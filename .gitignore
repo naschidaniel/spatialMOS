@@ -1,0 +1,16 @@
+# Python Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Docker Certs
+fabric/cert/ca.pem
+fabric/cert/cert.pem
+fabric/cert/key.pem
+
+# SpatialMOS
+data/*
+log/*
+spool/*
+settings.json
+.env

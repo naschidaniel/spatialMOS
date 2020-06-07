@@ -1,0 +1,53 @@
+{
+  "development": {
+    "collection": "development",
+    "docker_compose_files": [
+      "./docker-compose.yml",
+      "./docker-compose.development.yml"
+    ],
+    "initFolders": [
+      "./data/get_available_data",
+      "./data/get_available_data/suedtirol",
+      "./data/media",
+      "./data/postgresdata",
+      "./data/postgresdata_backup",
+      "./data/postgresdata_backup_server",
+      "./data/static",
+      "./log/fabric",
+      "./log/nginx",
+      "./spool"
+    ]
+  },
+  "test": {
+    "collection": "test",
+    "docker_compose_files": [
+      "./docker-compose.yml",
+      "./docker-compose.test.yml"
+    ],
+    "docker": {
+      "INSTALLFOLDER": "./"
+    }
+  },
+  "production": {
+    "collection": "production",
+    "initFolders": [
+      "./postgresdata",
+      "./postgresdata_backup_server",
+      "./log/nginx",
+      "./media",
+      "./static"
+    ],
+    "docker": {
+      "USERID": "1001",
+      "GROUPID": "1001",
+      "INSTALLFOLDER": "/www/spatialMOS"
+    },
+    "postgres_backup_server_folder": "./postgresdata_backup_server",
+    "docker_compose_files": [
+      "./docker-compose.yml",
+      "./docker-compose.production.yml"
+    ],
+    "REMOTE_USER": "webserver",
+    "REMOTE_HOST": "example.org"
+  }
+}
