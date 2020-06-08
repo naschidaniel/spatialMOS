@@ -1,0 +1,5 @@
+[BASIC]
+good-names= df, c, i, j, k, f
+
+[FORMAT]
+max-line-length=200

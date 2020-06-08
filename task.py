@@ -7,7 +7,7 @@ import logging
 import sys
 from invoke import task, Collection, Program
 
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 from fabric import inv_base
 from fabric import inv_docker
 from fabric import inv_logging

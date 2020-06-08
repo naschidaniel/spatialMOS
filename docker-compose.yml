@@ -9,5 +9,4 @@ services:
       - get_available_data:/get_available_data
       - log:/log
       - py_get_available_data:/usr/src/app/py_get_available_data
-      - py_middleware:/usr/src/app/py_middleware
       - spool:/spool

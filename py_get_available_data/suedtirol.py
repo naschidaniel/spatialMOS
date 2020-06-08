@@ -4,27 +4,22 @@
 
 import json
 import csv
-import requests
 import logging
+import time
+import requests
 import pandas as pd
 from datetime import datetime
 import os
 from tqdm import tqdm
-import time
-import optparse
 import sys
 import dateutil
 import pytz
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from py_middleware import spatial_parser
+
 
 # Functions
-def dateformatcheck(input):
-    try:
-        datetime.strptime(input, '%Y-%m-%d')
-    except ValueError:
-        logging.error("Datum Input überprüfen YYYY-MM-DD | BSP: -s 2018-1-1 -e 2018-12-31")
-        sys.exit(1)
-
 def rename_sensor_name(sensor):
     '''The function is used to set the parameters to a uniform format.'''
     parameter_dict = {'LT': 't', 'LF': 'rf', 'WR': 'wr', 'WG': 'wg', 'WG.BOE': 'wsg', 'N': 'regen', 'LD.RED': 'ldred', 'GS': 'globalstrahlung', 'SD': 'sonne'}
@@ -156,25 +151,9 @@ def fetch_suedirol_data(startdate, enddate):
 
 # Main
 if __name__ == "__main__":
-    parser = optparse.OptionParser()
-
-    parser.add_option('-b', '--beginn',
-                      action="store", dest="beginn",
-                      help="2014-7-27", default="")
-    parser.add_option('-e', '--enddate',
-                     action="store", dest="end",
-                     help="2018-12-31", default="")
-
-    options, args = parser.parse_args()
-
-    dateformatcheck(options.beginn)
-    dateformatcheck(options.end)
-
-    logging.info("Startdate : " + options.beginn)
-    logging.info("Enddate : " + options.end)
-
     start = time.time()
-    fetch_suedirol_data(options.beginn, options.end)
+    parser_dict = spatial_parser(beginndate=True, enddate=True)
+    fetch_suedirol_data(parser_dict['beginndate'], parser_dict['enddate'])
     end = time.time()
     time_diff = (end - start) / 60
     logging.info("The download process took {0:.2f} minutes.".format(time_diff))

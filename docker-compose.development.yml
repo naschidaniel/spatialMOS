@@ -49,9 +49,3 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/py_get_available_data
-  py_middleware:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/py_middleware

@@ -18,7 +18,8 @@ def start_logging():
     if not os.path.exists(logging_folder):
         os.mkdir(logging_folder)
 
-    logging_cfg_file = os.path.join("py_middleware", "logging.cfg")
+    logging_cfg_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logging.cfg")
+
     logfile = os.path.join(
         logging_folder, f"logfile-{datetime.now().strftime('%Y-%m-%d')}.log")
     logging.config.fileConfig(logging_cfg_file,
