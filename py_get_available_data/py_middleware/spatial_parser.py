@@ -35,13 +35,13 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
 
     if beginndate is True:
         try:
-            beginndate = datetime.strptime(options.date, "%Y-%m-%d")
-            beginndate = datetime.strftime(date, "%Y%m%d")
+            beginndate = datetime.strptime(options.beginndate, "%Y-%m-%d")
+            beginndate = datetime.strftime(beginndate, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--beginndate", beginndate))
         except ValueError:
             logging.error("PARSER | {:>20} | {}".format(
                 "--beginndate", options.beginndate))
-            raise ValueError("The date is not entered in the correct format: YYYY-MM-DD")
+            raise ValueError("The beginndate is not entered in the correct format: YYYY-MM-DD")
     else:
         beginndate = None
 
@@ -71,8 +71,8 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
 
     if enddate is True:
         try:
-            enddate = datetime.strptime(options.date, "%Y-%m-%d")
-            enddate = datetime.strftime(date, "%Y%m%d")
+            enddate = datetime.strptime(options.enddate, "%Y-%m-%d")
+            enddate = datetime.strftime(enddate, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--enddate", enddate))
         except ValueError:
             logging.error("PARSER | {:>20} | {}".format("--enddate", options.enddate))

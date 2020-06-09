@@ -2,6 +2,7 @@
 #  -*- coding: utf-8 -*-
 """With this Python script data can be obtained from the South Tyrol Weather Service."""
 
+from py_middleware import spatial_parser
 import json
 import csv
 import logging
@@ -13,23 +14,21 @@ import os
 from tqdm import tqdm
 import sys
 import dateutil
-import pytz
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from py_middleware import spatial_parser
 
 
 # Functions
 def rename_sensor_name(sensor):
     '''The function is used to set the parameters to a uniform format.'''
-    parameter_dict = {'LT': 't', 'LF': 'rf', 'WR': 'wr', 'WG': 'wg', 'WG.BOE': 'wsg', 'N': 'regen', 'LD.RED': 'ldred', 'GS': 'globalstrahlung', 'SD': 'sonne'}
+    parameter_dict = {'LT': 't', 'LF': 'rf', 'WR': 'wr', 'WG': 'wg', 'WG.BOE': 'wsg',
+                      'N': 'regen', 'LD.RED': 'ldred', 'GS': 'globalstrahlung', 'SD': 'sonne'}
     if sensor in parameter_dict:
         name = parameter_dict[sensor]
     else:
         name = sensor
     return(name)
 
-def fetch_suedirol_data(startdate, enddate):
+
+def fetch_suedirol_data(beginndate, enddate):
     '''The function is used to load data from the South Tyrolean weather service. The data is stored as a csv file.'''
 
     # Provide folder structure.
@@ -45,13 +44,6 @@ def fetch_suedirol_data(startdate, enddate):
     url_sensor = 'http://dati.retecivica.bz.it/services/meteo/v1/sensors'
     req_sensor = requests.get(url_sensor)
 
-    # Convert date format for request
-    startdate_download_format = datetime.strptime(startdate, '%Y-%m-%d')
-    startdate_download_format = datetime.strftime(startdate_download_format, '%Y%m%d')
-    enddate_download_format = datetime.strptime(enddate, '%Y-%m-%d')
-    enddate_download_format = datetime.strftime(enddate_download_format, '%Y%m%d')
-
-
     if req_stations.status_code == 200 and req_sensor.status_code == 200:
         stations_json = '{}/stations.json.tmp'.format(data_path)
         with open(stations_json, mode='w') as f:
@@ -65,11 +57,13 @@ def fetch_suedirol_data(startdate, enddate):
         station_features = data_stations['features']
         station_properties = [d['properties'] for d in station_features]
         station_data = pd.json_normalize(station_properties)
-        station_data = station_data.drop(['NAME_E', 'NAME_I', 'NAME_L'], axis=1)
+        station_data = station_data.drop(
+            ['NAME_E', 'NAME_I', 'NAME_L'], axis=1)
         station_data.columns = ['station', 'name', 'alt', 'lon', 'lat']
         station_data['lon'] = round(station_data['lon'], ndigits=2)
         station_data['lat'] = round(station_data['lat'], ndigits=2)
-        station_data.to_csv('{}/stations.csv'.format(data_path),index=False, quoting=csv.QUOTE_NONNUMERIC)
+        station_data.to_csv('{}/stations.csv'.format(data_path),
+                            index=False, quoting=csv.QUOTE_NONNUMERIC)
 
         # Provide available sensors for the respective station
         stations_sensor_json = '{}/stations_sensor.json.tmp'.format(data_path)
@@ -86,7 +80,8 @@ def fetch_suedirol_data(startdate, enddate):
         sensor_data_info.columns = ['Beschreibung', 'Parameter', 'Einheit']
         for index, row in sensor_data_info.iterrows():
             row['Parameter'] = rename_sensor_name(row['Parameter'])
-        sensor_data_info.to_csv('{}/Parameter_Info.csv'.format(data_path),index=False, quoting=csv.QUOTE_NONNUMERIC)
+        sensor_data_info.to_csv(
+            '{}/Parameter_Info.csv'.format(data_path), index=False, quoting=csv.QUOTE_NONNUMERIC)
 
         station_sensor_dict = {}
         for index, row in sensor_data.iterrows():
@@ -102,13 +97,13 @@ def fetch_suedirol_data(startdate, enddate):
             result[key] = value
         station_sensor_dict = result
 
-
-        with tqdm(total=station_data.shape[0], desc=f"Data download from API of the weather service Province of Bolzano. | {startdate} to {enddate} |", leave=False) as pbar:
+        with tqdm(total=station_data.shape[0], desc=f"Data download from API of the weather service Province of Bolzano. | {beginndate} to {enddate} |", leave=False) as pbar:
             for index, row in station_data.iterrows():
                 df = None
                 for sensor in station_sensor_dict[str(row['station'])]:
                     url_values = 'http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={}&output_format=JSON&' \
-                      'sensor_code={}&date_from={}0000&date_to={}0000'.format(str(row['station']), str(sensor), startdate_download_format, enddate_download_format)
+                        'sensor_code={}&date_from={}0000&date_to={}0000'.format(
+                            str(row['station']), str(sensor), beginndate, enddate)
                     req_values = requests.get(url_values)
 
                     if req_values.status_code == 200:
@@ -116,13 +111,14 @@ def fetch_suedirol_data(startdate, enddate):
                         with open(tmp_data_file, mode='w') as f:
                             f.write(req_values.text)
                             f.close()
-                        
+
                         with open(tmp_data_file, 'r') as f:
                             data_stations_value = json.load(f)
                         os.remove(tmp_data_file)
 
                         new_df = pd.json_normalize(data_stations_value)
-                        new_df.columns = ['obstime', rename_sensor_name(sensor)]
+                        new_df.columns = ['obstime',
+                                          rename_sensor_name(sensor)]
                         new_df = new_df.set_index('obstime')
 
                         if df is None:
@@ -134,26 +130,32 @@ def fetch_suedirol_data(startdate, enddate):
                         logging.info("The values could not be downloaded.")
 
                 if df is None:
-                    tqdm.write(f"No data for the date range {startdate} to {enddate} are available for station {str(row['station'])}.")
+                    tqdm.write(
+                        f"No data for the date range {beginndate} to {enddate} are available for station {str(row['station'])}.")
                 else:
-                    startdateDF = dateutil.parser.parse(df.index[-1], tzinfos={'CET': dateutil.tz.gettz("Europe/Vienna")})
+                    tzinfos = {'CET': dateutil.tz.gettz(
+                        "Europe/Vienna"), 'CEST': dateutil.tz.gettz("Europe/Vienna")}
+                    startdateDF = dateutil.parser.parse(
+                        df.index[-1], tzinfos=tzinfos)
                     startdateDF = datetime.strftime(startdateDF, '%Y-%m-%d')
 
-                    enddateDF = dateutil.parser.parse(df.index[0], tzinfos={'CET': dateutil.tz.gettz("Europe/Vienna")})
+                    enddateDF = dateutil.parser.parse(
+                        df.index[0], tzinfos=tzinfos)
                     enddateDF = datetime.strftime(enddateDF, '%Y-%m-%d')
 
-                    df.to_csv('{}/data/{}_{}_{}.csv'.format(data_path, startdateDF, enddateDF, str(row['station'])), sep=';', index=True, quoting=csv.QUOTE_MINIMAL)
+                    df.to_csv('{}/data/{}_{}_{}.csv'.format(data_path, startdateDF, enddateDF,
+                                                            str(row['station'])), sep=';', index=True, quoting=csv.QUOTE_MINIMAL)
                 pbar.update(1)
     else:
         logging.error('Error while Downloading Station File from wetter ')
 
 
-
 # Main
 if __name__ == "__main__":
     start = time.time()
-    parser_dict = spatial_parser(beginndate=True, enddate=True)
+    parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
     fetch_suedirol_data(parser_dict['beginndate'], parser_dict['enddate'])
     end = time.time()
     time_diff = (end - start) / 60
-    logging.info("The download process took {0:.2f} minutes.".format(time_diff))
+    logging.info(
+        "The download process took {0:.2f} minutes.".format(time_diff))
