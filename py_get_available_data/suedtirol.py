@@ -1,5 +1,5 @@
-#! /usr/bin/env python3
-#  -*- coding: utf-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """With this Python script data can be obtained from the South Tyrol Weather Service."""
 
 import csv
@@ -16,14 +16,14 @@ from py_middleware import spatial_parser
 
 
 # Functions
-def rename_sensor_name(sensor):
+def rename_sensor_name(parameter):
     """The function is used to set the parameters to a uniform format."""
-    parameter_dict = {"LT": "t", "LF": "rf", "WR": "wr", "WG": "wg", "WG.BOE": "wsg",
+    sensor_dict = {"LT": "t", "LF": "rf", "WR": "wr", "WG": "wg", "WG.BOE": "wsg",
                       "N": "regen", "LD.RED": "ldred", "GS": "globalstrahlung", "SD": "sonne"}
-    if sensor in parameter_dict:
-        name = parameter_dict[sensor]
+    if parameter in sensor_dict:
+        name = sensor_dict[parameter]
     else:
-        name = sensor
+        name = parameter
     return name
 
 
@@ -32,6 +32,9 @@ def fetch_suedirol_data(beginndate, enddate):
 
     # Provide folder structure.
     data_path = "/get_available_data/suedtirol"
+    if not os.path.exists(f"{data_path}"):
+        os.mkdir(f"{data_path}")
+
     if not os.path.exists(f"{data_path}/data/"):
         os.mkdir(f"{data_path}/data/")
 
