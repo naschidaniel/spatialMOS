@@ -3,3 +3,6 @@ good-names= df, c, i, j, k, f
 
 [FORMAT]
 max-line-length=200
+
+[LOGGING]
+logging-format-style=<i class="fa fa-hacker-news" aria-hidden="true"></i>
