@@ -49,8 +49,8 @@ def fetch_zamg_data():
 
                 # Merging of the two dataframes and reorder
                 df = df_stat.merge(df_red, on=["station"])
-                df = df[["timestamp", "timestamp_download", "station", "alt", "t", "rf", "wg", "wr", "wsg", "regen", "sonne",
-                         "ldred", "ldstat"]]
+                df = df[["timestamp", "timestamp_download", "station", "alt", "t",
+                         "rf", "wg", "wr", "wsg", "regen", "sonne", "ldred", "ldstat"]]
 
                 # Check the data status of the website
                 if now_hour == raw_text_time:
