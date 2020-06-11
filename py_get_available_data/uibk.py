@@ -114,7 +114,7 @@ def download_api_data(data_path, station):
         return (data_stations_pd, beginndate, enddate)
     else:
         logging.error(
-            f"The request for the URL '{url_station}' returned the status code 404")
+            "The request for the URL '%s' returned the status code 404", url_station)
 
 
 # Main
