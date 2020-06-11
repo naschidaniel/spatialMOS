@@ -73,8 +73,7 @@ def fetch_zamg_data():
                     "Not all federal states could be downloaded successfully. The process is repeated. | Retry {}/{} ".format(retry, max_retrys))
                 retry = retry + 1
                 file_counter = 0
-                logging.info(
-                    "-------------------------------------------- Retry {}/{}. The process is repeated in 600 seconds. --------------------------------------------".format(retry, max_retrys))
+                logging.info("The process is repeated in 600 seconds.")
                 time.sleep(600)
             else:
                 logging.info(
