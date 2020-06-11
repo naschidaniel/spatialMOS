@@ -3,7 +3,6 @@
 """The collection is needed for postgresql."""
 
 import os
-import sys
 import datetime
 import logging
 from invoke import task, Collection

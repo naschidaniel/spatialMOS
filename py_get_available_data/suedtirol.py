@@ -162,7 +162,6 @@ def fetch_suedirol_data(beginndate, enddate):
 
 # Main
 if __name__ == "__main__":
-    start = time.time()
     starttime = logger_module.start_logging("get_available_data", "suedtirol")
     parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
     fetch_suedirol_data(parser_dict["beginndate"], parser_dict["enddate"])

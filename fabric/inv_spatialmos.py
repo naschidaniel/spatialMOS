@@ -24,10 +24,21 @@ def get_available_data_uibk(c):
     inv_docker.run(c, cmd)
     inv_logging.success(get_available_data_uibk.__name__)
 
+@task
+def get_available_data_zamg(c):
+    """Download data from zamg webpage."""
+    inv_logging.task(get_available_data_zamg.__name__)
+    cmd = ["py_get_available_data", "python", "./py_get_available_data/zamg.py"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(get_available_data_zamg.__name__)
+
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(get_available_data_suedtirol)
 spatialmos_development_ns.add_task(get_available_data_uibk)
+spatialmos_development_ns.add_task(get_available_data_zamg)
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(get_available_data_suedtirol)
 spatialmos_production_ns.add_task(get_available_data_uibk)
+spatialmos_development_ns.add_task(get_available_data_zamg)
