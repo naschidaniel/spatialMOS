@@ -8,6 +8,16 @@ import inv_docker
 
 
 @task
+def archive_available_data(c, cmd):
+    """The csv-files are created with the 7zip. The folder must be specified e.g. uibk."""
+    inv_logging.task(archive_available_data.__name__)
+    command = ["python", "./py_get_available_data/archive_available_data.py", "--folder", cmd]
+    command = ' '.join(command)
+    c.run(command)
+    inv_logging.success(archive_available_data.__name__)
+
+
+@task
 def get_available_data_wetter_at(c):
     """Download data from wetter_at."""
     inv_logging.task(get_available_data_wetter_at.__name__)
@@ -52,12 +62,14 @@ def get_available_data_zamg(c):
 
 
 spatialmos_development_ns = Collection("spatialmos")
+spatialmos_development_ns.add_task(archive_available_data)
 spatialmos_development_ns.add_task(get_available_data_wetter_at)
 spatialmos_development_ns.add_task(get_available_data_suedtirol)
 spatialmos_development_ns.add_task(get_available_data_uibk)
 spatialmos_development_ns.add_task(get_available_data_zamg)
 
 spatialmos_production_ns = Collection("spatialmos")
+spatialmos_production_ns.add_task(archive_available_data)
 spatialmos_production_ns.add_task(get_available_data_wetter_at)
 spatialmos_production_ns.add_task(get_available_data_suedtirol)
 spatialmos_production_ns.add_task(get_available_data_uibk)

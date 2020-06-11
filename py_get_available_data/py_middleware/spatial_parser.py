@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", param=False, name_param=""):
+def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
     parser.add_argument("--beginn", dest="beginn", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
@@ -18,7 +18,7 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
     parser.add_argument("--enddate", dest="enddate", help="Enter the enddate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--folder", dest="folder", help="Enter a folder", default="", type=str)
     parser.add_argument("--host", dest="host", help="Specify the host: example.com", default="moses.tirol", type=str)
-    parser.add_argument("--param", dest="param", help="Enter a parameter from the list: [tmp_2m | rh_2m | wind_10m]", default="", type=str)
+    parser.add_argument("--parameter", dest="parameter", help="Enter a parameter from the list: [tmp_2m | rh_2m | wind_10m]", default="", type=str)
 
     options = parser.parse_args()
 
@@ -82,10 +82,10 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
 
     if folder is True:
         logging.info("PARSER | {:>20} | {}".format(
-            "name_parm options", name_folder))
-        if options.parm in name_param:
+            "name_folder options", name_folder))
+        if options.folder in name_folder:
             folder = options.folder
-            logging.info("PARSER | {:>20} | {}".format("--parm", folder))
+            logging.info("PARSER | {:>20} | {}".format("--folder", folder))
         else:
             print("--folder | Enter a folder from the list: {}".format(name_folder))
             logging.error("PARSER | {:>20} | {}".format("--folder", options.folder))
@@ -104,19 +104,19 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
     else:
         host = None
 
-    if param is True:
+    if parameter is True:
         logging.info("PARSER | {:>20} | {}".format(
-            "name_param options", name_param))
-        if options.param in name_param:
-            param = options.param
-            logging.info("PARSER | {:>20} | {}".format("--param", param))
+            "name_param options", name_parameter))
+        if options.param in name_parameter:
+            parameter = options.parameter
+            logging.info("PARSER | {:>20} | {}".format("--parameter", parameter))
         else:
-            print("--param | Enter a host from the list: {}".format(name_param))
+            print("--parameter | Enter a host from the list: {}".format(name_parameter))
             logging.error("PARSER | {:>20} | {}".format(
-                "--param", options.param))
+                "--parameter", options.parameter))
             sys.exit(1)
     else:
-        param = None
+        parameter = None
 
     parser_dict = {"beginn": beginn,
                    "beginndate": beginndate,
@@ -125,6 +125,6 @@ def spatial_parser(beginn=False, beginndate=False, date=False, end=False, enddat
                    "enddate": enddate,
                    "folder": folder,
                    "host": host,
-                   "param": param
+                   "parameter": parameter
                    }
     return parser_dict

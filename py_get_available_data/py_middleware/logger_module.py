@@ -8,13 +8,15 @@ import os
 from datetime import datetime
 
 
-def start_logging(folder, program):
+def start_logging(folder, program, docker=True):
     """A function to initialize the logging module"""
     starttime = datetime.utcnow()
 
-
     logging_cfg_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logging.cfg')
-    logfile = os.path.join('/log/', f"{folder}")
+    if docker:
+        logfile = os.path.join('/log/', f"{folder}")
+    else:
+        logfile = os.path.join('./log/', f"{folder}")
     logfile = os.path.join(logfile, f"{program}_{datetime.now().strftime('%Y%m%d')}.log")
     logging.config.fileConfig(logging_cfg_file, \
         disable_existing_loggers=False, \
