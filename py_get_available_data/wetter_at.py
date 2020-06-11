@@ -54,12 +54,12 @@ def fetch_wetter_at_data(beginndate, enddate):
                 df.to_csv(csvfile, sep=";", index=False,
                           quoting=csv.QUOTE_MINIMAL)
                 logging.info(
-                    f"The data of for the station {stationinfo['station']} from {enddate} to {beginndate} has been saved in the file {csvfile}.")
+                    "The data of for the station %s from %s to %s has been saved in the file %s.", stationinfo["station"], enddate, beginndate, csvfile)
             else:
                 tqdm.write(
                     f"The data has already been saved in the file {csvfile}.")
                 logging.warning(
-                    f"The data has already been saved in the file {csvfile}.")
+                    "The data has already been saved in the file %s.", csvfile)
             pbar.update(1)
 
 
@@ -100,7 +100,7 @@ def download_data_wetter_at(data_path, station, beginndate, timeseries, paramete
         return df
     else:
         logging.error(
-            f"The request for the URL '{url_parameter}' returned the status code 404")
+            "The request for the URL '%s' returned the status code 404", url_parameter)
 
 
 # Main

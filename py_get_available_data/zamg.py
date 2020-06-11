@@ -70,7 +70,7 @@ def fetch_zamg_data():
             # Check whether all federal states have been successfully loaded
             if file_counter != 9:
                 logging.error(
-                    "Not all federal states could be downloaded successfully. The process is repeated. | Retry {}/{} ".format(retry, max_retrys))
+                    "Not all federal states could be downloaded successfully. The process is repeated. | Retry %s/%s ", retry, max_retrys)
                 retry = retry + 1
                 file_counter = 0
                 logging.info("The process is repeated in 600 seconds.")
@@ -81,7 +81,7 @@ def fetch_zamg_data():
 
         else:
             logging.error(
-                "The maximum number of retries was reached and not all data could be saved. {}/{}".format(retry, max_retrys))
+                "The maximum number of retries was reached and not all data could be saved. %s/%s", retry, max_retrys)
             sys.exit(1)
 
 
@@ -206,7 +206,7 @@ def download_zamg_page_data(data_path, state, pressure):
         return (df, raw_text_time)
     else:
         logging.error(
-            f"The request for the URL '{url_page}' returned the status code 404")
+            "The request for the URL '%s' returned the status code 404", url_page)
         df = None
         raw_text_time = None
         return(df, raw_text_time)

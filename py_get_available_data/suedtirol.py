@@ -129,10 +129,10 @@ def fetch_suedirol_data(beginndate, enddate):
                                 df = df.join(new_df)
                         else:
                             logging.error(
-                                f"The template file was not created correctly. URL: {url_values}")
+                                "The template file was not created correctly. URL: %s", url_values)
                     else:
                         logging.info(
-                            f"The values could not be downloaded. URL: {url_values}")
+                            "The values could not be downloaded. URL: %s", url_values)
 
                 if df is None:
                     tqdm.write(
@@ -152,7 +152,7 @@ def fetch_suedirol_data(beginndate, enddate):
                     df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df,
                                                             str(row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
                     logging.info(
-                        f"The data of the station {str(row['station'])} for the time range from {start_date_df} to {end_date_df} has been saved successfully.")
+                        "The data of the station %s for the time range from %s to %s has been saved successfully.", row["station"], start_date_df, end_date_df)
                 pbar.update(1)
     else:
         logging.error(
