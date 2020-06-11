@@ -19,7 +19,7 @@ from py_middleware import spatial_parser
 def rename_sensor_name(parameter):
     """The function is used to set the parameters to a uniform format."""
     sensor_dict = {"LT": "t", "LF": "rf", "WR": "wr", "WG": "wg", "WG.BOE": "wsg",
-                      "N": "regen", "LD.RED": "ldred", "GS": "globalstrahlung", "SD": "sonne"}
+                   "N": "regen", "LD.RED": "ldred", "GS": "globalstrahlung", "SD": "sonne"}
     if parameter in sensor_dict:
         name = sensor_dict[parameter]
     else:
