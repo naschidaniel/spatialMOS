@@ -29,7 +29,7 @@ if __name__ == "__main__":
     path_to_tar = os.path.join(path_to_tar, parser_dict["folder"])
     if not os.path.exists(archive_path):
         os.makedirs(archive_path)
-        logging.info(f"The archive folder '{archive_path}' was created.")
+        logging.info("The archive folder '%s' was created.", archive_path)
     
     count_files_to_tar = 0
     if os.path.exists(path_to_tar):
@@ -41,19 +41,19 @@ if __name__ == "__main__":
         tarfileStatus = os.system(f"tar -czvf {tarfile} -C {path_to_tar} .")
 
         if tarfileStatus == 0:
-            logging.info(f"The archive file '{tarfile}' was successfully created.")
+            logging.info("The archive file '%s' was successfully created.", tarfile)
         else:
-            logging.error(f"The archive file '{tarfile}' could not be created.")
+            logging.error("The archive file '%s' could not be created.", tarfile)
             sys.exit(1)
     else:
-        logging.error(f"There is no folder '{path_to_tar}' for archiving.")
+        logging.error("There is no folder '%s' for archiving.", path_to_tar)
         sys.exit(1)
 
     try:
         os.system("rm -rf {}".format(path_to_tar))
-        logging.info(f"The data folder '{path_to_tar}'was successfully deleted.")
+        logging.info("The data folder '%s' was successfully deleted.", path_to_tar)
     except:
-        logging.error(f"The data folder '{path_to_tar}' could not be deleted.")
+        logging.error("The data folder '%s' could not be deleted.", path_to_tar)
         sys.exit(1)
 
     logger_module.end_logging(starttime)
