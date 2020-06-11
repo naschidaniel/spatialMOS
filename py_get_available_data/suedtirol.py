@@ -13,6 +13,7 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 from py_middleware import spatial_parser
+from py_middleware import logger_module
 
 
 # Functions
@@ -29,7 +30,6 @@ def rename_sensor_name(parameter):
 
 def fetch_suedirol_data(beginndate, enddate):
     """The function is used to load data from the South Tyrolean weather service. The data is stored as a csv file."""
-
     # Provide folder structure.
     data_path = "/get_available_data/suedtirol"
     if not os.path.exists(f"{data_path}"):
@@ -113,23 +113,27 @@ def fetch_suedirol_data(beginndate, enddate):
                         with open(tmp_data_file, mode="w") as f:
                             f.write(req_values.text)
                             f.close()
+                        if os.path.exists(tmp_data_file):
+                            with open(tmp_data_file, "r") as f:
+                                data_stations_value = json.load(f)
+                            os.remove(tmp_data_file)
 
-                        with open(tmp_data_file, "r") as f:
-                            data_stations_value = json.load(f)
-                        os.remove(tmp_data_file)
+                            new_df = pd.json_normalize(data_stations_value)
+                            new_df.columns = ["obstime",
+                                              rename_sensor_name(sensor)]
+                            new_df = new_df.set_index("obstime")
 
-                        new_df = pd.json_normalize(data_stations_value)
-                        new_df.columns = ["obstime",
-                                          rename_sensor_name(sensor)]
-                        new_df = new_df.set_index("obstime")
-
-                        if df is None:
-                            df = new_df
-                            df.insert(0, "station", row["station"])
+                            if df is None:
+                                df = new_df
+                                df.insert(0, "station", row["station"])
+                            else:
+                                df = df.join(new_df)
                         else:
-                            df = df.join(new_df)
+                            logging.error(
+                                f"The template file was not created correctly. URL: {url_values}")
                     else:
-                        logging.info("The values could not be downloaded.")
+                        logging.info(
+                            f"The values could not be downloaded. URL: {url_values}")
 
                 if df is None:
                     tqdm.write(
@@ -148,6 +152,8 @@ def fetch_suedirol_data(beginndate, enddate):
 
                     df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df,
                                                             str(row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
+                    logging.info(
+                        f"The data of the station {str(row['station'])} for the time range from {start_date_df} to {end_date_df} has been saved successfully.")
                 pbar.update(1)
     else:
         logging.error(
@@ -157,9 +163,7 @@ def fetch_suedirol_data(beginndate, enddate):
 # Main
 if __name__ == "__main__":
     start = time.time()
+    starttime = logger_module.start_logging("get_available_data", "suedtirol")
     parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
     fetch_suedirol_data(parser_dict["beginndate"], parser_dict["enddate"])
-    end = time.time()
-    time_diff = (end - start) / 60
-    logging.info(
-        "The download process took {0:.2f} minutes.".format(time_diff))
+    logger_module.end_logging(starttime)
