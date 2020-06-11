@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""This program is used to load data from the ZAMG Website."""
+"""This program is used to load data from the ZAMG website."""
 
 import csv
 import logging

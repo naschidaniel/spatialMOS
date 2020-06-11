@@ -1,5 +1,5 @@
 [BASIC]
-good-names= df, c, i, j, k, f
+good-names= df, c, i, j, k, f, p
 
 [FORMAT]
 max-line-length=200
