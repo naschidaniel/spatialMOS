@@ -49,7 +49,7 @@ class idx_entry(object):
         try:
             x = getattr(self, "_byte_end")
         except:
-            raise Error("whoops, _byte_end attribute not found.")
+            logging.error("whoops, _byte_end attribute not found.")
         return x 
 
     def start_byte(self):
@@ -60,7 +60,7 @@ class idx_entry(object):
         try:
             x = getattr(self, "_byte_start")
         except:
-            raise Error("whoops, _byte_start attribute not found.")
+            logging.error("whoops, _byte_start attribute not found.")
         return x 
 
     def key(self):
@@ -242,6 +242,13 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
             logging.info("Index file: %s", files["idx"])
             logging.info("Local file: %s", files["local"])
             logging.info("Subset file: %s", files["subset"])
+
+            # Read/parse index file (if possible)
+            required = parse_index_file(files["idx"], params)
+
+            # If no messages found: continue
+            if required is None: continue
+            if len(required) == 0: continue
 
             download_grib(files["grib"], files["local"])
 
