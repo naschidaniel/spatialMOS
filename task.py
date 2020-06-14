@@ -2,12 +2,7 @@
 #  -*- coding: utf-8 -*-
 """The fabricfile of the project."""
 
-import os
-import logging
-import sys
-from invoke import task, Collection, Program
-
-sys.path.insert(0, os.getcwd())
+from invoke import Collection, Program
 from fabric import inv_base
 from fabric import inv_docker
 from fabric import inv_logging
@@ -18,7 +13,6 @@ from fabric import inv_test
 from fabric import inv_rsync
 from fabric import inv_postgres
 from fabric import inv_spatialmos
-from fabric import inv_test
 
 # Logging
 inv_logging.start_logging()
