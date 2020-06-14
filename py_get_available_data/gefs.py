@@ -14,6 +14,7 @@ import logging
 from datetime import datetime
 import subprocess as sub
 import numpy as np
+import requests
 from py_middleware import spatial_parser
 from py_middleware import logger_module
 
@@ -154,30 +155,14 @@ class idx_entry(object):
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
 def parse_index_file(idxfile, params):
-    """parse_index_file(idxfile, config)
- 
-    Downloading and parsing the grib index file, extracts the
-    bytes of the required fields/variables.
+    """A function for processing the GEFS idx files"""
 
-    Parameters
-    ----------
-    idxfile : str
-        url to the index file
-    params : dict
-        contains the config of the requested parameters
-
-    Returns
-    -------
-    Things ... (tdb)
-    """
-
-    import requests
     try:
-        print(idxfile)
+        logging.info("The index file is going to be downloaded: %s", idxfile)
         req  = requests.get(idxfile)
         data = req.text.split("\n")
     except Exception as e:
-        print("[!] Problems reading index file\n    {:s}\n    ... return None".format(idxfile))
+        logging.error("Problems reading index file ... %s ... return None", idxfile)
         return None
 
     # List to store the required index message information
@@ -185,9 +170,8 @@ def parse_index_file(idxfile, params):
 
     # Parsing data (extracting message starting byte,
     # variable name, and variable level)
-    import re
+
     comp = re.compile("^\d+:(\d+):d=\d{10}:([^:.*]*):([^:.*]*)")
-    byte = 1 # initial byte
     for line in data:
         if len(line) == 0: continue
         mtch = re.findall(comp, line)
@@ -214,13 +198,11 @@ def parse_index_file(idxfile, params):
     return res
 
 # -------------------------------------------------------------------
-def download_range(grib, local, range):
-    print(local)
-    import requests
-    r = requests.get(grib)
+def download_grib(grib, local):
+    req_grib = requests.get(grib)
 
     with open(local, 'wb') as f:
-        f.write(r.content)
+        f.write(req_grib.content)
         f.close()
     return True
 
@@ -310,15 +292,8 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
             # Else start download
             print (f"- Grib file: {files['grib']}\n- Index file: {files['idx']}\n - Local file: {files['local']}\n- Subset file: {files['subset']}")
 
-            # Read/parse index file (if possible)
-            required = parse_index_file(files["idx"], params)
-
-            # If no messages found: continue
-            if required is None: continue
-            if len(required) == 0: continue
-
             # Downloading the data
-            download_range(files["grib"], files["local"], required)
+            download_grib(files["grib"], files["local"])
 
             # If wgrib2 exists: crate subset (small_grib)
             if not subset is None:
