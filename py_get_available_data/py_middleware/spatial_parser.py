@@ -11,16 +11,16 @@ from datetime import datetime
 def spatial_parser(avgspr=False, name_avgspr="", beginn=False, beginndate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
-    parser.add_argument("--avgspr", dest="avgspr", help="Enter the GFSE Mean or Spread: ['avg', 'spr]", default="avg", type=str)
+    parser.add_argument("--avgspr", dest="avgspr", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
     parser.add_argument("--beginn", dest="beginn", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--beginndate", dest="beginndate", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--end", dest="end", help="Enter a number for one day in the calendar year: e.g. 1", default=365, type=int)
     parser.add_argument("--enddate", dest="enddate", help="Enter the enddate in the format YYYY-MM-DD.", default="", type=str)
-    parser.add_argument("--folder", dest="folder", help="Enter a folder", default="", type=str)
-    parser.add_argument("--host", dest="host", help="Specify the host: example.com", default="moses.tirol", type=str)
-    parser.add_argument("--parameter", dest="parameter", help="Enter a parameter from the list: [tmp_2m | rh_2m | wind_10m]", default="", type=str)
-    parser.add_argument("--runhour", dest="runhour", help="Model initialization hour: [0, 6, 12, 18]", default=0, type=int)
+    parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
+    parser.add_argument("--host", dest="host", help=f"Specify the host: {name_host}", default="moses.tirol", type=str)
+    parser.add_argument("--parameter", dest="parameter", help=f"Enter a parameter from the list: {name_parameter}", default="", type=str)
+    parser.add_argument("--runhour", dest="runhour", help=f"Model initialization hour: {name_runhour}", default=0, type=int)
 
     options = parser.parse_args()
 
