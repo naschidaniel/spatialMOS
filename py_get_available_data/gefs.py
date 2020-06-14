@@ -5,15 +5,19 @@
 The sourcecode of Reto Stauffer can be found at :
 https://github.com/retostauffer/GEFS_Downloader_Simple"""
 
-def bar():
-    """bar()
 
-    Simply prints a line of "-" on stdout.
-    """
-    print("{:s}".format("".join(["-"]*70)))
+import os
+import re
+import sys
+import argparse
+import logging
+from datetime import datetime
+import subprocess as sub
+import numpy as np
+from py_middleware import spatial_parser
+from py_middleware import logger_module
 
-# -------------------------------------------------------------------
-# -------------------------------------------------------------------
+# Functions
 def get_file_names(filedir, baseurl, date, mem, step, avgspr):
     """get_file_names(filedir, baseurl, date, mem, step)
 
@@ -25,7 +29,7 @@ def get_file_names(filedir, baseurl, date, mem, step, avgspr):
         name of the directory where to create the file "local"
     baseurl : str
         base url, used to format the data (can contain %Y%m%d or similar)
-    date : datetime.datetime
+    date : datetime.
         defines model initialization date and time
     mem : int
         member number
@@ -38,8 +42,6 @@ def get_file_names(filedir, baseurl, date, mem, step, avgspr):
     and the local file name ("local"), plus the file name of the local subset. Only
     used if subset is defined and wgrib2 is available (see main script).
     """
-    import os
-    import datetime as dt
 
     # Create URL  	geavg.t00z.pgrb2af00.idx
     if avgspr in ['avg', 'spr']:
@@ -223,66 +225,15 @@ def download_range(grib, local, range):
     return True
 
 
-# -------------------------------------------------------------------
-# Main script
-# -------------------------------------------------------------------
-if __name__ == "__main__":
 
-    # List of the required parameters. Check the index file
-    # to see the available parameters. Always <param>:<level> where
-    # <param> and <level> are the strings as in the grib index file.
-
-    # Import some required packages
-    import sys, os, re
-    import argparse, sys
-    import datetime as dt
-    import numpy as np
-    import distutils.spawn
-    import subprocess as sub
-
-
-    # Change Working dir:
-    dir_of_file = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(dir_of_file)
-    os.chdir('../../')
-    cwd = os.getcwd()
-    print('Arbeitsverzeicniss: {}'.format(cwd))
-
-    # Parsing input args
-    parser = argparse.ArgumentParser(description="Download some GEFS data")
-    parser.add_argument("--date","-d", type = str,
-               help = "Model initialization date. Format has to be YYYY-mm-dd!")
-    parser.add_argument("--runhour","-r", type = int,
-               help = "Model initialization hour, 0/6/12/18, integer.")
-    parser.add_argument("--parm", "-p", type=str,
-                        help="GFSE parm, tmp_2m/rh_2m, string.")
-    parser.add_argument("--avgspr","-as", type = str,
-               help = "GFSE Mean or Spread, avg/spr, string.")
-    args = vars(parser.parse_args())
-
-    # Checking args
-    if args["runhour"] is None or args["date"] is None:
-        parser.print_usage(); sys.exit(9)
-    if not re.match("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", args["date"]):
-        parser.print_usage()
-        raise ValueError("wrong format for input -d/--date")
-    if not args["runhour"] in [0, 6, 12, 18]:
-        parser.print_usage()
-        raise ValueError("wrong input for -r/--runhour, has to be 0/6/12/18")
-    if not args["parm"] in ['tmp_2m', 'rh_2m', 'ugrd_10m', 'vgrd_10m']:
-        parser.print_usage()
-        raise ValueError("wrong input for -p/--parm, has to be tmp_2m/rh_2m/ugrd_10m/vgrd_10m")
-    if not args["avgspr"] in [None, 'avg', 'spr']:
-        parser.print_usage()
-        raise ValueError("wrong input for -as/--avgspr, has to be avg/spr")
-
-    if args["parm"] == 'tmp_2m':
+def fetch_gefs_data(avgspr, date, parameter, runhour):
+    if parameter == 'tmp_2m':
         params = ["TMP:2 m above ground"]
-    elif args["parm"] == 'rh_2m':
+    elif parameter == 'rh_2m':
         params = ["RH:2 m above ground"]
-    elif args["parm"] == 'ugrd_10m':
+    elif parameter == 'ugrd_10m':
         params = ["UGRD:10 m above ground"]
-    elif args["parm"] == 'vgrd_10m':
+    elif parameter == 'vgrd_10m':
         params = ["VGRD:10 m above ground"]
 
     # Config
@@ -294,7 +245,7 @@ if __name__ == "__main__":
     if not os.path.exists(f"{data_path}/data/"):
         os.mkdir(f"{data_path}/data/")
 
-    outdir = "/get_available_data/gefs/data/gfs_forcast/{}".format(args["parm"])
+    outdir = "/get_available_data/gefs/data/gfs_forcast/{}".format(parameter)
     baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
     baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.
@@ -303,16 +254,16 @@ if __name__ == "__main__":
 
 
     # Crate date arg
-    date = dt.datetime.strptime("{:s} {:02d}:00".format(args["date"], args["runhour"]),
-                                  "%Y-%m-%d %H:%M")
+    print(date)
+    date = datetime.strptime("{:s} {:02d}:00:00".format(date, runhour), "%Y%m%d %H:%M:%S")
 
     # Steps/members. The +1 is required to get the required sequence!
     steps = np.arange(6, 300+1, 6, dtype = int)
 
-    bar()
-    if args["avgspr"] in ['avg', 'spr']:
+    logging.info("{:s}".format("".join(["-"]*70)))
+    if avgspr in ['avg', 'spr']:
         members = np.arange(0, 1, 1, dtype = int)
-        print("Downloading members:\n  {:s}:  ".format(args["avgspr"]))
+        print("Downloading members:\n  {:s}:  ".format(avgspr))
         baseurl = baseurl_avgspr
     else:
         members = np.arange(0, 20+1, 1, dtype=int)
@@ -323,15 +274,15 @@ if __name__ == "__main__":
     print("Downloading steps:\n  {:s}".format(", ".join(["{:d}".format(x) for x in steps])))
     print("For date/model initialization\n  {:s}".format(date.strftime("%Y-%m-%d %H:%M UTC")))
     print("Base url:\n  {:s}".format(date.strftime(baseurl)))
-    bar()
+    logging.info("{:s}".format("".join(["-"]*70)))
 
     # Looping over the different members first
     for mem in members:
         # Looping over forecast lead times
         for step in steps:
-            bar()
-            if args["avgspr"] in ['avg', 'spr']:
-                print("Processing +{:03d}h forecast, {:s}".format(step, args["avgspr"]))
+            logging.info("{:s}".format("".join(["-"]*70)))
+            if avgspr in ['avg', 'spr']:
+                print("Processing +{:03d}h forecast, {:s}".format(step, avgspr))
             else:
                 print("Processing +{:03d}h forecast, member {:02d}".format(step, mem))
 
@@ -344,15 +295,15 @@ if __name__ == "__main__":
                     raise Exception("Cannot create directory {:s}!".format(filedir))
 
             # Getting file names
-            files = get_file_names(filedir, baseurl, date, mem, step, args["avgspr"])
+            files = get_file_names(filedir, baseurl, date, mem, step, avgspr)
             print(files)
             if os.path.isfile(files["subset"]):
                 print("- Local subset exists, skip")
-                bar()
+                logging.info("{:s}".format("".join(["-"]*70)))
                 continue
             if os.path.isfile(files["local"]):
                 print("- Local file exists, skip")
-                bar()
+                logging.info("{:s}".format("".join(["-"]*70)))
                 continue
 
 
@@ -376,7 +327,7 @@ if __name__ == "__main__":
                 cmd = ["wgrib2", files["local"], "-small_grib", WE, SN, files["subset"]]
                 print("- Subsetting: {:s}".format(" ".join(cmd)))
                 p = sub.Popen(cmd, stdout = sub.PIPE, stderr = sub.PIPE) 
-                out,err = p.communicate()
+                out, err = p.communicate()
 
                 if p.returncode == 0:
                     print("- Subset created, delete global file")
@@ -386,4 +337,12 @@ if __name__ == "__main__":
 
 
             # Else post-processing the data
-            bar()
+            logging.info("{:s}".format("".join(["-"]*70)))
+
+# Main
+if __name__ == "__main__":
+    starttime = logger_module.start_logging("get_available_data", "suedtirol")
+    parser_dict = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
+    fetch_gefs_data(parser_dict["avgspr"], parser_dict["date"], parser_dict["parameter"], parser_dict["runhour"])
+    logger_module.end_logging(starttime)
+ 

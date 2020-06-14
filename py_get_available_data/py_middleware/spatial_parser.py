@@ -11,6 +11,7 @@ from datetime import datetime
 def spatial_parser(avgspr=False, name_avgspr="", beginn=False, beginndate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
+    parser.add_argument("--avgspr", dest="avgspr", help="Enter the GFSE Mean or Spread: ['avg', 'spr]", default="avg", type=str)
     parser.add_argument("--beginn", dest="beginn", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--beginndate", dest="beginndate", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
