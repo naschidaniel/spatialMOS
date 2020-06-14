@@ -25,7 +25,7 @@ def get_available_data_gefs(c):
            "./py_get_available_data/gefs.py",
            "--date", "2020-06-14",
            "--runhour", "0",
-           "--parameter", "rh_2m",
+           "--parameter", "ugrd_10m",
            "--avgspr", "avg"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
