@@ -18,15 +18,18 @@ def archive_available_data(c, cmd):
 
 
 @task
-def get_available_data_wetter_at(c):
-    """Download data from wetter_at."""
-    inv_logging.task(get_available_data_wetter_at.__name__)
-    cmd = ["py_get_available_data", "python", "./py_get_available_data/wetter_at.py",
-           "--beginndate", "2018-01-01", "--enddate", "2019-01-10"]
+def get_available_data_gefs(c):
+    """Download data from zamg webpage."""
+    inv_logging.task(get_available_data_gefs.__name__)
+    cmd = ["py_get_available_data_gefs", "python",
+           "./py_get_available_data/gefs.py",
+           "--date", "2020-06-14",
+           "--runhour", "0",
+           "--parm", "rh_2m",
+           "--avgspr", "avg"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(get_available_data_wetter_at.__name__)
-
+    inv_logging.success(get_available_data_gefs.__name__)
 
 @task
 def get_available_data_suedtirol(c):
@@ -51,6 +54,17 @@ def get_available_data_uibk(c):
 
 
 @task
+def get_available_data_wetter_at(c):
+    """Download data from wetter_at."""
+    inv_logging.task(get_available_data_wetter_at.__name__)
+    cmd = ["py_get_available_data", "python", "./py_get_available_data/wetter_at.py",
+           "--beginndate", "2018-01-01", "--enddate", "2019-01-10"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(get_available_data_wetter_at.__name__)
+
+
+@task
 def get_available_data_zamg(c):
     """Download data from zamg webpage."""
     inv_logging.task(get_available_data_zamg.__name__)
@@ -63,14 +77,16 @@ def get_available_data_zamg(c):
 
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(archive_available_data)
-spatialmos_development_ns.add_task(get_available_data_wetter_at)
+spatialmos_development_ns.add_task(get_available_data_gefs)
 spatialmos_development_ns.add_task(get_available_data_suedtirol)
 spatialmos_development_ns.add_task(get_available_data_uibk)
+spatialmos_development_ns.add_task(get_available_data_wetter_at)
 spatialmos_development_ns.add_task(get_available_data_zamg)
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(archive_available_data)
-spatialmos_production_ns.add_task(get_available_data_wetter_at)
+spatialmos_production_ns.add_task(get_available_data_gefs)
 spatialmos_production_ns.add_task(get_available_data_suedtirol)
 spatialmos_production_ns.add_task(get_available_data_uibk)
-spatialmos_development_ns.add_task(get_available_data_zamg)
+spatialmos_production_ns.add_task(get_available_data_wetter_at)
+spatialmos_production_ns.add_task(get_available_data_zamg)

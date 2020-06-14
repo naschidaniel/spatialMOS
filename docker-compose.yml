@@ -10,3 +10,12 @@ services:
       - log:/log
       - py_get_available_data:/usr/src/app/py_get_available_data
       - spool:/spool
+
+  py_get_available_data_gefs:
+    restart: always
+    build: ./container/py_get_available_data_gefs/
+    container_name: spatialMOS_py_gefs
+    volumes:
+      - get_available_data:/get_available_data
+      - log:/log
+      - py_get_available_data:/usr/src/app/py_get_available_data
