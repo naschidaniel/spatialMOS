@@ -55,15 +55,15 @@ def scp_get(c, remote_user, remote_host, source_file, destination_file):
 
 def rsync_push(c, remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None):
     """The function synchronizes local files with the server"""
-    return _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, exclude_from, push=True)
+    return _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, push_to_server=True)
 
 
 def rsync_get(c, remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None):
     """The function synchronizes remote files with the local machine"""
-    return _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, push=False)
+    return _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, push_to_server=False)
 
 
-def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, push=True):
+def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, push_to_server=True):
     if include is None:
         include = []
     include_args = list(chain(*zip(repeat('--include'), include)))
@@ -78,17 +78,18 @@ def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include=None, exc
 
 
     ssh_str = f"{remote_user}@{remote_host}:{remote_dir}"
-    if push:
+    if push_to_server:
         cp = [local_dir, ssh_str]
     else:
         cp = [ssh_str, local_dir]
 
-    rsync_cmd = ["rsync", "-a", "--progress", "--delete-before"] + exclude_args + exclude_from_args + include_args + cp
+    rsync_cmd = ["rsync", "-a", "--progress", "--delete-before"] + include_args + exclude_args + exclude_from_args + cp
     logging.info(f"The following rsync command is executed: {rsync_cmd}")
     subprocess.run(rsync_cmd, check=True)
 
 
-@task(inv_install.check_upstream)
+#@task(inv_install.check_upstream)
+@task
 def push(c):
     """This task synchronizes the local folders to the server"""
     inv_logging.task(push.__name__)

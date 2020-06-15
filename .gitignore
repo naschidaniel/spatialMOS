@@ -8,9 +8,14 @@ fabric/cert/ca.pem
 fabric/cert/cert.pem
 fabric/cert/key.pem
 
+# Editor
+.vscode
+
 # SpatialMOS
-data/*
-log/*
-spool/*
+data/
+log/
+spool/
 settings.json
+
+# Environment
 .env
