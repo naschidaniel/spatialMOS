@@ -108,7 +108,7 @@ def setenvironment(c, cmd):
         filename = ".env"
 
     dict_env = {
-        "django": os.path.join(development_dir, f"django/djangoVue/{filename}"),
+        #"django": os.path.join(development_dir, f"django/djangoVue/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
 
@@ -129,7 +129,8 @@ def setenvironment(c, cmd):
     return dict_env
 
 
-@task(pre=[check_upstream])
+#@task(pre=[check_upstream])
+@task
 def setproductionenvironment(c):
     """The task writes the environment variables on the server for django and docker. The created files are uploaded to the server and the required folders for spatialMOS are created."""
     inv_logging.task(setproductionenvironment.__name__)
@@ -137,21 +138,21 @@ def setproductionenvironment(c):
 
     dict_env = setenvironment(c, "production")
     remote_env = {
-        "django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/djangoVue/.env"),
+        #"django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/djangoVue/.env"),
         "docker": os.path.join(settings["docker"]["INSTALLFOLDER"], ".env")
     }
 
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"],
         dict_env["docker"], remote_env["docker"])
-    inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"],
-        dict_env["django"], remote_env["django"])
+    #inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"],
+    #    dict_env["django"], remote_env["django"])
 
     os.system(f"rm {dict_env['docker']}")
     logging.info(
         f"The environment '{dict_env['docker']}' variable was deleted.")
-    os.system(f"rm {dict_env['django']}")
-    logging.info(
-        f"The environment '{dict_env['django']}' variable was deleted.")
+    #os.system(f"rm {dict_env['django']}")
+    #logging.info(
+    #    f"The environment '{dict_env['django']}' variable was deleted.")
 
     for folder in settings['initFolders']:
         folder = os.path.join(settings["docker"]["INSTALLFOLDER"], folder)
@@ -160,7 +161,8 @@ def setproductionenvironment(c):
 
     inv_logging.success(setproductionenvironment.__name__)
 
-@task(pre=[check_upstream])
+#@task(pre=[check_upstream])
+@task
 def deploy(c):
     """Everything you need to deploy"""
     inv_logging.task(deploy.__name__)

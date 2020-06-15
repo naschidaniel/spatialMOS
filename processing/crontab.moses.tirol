@@ -7,21 +7,21 @@
 # |  |  |  |  |
 # *  *  *  *  * user-name  command to be executed
 
-  *  *  *  *  * /bin/date >> /var/log/daniel/date.log 2>&1
+  *  *  *  *  * /bin/date >> /var/log/webserver/date.log 2>&1
 
 
 # Hourly download of current weather DATA from UIBK and ZAMG
- 25  *  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__uibk.sh >> /var/log/daniel/spatialmos__py_get_available_data__uibk.log 2>&1
- 30  *  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__zamg.sh >> /var/log/daniel/spatialmos__py_get_available_data__zamg.log 2>&1
+ 25  *  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__uibk.sh >> /var/log/webserver/spatialmos__py_get_available_data__uibk.log 2>&1
+ 30  *  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__zamg.sh >> /var/log/webserver/spatialmos__py_get_available_data__zamg.log 2>&1
 
 
 # Daily download of GEFS forecasts
-  0  6  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__tmp2m.sh >> /var/log/daniel/spatialmos__py_get_available_data__gefs__tmp2m.log 2>&1
- 10  6  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__rh2m.sh >> /var/log/daniel/spatialmos__py_get_available_data__gefs__rh2m.log 2>&1
- 20  6  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__ugrd_10m.sh >> /var/log/daniel/spatialmos__py_get_available_data__gefs__ugrd_10m.log 2>&1
- 30  6  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__vgrd_10m.sh >> /var/log/daniel/spatialmos__py_get_available_data__gefs__vgrd_10m.log 2>&1
+  0  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__tmp2m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__tmp2m.log 2>&1
+ 10  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__rh2m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__rh2m.log 2>&1
+ 20  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__ugrd_10m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__ugrd_10m.log 2>&1
+ 30  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__vgrd_10m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__vgrd_10m.log 2>&1
 
 # Weekly data archiving
-  0  5  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_archive_get_available_data__grib.sh >> /var/log/daniel/spatialmos__py_archive_get_available_data__grib.log 2>&1
-  5  5  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_archive_get_available_data__uibk.sh >> /var/log/daniel/spatialmos__py_archive_get_available_data__uibk.log 2>&1
- 15  5  *  *  * sh /home/daniel/spatialMOSv2/processing/py_get_available_data/spatialmos__py_archive_get_available_data__zamg.sh >> /var/log/daniel/spatialmos__py_archive_get_available_data__zamg.log 2>&1
+  0  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__grib.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__grib.log 2>&1
+  5  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__uibk.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__uibk.log 2>&1
+ 15  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__zamg.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__zamg.log 2>&1

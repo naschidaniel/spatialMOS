@@ -10,5 +10,5 @@ parameter='ugrd_10m'
 
 # - Starting the job here
 cd $INSTALLFOLDER
-./task.py $HOST.spatialmos.py-get-available-data--gefs "--date $d --runhour 0 --parameter $parameter --avgspr avg"
-./task.py $HOST.spatialmos.py-get-available-data--gefs "--date $d --runhour 0 --parameter $parameter --avgspr spr"
+./task.py production.spatialmos.py-get-available-data--gefs "--date $d --runhour 0 --parameter $parameter --avgspr avg"
+./task.py production.spatialmos.py-get-available-data--gefs "--date $d --runhour 0 --parameter $parameter --avgspr spr"
