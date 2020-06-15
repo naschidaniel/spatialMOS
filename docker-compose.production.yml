@@ -1,0 +1,51 @@
+version: '3.7'
+
+volumes:
+  get_available_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/get_available_data
+  log:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/log
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/media
+  static:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/static
+  spool:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/spool
+  postgresdata:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/postgresdata
+  postgres_backup_server:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/postgresdata_backup_server
+  py_get_available_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/py_get_available_data
