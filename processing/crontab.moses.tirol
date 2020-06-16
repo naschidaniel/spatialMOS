@@ -7,21 +7,27 @@
 # |  |  |  |  |
 # *  *  *  *  * user-name  command to be executed
 
-  *  *  *  *  * /bin/date >> /var/log/webserver/date.log 2>&1
+
+date=`/bin/date +%Y-%m-%d`
+  *  *  *  *  * $date >> /var/log/webserver/date.log 2>&1
 
 
 # Hourly download of current weather DATA from UIBK and ZAMG
- 25  *  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__uibk.sh >> /var/log/webserver/spatialmos__py_get_available_data__uibk.log 2>&1
- 30  *  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__zamg.sh >> /var/log/webserver/spatialmos__py_get_available_data__zamg.log 2>&1
+ 25  *  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--uibk >> /var/log/webserver/spatialmos.py-get-available-data--uibk.log 2>&1
+ 30  *  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--zamg >> /var/log/webserver/spatialmos.py-get-available-data--zamg.log 2>&1
+
+ # Daily download of GEFS forecasts
+  0  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter tmp_2m --avgspr avg"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--tmp_2m.log 2>&1
+  5  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter tmp_2m --avgspr spr"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--tmp_2m.log 2>&1
+ 10  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter rh_2m --avgspr avg"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--rh_2m.log 2>&1
+ 15  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter rh_2m --avgspr spr"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--rh_2m.log 2>&1
+ 20  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter ugrd_10m --avgspr avg"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--ugrd_10m.log 2>&1
+ 25  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter ugrd_10m --avgspr spr"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--ugrd_10m.log 2>&1
+ 30  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter vgrd_10m --avgspr avg"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--vgrd_10m.log 2>&1
+ 35  6  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-get-available-data--gefs"--date $date --runhour 0 --parameter vgrd_10m --avgspr spr"  >> /var/log/webserver/production.spatialmos-py-get-available-data--gefs--vgrd_10m.log 2>&1
 
 
-# Daily download of GEFS forecasts
-  0  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__tmp2m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__tmp2m.log 2>&1
- 10  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__rh2m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__rh2m.log 2>&1
- 20  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__ugrd_10m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__ugrd_10m.log 2>&1
- 30  6  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_get_available_data__gefs__vgrd_10m.sh >> /var/log/webserver/spatialmos__py_get_available_data__gefs__vgrd_10m.log 2>&1
-
-# Weekly data archiving
-  0  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__grib.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__grib.log 2>&1
-  5  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__uibk.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__uibk.log 2>&1
- 15  5  *  *  * sh /www/spatialMOS/processing/py_get_available_data/spatialmos__py_archive_get_available_data__zamg.sh >> /var/log/webserver/spatialmos__py_archive_get_available_data__zamg.log 2>&1
+# Weekly data archiving 
+  0  5  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-archive-get-available-data "grib" >> /var/log/webserver/production.spatialmos.py-archive-get-available-data--grib.log 2>&1
+  5  5  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-archive-get-available-data "uibk" >> /var/log/webserver/production.spatialmos.py-archive-get-available-data--uibk.log 2>&1
+ 15  5  *  *  * cd /www/spatialMOSv2/ && ./task.py production.spatialmos.py-archive-get-available-data "zamg" >> /var/log/webserver/production.spatialmos.py-archive-get-available-data--zamg.log 2>&1
