@@ -108,7 +108,7 @@ def setenvironment(c, cmd):
         filename = ".env"
 
     dict_env = {
-        #"django": os.path.join(development_dir, f"django/djangoVue/{filename}"),
+        #"django": os.path.join(development_dir, f"django/spatialmos/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
 
@@ -138,7 +138,7 @@ def setproductionenvironment(c):
 
     dict_env = setenvironment(c, "production")
     remote_env = {
-        #"django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/djangoVue/.env"),
+        #"django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/spatialmos/.env"),
         "docker": os.path.join(settings["docker"]["INSTALLFOLDER"], ".env")
     }
 
