@@ -13,6 +13,9 @@ The following dependencies must be installed to access the docker container usin
 
 ## Changelog
 
+- 2020-06-16 Landing page set up for moses.tirol
+- 2020-06-16 Productive use of fabric commands with crontab
+- 2020-06-16 Domain Moses.tirol was redirected to the new server
 - 2020-06-14 Implementing processing and cronjobs for servers
 - 2020-06-14 Download GEFS predictions from NCEP NOAA FTP Server
 - 2020-06-11 Parse HTML file from ZAMG
