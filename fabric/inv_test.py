@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 #  -*- coding: utf-8 -*-
-"""This collection is used to test the functionality of DjangoVue before production."""
+"""This collection is used to test the functionality of spatialMOS before production."""
 
 import os
 import sys
 import logging
+import shutil
 from invoke import task
 import inv_logging
 import inv_base

@@ -40,7 +40,7 @@
     "docker": {
       "USERID": "1001",
       "GROUPID": "1001",
-      "INSTALLFOLDER": "/www/spatialMOS"
+      "INSTALLFOLDER": "/www/spatialMOSv2"
     },
     "postgres_backup_server_folder": "./postgresdata_backup_server",
     "docker_compose_files": [

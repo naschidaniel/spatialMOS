@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-"""DjangoVue logging module for fabric."""
+"""spatialMOS logging module for fabric."""
 
 import logging
 import logging.config
@@ -26,7 +26,7 @@ def start_logging():
                               disable_existing_loggers=False,
                               defaults={"logfilename": logfile})
     logging.getLogger()
-    logging.info("DjangoVue fabric logging module was started.")
+    logging.info("spatialMOS fabric logging module was started.")
 
 
 def task(task=None):
