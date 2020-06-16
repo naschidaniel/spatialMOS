@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/python
 #  -*- coding: utf-8 -*-
 """This collection is used to test the functionality of spatialMOS before production."""
 

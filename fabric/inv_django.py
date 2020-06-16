@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/python
 #  -*- coding: utf-8 -*-
 """The collection is needed for django commands."""
 
