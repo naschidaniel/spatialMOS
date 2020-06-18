@@ -6,17 +6,19 @@
       "./docker-compose.development.yml"
     ],
     "initFolders": [
+      "./data/archiv",
       "./data/get_available_data",
-      "./data/get_available_data/suedtirol",
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
       "./data/postgresdata_backup_server",
       "./data/static",
       "./log/fabric",
+      "./log/get_available_data",
       "./log/nginx",
       "./spool"
-    ]
+    ],
+    "docker": {}
   },
   "test": {
     "collection": "test",
@@ -31,23 +33,54 @@
   "production": {
     "collection": "production",
     "initFolders": [
-      "./postgresdata",
-      "./postgresdata_backup_server",
+      "./data/archiv",
+      "./data/get_available_data",
+      "./data/media",
+      "./data/postgresdata",
+      "./data/postgresdata_backup",
+      "./data/postgresdata_backup_server",
+      "./data/static",
+      "./log/fabric",
+      "./log/get_available_data",
       "./log/nginx",
-      "./media",
-      "./static"
+      "./spool"
     ],
     "docker": {
       "USERID": "1001",
       "GROUPID": "1001",
-      "INSTALLFOLDER": "/www/spatialMOSv2"
+      "INSTALLFOLDER": "/www/spatialMOSv2",
+      "HOST": "production",
+      "DOCKER_TLS_VERIFY": "1",
+      "DOCKER_HOST": "tcp://example@example.com:2376",
+      "DOCKER_CERT_PATH": "./fabric/cert/"
     },
     "postgres_backup_server_folder": "./postgresdata_backup_server",
     "docker_compose_files": [
       "./docker-compose.yml",
       "./docker-compose.production.yml"
     ],
-    "REMOTE_USER": "webserver",
-    "REMOTE_HOST": "example.org"
+    "REMOTE_USER": "example",
+    "REMOTE_HOST": "example.com",
+    "rsync_push": {
+      "spatialMOSv2": {
+        "local_dir": ".",
+        "remote_dir": "/www/spatialMOSv2",
+        "include": [
+          "fabric/cert/ca.pem",
+          "fabric/cert/cert.pem",
+          "fabric/cert/key.pem",
+          "settings.json",
+          "task.py"
+        ],
+        "exclude": [
+          "*.git*",
+          ".pylintrc",
+          ".editorconfig"
+        ],
+        "exclude-from": [
+          ".gitignore"
+        ]
+      }
+    }
   }
 }
