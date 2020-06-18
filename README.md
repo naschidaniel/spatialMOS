@@ -12,14 +12,8 @@ The spatial resolution of the statistically corrected predictions corresponds to
 A detailed description of the method can be found in the master thesis [Flächenhafte Vorhersagen von Temperatur und relativer Luftfeuchte im Flachland](http://diglib.uibk.ac.at/urn:nbn:at:at-ubi:1-16130).
 
 ## Dependencies
-The following dependencies must be installed to access the docker container using invoke. tar is used to archive files.
+You will need [python](https://www.python.org/) **version 3.7+**, [invoke](http://www.pyinvoke.org/installing.html) **version 1.4+**, [docker](https://www.docker.com/), [docker-compose](https://docs.docker.com/compose/), [rsync](https://rsync.samba.org/) and [tar](https://www.gnu.org/software/tar/).
 
-* docker
-* docker-compose
-* python 3.7+
-* pip install invoke
-* rsync
-* tar
 
 ## Configuration and Installation
 Copy the `fabric/settings.example.json` to `./settings.json` and adapt the file to your individual needs. Three development environments are provided in the file: `development`, `test` and `production`. For local operation, only the dictionary `development` must be edited.
@@ -138,12 +132,6 @@ Visit the Live Demo Page for current forecasts for North and South Tyrol.
 Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before making a pull request.
 
 
-## License
-
-[GPL-3.0](./LICENSE)
-
-Copyright (c) 2019-present, Daniel Naschberger
-
 
 ## Changelog
 
@@ -158,3 +146,10 @@ Copyright (c) 2019-present, Daniel Naschberger
 - 2020-06-09 Fetch data from the University of Innsbruck API
 - 2020-06-09 Fetch data from the South Tyrolean weather service  
 - 2020-06-07 Init Repository 
+
+
+## License
+
+[GPL-3.0](./LICENSE)
+
+Copyright (c) 2019-present, Daniel Naschberger
