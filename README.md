@@ -1,7 +1,5 @@
 # spatialMOSv2
 
-A Live Perview about the current development status of the repository can be viewed at [http://moses.tirol](http://moses.tirol)
-
 spatialMOSv2 is currently being completely redesigned. In the file [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed.
 
 
