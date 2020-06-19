@@ -70,7 +70,7 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr avg"
 ./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr spr"
 ./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr avg"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd10m --avgspr spr"
+./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr spr"
 ```
 
 
