@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 #  -*- coding: utf-8 -*-
 """This function contains the most important docker commands."""
 

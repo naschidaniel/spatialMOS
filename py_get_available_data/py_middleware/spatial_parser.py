@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 #  -*- coding: utf-8 -*-
 """The middleware is used to parse input for spatialMOS."""
 
