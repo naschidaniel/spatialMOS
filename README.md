@@ -122,7 +122,7 @@ The online presence was implemented with the web framework django from python. T
 
 Visit the Live Demo Page for current forecasts for North and South Tyrol.
 
-[http://moses.tirol](http://moses.tirol)
+[https://moses.tirol](https://moses.tirol)
 
 
 ## Contribution
@@ -133,6 +133,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-06-23 added https certificates via letsenctryp to nginx configuration
 - 2020-06-18 nginx configuration for moses.tirol
 - 2020-06-16 Landing page set up for moses.tirol
 - 2020-06-16 Productive use of fabric commands with crontab
