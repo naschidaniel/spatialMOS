@@ -5,6 +5,7 @@
 import logging
 import logging.config
 import os
+import time
 from datetime import datetime
 
 
@@ -26,6 +27,7 @@ def start_logging():
                               disable_existing_loggers=False,
                               defaults={"logfilename": logfile})
     logging.getLogger()
+    logging.Formatter.converter = time.localtime
     logging.info("spatialMOS fabric logging module was started.")
 
 
