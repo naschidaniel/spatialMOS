@@ -182,7 +182,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
     elif parameter == 'vgrd_10m':
         params = ["VGRD:10 m above ground"]
 
-    data_path = "/get_available_data/gfs_forcast/{}".format(parameter)
+    data_path = "/get_available_data/gefs_forcast/{}".format(parameter)
     baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
     baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.

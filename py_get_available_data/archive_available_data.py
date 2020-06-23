@@ -13,12 +13,12 @@ from py_middleware import logger_module
 # Main
 if __name__ == "__main__":
     starttime = logger_module.start_logging("get_available_data", "archiv", docker=False)
-    parser_dict = spatial_parser.spatial_parser(folder=True, name_folder=["uibk", "grib", "zamg"])
+    parser_dict = spatial_parser.spatial_parser(folder=True, name_folder=["uibk", "gefs_forcast", "zamg"])
 
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 
     # Provide folder structure.
-    archive_path = "./data/get_available_data/archive"
+    archive_path = "./data/archive"
     archive_path = os.path.join(basedir, archive_path)
     if not os.path.exists(f"{archive_path}"):
         os.mkdir(f"{archive_path}")
