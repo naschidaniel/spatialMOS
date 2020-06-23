@@ -5,6 +5,7 @@
 import logging
 import logging.config
 import os
+import time
 from datetime import datetime
 
 
@@ -22,7 +23,8 @@ def start_logging(folder, program, docker=True):
         disable_existing_loggers=False, \
         defaults={'logfilename' : logfile})
     logging.getLogger()
-
+    logging.Formatter.converter = time.localtime
+    
     msg = 'STARTTIME | {}'.format(starttime.strftime("%Y-%m-%d %H:%M:%S"))
     logging.info("{s:{c}^{n}} ".format(s=msg, n=150, c='-'))
     return starttime
