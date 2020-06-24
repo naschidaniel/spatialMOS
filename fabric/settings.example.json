@@ -6,7 +6,7 @@
       "./docker-compose.development.yml"
     ],
     "initFolders": [
-      "./data/archiv",
+      "./data/archive",
       "./data/get_available_data",
       "./data/media",
       "./data/postgresdata",
@@ -33,7 +33,7 @@
   "production": {
     "collection": "production",
     "initFolders": [
-      "./data/archiv",
+      "./data/archive",
       "./data/get_available_data",
       "./data/media",
       "./data/postgresdata",
