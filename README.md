@@ -80,6 +80,17 @@ Previous mean and spread ensemble forecasts of the GEFS weather model can be dow
 
 The data is stored in order *TODO*.
 
+### Archive downloaded files
+
+The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
+
+```
+./task.py production.spatialmos.py-archive-get-available-data "gefs_forcast"
+./task.py production.spatialmos.py-archive-get-available-data "uibk"
+./task.py production.spatialmos.py-archive-get-available-data "zamg"
+
+```
+
 
 ### Raw data processing for further statistical processing
 
