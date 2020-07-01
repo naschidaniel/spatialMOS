@@ -53,9 +53,8 @@ Current values from the ZAMG web page as well as from the UIBK API interface can
 
 #### GEFS Weather Forecast Archive
 
-Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
-
-The data is stored in order *TODO*.
+Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
+A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive gfse forcasts can be downloaded. The data must be stored in this project in the folder `./data/get_available_data/gfse_archive` for further processing.
 
 
 #### GEFS Weather Forecasts
