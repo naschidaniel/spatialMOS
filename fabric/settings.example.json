@@ -8,6 +8,7 @@
     "initFolders": [
       "./data/archive",
       "./data/get_available_data",
+      "./data/get_available_data/gefs_reforcast",
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
@@ -35,6 +36,7 @@
     "initFolders": [
       "./data/archive",
       "./data/get_available_data",
+      "./data/get_available_data/gefs_reforcast",
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
