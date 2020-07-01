@@ -78,6 +78,7 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 
 ```
 ./task.py production.spatialmos.py-archive-get-available-data "gefs_forcast"
+./task.py production.spatialmos.py-archive-get-available-data "gefs_reforcast"
 ./task.py production.spatialmos.py-archive-get-available-data "uibk"
 ./task.py production.spatialmos.py-archive-get-available-data "zamg"
 
