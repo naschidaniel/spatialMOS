@@ -54,7 +54,7 @@ Current values from the ZAMG web page as well as from the UIBK API interface can
 #### GEFS Weather Forecast Archive
 
 Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
-A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive gfse forcasts can be downloaded. The data must be stored in this project in the folder `./data/get_available_data/gfse_archive` for further processing.
+A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive gfse forcasts can be downloaded. The data must be stored in this project in the folder `./data/get_available_data/gefs_reforcast` for further processing.
 
 
 #### GEFS Weather Forecasts
@@ -71,13 +71,6 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr avg"
 ./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr spr"
 ```
-
-
-#### GEFS Weather Forecast Archive
-
-Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
-
-The data is stored in order *TODO*.
 
 ### Archive downloaded files
 
