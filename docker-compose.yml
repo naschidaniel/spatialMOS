@@ -1,19 +1,20 @@
 version: '3.7'
 
 services:  
-  py_get_available_data:
-    build: ./container/py_spatialmos/
-    container_name: spatialMOS_py_spatialmos
+  py_get:
+    build: ./container/py_get/
+    container_name: spatialMOS_py_get
     volumes:
       - get_available_data:/get_available_data
       - log:/log
-      - py_get_available_data:/usr/src/app/py_get_available_data
+      - py_spatialmos:/usr/src/app/py_spatialmos
       - spool:/spool
 
-  py_get_available_data_gefs:
-    build: ./container/py_get_available_data_gefs/
-    container_name: spatialMOS_py_gefs
+  py_get_gefs:
+    build: ./container/py_get_gefs/
+    container_name: spatialMOS_py_get_gefs
     volumes:
       - get_available_data:/get_available_data
       - log:/log
-      - py_get_available_data:/usr/src/app/py_get_available_data
+      - py_spatialmos:/usr/src/app/py_spatialmos
+

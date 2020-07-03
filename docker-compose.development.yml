@@ -43,9 +43,19 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/data/postgresdata_backup_server
-  py_get_available_data:
+  py_spatialmos:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/py_get_available_data
+      device: ${PWD}/py_spatialmos
+
+
+services:  
+  py_pre_processing_gefs:
+    build: ./container/py_pre_processing_gefs/
+    container_name: spatialMOS_py_pre_processing_gefs
+    volumes:
+      - get_available_data:/get_available_data
+      - log:/log
+      - py_spatialmos:/usr/src/app/py_spatialmos

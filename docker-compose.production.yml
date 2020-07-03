@@ -43,9 +43,9 @@ volumes:
       type: none
       o: bind
       device: ${INSTALLFOLDER}/data/postgresdata_backup_server
-  py_get_available_data:
+  py_spatialmos:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${INSTALLFOLDER}/py_get_available_data
+      device: ${INSTALLFOLDER}/py_spatialmos
