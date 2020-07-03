@@ -40,7 +40,14 @@ def fetch_uibk_data():
     # Loop over stations
     stations = ["innsbruck", "obergurgl", "ellboegen", "sattelberg"]
     for station in stations:
-        df, startdate, enddate = download_api_data(data_path, station)
+        return_dict = download_api_data(data_path, station)
+        if return_dict != None:
+            df = return_dict["df"]
+            startdate = return_dict["startdate"]
+            enddate = return_dict["enddate"]
+        else:
+            continue
+
         df.to_csv(f"{data_path}/{startdate}_to_{enddate}_{station}.csv",
                   index=False, quoting=csv.QUOTE_NONNUMERIC)
         logging.info("| UIBK | {:18} | {} | {} ".format(
@@ -111,10 +118,12 @@ def download_api_data(data_path, station):
             data_stations_pd["obstime"][0], "%Y-%m-%dT%H_%M")
         enddate = datetime.strftime(
             data_stations_pd["obstime"][len(data_stations_pd) - 1], "%Y-%m-%dT%H_%M")
-        return (data_stations_pd, beginndate, enddate)
+        return_dict = {"df": data_stations_pd, "beginndate": beginndate, "enddate": enddate}
+        return return_dict
     else:
         logging.error(
-            "The request for the URL '%s' returned the status code 404", url_station)
+            "The request for the URL %s returned the status code 404", url_station)
+        return None
 
 
 # Main
