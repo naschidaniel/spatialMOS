@@ -18,68 +18,68 @@ def py_spatialmos__archive_available_data(c, cmd):
 
 
 @task
-def py_spatialmos__gefs(c, cmd):
+def py_spatialmos__get_gefs(c, cmd):
     """Download data gefs files."""
-    inv_logging.task(py_spatialmos__gefs.__name__)
+    inv_logging.task(py_spatialmos__get_gefs.__name__)
     cmd = ["py_get_gefs", "python", "./py_spatialmos/get_gefs_forcasts.py", cmd]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__gefs.__name__)
+    inv_logging.success(py_spatialmos__get_gefs.__name__)
 
 @task
-def py_spatialmos__suedtirol(c):
+def py_spatialmos__get_suedtirol(c, begindate, enddate):
     """Download data from South Tyrol."""
-    inv_logging.task(py_spatialmos__suedtirol.__name__)
+    inv_logging.task(py_spatialmos__get_suedtirol.__name__)
     cmd = ["py_get", "python", "./py_spatialmos/get_suedtirol_data.py",
-           "--beginndate", "2018-01-01", "--enddate", "2019-01-10"]
+           "--beginndate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__suedtirol.__name__)
+    inv_logging.success(py_spatialmos__get_suedtirol.__name__)
 
 
 @task
-def py_spatialmos__uibk(c):
+def py_spatialmos__get_uibk(c):
     """Download data from uibk."""
-    inv_logging.task(py_spatialmos__uibk.__name__)
+    inv_logging.task(py_spatialmos__get_uibk.__name__)
     cmd = ["py_get", "python", "./py_spatialmos/get_uibk_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__uibk.__name__)
+    inv_logging.success(py_spatialmos__get_uibk.__name__)
 
 
 @task
-def py_spatialmos__wetter_at(c):
+def py_spatialmos__get_wetter_at(c, begindate, enddate):
     """Download data from wetter_at."""
-    inv_logging.task(py_spatialmos__wetter_at.__name__)
+    inv_logging.task(py_spatialmos__get_wetter_at.__name__)
     cmd = ["py_get", "python", "./py_spatialmos/get_wetter_at_data.py",
-           "--beginndate", "2018-01-01", "--enddate", "2019-01-10"]
+           "--beginndate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__wetter_at.__name__)
+    inv_logging.success(py_spatialmos__get_wetter_at.__name__)
 
 
 @task
-def py_spatialmos__zamg(c):
+def py_spatialmos__get_zamg(c):
     """Download data from zamg webpage."""
-    inv_logging.task(py_spatialmos__zamg.__name__)
+    inv_logging.task(py_spatialmos__get_zamg.__name__)
     cmd = ["py_get", "python", "./py_spatialmos/get_zamg_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__zamg.__name__)
+    inv_logging.success(py_spatialmos__get_zamg.__name__)
 
 
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
-spatialmos_development_ns.add_task(py_spatialmos__gefs)
-spatialmos_development_ns.add_task(py_spatialmos__suedtirol)
-spatialmos_development_ns.add_task(py_spatialmos__uibk)
-spatialmos_development_ns.add_task(py_spatialmos__wetter_at)
-spatialmos_development_ns.add_task(py_spatialmos__zamg)
+spatialmos_development_ns.add_task(py_spatialmos__get_gefs)
+spatialmos_development_ns.add_task(py_spatialmos__get_suedtirol)
+spatialmos_development_ns.add_task(py_spatialmos__get_uibk)
+spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
+spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
-spatialmos_production_ns.add_task(py_spatialmos__gefs)
-spatialmos_production_ns.add_task(py_spatialmos__suedtirol)
-spatialmos_production_ns.add_task(py_spatialmos__uibk)
-spatialmos_production_ns.add_task(py_spatialmos__wetter_at)
-spatialmos_production_ns.add_task(py_spatialmos__zamg)
+spatialmos_production_ns.add_task(py_spatialmos__get_gefs)
+spatialmos_production_ns.add_task(py_spatialmos__get_suedtirol)
+spatialmos_production_ns.add_task(py_spatialmos__get_uibk)
+spatialmos_production_ns.add_task(py_spatialmos__get_wetter_at)
+spatialmos_production_ns.add_task(py_spatialmos__get_zamg)
