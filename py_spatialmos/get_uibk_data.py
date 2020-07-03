@@ -43,15 +43,15 @@ def fetch_uibk_data():
         return_dict = download_api_data(data_path, station)
         if return_dict != None:
             df = return_dict["df"]
-            startdate = return_dict["startdate"]
+            begindate = return_dict["begindate"]
             enddate = return_dict["enddate"]
         else:
             continue
 
-        df.to_csv(f"{data_path}/{startdate}_to_{enddate}_{station}.csv",
+        df.to_csv(f"{data_path}/{begindate}_to_{enddate}_{station}.csv",
                   index=False, quoting=csv.QUOTE_NONNUMERIC)
         logging.info("| UIBK | {:18} | {} | {} ".format(
-            station, startdate, enddate))
+            station, begindate, enddate))
         time.sleep(5)
 
     # Information about parameters on a station
@@ -114,11 +114,11 @@ def download_api_data(data_path, station):
             rename_label.append(rename_sensor_name(label))
         data_stations_pd.columns = rename_label
 
-        beginndate = datetime.strftime(
+        begindate = datetime.strftime(
             data_stations_pd["obstime"][0], "%Y-%m-%dT%H_%M")
         enddate = datetime.strftime(
             data_stations_pd["obstime"][len(data_stations_pd) - 1], "%Y-%m-%dT%H_%M")
-        return_dict = {"df": data_stations_pd, "beginndate": beginndate, "enddate": enddate}
+        return_dict = {"df": data_stations_pd, "begindate": begindate, "enddate": enddate}
         return return_dict
     else:
         logging.error(
