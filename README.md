@@ -46,8 +46,8 @@ Past measured values are obtained via the API interfaces of [http://at-wetter.tk
 Current values from the ZAMG web page as well as from the UIBK API interface can be done with the two program calls.
 
 ```
-./task.py production.spatialmos.py-get-available-data--uibk
-./task.py production.spatialmos.py-get-available-data--zamg
+./task.py production.spatialmos.py-spatialmos--get-uibk
+./task.py production.spatialmos.py-spatialmos--get-zamg
 ```
 
 
@@ -62,14 +62,14 @@ A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.c
 Current Ensemble weather forecasts can be obtained from the FTP server. Please use today's date
 
 ```
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter tmp_2m --avgspr avg"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter tmp_2m --avgspr spr"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter rh_2m --avgspr avg"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter rh_2m --avgspr spr"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr avg"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr spr"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr avg"
-./task.py production.spatialmos.py-get-available-data--gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr spr"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter tmp_2m --avgspr avg"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter tmp_2m --avgspr spr"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter rh_2m --avgspr avg"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter rh_2m --avgspr spr"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr avg"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter vgrd_10m --avgspr spr"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr avg"
+./task.py production.spatialmos.py-spatialmos--get-gefs "--date 2020-06-18 --runhour 0 --parameter ugrd_10m --avgspr spr"
 ```
 
 ### Archive downloaded files
@@ -77,10 +77,10 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
 ```
-./task.py production.spatialmos.py-archive-get-available-data "gefs_forcast"
-./task.py production.spatialmos.py-archive-get-available-data "gefs_reforcast"
-./task.py production.spatialmos.py-archive-get-available-data "uibk"
-./task.py production.spatialmos.py-archive-get-available-data "zamg"
+./task.py production.spatialmos.py-spatialmos--archive-available-data "gefs_forcast"
+./task.py production.spatialmos.py-spatialmos--archive-available-data "gefs_reforcast"
+./task.py production.spatialmos.py-spatialmos--archive-available-data "uibk"
+./task.py production.spatialmos.py-spatialmos--archive-available-data "zamg"
 
 ```
 
@@ -137,7 +137,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-06-23 added https certificates via letsenctryp to nginx configuration
+- 2020-06-23 added https certificates via Let´s Encrypt to nginx configuration
 - 2020-06-18 nginx configuration for moses.tirol
 - 2020-06-16 Landing page set up for moses.tirol
 - 2020-06-16 Productive use of fabric commands with crontab
