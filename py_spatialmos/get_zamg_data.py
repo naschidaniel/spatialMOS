@@ -19,7 +19,7 @@ from py_middleware import logger_module
 def fetch_zamg_data():
     """This function is used to store zamg data in csv files."""
     # Provide folder structure.
-    data_path = "/get_available_data/zamg"
+    data_path = "./data/get_available_data/zamg"
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
@@ -214,6 +214,6 @@ def download_zamg_page_data(data_path, state, pressure):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "zamg")
+    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     fetch_zamg_data()
     logger_module.end_logging(starttime)

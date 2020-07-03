@@ -18,7 +18,7 @@ from py_middleware import logger_module
 def fetch_wetter_at_data(beginndate, enddate):
     """This function loads data from the API interface of at-wetter.tk website and saves it as csv files."""
     # Provide folder structure.
-    data_path = "/get_available_data/wetter_at"
+    data_path = "./data/get_available_data/wetter_at"
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
@@ -105,7 +105,7 @@ def download_data_wetter_at(data_path, station, beginndate, timeseries, paramete
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "wetter_at")
+    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
     fetch_wetter_at_data(parser_dict["beginndate"], parser_dict["enddate"])
     logger_module.end_logging(starttime)

@@ -30,7 +30,7 @@ def rename_sensor_name(parameter):
 def fetch_suedirol_data(beginndate, enddate):
     """The function is used to load data from the South Tyrolean weather service. The data is stored as a csv file."""
     # Provide folder structure.
-    data_path = "/get_available_data/suedtirol"
+    data_path = "./data/get_available_data/suedtirol"
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
@@ -161,7 +161,7 @@ def fetch_suedirol_data(beginndate, enddate):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "suedtirol")
+    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
     fetch_suedirol_data(parser_dict["beginndate"], parser_dict["enddate"])
     logger_module.end_logging(starttime)

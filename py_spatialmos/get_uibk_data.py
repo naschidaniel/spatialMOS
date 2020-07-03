@@ -29,7 +29,7 @@ def fetch_uibk_data():
     """The data is stored as a csv file. Either 3 or 7 days will be returned."""
 
     # Provide folder structure.
-    data_path = "/get_available_data/uibk"
+    data_path = "./data/get_available_data/uibk"
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
@@ -119,6 +119,6 @@ def download_api_data(data_path, station):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "uibk")
+    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     fetch_uibk_data()
     logger_module.end_logging(starttime)

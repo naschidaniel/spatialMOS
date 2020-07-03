@@ -182,7 +182,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
     elif parameter == 'vgrd_10m':
         params = ["VGRD:10 m above ground"]
 
-    data_path = "/get_available_data/gefs_forcast/{}".format(parameter)
+    data_path = "./data/get_available_data/gefs_forcast/{}".format(parameter)
     baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
     baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.
@@ -271,7 +271,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "gefs")
+    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     parser_dict = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
     fetch_gefs_data(parser_dict["avgspr"], parser_dict["date"], parser_dict["parameter"], parser_dict["runhour"])
     logger_module.end_logging(starttime)
