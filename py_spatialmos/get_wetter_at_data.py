@@ -22,9 +22,16 @@ def fetch_wetter_at_data(beginndate, enddate):
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
-    # TODO download station.csv file form at_wetter
-    stationinfo_all = pd.read_csv(
-        f"{data_path}/stations.csv", delimiter=",", header=0)
+    # Download from moses.tirol
+    stationfile = f"{data_path}/stations.csv"
+    if not os.path.exists(stationfile):
+        req_stationsfile = requests.get("http://moses.tirol/required_files/wetter_at/stations.csv")
+        if req_stationsfile.status_code == 200:
+            with open(stationfile, mode="w") as f:
+                f.write(req_stationsfile.text)
+                f.close()
+
+    stationinfo_all = pd.read_csv(stationfile, delimiter=",", header=0)
     parameter = ["t", "tp", "rf", "wr", "wg", "wsr",
                  "wsg", "regen", "ldred", "ldstat", "sonne"]
 
