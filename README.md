@@ -80,7 +80,9 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 ```
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_forcast"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_reforcast"
+./task.py local.spatialmos.py-spatialmos--archive-available-data "suedtirol"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "uibk"
+./task.py local.spatialmos.py-spatialmos--archive-available-data "wetter_at"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "zamg"
 
 ```
