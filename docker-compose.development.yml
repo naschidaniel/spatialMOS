@@ -1,12 +1,6 @@
 version: '3.7'
 
 volumes:
-  get_available_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/data/get_available_data
   log:
     driver: local
     driver_opts:
@@ -49,6 +43,18 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/py_spatialmos
+  get_available_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/get_available_data
+  spatialmos_climatology:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/spatialmos_climatology
 
 
 services:  
@@ -56,6 +62,7 @@ services:
     build: ./container/py_pre_processing_gefs/
     container_name: spatialMOS_py_pre_processing_gefs
     volumes:
-      - get_available_data:/get_available_data
-      - log:/log
-      - py_spatialmos:/usr/src/app/py_spatialmos
+      - log:/log:z
+      - py_spatialmos:/usr/src/app/py_spatialmos:z
+      - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
+      - get_available_data:/usr/src/app/data/get_available_data:z
