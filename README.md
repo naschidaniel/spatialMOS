@@ -52,10 +52,10 @@ Current values from the ZAMG web page as well as from the UIBK API interface can
 ```
 
 
-#### GEFS Weather Forecast Archive
+#### GEFS Weather Reforcasts (Forecast Archive)
 
 Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
-A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive gfse forcasts can be downloaded. The data must be stored in this project in the folder `./data/get_available_data/gefs_reforcast` for further processing.
+A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive gfse forcasts can be downloaded. The data must be stored in this project in the folder `./data/get_available_data/gefs_reforcast/nwp` for further processing.
 
 
 #### GEFS Weather Forecasts
@@ -90,26 +90,44 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 
 ### Raw data processing for further statistical processing
 
-Based on the raw data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. The raw data must be converted into a general format for this purpose.
+#### Pre processing GEFS Weather Reforcasts to station locations
+
+The Global Weather Model data from the GEFS Model is bilinear interpolated to the station location. The predictions are saved per model run and step in CSV-Format. The data is stored under `./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/*`. 
 
 ```
-.\task.py *TODO*
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "tmp_2m"
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "spfh_2m"
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "pres_sfc"
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "apcp_sfc"
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "ugrd_10m"
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "vgrd_10m"
 ```
+
+The data for relative humidity and wind are calculated from other parameters. These parameters must be interpolated in advance.
+
+```
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "rh_2m" #Required parameters: tmp_2m, spfh_2m, pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "wind_10m" #Required parameters: ugrd_10m, vgrd_10m
+```
+
+
+
+The raw data must be converted into a general format for this purpose.
 
 
 ### Climatologies for the daily calculation of forecasts
 
-The required daily climatologies are created with the statistics software R.
+Based on the pre processed data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. Für die Topographie wird das GADM Topographie von Nord und Südtirol verwendet. For the topography the GADM topography of North and South Tyrol is used. The data must first be obtained from their website [GADM](https://gadm.org/) and stored in folder *TODO*. The required daily climatologies are created with the statistics software R.
 
 ```
-.\task.py *TODO*
+./task.py *TODO*
 ```
 
 ### Statistically corrected weather forecasts
 The current forecasts and the climatologies created are used to produce corrected weather forecasts for temperature, relative humidity and wind. 
 
 ```
-.\task.py *TODO*
+./task.py *TODO*
 ```
 
 The calculated predictions are available in the exchange folder spool. A provision of the data is done via the framework python django.
@@ -122,7 +140,7 @@ The online presence was implemented with the web framework django from python. T
 #### Data import from spool directory to PostgreSQL database
 
 ```
-.\task.py *TODO*
+./task.py *TODO*
 ```
 
 #### Live Demo
