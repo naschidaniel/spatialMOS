@@ -67,6 +67,15 @@ def py_spatialmos__get_zamg(c):
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_zamg.__name__)
 
+@task
+def py_spatialmos__pre_proccessing_reforcasts(c, parameter):
+    """GEFS Reforcasts are bilinearly interpolated at station locations."""
+    inv_logging.task(py_spatialmos__pre_proccessing_reforcasts.__name__)
+    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gefs_reforcasts_to_stations_locations.py", "--parameter", parameter]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__pre_proccessing_reforcasts.__name__)
+
 
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
@@ -75,11 +84,10 @@ spatialmos_development_ns.add_task(py_spatialmos__get_suedtirol)
 spatialmos_development_ns.add_task(py_spatialmos__get_uibk)
 spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
 spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
+spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforcasts)
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
 spatialmos_production_ns.add_task(py_spatialmos__get_gefs)
-spatialmos_production_ns.add_task(py_spatialmos__get_suedtirol)
 spatialmos_production_ns.add_task(py_spatialmos__get_uibk)
-spatialmos_production_ns.add_task(py_spatialmos__get_wetter_at)
 spatialmos_production_ns.add_task(py_spatialmos__get_zamg)
