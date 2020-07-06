@@ -1,0 +1,5 @@
+r-base
+r-raster
+r-rgdal
+r-rasterVis
+r-feather
