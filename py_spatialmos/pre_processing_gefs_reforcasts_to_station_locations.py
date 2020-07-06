@@ -18,6 +18,52 @@ from py_middleware import spatial_parser
 
 
 # Functions
+def status_gribfiles(cores, parameter, gribfiles_mean_spread):
+    """A function for the calculation status to be processed."""
+    logging.info("Cores für Parallelisierung: %s", cores)
+    logging.info("                Parameter : %s", parameter)
+    logging.info("    gribfiles to processed: %s", (len(gribfiles_mean_spread) * 43))
+    logging.info("            first gribfile: %s", gribfiles_mean_spread[0])
+    logging.info("             last gribfile: %s", gribfiles_mean_spread[-1])
+
+def filename_csv(parameter, df):
+    """A function to generate the filename for the CSV-Files"""
+    analDate = pd.to_datetime(df["analDate"][0]).strftime("%Y%m%d%H")
+    step = int(df["step"][0])
+    
+    path_interpolated_station_reforcasts = f"./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/{parameter}"
+    if not os.path.exists(path_interpolated_station_reforcasts):
+        os.makedirs(path_interpolated_station_reforcasts)
+    
+    return f"{path_interpolated_station_reforcasts}/GFSV2_{parameter}_{analDate}_{step:03d}.csv"
+
+
+def spfh2rh(spfh_2m, pres_sfc, tmp_2m):
+    """A function to calculate the relative humidity"""
+    es = 6.112 * np.exp((17.67 * tmp_2m) / (tmp_2m + 243.5))
+    e = spfh_2m * pres_sfc / (0.378 * spfh_2m + 0.622)
+    rh = e / es
+
+    rh[rh > 100] = 100.0
+    rh[rh < 0] = 0.0
+    return rh
+
+
+def uv2wind(ugrd_10m, vgrd_10m):
+    """A function to calculate the wind speed from the u and v component."""
+    squarewind = ugrd_10m**2 + vgrd_10m**2
+    windSpeed = np.sqrt(squarewind)
+    return(windSpeed)
+
+
+def predictions_for_stations(gribfile, parameter):
+    """A function to create a pandas dataframe for the GEFS Reforcasts for the respective stations."""
+    df = pd.read_csv(gribfile, sep=";", quoting=csv.QUOTE_NONNUMERIC)
+    df.columns = ["analDate", "validDate", "step", "station", "alt", "lon", "lat", f"mean_{parameter}", f"spread_{parameter}"]
+    df.set_index("station")
+    return df
+
+
 def gefs_reforcasts_to_station_location(parameter, cores=8):
     """Main function of the program to interpolate GEFS Reforcasts on ward locations. Existing GEFS Reforcasts are interpolated. Data wich is not included in the GEFS Reforcasts are calculated. The predictions are saved per model run and step in CSV-Format"""
     if parameter in ["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "ugrd_10m", "vgrd_10m"]:
@@ -46,31 +92,26 @@ def gefs_reforcasts_to_station_location(parameter, cores=8):
             p.map(interpolate_grib_files, gribfiles_mean_spread)
     
     elif parameter in ["rh_2m", "wind_10m"]:
-        data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforcast/interpolated_gribfiles/"
+        data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/"
         parameter_calc = []
         if parameter == "rh_2m":
             parameter_calc = ["spfh_2m", "pres_sfc", "tmp_2m"]
         elif parameter == "wind_10m":
             parameter_calc = ["ugrd_10m", "vgrd_10m"]
-
-        csvfiles_file0 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[0])
-        csvfiles_file1 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[1])
+        
+        data_path_spfh_2m = os.path.join(data_path_interpolated_gribfiles, parameter_calc[0])
+        data_path_pres_sfc = os.path.join(data_path_interpolated_gribfiles, parameter_calc[1])
+        
+        csvfiles_file0 = scandir.scandir(data_path_spfh_2m, parameter_calc[0])
+        csvfiles_file1 = scandir.scandir(data_path_pres_sfc, parameter_calc[1])
         csvfiles_file2 = []
-
         if parameter == "rh_2m":
-            csvfiles_file2 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[2])
-            if csvfiles_file0 == [] or csvfiles_file1 == [] or csvfiles_file2 == []:
-                logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
-                sys.exit(1)
-        elif parameter == "wind_10m":
-            if csvfiles_file0 == [] or csvfiles_file1 == []:
-                logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
-                sys.exit(1)
-
+            data_path_tmp_2m = os.path.join(data_path_interpolated_gribfiles, parameter_calc[2])
+            csvfiles_file2 = scandir.scandir(data_path_tmp_2m, parameter_calc[2])
 
         # group gribfiles by date
         gribfiles_combined = []
-        for file0_f in csvfiles_file1:
+        for file0_f in csvfiles_file0:
             file0_date = file0_f[-18:]
             file1_f = [s for s in csvfiles_file1 if file0_date in s]
 
@@ -89,57 +130,13 @@ def gefs_reforcasts_to_station_location(parameter, cores=8):
         status_gribfiles(cores, parameter, gribfiles_combined)
 
         with Pool(cores) as p:
-            p.map(calculate_parameter(gribfiles_combined), gribfiles_combined)
+            p.map(calculate_parameter, gribfiles_combined)
 
-
-def status_gribfiles(cores, parameter, gribfiles_mean_spread):
-    """A function for the calculation status to be processed."""
-    logging.info("Cores für Parallelisierung: %s", cores)
-    logging.info("                Parameter : %s", parameter)
-    logging.info("    gribfiles to processed: %s", (len(gribfiles_mean_spread) * 43))
-    logging.info("            first gribfile: %s", gribfiles_mean_spread[0])
-    logging.info("             last gribfile: %s", gribfiles_mean_spread[-1])
-
-def filename_csv(parameter, df):
-    """A function to generate the filename for the CSV-Files"""
-    analDate = pd.to_datetime(df["analDate"][0]).strftime("%Y%m%d%H")
-    step = int(df["step"][0])
-    
-    path_interpolated_station_reforcasts = f"./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/{parameter}"
-    if not os.path.exists(path_interpolated_station_reforcasts):
-        os.makedirs(path_interpolated_station_reforcasts)
-    
-    return f"{path_interpolated_station_reforcasts}/GFSV2_{parameter}_{analDate}_{step:03d}.csv"
-
-def spfh2rh(spfh_2m, pres_sfc, tmp_2m):
-    """A function to calculate the relative humidity"""
-    es = 6.112 * np.exp((17.67 * tmp_2m) / (tmp_2m + 243.5))
-    e = spfh_2m * pres_sfc / (0.378 * spfh_2m + 0.622)
-    rh = e / es
-
-    rh[rh > 100] = 100.0
-    rh[rh < 0] = 0.0
-    return rh
-
-def uv2wind(ugrd_10m, vgrd_10m):
-    """A function to calculate the wind speed from the u and v component."""
-    squarewind = ugrd_10m**2 + vgrd_10m**2
-    windSpeed = np.sqrt(squarewind)
-    return(windSpeed)
-
-def predictions_for_stations(gribfile, parameter):
-    """A function to create a pandas dataframe for the GEFS Reforcasts for the respective stations."""
-    file_f = pd.read_csv(gribfile, sep=";", quoting=csv.QUOTE_NONNUMERIC)
-    file_f.columns = ["analDate", "validDate", "step", "station", "alt", "lon", "lat", f"mean_{parameter}", f"spread_{parameter}"]
-    file_f.set_index("station")
-    return file_f
 
 def calculate_parameter(gribfiles_combined):
     """A function to calculate a parameter that is not available as direct model output."""
     parameter = gribfiles_combined[3]
     parameter_calc = gribfiles_combined[4]
-    
-
     file0_f = predictions_for_stations(gribfiles_combined[0], parameter_calc[0])
     file1_f = predictions_for_stations(gribfiles_combined[1], parameter_calc[1])
 
