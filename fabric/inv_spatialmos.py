@@ -77,6 +77,15 @@ def py_spatialmos__pre_proccessing_reforcasts(c, parameter):
     inv_logging.success(py_spatialmos__pre_proccessing_reforcasts.__name__)
 
 
+@task
+def py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations(c):
+    """Station Observations and GEFS Reforcasts are combined."""
+    inv_logging.task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations.__name__)
+    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_station_observations_and_reforcasts.py"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations.__name__)
+
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
 spatialmos_development_ns.add_task(py_spatialmos__get_gefs)
@@ -85,6 +94,7 @@ spatialmos_development_ns.add_task(py_spatialmos__get_uibk)
 spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
 spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
 spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforcasts)
+spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations)
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
