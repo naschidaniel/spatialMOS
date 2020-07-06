@@ -18,79 +18,78 @@ from py_middleware import spatial_parser
 
 
 # Functions
-class gefs_reforcasts_to_station_location:
-    """Main class of the program to interpolate GEFS Reforcasts on ward locations. Existing GEFS Reforcasts are interpolated. Data wich is not included in the GEFS Reforcasts are calculated. The predictions are saved per model run and step in CSV-Format"""
-    def __init__( self, parameter, cores):
-        if parameter in ["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "ugrd_10m", "vgrd_10m"]:
-            data_path = "./data/get_available_data/gefs_reforcast/nwp/"
-            gribfiles = scandir.scandir(data_path, parameter)
+def gefs_reforcasts_to_station_location(parameter, cores=8):
+    """Main function of the program to interpolate GEFS Reforcasts on ward locations. Existing GEFS Reforcasts are interpolated. Data wich is not included in the GEFS Reforcasts are calculated. The predictions are saved per model run and step in CSV-Format"""
+    if parameter in ["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "ugrd_10m", "vgrd_10m"]:
+        data_path = "./data/get_available_data/gefs_reforcast/nwp/"
+        gribfiles = scandir.scandir(data_path, parameter)
 
-            if gribfiles == []:
-                logging.error("There are no gribfiles for parameter {%s}", parameter)
+        if gribfiles == []:
+            logging.error("There are no gribfiles for parameter {%s}", parameter)
+            sys.exit(1)
+
+        # Split gribfiles into mean and spread files
+        gribfiles_mean = [s for s in gribfiles if "mean" in s]
+        gribfiles_spread = [s for s in gribfiles if "sprd" in s]
+
+        # group gribfiles by date
+        gribfiles_mean_spread = []
+        for mean_f in gribfiles_mean:
+            spread_f = [s for s in gribfiles_spread if mean_f[-28:-18] in s]
+            spread_f = spread_f[0]
+            if spread_f is not None:
+                gribfiles_mean_spread.append([mean_f, spread_f, parameter])
+        
+        status_gribfiles(cores, parameter, gribfiles_mean_spread)
+
+        with Pool(cores) as p:
+            p.map(interpolate_grib_files, gribfiles_mean_spread)
+    
+    elif parameter in ["rh_2m", "wind_10m"]:
+        data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforcast/interpolated_gribfiles/"
+        parameter_calc = []
+        if parameter == "rh_2m":
+            parameter_calc = ["spfh_2m", "pres_sfc", "tmp_2m"]
+        elif parameter == "wind_10m":
+            parameter_calc = ["ugrd_10m", "vgrd_10m"]
+
+        csvfiles_file0 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[0])
+        csvfiles_file1 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[1])
+        csvfiles_file2 = []
+
+        if parameter == "rh_2m":
+            csvfiles_file2 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[2])
+            if csvfiles_file0 == [] or csvfiles_file1 == [] or csvfiles_file2 == []:
+                logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
+                sys.exit(1)
+        elif parameter == "wind_10m":
+            if csvfiles_file0 == [] or csvfiles_file1 == []:
+                logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
                 sys.exit(1)
 
-            # Split gribfiles into mean and spread files
-            gribfiles_mean = [s for s in gribfiles if "mean" in s]
-            gribfiles_spread = [s for s in gribfiles if "sprd" in s]
 
-            # group gribfiles by date
-            gribfiles_mean_spread = []
-            for mean_f in gribfiles_mean:
-                spread_f = [s for s in gribfiles_spread if mean_f[-28:-18] in s]
-                spread_f = spread_f[0]
-                if spread_f is not None:
-                    gribfiles_mean_spread.append([mean_f, spread_f, parameter])
-            
-            status_gribfiles(cores, parameter, gribfiles_mean_spread)
+        # group gribfiles by date
+        gribfiles_combined = []
+        for file0_f in csvfiles_file1:
+            file0_date = file0_f[-18:]
+            file1_f = [s for s in csvfiles_file1 if file0_date in s]
 
-            with Pool(cores) as p:
-                p.map(interpolate_grib_files, gribfiles_mean_spread)
-        
-        elif parameter in ["rh_2m", "wind_10m"]:
-            data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforcast/interpolated_gribfiles/"
-            parameter_calc = []
-            if parameter == "rh_2m":
-                parameter_calc = ["spfh_2m", "pres_sfc", "tmp_2m"]
-            elif parameter == "wind_10m":
-                parameter_calc = ["ugrd_10m", "vgrd_10m"]
-
-            csvfiles_file0 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[0])
-            csvfiles_file1 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[1])
-            csvfiles_file2 = []
-
-            if parameter == "rh_2m":
-                csvfiles_file2 = scandir.scandir(data_path_interpolated_gribfiles, parameter_calc[2])
-                if csvfiles_file0 == [] or csvfiles_file1 == [] or csvfiles_file2 == []:
-                    logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
-                    sys.exit(1)
-            elif parameter == "wind_10m":
-                if csvfiles_file0 == [] or csvfiles_file1 == []:
-                    logging.error("There are no interpolated values in the folder %s available for parameter %s.", data_path_interpolated_gribfiles, parameter_calc)
-                    sys.exit(1)
-
-
-            # group gribfiles by date
-            gribfiles_combined = []
-            for file0_f in csvfiles_file1:
-                file0_date = file0_f[-18:]
-                file1_f = [s for s in csvfiles_file1 if file0_date in s]
-
-                if parameter == 'rh_2m':
-                    file2_f = [s for s in csvfiles_file2 if file0_date in s]
-                    if file0_f != [] and file1_f != [] and file1_f != []:
-                        gribfiles_combined.append([file0_f, file1_f[0], file2_f[0], parameter, parameter_calc])
-                    else:
-                        pass
+            if parameter == 'rh_2m':
+                file2_f = [s for s in csvfiles_file2 if file0_date in s]
+                if file0_f != [] and file1_f != [] and file1_f != []:
+                    gribfiles_combined.append([file0_f, file1_f[0], file2_f[0], parameter, parameter_calc])
                 else:
-                    if file0_f != [] and file1_f != []:
-                        gribfiles_combined.append([file0_f, file1_f[0], -999, parameter, parameter_calc])
-                    else:
-                        pass
+                    pass
+            else:
+                if file0_f != [] and file1_f != []:
+                    gribfiles_combined.append([file0_f, file1_f[0], -999, parameter, parameter_calc])
+                else:
+                    pass
 
-            status_gribfiles(cores, parameter, gribfiles_combined)
+        status_gribfiles(cores, parameter, gribfiles_combined)
 
-            with Pool(cores) as p:
-                p.map(calculate_parameter(gribfiles_combined), gribfiles_combined)
+        with Pool(cores) as p:
+            p.map(calculate_parameter(gribfiles_combined), gribfiles_combined)
 
 
     def status_gribfiles(cores, parameter, gribfiles_mean_spread):
