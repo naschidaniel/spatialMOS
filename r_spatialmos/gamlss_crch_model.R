@@ -1,7 +1,7 @@
-# A Programm to build spatial Klimatologies on Basis of Historical Data for a pre defined Area
+# A Programm to build spatial climatetologies on Basis of Historical Data for a pre defined Area
 rm(list = ls())
 setwd('~/spatialMOS/')
-stations = read.csv('./data/klima/stations.csv')
+stations = read.csv('./data/climate/stations.csv')
 
 library(crch)
 library(gamlss)
@@ -10,63 +10,59 @@ library(gamlss.cens)
 library(gamlss.spatial)
 library(foreach)
 library(doParallel)
-source("./r_spatialmos/functions.R")
-
-#Einlsen des optparsers Parameter
+source("./r_spatialmos/r_middleware/functions.R")
 source("./r_spatialmos/gamlss_crch_model_optparse.R")
-
-#TODO make a Config file
 source("./r_spatialmos/gam_crch_model.R.conf")
 
-#Check ob Daten existieren
-if (!dir.exists(paste0("./data/GAM/", name_parm))){
-  print(paste0('Der Ordner für den Parameter ', name_parm, ' wurde nicht gefunden'))
+# Check if GADM data are available
+if (!dir.exists(paste0("./data/spatialmos_climatology/", parameter))){
+  print(paste0('The folder for the parameter ', parameter, ' was not found'))
   quit(status=1)
 }
 
-#Daten aus modellklimatologies.py einlesen
-klima <- read.csv(paste0("./data/GAM/", name_parm, "/", name_parm, "_alle_stationswerte.csv"), sep=";", header = TRUE)
-colnamesObsKlima <- colnames(klima)
-colnamesObsKlima <- colnamesObsKlima[1:6]
+# Daten aus modellclimatetologies.py einlesen
+climate <- read.csv(paste0("./data/spatialmos_climatology/", parameter, "/", parameter, "station_observations_and_reforcasts.csv"), sep=";", header = TRUE)
+colnamesObsclimate <- colnames(climate)
+colnamesObsclimate <- colnamesObsclimate[1:6]
 
-#Build von klimaValidation auf Basis von Kfold
+#Build von climateValidation auf Basis von Kfold
 if (validation == FALSE){
-  SAMOS_coef_dir <- paste0('./data/GAM/', name_parm, '/', 'SAMOS_coef')
+  SAMOS_coef_dir <- paste0('./data/spatialmos_climatology/', parameter, '/', 'SAMOS_coef')
   dir.create(SAMOS_coef_dir, showWarnings = FALSE)
   
-  #Erstellen des Verzeichniss für die GAM NWP Klimatologien
-  dir.create(file.path(paste0('./data/GAM/', name_parm, '/'), 'gam_nwp'), showWarnings = FALSE)
+  #Erstellen des Verzeichniss für die GAM NWP climatetologien
+  dir.create(file.path(paste0('./data/spatialmos_climatology/', parameter, '/'), 'gam_nwp'), showWarnings = FALSE)
 
-  file <- paste0("./data/GAM/", name_parm, "/gam_", name_parm, "_alle_stationswerte.RData")
+  file <- paste0("./data/spatialmos_climatology/", parameter, "/gam_", parameter, "station_observations_and_reforcasts.RData")
 } else {
-  #Erstellen des Verzeichniss für die Validation GAM Klimatologien
-  validationDir <- paste0("./data/GAM/", name_parm, "/validation/")
+  #Erstellen des Verzeichniss für die Validation GAM climatetologien
+  validationDir <- paste0("./data/spatialmos_climatology/", parameter, "/validation/")
   dir.create(file.path(validationDir), showWarnings = FALSE)
   
-  validation_gam_NWP_dir <- paste0('./data/GAM/', name_parm, '/validation/', 'gam_nwp')
+  validation_gam_NWP_dir <- paste0('./data/spatialmos_climatology/', parameter, '/validation/', 'gam_nwp')
   dir.create(file.path(validation_gam_NWP_dir), showWarnings = FALSE)
   
-  validation_SAMOS_coef_dir <- paste0('./data/GAM/', name_parm, '/validation/', 'SAMOS_coef')
+  validation_SAMOS_coef_dir <- paste0('./data/spatialmos_climatology/', parameter, '/validation/', 'SAMOS_coef')
   dir.create(file.path(validation_SAMOS_coef_dir), showWarnings = FALSE)
   
-  predictionsdir <- paste0('./data/GAM/', name_parm, '/validation/', 'predictions')
+  predictionsdir <- paste0('./data/spatialmos_climatology/', parameter, '/validation/', 'predictions')
   dir.create(file.path(predictionsdir), showWarnings = FALSE)
   
-  file <- paste0(validationDir, "gam_", name_parm, "_kfold_", kfold, ".RData")
-  klima <- klima[which(klima$kfold != kfold),]
+  file <- paste0(validationDir, "gam_", parameter, "_kfold_", kfold, ".RData")
+  climate <- climate[which(climate$kfold != kfold),]
 }
 
-#Erstellen der GAMLSS Klimatologien
+#Erstellen der GAMLSS climatetologien
 if(!file.exists(file)){
   if (validation == TRUE){
-    print(paste0('GAMLSS Klimatologie für -p = ', name_parm, " und kfold -k = ", kfold, " wird erstellt!"))
+    print(paste0('GAMLSS climatetologie für -p = ', parameter, " und kfold -k = ", kfold, " wird erstellt!"))
   }else {
-    print(paste0('GAMLSS Klimatologie für ', name_parm, " wird erstellt!"))
+    print(paste0('GAMLSS climatetologie für ', parameter, " wird erstellt!"))
   }
   print(paste('Parameter       | (lon, lat) =', lat_lon_k, '| dayminute = ', dayminute_k, 'yday = ', yday_k))
   print(paste('Parameter Sigma | (lon, lat) =', lat_lon_sigma_k, '| dayminute = ', dayminute_sigma_k, 'yday = ', yday_sigma_k))
   
-  gam_klima <- gamlss(obs ~ ga(~ti(lon, lat, k = lat_lon_k, d = c(2), bs = c("tp"))) + 
+  gam_climate <- gamlss(obs ~ ga(~ti(lon, lat, k = lat_lon_k, d = c(2), bs = c("tp"))) + 
                                 alt + 
                                 pbc(dayminute, df=dayminute_k, by=alt) + 
                                 pbc(yday, df=yday_k, by=alt), 
@@ -74,8 +70,8 @@ if(!file.exists(file)){
                                 alt + 
                                 pbc(dayminute, df=dayminute_sigma_k, by=alt) + 
                                 pbc(yday, df=yday_sigma_k, by=alt),
-                              data = klima)
-  save(gam_klima, file=file)
+                              data = climate)
+  save(gam_climate, file=file)
 } else {
   print(paste0("File (", file, ") existiert und wird geladen!"))
   load(file)
@@ -84,7 +80,7 @@ if(!file.exists(file)){
 
 
 ############# NWP Daten ##########
-nwp_files <- list.files(path = paste0("./data/GAM/", name_parm ,"/klima_nwp"), pattern=".csv", full.names = TRUE, recursive = FALSE)
+nwp_files <- list.files(path = paste0("./data/spatialmos_climatology/", parameter ,"/climate_nwp"), pattern=".csv", full.names = TRUE, recursive = FALSE)
 
 start_time <- Sys.time()
 
@@ -92,37 +88,37 @@ for(i in 1:length(nwp_files)){
   stepstr <- substr(nwp_files[i], start=nchar(nwp_files[i])-6, stop=nchar(nwp_files[i])-4)
 
   if (validation == TRUE){
-    klimaNWPValidationFilename <- paste0(predictionsdir, "/samos_pred_", name_parm, "_", stepstr, "_kfold_", kfold, ".csv")
+    climateNWPValidationFilename <- paste0(predictionsdir, "/samos_pred_", parameter, "_", stepstr, "_kfold_", kfold, ".csv")
   
-    if (file.exists(klimaNWPValidationFilename)){
-      print(paste("Durchlauf für", nwp_files[i], "übersprungen. Validation File ------ ",  klimaNWPValidationFilename, "ist schon vorhanden ------"))
+    if (file.exists(climateNWPValidationFilename)){
+      print(paste("Durchlauf für", nwp_files[i], "übersprungen. Validation File ------ ",  climateNWPValidationFilename, "ist schon vorhanden ------"))
       next()
     }else{
-      print(paste0('GAMLSS NWP-Klimatologie für -p = ', name_parm, " und kfold -k = ", kfold, " wird erstellt!"))
+      print(paste0('GAMLSS NWP-climatetologie für -p = ', parameter, " und kfold -k = ", kfold, " wird erstellt!"))
     }
   } else{
-    print(paste0('GAMLSS NWP-Klimatologie für ', name_parm, " wird erstellt!"))
+    print(paste0('GAMLSS NWP-climatetologie für ', parameter, " wird erstellt!"))
   }
   
 
 
-  #Modellklimatologie 
-  klimaNWP <- read.csv(file = nwp_files[i], sep=";", header = TRUE)
+  #Modellclimatetologie 
+  climateNWP <- read.csv(file = nwp_files[i], sep=";", header = TRUE)
   #Crossvalidation 
   if (validation == TRUE){
-    klimaNWPValidation <- klimaNWP[which(klimaNWP$kfold == kfold),]
-    klimaNWP <- klimaNWP[which(klimaNWP$kfold != kfold),]
+    climateNWPValidation <- climateNWP[which(climateNWP$kfold == kfold),]
+    climateNWP <- climateNWP[which(climateNWP$kfold != kfold),]
     
-    gam_nwp_klimaFilename <- paste0(validation_gam_NWP_dir, "/gam_nwp_", name_parm, "_", stepstr, "_kfold_", kfold, ".RData")
-    gam_nwp_log_sdFilename <- paste0(validation_gam_NWP_dir, "/gam_nwp_log_sd_", name_parm, "_", stepstr, "_kfold_", kfold, ".RData")
+    gam_nwp_climateFilename <- paste0(validation_gam_NWP_dir, "/gam_nwp_", parameter, "_", stepstr, "_kfold_", kfold, ".RData")
+    gam_nwp_log_sdFilename <- paste0(validation_gam_NWP_dir, "/gam_nwp_log_sd_", parameter, "_", stepstr, "_kfold_", kfold, ".RData")
   }else if (validation == FALSE){
-    gam_nwp_klimaFilename <- paste0("./data/GAM/", name_parm, "/gam_nwp/gam_nwp_", name_parm, "_", stepstr, ".RData")
-    gam_nwp_log_sdFilename <- paste0("./data/GAM/", name_parm, "/gam_nwp/gam_nwp_log_sd_", name_parm, "_", stepstr, ".RData")
+    gam_nwp_climateFilename <- paste0("./data/spatialmos_climatology/", parameter, "/gam_nwp/gam_nwp_", parameter, "_", stepstr, ".RData")
+    gam_nwp_log_sdFilename <- paste0("./data/spatialmos_climatology/", parameter, "/gam_nwp/gam_nwp_log_sd_", parameter, "_", stepstr, ".RData")
   }
   
   #########Generalized Additive Modell
-  #Building the Modellklimatologie fuer NWP LOG_SD
-  if (!file.exists(gam_nwp_klimaFilename)){
+  #Building the Modellclimatetologie fuer NWP LOG_SD
+  if (!file.exists(gam_nwp_climateFilename)){
     diff_time = Sys.time() - start_time
     print(paste('Time:               | ', diff_time))
     print(paste('Step:               | ', stepstr))
@@ -130,22 +126,22 @@ for(i in 1:length(nwp_files)){
     print(paste('NWP Parameter Sigma | (lon, lat) =', nwp_lat_lon_sigma_k, 'yday = ', nwp_yday_sigma_k))
     print('----------------------------------------')
     
-    gam_nwp_klima <- gamlss(mean ~ ga(~ti(lon, lat, k = nwp_lat_lon_k, d = c(2), bs = c("tp"))) + 
+    gam_nwp_climate <- gamlss(mean ~ ga(~ti(lon, lat, k = nwp_lat_lon_k, d = c(2), bs = c("tp"))) + 
                               alt + 
                               pbc(yday, df=nwp_yday_k, by=alt), 
                             sigma.formula = ~ ga(~ti(lon, lat, k = nwp_lat_lon_sigma_k, d = c(2), bs = c("tp"))) + 
                               alt + 
                               pbc(yday, df=nwp_yday_sigma_k, by=alt),
-                            data = klimaNWP)
+                            data = climateNWP)
     
-    save(gam_nwp_klima, file=gam_nwp_klimaFilename)
+    save(gam_nwp_climate, file=gam_nwp_climateFilename)
   }else {
-    print(paste0("File (", gam_nwp_klimaFilename, ") existiert und wird geladen!"))
-    load(gam_nwp_klimaFilename)
+    print(paste0("File (", gam_nwp_climateFilename, ") existiert und wird geladen!"))
+    load(gam_nwp_climateFilename)
   }
 
   #########Generalized Additive Modell
-  #Building the Modellklimatologie fuer NWP LOG_SD
+  #Building the Modellclimatetologie fuer NWP LOG_SD
   if (!file.exists(gam_nwp_log_sdFilename)){
     diff_time = Sys.time() - start_time
     print(paste('Time:               | ', diff_time))
@@ -160,7 +156,7 @@ for(i in 1:length(nwp_files)){
                              sigma.formula = ~ ga(~ti(lon, lat, k = nwp_log_sd_lat_lon_sigma_k, d = c(2), bs = c("tp"))) + 
                                alt + 
                                pbc(yday, df=nwp_log_sd_yday_sigma_k, by=alt),
-                             data = klimaNWP)
+                             data = climateNWP)
     
     save(gam_nwp_log_sd, file=gam_nwp_log_sdFilename)
   }else {
@@ -168,72 +164,72 @@ for(i in 1:length(nwp_files)){
     load(gam_nwp_log_sdFilename)
   }
   
-  mean_fit <- predict(gam_nwp_klima, what= "mu", type ="response")
-  mean_fit_sd <- predict(gam_nwp_klima, what= "sigma", type ="response")
+  mean_fit <- predict(gam_nwp_climate, what= "mu", type ="response")
+  mean_fit_sd <- predict(gam_nwp_climate, what= "sigma", type ="response")
   
   log_spread_fit <- predict(gam_nwp_log_sd, what= "mu", type ="response")
   log_spread_fit_sd <- predict(gam_nwp_log_sd, what= "sigma", type ="response")
   
   #Observations fit
-  klima_fit <- predict(gam_klima, what= "mu", type="response", data = klima, newdata = klimaNWP[colnamesObsKlima])
-  klima_fit_sd <- predict(gam_klima, what= "sigma", type="response", data = klima, newdata = klimaNWP[colnamesObsKlima])
+  climate_fit <- predict(gam_climate, what= "mu", type="response", data = climate, newdata = climateNWP[colnamesObsclimate])
+  climate_fit_sd <- predict(gam_climate, what= "sigma", type="response", data = climate, newdata = climateNWP[colnamesObsclimate])
 
-  klimaNWP <- cbind(klimaNWP, klima_fit)
-  klimaNWP <- cbind(klimaNWP, klima_fit_sd)
-  klimaNWP <- cbind(klimaNWP, mean_fit)
-  klimaNWP <- cbind(klimaNWP, mean_fit_sd)
-  klimaNWP <- cbind(klimaNWP, log_spread_fit)
-  klimaNWP <- cbind(klimaNWP, log_spread_fit_sd)
+  climateNWP <- cbind(climateNWP, climate_fit)
+  climateNWP <- cbind(climateNWP, climate_fit_sd)
+  climateNWP <- cbind(climateNWP, mean_fit)
+  climateNWP <- cbind(climateNWP, mean_fit_sd)
+  climateNWP <- cbind(climateNWP, log_spread_fit)
+  climateNWP <- cbind(climateNWP, log_spread_fit_sd)
   
-  klima_anom <- (klimaNWP$obs - klimaNWP$klima_fit) / klimaNWP$klima_fit_sd
-  mean_anom <- (klimaNWP$mean - klimaNWP$mean_fit) / klimaNWP$mean_fit_sd
-  log_spread_anom <- (klimaNWP$log_spread - klimaNWP$log_spread_fit) / klimaNWP$log_spread_fit_sd
+  climate_anom <- (climateNWP$obs - climateNWP$climate_fit) / climateNWP$climate_fit_sd
+  mean_anom <- (climateNWP$mean - climateNWP$mean_fit) / climateNWP$mean_fit_sd
+  log_spread_anom <- (climateNWP$log_spread - climateNWP$log_spread_fit) / climateNWP$log_spread_fit_sd
   
-  klimaNWP <- cbind(klimaNWP, klima_anom)
-  klimaNWP <- cbind(klimaNWP, mean_anom)
-  klimaNWP <- cbind(klimaNWP, log_spread_anom)
+  climateNWP <- cbind(climateNWP, climate_anom)
+  climateNWP <- cbind(climateNWP, mean_anom)
+  climateNWP <- cbind(climateNWP, log_spread_anom)
   
-  SAMOS <- crch(klimaNWP$klima_anom ~ klimaNWP$mean_anom | klimaNWP$log_spread_anom)
+  SAMOS <- crch(climateNWP$climate_anom ~ climateNWP$mean_anom | climateNWP$log_spread_anom)
   SAMOS_coef <- coef(SAMOS)
   SAMOS_coef <- as.data.frame(t(c(stepstr, SAMOS_coef)))
   colnames(SAMOS_coef)<- c("step", "intercept", "mean_anom", "intercept_log_spread", "log_spread_anom")
   
-  #Erstellen des Verzeichniss für die Koefezienten für NWP Klimatologien
+  #Erstellen des Verzeichniss für die Koefezienten für NWP climatetologien
   if (validation == FALSE){
-    write.csv2(SAMOS_coef, file = paste0(SAMOS_coef_dir, "/SAMOS_coef_", name_parm, "_", stepstr, ".csv"),
+    write.csv2(SAMOS_coef, file = paste0(SAMOS_coef_dir, "/SAMOS_coef_", parameter, "_", stepstr, ".csv"),
                row.names=FALSE, quote = TRUE)
   }else {
-    write.csv2(SAMOS_coef, file = paste0(validation_SAMOS_coef_dir, "/SAMOS_coef_", name_parm, "_", stepstr, "_kfold_", kfold, ".csv"),
+    write.csv2(SAMOS_coef, file = paste0(validation_SAMOS_coef_dir, "/SAMOS_coef_", parameter, "_", stepstr, "_kfold_", kfold, ".csv"),
                row.names=FALSE, quote = TRUE)
 
     #TODO Dokumentation und Check ob das so richtig ist
-    klima_fit_Validation_kfold <- predict(gam_klima, what= "mu", type="response", data = klima, newdata = klimaNWPValidation[colnamesObsKlima])
-    klima_fit_sd_Validation_kfold <- predict(gam_klima, what= "sigma", type="response", data = klima, newdata = klimaNWPValidation[colnamesObsKlima])
+    climate_fit_Validation_kfold <- predict(gam_climate, what= "mu", type="response", data = climate, newdata = climateNWPValidation[colnamesObsclimate])
+    climate_fit_sd_Validation_kfold <- predict(gam_climate, what= "sigma", type="response", data = climate, newdata = climateNWPValidation[colnamesObsclimate])
     
-    mean_fit <- predict(gam_nwp_klima, what= "mu", type ="response", data = klimaNWP, newdata = klimaNWPValidation)
-    mean_fit_sd <- predict(gam_nwp_klima, what= "sigma", type ="response", data = klimaNWP, newdata = klimaNWPValidation)
+    mean_fit <- predict(gam_nwp_climate, what= "mu", type ="response", data = climateNWP, newdata = climateNWPValidation)
+    mean_fit_sd <- predict(gam_nwp_climate, what= "sigma", type ="response", data = climateNWP, newdata = climateNWPValidation)
     
-    log_spread_fit <- predict(gam_nwp_log_sd, what= "mu", type ="response", newdata = klimaNWPValidation)
-    log_spread_fit_sd <- predict(gam_nwp_log_sd, what= "sigma", type ="response", newdata = klimaNWPValidation)
+    log_spread_fit <- predict(gam_nwp_log_sd, what= "mu", type ="response", newdata = climateNWPValidation)
+    log_spread_fit_sd <- predict(gam_nwp_log_sd, what= "sigma", type ="response", newdata = climateNWPValidation)
     
-    nwp_anom <- (klimaNWPValidation$mean - mean_fit) / mean_fit_sd
-    log_spread_nwp_anom <- (klimaNWPValidation$log_spread - log_spread_fit) / log_spread_fit_sd
+    nwp_anom <- (climateNWPValidation$mean - mean_fit) / mean_fit_sd
+    log_spread_nwp_anom <- (climateNWPValidation$log_spread - log_spread_fit) / log_spread_fit_sd
     
     samos_anom <- SAMOS$coefficients$location[1] + SAMOS$coefficients$location[2] * nwp_anom
-    samos_pred <- samos_anom * klima_fit_sd_Validation_kfold + klima_fit_Validation_kfold
+    samos_pred <- samos_anom * climate_fit_sd_Validation_kfold + climate_fit_Validation_kfold
     
     samos_log_anom_spread <- SAMOS$coefficients$scale[1] + SAMOS$coefficients$scale[2] * exp(log_spread_nwp_anom) #Formelcheck | auch in prediction/pointprediction.py überprüfen!!!!!!!
-    #TODO Stimmt das so= laut Formel So exp(samos_log_anom_spread) * klima_fit_sd_Validation_kfold laut paper
-    samos_pred_spread = samos_log_anom_spread * klima_fit_sd_Validation_kfold
+    #TODO Stimmt das so= laut Formel So exp(samos_log_anom_spread) * climate_fit_sd_Validation_kfold laut paper
+    samos_pred_spread = samos_log_anom_spread * climate_fit_sd_Validation_kfold
 
-    klimaNWPValidation <- cbind(klimaNWPValidation, samos_pred)
-    klimaNWPValidation <- cbind(klimaNWPValidation, samos_pred_spread)
-    write.csv2(klimaNWPValidation, file = klimaNWPValidationFilename,
+    climateNWPValidation <- cbind(climateNWPValidation, samos_pred)
+    climateNWPValidation <- cbind(climateNWPValidation, samos_pred_spread)
+    write.csv2(climateNWPValidation, file = climateNWPValidationFilename,
                row.names=FALSE, quote = TRUE)
   }
   #clear Memory
-  rm(klimaNWP)
+  rm(climateNWP)
 }
-rm(klima)
+rm(climate)
 diff_time = Sys.time() - start_time
 print(diff_time)
