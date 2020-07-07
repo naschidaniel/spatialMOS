@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""With this Python script the existing data is combined and saved as feather file."""
+"""With this Python script the existing data is combined and saved as csv file."""
 
 import csv
 import os
@@ -155,8 +155,11 @@ def spatialmos_dataframe(starttime):
     df[["lon", "lat"]] = df[["lon", "lat"]].astype(float)
     df[["alt"]] = df[["alt"]].astype(int)
 
-    h5filename = "./data/spatialmos_climatology/all_station_observations_and_reforcasts.h5"
+    h5filename = "./data/spatialmos_climatology/station_observations_and_reforcasts.h5"
     df.to_hdf(h5filename, "table", append=False, complevel=9, complib="zlib")
+    csvfilename = "./data/spatialmos_climatology/station_observations_and_reforcasts.csv"
+    df.to_csv(csvfilename, sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+
 
 # Main
 if __name__ == "__main__":
