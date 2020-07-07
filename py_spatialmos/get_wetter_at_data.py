@@ -31,6 +31,14 @@ def fetch_wetter_at_data(beginndate, enddate):
                 f.write(req_stationsfile.text)
                 f.close()
 
+    parameter_info_file = f"{data_path}/Parameter_Info.csv"
+    if not os.path.exists(parameter_info_file):
+        req_parameter_info_file = requests.get("http://moses.tirol/required_files/wetter_at/Parameter_Info.csv")
+        if req_parameter_info_file.status_code == 200:
+            with open(parameter_info_file, mode="w") as f:
+                f.write(req_parameter_info_file.text)
+                f.close()
+
     stationinfo_all = pd.read_csv(stationfile, delimiter=",", header=0)
     parameter = ["t", "tp", "rf", "wr", "wg", "wsr",
                  "wsg", "regen", "ldred", "ldstat", "sonne"]
