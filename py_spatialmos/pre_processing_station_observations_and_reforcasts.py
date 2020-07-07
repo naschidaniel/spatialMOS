@@ -3,6 +3,7 @@
 """With this Python script the existing data is combined and saved as csv file."""
 
 import csv
+import logging
 import os
 import datetime
 import logging
@@ -39,7 +40,7 @@ def combine_dataframes(data_path, columns):
     df = None
     i = 1
     for file in data_files:
-        print("CSV File {:2d} von {} | File: {}".format(i, len(data_files), file))
+        logging.info("CSV File {:2d} of {} is processed | File: {}".format(i, len(data_files), file))
         new_df = pd.read_csv(file, sep=";", quoting=csv.QUOTE_MINIMAL)
         new_df_columsn = new_df.columns
         for key in columns:
@@ -57,7 +58,7 @@ def combine_dataframes(data_path, columns):
         i += 1
 
     df = df.drop_duplicates(subset=None, keep="first", inplace=False)
-    return (df)
+    return df
 
 
 def two_element_dict_from_pd_series(data_key, data_value):
@@ -133,23 +134,20 @@ def spatialmos_dataframe(starttime):
     df = df.drop("obstime", axis=1)
     df = df.drop("timestamp", axis=1)
 
-    time_diff = datetime.datetime.now() - starttime
-    time_diff = time_diff.total_seconds()
-    
     alt_dict = two_element_dict_from_pd_series(stations["station"], stations["alt"])
     alt_entry = [int(alt_dict[r]) for r in df["station"]]
     df.insert(5, "alt", alt_entry)
-    logging.info("The altitude values were assigned in %s seconds.", time_diff)
+    logging.info("The altitude values were assigned.")
 
     lon_dict = two_element_dict_from_pd_series(stations["station"], stations["lon"])
     lon_entry = [float(lon_dict[r]) for r in df["station"]]
     df.insert(6, "lon", lon_entry)
-    logging.info("The longitude values were assigned in %s seconds.", time_diff)
+    logging.info("The longitude values were assigned.")
 
     lat_dict = two_element_dict_from_pd_series(stations["station"], stations["lat"])
     lat_entry = [float(lat_dict[r]) for r in df["station"]]
     df.insert(7, "lat", lat_entry)
-    logging.info("The latitude values were assigned in %s seconds.", time_diff)
+    logging.info("The latitude values were assigned.")
 
     df["station"] = df["station"].astype(str)
     df[["lon", "lat"]] = df[["lon", "lat"]].astype(float)
@@ -157,8 +155,11 @@ def spatialmos_dataframe(starttime):
 
     h5filename = "./data/spatialmos_climatology/station_observations_and_reforcasts.h5"
     df.to_hdf(h5filename, "table", append=False, complevel=9, complib="zlib")
+    logging.info("The data was saved in the h5 format under %s", h5filename)
     csvfilename = "./data/spatialmos_climatology/station_observations_and_reforcasts.csv"
     df.to_csv(csvfilename, sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+    logging.info("The data was saved in the csv format under %s", csvfilename)
+
 
 
 # Main
