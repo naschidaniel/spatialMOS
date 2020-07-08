@@ -79,5 +79,6 @@ services:
     volumes:
       - log:/log:z
       - r_spatialmos:/usr/src/app/r_spatialmos:z
+      - get_available_data:/usr/src/app/data/get_available_data:z
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
       - static:/usr/src/app/data/static:z
