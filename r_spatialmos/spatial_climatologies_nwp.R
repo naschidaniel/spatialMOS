@@ -10,12 +10,14 @@ library(gamlss.cens)
 library(gamlss.spatial)
 library(raster)
 source("./r_spatialmos/functions.R")
-source("./r_spatialmos/spatial_climatologies_optparser.R") #name_parm #daybegin #dayend
 
-############## Funktionen
+# Parse Inputs
+required_climatologies_model_inputs <- TRUE
+source("./r_spatialmos/spatial_climatologies_optparser.R")
 
-############## Main Programm
-#Predict the Modellklimatologie
+
+# Main
+# Predict the Modellklimatologie
 dayseq <- seq(daybegin,dayend,by=1)
 #TODO kill this line commandArgs folder
 source("./r_spatialmos/gam_crch_model.R.conf")

@@ -1,7 +1,5 @@
 # A Programm to build spatial climatetologies on Basis of Historical Data for a pre defined Area
 rm(list = ls())
-setwd('~/spatialMOS/')
-stations = read.csv('./data/climate/stations.csv')
 
 library(crch)
 library(gamlss)
@@ -10,8 +8,18 @@ library(gamlss.cens)
 library(gamlss.spatial)
 library(foreach)
 library(doParallel)
+
+setwd('/usr/src/app/')
 source("./r_spatialmos/r_middleware/functions.R")
+
+# Parse Inputs
+required_gamlss_model_inputs <- TRUE
 source("./r_spatialmos/gamlss_crch_model_optparse.R")
+
+stations = read.csv('./data/spatialmos_climatology/stations.csv')
+
+
+# Load Config
 source("./r_spatialmos/gam_crch_model.R.conf")
 
 # Check if GADM data are available
