@@ -161,6 +161,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-07-08 create Shapefiles with R
+- 2020-07-07 adding R Container to project 
 - 2020-07-03 Restructuring of the Docker containers, volumes and python script folder
 - 2020-06-23 added https certificates via Let´s Encrypt to nginx configuration
 - 2020-06-18 nginx configuration for moses.tirol
