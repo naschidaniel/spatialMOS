@@ -1,18 +1,23 @@
 rm(list = ls())
-setwd(getSrcDirectory()[1])
-#setwd('~/dev/spatialMOSv2/r_spatialmos/')
-plotpdf = TRUE
-stations = read.csv('./data/spatialmos_climatology/stations.csv')
 
+library(tools)
 library(raster)
 library(rgdal)
 library(rasterVis)
 library(feather)
 
+#setwd(file_path_as_absolute())
+#setwd('~/dev/spatialMOSv2/r_spatialmos/')
+setwd('/usr/src/app/')
+plotpdf = TRUE
+stations = read.csv('./data/spatialmos_climatology/stations.csv')
+
 # GADM Files from http://www.gadm.org/
-# dgm <- getData('alt', country='AUT', mask=FALSE, path='./data/spatialmos_climatology/gadm/', download = TRUE)
-# aut_border <- getData('GADM', country='AUT', level=0, download = TRUE, path='./data/spatialmos_climatology/gadm/')
-# stirol_border <- getData('GADM', country='ITA', level=2, download = TRUE, path='./data/spatialmos_climatology/gadm/')
+dir.create('./data/spatialmos_climatology/gadm/', showWarnings = FALSE)
+dgm <- getData('alt', country='AUT', mask=FALSE, path='./data/spatialmos_climatology/gadm/', download = TRUE)
+aut_border <- getData('GADM', country='AUT', level=0, download = TRUE, path='./data/spatialmos_climatology/gadm/')
+ntirol_border <- getData('GADM', country='AUT', level=1, download = TRUE, path='./data/spatialmos_climatology/gadm/')
+stirol_border <- getData('GADM', country='ITA', level=2, download = TRUE, path='./data/spatialmos_climatology/gadm/')
 dgm <- raster('./data/spatialmos_climatology/gadm/AUT_alt.grd')
 aut_border <- readRDS('./data/spatialmos_climatology/gadm/gadm36_AUT_0_sp.rds')
 ntirol_border <- readRDS('./data/spatialmos_climatology/gadm/gadm36_AUT_1_sp.rds')
@@ -69,7 +74,7 @@ spatial_alt_area_df = data.frame(lon = lonlat[,1],
 write_feather(spatial_alt_area_df, './data/spatialmos_climatology/gadm/spatial_alt_area_df.feather')
 
 ##### Plot a map with used Stations
-if (plotpdf == TRUE) jpeg("./media/plots/messtationen.jpg", height=500, width=800, pointsize = 20, quality=99)
+if (plotpdf == TRUE) jpeg("./data/static/measuring_stations.jpg", height=500, width=800, pointsize = 20, quality=99)
 plot(dgm, legend=FALSE, xlab="Longitude", ylab="Latitude", add=FALSE, las=1, col=gray.colors(255))
 grid()
 plot(spatial_alt_area, legend=TRUE, add=TRUE)
