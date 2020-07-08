@@ -1,13 +1,10 @@
 rm(list = ls())
 
-library(tools)
 library(raster)
 library(rgdal)
 library(rasterVis)
 library(feather)
 
-#setwd(file_path_as_absolute())
-#setwd('~/dev/spatialMOSv2/r_spatialmos/')
 setwd('/usr/src/app/')
 plotpdf = TRUE
 stations = read.csv('./data/spatialmos_climatology/stations.csv')
