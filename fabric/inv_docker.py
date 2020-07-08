@@ -43,6 +43,14 @@ def run(c, cmd):
     inv_base.docker_compose(c, f"run -u {user}:{group} {cmd}", pty=True)
     inv_logging.success(run.__name__)
 
+@task
+def run_as_root(c, cmd):
+    """Start a service from the Docker Compose file as root user, for example: docker django"""
+    inv_logging.task(run_as_root.__name__)
+    inv_logging.cmd(cmd)
+    inv_base.docker_compose(c, f"run {cmd}", pty=True)
+    inv_logging.success(run_as_root.__name__)
+
 
 @task
 def rebuild(c):
@@ -104,6 +112,7 @@ docker_compose_development_ns.add_task(rebuild)
 docker_compose_development_ns.add_task(start)
 docker_compose_development_ns.add_task(stop)
 docker_compose_development_ns.add_task(run)
+docker_compose_development_ns.add_task(run_as_root)
 docker_compose_development_ns.add_task(logs)
 
 
