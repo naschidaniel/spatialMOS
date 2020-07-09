@@ -135,25 +135,25 @@ The required shapefiles are prepared for further processing with the help of the
 Based on the pre processed data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. 
 
 ```
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "tmp_2m" False
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "rh_2m" False
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "wind_10m" False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model tmp_2m False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model rh_2m False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model wind_10m False
 ```
 
 #### Create daily climatologies for post processing of GEFS forecasts
 
 ##### climatologies for GEFS Reforcasts
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "tmp_2m" 192 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "rh_2m" 192 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "wind_10m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp mp_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp rh_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp wind_10m 192 195
 ```
 
 ##### climatologies for Observations
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "tmp_2m" 192 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "rh_2m" 192 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "wind_10m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs tmp_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs rh_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs wind_10m 192 195
 ```
 
 
