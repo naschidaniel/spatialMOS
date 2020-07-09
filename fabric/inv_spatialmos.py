@@ -105,10 +105,10 @@ def r_spatialmos__gam_init_shapefiles(c):
     inv_logging.success(r_spatialmos__gam_init_shapefiles.__name__)
 
 @task
-def r_spatialmos__gamlss_crch_model(c):
+def r_spatialmos__gamlss_crch_model(c, parameter, validation):
     """Create the required spatial climatologies."""
     inv_logging.task(r_spatialmos__gamlss_crch_model.__name__)
-    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/gamlss_crch_model.R"]
+    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/gamlss_crch_model.R", "--parameter", parameter, "--validation", validation]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__gamlss_crch_model.__name__)
