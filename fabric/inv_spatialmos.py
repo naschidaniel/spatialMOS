@@ -87,8 +87,17 @@ def py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations(c):
     inv_logging.success(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations.__name__)
 
 @task
+def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
+    """Create climatologies for further processing in R with gamlss."""
+    inv_logging.task(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
+    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
+
+@task
 def r_spatialmos__gam_init_shapefiles(c):
-    """Station Observations and GEFS Reforcasts are combined."""
+    """Create shapefiles for spatialMOS"""
     inv_logging.task(r_spatialmos__gam_init_shapefiles.__name__)
     cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/init_shapefiles.R"]
     cmd = ' '.join(cmd)
@@ -104,6 +113,7 @@ spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
 spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
 spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforcasts)
 spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations)
+spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 spatialmos_development_ns.add_task(r_spatialmos__gam_init_shapefiles)
 
 spatialmos_production_ns = Collection("spatialmos")
