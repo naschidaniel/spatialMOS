@@ -4,7 +4,7 @@ library("optparse")
 # Functions
 check_input <- function(rawinput){
   if (is.null(rawinput)){
-    print("-h Get help | Please enter one day a year for --beginn and --end | -b 140 -e 160")
+    print("-h Get help | Please enter one day a year for --beginn and --end | -b [0, ..., 364] -e [1, ..., 365]")
     quit()
   }else if (rawinput > 0 & rawinput <= 365){
     yday <- rawinput
@@ -37,7 +37,7 @@ opt <- parse_args(opt_parser);
 print("optparse Entries:")
 print("---------------------------------------")
 if (is.null(opt$parameter)){
-  print("-h Get help | Enter an option for --parameter | -p tmp_2m or rh_2m or wind_10m")
+  print("-h Get help | Enter an option for --parameter | -p ['tmp_2m', 'rh_2m', 'wind_10m']")
   quit()
 }else if (opt$parameter == 'tmp_2m' | opt$parameter == 'rh_2m' | opt$parameter == 'wind_10m'){
   parameter <- opt$parameter
@@ -49,7 +49,7 @@ if (is.null(opt$parameter)){
 
 if (required_gamlss_model_inputs){
   if (is.null(opt$validation)){
-    print("-h Get help | Enter an option for --validation | -v True or False")
+    print("-h Get help | Enter an option for --validation | -v [True, False]")
     quit()
   }else if (!is.na(opt$validation)){
     validation <- opt$validation
@@ -61,7 +61,7 @@ if (required_gamlss_model_inputs){
 
   if (validation == TRUE){
     if (is.null(opt$kfold)){
-      print("-h Get help | Enter an option for --kfold | -c [Integer 1 bis 10]")
+      print("-h Get help | Enter an option for --kfold | -c [1, ..., 10]")
       quit()
     }else if (opt$kfold > 0 & opt$kfold <= 10){
       kfold <- opt$kfold
@@ -73,12 +73,15 @@ if (required_gamlss_model_inputs){
   }
 }
 
-
 if (required_gamlss_model_inputs){
   daybegin <- check_input(opt$beginn)
   print(paste0("--beginn: ", daybegin))
   dayend <- check_input(opt$end)
   print(paste0("--end: ", dayend))
+  
+  if ((dayend - dayend) < 1) {
+    print("Please check your entered --beginn and --end options.")
+    quit()
+  }
 }
-
 print("---------------------------------------")
