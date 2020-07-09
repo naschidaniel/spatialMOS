@@ -1,5 +1,5 @@
 rm(list = ls())
-setwd('~/spatialMOS/')
+setwd('/usr/src/app/')
 start_time = Sys.time()
 
 library(feather)
@@ -21,8 +21,8 @@ source("./r_spatialmos/spatial_climatologies_optparser.R")
 dayseq <- seq(daybegin,dayend,by=1)
 source("./r_spatialmos/gam_crch_model.R.conf")
 
-folder <- 'climate_samos_nwp'
-spatial_alt_area_df <- read_feather('./data/DGM/SPATIAL_ALT_area_df.feather')
+folder <- "climate_samos_nwp"
+spatial_alt_area_df <- read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
 
 climate_nwp_files = list.files(path = paste0("./data/spatialmos_climatology/gam/", parameter, "/climate_nwp/"), pattern=".csv", full.names = TRUE, recursive = FALSE)
 
@@ -46,7 +46,7 @@ for (i in 1:length(climate_nwp_files)){
     filename_feather <- paste0(data_path_climatologies, "/yday_", daystring, "_dayminute_", as.character(unique(climate$dayminute)), "_step_", stepstr, ".feather")
     print(filename_feather)
     if (!file.exists(filename_feather)){
-      predict_climate_day_df <- data.frame(yday = yday, dayminute=dayminute, alt = spatial_alt_area_df['alt'], lon= spatial_alt_area_df['lon'], lat=spatial_alt_area_df['lat'])
+      predict_climate_day_df <- data.frame(yday = yday, dayminute=dayminute, alt = spatial_alt_area_df["alt"], lon= spatial_alt_area_df["lon"], lat=spatial_alt_area_df["lat"])
       predict_climate_day_df_na_omit <- na.omit(predict_climate_day_df)
 
       mean_fit = predict(gam_nwp_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response")

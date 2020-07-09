@@ -73,7 +73,7 @@ if (required_gamlss_model_inputs){
   }
 }
 
-if (required_gamlss_model_inputs){
+if (required_climatologies_model_inputs){
   daybegin <- check_input(opt$beginn)
   print(paste0("--beginn: ", daybegin))
   dayend <- check_input(opt$end)
