@@ -104,6 +104,33 @@ def r_spatialmos__gam_init_shapefiles(c):
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__gam_init_shapefiles.__name__)
 
+@task
+def r_spatialmos__gamlss_crch_model(c):
+    """Create the required spatial climatologies."""
+    inv_logging.task(r_spatialmos__gamlss_crch_model.__name__)
+    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/gamlss_crch_model.R"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(r_spatialmos__gamlss_crch_model.__name__)
+
+@task
+def r_spatialmos__spatial_climatologies_nwp(c, parameter, beginn, end):
+    """Create daily climatologies."""
+    inv_logging.task(r_spatialmos__spatial_climatologies_nwp.__name__)
+    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/spatial_climatologies_nwp.R", "--parameter", parameter, "--beginn", beginn, "--end", end]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(r_spatialmos__spatial_climatologies_nwp.__name__)
+
+@task
+def r_spatialmos__spatial_climatologies_obs(c, parameter, beginn, end):
+    """Create daily climatologies."""
+    inv_logging.task(r_spatialmos__spatial_climatologies_obs.__name__)
+    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/spatial_climatologies_obs.R", "--parameter", parameter, "--beginn", beginn, "--end", end]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
+
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
 spatialmos_development_ns.add_task(py_spatialmos__get_gefs)
@@ -115,6 +142,10 @@ spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforcasts)
 spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 spatialmos_development_ns.add_task(r_spatialmos__gam_init_shapefiles)
+spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
+spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)
+spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_obs)
+
 
 spatialmos_production_ns = Collection("spatialmos")
 spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
