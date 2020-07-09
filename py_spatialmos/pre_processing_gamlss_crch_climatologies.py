@@ -66,8 +66,6 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     df["alt"] = df["alt"].astype(int)
     df_reforcasts["alt"] = df_reforcasts["alt"].astype(int)
     
-    print(df_reforcasts)
-    print(df)
     # Merge Dataframe von Messungen und Gribfiles
     df = pd.merge(df, df_reforcasts, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
     df[["datum", "analDate", "validDate", "station"]] = df[["datum", "analDate", "validDate", "station"]].astype(str)  # .astype("|S")
@@ -78,8 +76,8 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     stepstr = df["step"][0]
     df = df[["yday", "kfold", "dayminute", "alt", "lon", "lat", station_parameter, "mean", "log_spread"]]
     df.columns = ["yday", "kfold", "dayminute", "alt", "lon", "lat", "obs", "mean", "log_spread"]
-    df.to_csv(f"./data/spatialmos_climatology/gam/{parameter}/klima_nwp/{parameter}_{stepstr:03d}.csv", sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logging.info(f"Thread mit Step {stepstr:03d} fertiggestellt")
+    df.to_csv(f"./data/spatialmos_climatology/gam/{parameter}/climate_nwp/{parameter}_{stepstr:03d}.csv", sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+    logging.info(f"Finished Thread for Step {stepstr:03d}")
     return df
 
 def create_gamlss_climatologies(parameter):
@@ -102,8 +100,8 @@ def create_gamlss_climatologies(parameter):
         os.mkdir("./data/spatialmos_climatology/gam")
     if not os.path.exists("./data/spatialmos_climatology/gam/{}".format(parameter)):
         os.mkdir("./data/spatialmos_climatology/gam/{}".format(parameter))
-    if not os.path.exists("./data/spatialmos_climatology/gam/{}/klima_nwp".format(parameter)):
-        os.mkdir("./data/spatialmos_climatology/gam/{}/klima_nwp".format(parameter))
+    if not os.path.exists("./data/spatialmos_climatology/gam/{}/climate_nwp".format(parameter)):
+        os.mkdir("./data/spatialmos_climatology/gam/{}/climate_nwp".format(parameter))
 
     # Read in interpolated reforcast
     csvfiles = scandir.scandir(data_path_csvfiles, parameter)
