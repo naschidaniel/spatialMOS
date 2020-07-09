@@ -30,4 +30,8 @@ RUN R -e "install.packages(c('gamlss.cens'), repos='http://cran.rstudio.com/')"
 
 RUN R -e "install.packages(c('gamlss.spatial'), repos='http://cran.rstudio.com/')"
 
+RUN R -e "install.packages(c('foreach'), repos='http://cran.rstudio.com/')"
+
+RUN R -e "install.packages(c('doParallel'), repos='http://cran.rstudio.com/')"
+
 WORKDIR /usr/src/app
