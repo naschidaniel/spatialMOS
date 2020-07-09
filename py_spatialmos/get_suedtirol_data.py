@@ -118,8 +118,7 @@ def fetch_suedirol_data(beginndate, enddate):
                             os.remove(tmp_data_file)
 
                             new_df = pd.json_normalize(data_stations_value)
-                            new_df.columns = ["obstime",
-                                              rename_sensor_name(sensor)]
+                            new_df.columns = ["obstime", rename_sensor_name(sensor)]
                             new_df = new_df.set_index("obstime")
 
                             if df is None:
@@ -128,11 +127,9 @@ def fetch_suedirol_data(beginndate, enddate):
                             else:
                                 df = df.join(new_df)
                         else:
-                            logging.error(
-                                "The template file was not created correctly. URL: %s", url_values)
+                            logging.error("The template file was not created correctly. URL: %s", url_values)
                     else:
-                        logging.info(
-                            "The values could not be downloaded. URL: %s", url_values)
+                        logging.info("The values could not be downloaded. URL: %s", url_values)
 
                 if df is None:
                     tqdm.write(
@@ -149,10 +146,8 @@ def fetch_suedirol_data(beginndate, enddate):
                         df.index[0], tzinfos=tzinfos)
                     end_date_df = datetime.strftime(end_date_df, "%Y-%m-%d")
 
-                    df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df,
-                                                            str(row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
-                    logging.info(
-                        "The data of the station %s for the time range from %s to %s has been saved successfully.", row["station"], start_date_df, end_date_df)
+                    df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df, str(row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
+                    logging.info("The data of the station %s for the time range from %s to %s has been saved successfully.", row["station"], start_date_df, end_date_df)
                 pbar.update(1)
     else:
         logging.error(
