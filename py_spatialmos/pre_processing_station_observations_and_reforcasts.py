@@ -68,7 +68,7 @@ def two_element_dict_from_pd_series(data_key, data_value):
     return dict(zip(data_key, data_value))
 
 
-def spatialmos_dataframe(starttime):
+def spatialmos_dataframe():
     """A function to generate a dataframe of station observations and station predictions for further statistical processing."""
     stations_wetter_at = pd.read_csv("./data/get_available_data/wetter_at/stations.csv", delimiter=",", header=0)
     stations_wetter_at = stations_wetter_at.drop(["lon_winkelmin", "lat_winkelmin"], axis=1)
@@ -156,14 +156,11 @@ def spatialmos_dataframe(starttime):
     h5filename = "./data/spatialmos_climatology/station_observations_and_reforcasts.h5"
     df.to_hdf(h5filename, "table", append=False, complevel=9, complib="zlib")
     logging.info("The data was saved in the h5 format under %s", h5filename)
-    csvfilename = "./data/spatialmos_climatology/station_observations_and_reforcasts.csv"
-    df.to_csv(csvfilename, sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logging.info("The data was saved in the csv format under %s", csvfilename)
 
 
 
 # Main
 if __name__ == "__main__":
     starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    spatialmos_dataframe(starttime)
+    spatialmos_dataframe()
     logger_module.end_logging(starttime)
