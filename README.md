@@ -24,6 +24,7 @@ spatialMOSv2 is operated in docker containers. The docker containers and the dep
 ./task.py local.docker-compose.rebuild
 ```
 
+
 ## Usage
 
 A list for spatialMOSv2 implemented invoke commands: 
@@ -32,9 +33,11 @@ A list for spatialMOSv2 implemented invoke commands:
 ./task.py
 ```
 
+
 ### Data basis
 
 For the calculation of weather forecasts, past values of at least two years are required.
+
 
 #### Meteorological station values
 Past measured values are obtained via the API interfaces of [http://wetter.provinz.bz.it/](http://wetter.provinz.bz.it/) and [http://at-wetter.tk/](http://at-wetter.tk/). The station file for further processing is loaded from the moses.tirol page.
@@ -73,7 +76,10 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ./task.py local.spatialmos.py-spatialmos--get-gefs "--date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr spr"
 ```
 
+
+
 ### Raw data pre processing for further statistical processing
+
 
 #### Bilinear interpolation of GEFS Weather Reforcasts to station locations
 
@@ -95,21 +101,61 @@ The data for relative humidity and wind are calculated from other parameters. Th
 ./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts "wind_10m" #Required parameters: ugrd_10m, vgrd_10m
 ```
 
+
 #### Combination of GEFS Reforcasts and Station Observations
 
-For further statistical processing a data set with all station observations and forecasts of the past years is required. 
+For further statistical processing a data set with all station observations and forecasts of the past years is required. In this file all observations for all parameters and predictions are combined.
 
 ```
-./task.py local.spatialmos.py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-observations-and-reforcasts-to-stations
 ```
 
-### Climatologies for the daily calculation of forecasts
-
-Based on the pre processed data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. For the topography the GADM topography of North and South Tyrol is used. The data must first be obtained from their website [GADM](https://gadm.org/) and stored in folder *TODO*. The required daily climatologies are created with the statistics software R.
+The observations and the GEFS Reforcasts still need to be pre-processed. The observations and the GEFS Reforcasts will be combined. From these files the area-wide valid climatologies are generated.
 
 ```
-./task.py *TODO*
+./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies "tmp_2m"
+./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies "rh_2m"
+./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies "wind_10m"
+./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies "apcp_sfc"
 ```
+
+### Statistical processing for spatial of the spatially valid climatologies
+
+#### Digital Ground Model and National Shapefiles
+
+The required shapefiles are prepared for further processing with the help of the libraries rgdal and raster. For the topography the GADM topography of North and South Tyrol is used. The will be downloaded from the website [GADM](https://gadm.org/) and stored in folder `./data/get_available_data/gadm`. 
+
+```
+./task.py local.spatialmos.r-spatialmos--gam-init-shapefiles
+```
+
+
+#### Climatologies for the daily calculation of forecasts
+
+Based on the pre processed data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. 
+
+```
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "tmp_2m" False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "rh_2m" False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model "wind_10m" False
+```
+
+#### Create daily climatologies for post processing of GEFS forecasts
+
+##### climatologies for GEFS Reforcasts
+```
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "tmp_2m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "rh_2m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp "wind_10m" 192 195
+```
+
+##### climatologies for Observations
+```
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "tmp_2m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "rh_2m" 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs "wind_10m" 192 195
+```
+
 
 ### Statistically corrected weather forecasts
 
@@ -119,10 +165,10 @@ The current forecasts and the climatologies created are used to produce correcte
 ./task.py *TODO*
 ```
 
-The calculated predictions are available in the exchange folder spool. A provision of the data is done via the framework python django.
+The calculated predictions are available in the exchange folder `./data/spool`. The presentation of the data is made with the help of django. 
+
 
 ### Archive downloaded files
-
 
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
@@ -161,7 +207,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-07-08 create Shapefiles with R
+- 2020-07-09 create climatologies for gamlss
+- 2020-07-08 download Shapefiles with R
 - 2020-07-07 adding R Container to project 
 - 2020-07-03 Restructuring of the Docker containers, volumes and python script folder
 - 2020-06-23 added https certificates via Let´s Encrypt to nginx configuration
