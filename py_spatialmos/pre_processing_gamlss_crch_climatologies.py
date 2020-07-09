@@ -36,38 +36,40 @@ def kfold(date, k):
 
 def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     """"Multithreading worker function to create the climatologies."""
-    df_grib = None
+    df_reforcasts = None
     for file in csvfiles_sorted:
-        df_grib_new = pd.read_csv(file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
-        if df_grib is None:
-            df_grib = df_grib_new
+        df_reforcasts_new = pd.read_csv(file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
+        if df_reforcasts is None:
+            df_reforcasts = df_reforcasts_new
         else:
-            df_grib = df_grib.append(df_grib_new)
+            df_reforcasts = df_reforcasts.append(df_reforcasts_new)
 
     try:
-        obstime_grib_no_tz = df_grib["validDate"].apply(
+        obstime_grib_no_tz = df_reforcasts["validDate"].apply(
             lambda x: dateutil.parser.parse(x))  # obstimeformat is str("%Y-%m-%d %H:%M") no timezoneinfo
     except TypeError:
-        logging.error("df_grib: {} | parameter: {} | Datum: {}".format(df_grib, parameter, df["datum"]))
+        logging.error("df_reforcasts: {} | parameter: {} | Datum: {}".format(df_reforcasts, parameter, df["datum"]))
 
-    # Typenumwanldung für GAMLSS
-    df_grib["utctimestamp"] = obstime_grib_no_tz.dt.tz_localize("UTC", ambiguous="NaT")
-    df_grib.insert(0, "datum", df_grib["utctimestamp"].dt.strftime("%Y-%m-%d"))
-    df_grib.insert(1, "yday", df_grib["utctimestamp"].dt.dayofyear)
-    df_grib.insert(2, "hour", df_grib["utctimestamp"].dt.hour)
-    df_grib.insert(3, "minute", df_grib["utctimestamp"].dt.minute)
-    df_grib.insert(4, "dayminute", df_grib["utctimestamp"].dt.hour * 60 + df_grib["utctimestamp"].dt.minute)
+    # Datatable preperations for GAMLSS
+    df_reforcasts["utctimestamp"] = obstime_grib_no_tz.dt.tz_localize("UTC", ambiguous="NaT")
+    df_reforcasts.insert(0, "datum", df_reforcasts["utctimestamp"].dt.strftime("%Y-%m-%d"))
+    df_reforcasts.insert(1, "yday", df_reforcasts["utctimestamp"].dt.dayofyear)
+    df_reforcasts.insert(2, "hour", df_reforcasts["utctimestamp"].dt.hour)
+    df_reforcasts.insert(3, "minute", df_reforcasts["utctimestamp"].dt.minute)
+    df_reforcasts.insert(4, "dayminute", df_reforcasts["utctimestamp"].dt.hour * 60 + df_reforcasts["utctimestamp"].dt.minute)
 
-    # Umwandlung in log(spread) wichtig, damit nur postive Werte simuliert werden
-    log_spread_col = [log_spread(s) for s in df_grib["spread"]]
-    df_grib.insert(15, "log_spread", log_spread_col)
+    # conversion to log(spread) important, so that only positive values are simulated
+    log_spread_col = [log_spread(s) for s in df_reforcasts["spread"]]
+    df_reforcasts.insert(15, "log_spread", log_spread_col)
 
-    # TODO Typenumwandlung unnötig machen :)
+    # TODO make type conversion unnecessary
     df["alt"] = df["alt"].astype(int)
-    df_grib["alt"] = df_grib["alt"].astype(int)
-
+    df_reforcasts["alt"] = df_reforcasts["alt"].astype(int)
+    
+    print(df_reforcasts)
+    print(df)
     # Merge Dataframe von Messungen und Gribfiles
-    df = pd.merge(df, df_grib, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
+    df = pd.merge(df, df_reforcasts, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
     df[["datum", "analDate", "validDate", "station"]] = df[["datum", "analDate", "validDate", "station"]].astype(str)  # .astype("|S")
     df[["alt", "step", "yday", "hour", "minute", "dayminute"]] = df[["alt", "step", "yday", "hour", "minute", "dayminute"]].astype(int)
     df[["lon", "lat", station_parameter, "mean", "log_spread"]] = df[["lon", "lat", station_parameter, "mean", "log_spread"]].astype(float)
@@ -76,8 +78,8 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     stepstr = df["step"][0]
     df = df[["yday", "kfold", "dayminute", "alt", "lon", "lat", station_parameter, "mean", "log_spread"]]
     df.columns = ["yday", "kfold", "dayminute", "alt", "lon", "lat", "obs", "mean", "log_spread"]
-    df.to_csv("./data/spatialmos_climatology/gam/{}/klima_nwp/{}_{:03d}.csv".format(parameter, parameter, stepstr), sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logging.info("Thread mit Step {:03d} fertiggestellt".format(stepstr))
+    df.to_csv(f"./data/spatialmos_climatology/gam/{parameter}/klima_nwp/{parameter}_{stepstr:03d}.csv", sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+    logging.info(f"Thread mit Step {stepstr:03d} fertiggestellt")
     return df
 
 def create_gamlss_climatologies(parameter):
@@ -95,7 +97,7 @@ def create_gamlss_climatologies(parameter):
     elif parameter == "wind_10m":
         station_parameter = "wg"
 
-    # Erstellung Ordner für Klimatologien
+    # Provide folder structure
     if not os.path.exists("./data/spatialmos_climatology/gam"):
         os.mkdir("./data/spatialmos_climatology/gam")
     if not os.path.exists("./data/spatialmos_climatology/gam/{}".format(parameter)):
@@ -128,9 +130,9 @@ def create_gamlss_climatologies(parameter):
     df = df.dropna(axis=0).reset_index(drop=True)
 
     # Prepare the dataset for cross-validation
-    datum_series = df_h5["datum"].drop_duplicates(keep="first")
-    datum_series = datum_series.to_list()
-    kfold_dictonary = kfold(datum_series, k=10)
+    date_series = df_h5["datum"].drop_duplicates(keep="first")
+    date_series = date_series.to_list()
+    kfold_dictonary = kfold(date_series, k=10)
     kfold_entry = [int(kfold_dictonary[r]) for r in df["datum"]]
     df.insert(1, "kfold", kfold_entry)
 
