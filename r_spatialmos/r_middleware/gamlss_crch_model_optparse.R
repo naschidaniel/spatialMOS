@@ -18,13 +18,22 @@ check_input <- function(rawinput){
 
 
 # Main
+if (required_gamlss_model_inputs) {
+required_climatologies_model_inputs <- FALSE
+}
+
+if (required_climatologies_model_inputs) {
+required_gamlss_model_inputs <- FALSE
+}
+
+
 option_list <- list(
-  make_option(c("-p", "--parm"), type="character", default=NULL, 
+  make_option(c("-p", "--parameter"), type="character", default=NULL, 
               help="Ein Parameter | tmp_2m oder rh_2m", metavar="character"),
   make_option(c("-b", "--beginn"), type="integer", default=NULL, 
               help="Ein Tag im Jahr | <interger>", metavar="integer"),
   make_option(c("-e", "--end"), type="integer", default=NULL, 
-              help="Ein Tag im Jahr | <interger>", metavar="integer")
+              help="Ein Tag im Jahr | <interger>", metavar="integer"),
   make_option(c("-v", "--validation"), type="logical", default=NULL, 
               help="TRUE oder FALSE", metavar="character"),
   make_option(c("-k", "--kfold"), type="integer", default=NULL, 
