@@ -1,4 +1,3 @@
-# A Programm to create climatetologies fuer die weitere bearbeitung
 rm(list = ls())
 setwd('/usr/src/app/')
 start_time = Sys.time()
@@ -10,23 +9,25 @@ library(gamlss.add)
 library(gamlss.cens)
 library(gamlss.spatial)
 library(raster)
-source("./r_spatialmos/functions.R")
+source("./r_spatialmos/r_middleware/functions.R")
 
 # Parse Inputs
 required_climatologies_model_inputs <- TRUE
-source("./r_spatialmos/spatial_climatologies_optparser.R")
+required_gamlss_model_inputs <- FALSE
+source("./r_spatialmos/r_middleware/gamlss_crch_model_optparse.R")
 
 
 # Main
 # Predict the Modellclimatetologie
 dayseq <- seq(daybegin,dayend,by=1)
-source("./r_spatialmos/gam_crch_model.R.conf")
+source("./r_spatialmos/gamlss_crch_model.R.conf")
+
 
 folder <- "climate_samos"
 spatial_alt_area_df <- read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
 
-climate <- read.csv(file=paste0("./data/GAM/", parameter, "/", parameter, "_alle_stationswerte.csv"), sep=";", header = TRUE)
-load(paste0("./data/GAM/", parameter, "/gam_", parameter, "_alle_stationswerte.RData"))
+climate <- read.csv(file=paste0("./data/spatialmos_climatology/gam/", parameter, "/", parameter, "_station_observations.csv"), sep=";", header = TRUE)
+load(paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforcasts.RData"))
 
 #TODO Check Dayminutes
 dayminutes <- sort(unique(climate$dayminute))
