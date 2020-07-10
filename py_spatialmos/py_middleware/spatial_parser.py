@@ -8,13 +8,13 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(avgspr=False, name_avgspr="", beginn=False, beginndate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
+def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
     parser.add_argument("--avgspr", dest="avgspr", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
-    parser.add_argument("--beginn", dest="beginn", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
-    parser.add_argument("--beginndate", dest="beginndate", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
-    parser.add_argument("--date", dest="date", help="Enter the beginndate in the format YYYY-MM-DD.", default="", type=str)
+    parser.add_argument("--begin", dest="begin", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
+    parser.add_argument("--begindate", dest="begindate", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
+    parser.add_argument("--date", dest="date", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--end", dest="end", help="Enter a number for one day in the calendar year: e.g. 1", default=365, type=int)
     parser.add_argument("--enddate", dest="enddate", help="Enter the enddate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
@@ -35,28 +35,28 @@ def spatial_parser(avgspr=False, name_avgspr="", beginn=False, beginndate=False,
     else:
         avgspr = None
 
-    if beginn is True:
-        if isinstance(options.beginn, str):
-            beginn = options.beginn
-            logging.info("PARSER | {:>20} | {}".format("--beginn", enddate))
+    if begin is True:
+        if isinstance(options.begin, str):
+            begin = options.begin
+            logging.info("PARSER | {:>20} | {}".format("--begin", enddate))
         else:
             logging.error("PARSER | {:>20} | {}".format(
-                "--beginn", options.beginn))
+                "--begin", options.begin))
             sys.exit(1)
     else:
-        beginn = None
+        begin = None
 
-    if beginndate is True:
+    if begindate is True:
         try:
-            beginndate = datetime.strptime(options.beginndate, "%Y-%m-%d")
-            beginndate = datetime.strftime(beginndate, "%Y%m%d")
-            logging.info("PARSER | {:>20} | {}".format("--beginndate", beginndate))
+            begindate = datetime.strptime(options.begindate, "%Y-%m-%d")
+            begindate = datetime.strftime(begindate, "%Y%m%d")
+            logging.info("PARSER | {:>20} | {}".format("--begindate", begindate))
         except ValueError:
             logging.error("PARSER | {:>20} | {}".format(
-                "--beginndate", options.beginndate))
-            raise ValueError("The beginndate is not entered in the correct format: YYYY-MM-DD")
+                "--begindate", options.begindate))
+            raise ValueError("The begindate is not entered in the correct format: YYYY-MM-DD")
     else:
-        beginndate = None
+        begindate = None
 
     if date is True:
         try:
@@ -142,8 +142,8 @@ def spatial_parser(avgspr=False, name_avgspr="", beginn=False, beginndate=False,
         runhour = None
 
     parser_dict = {"avgspr": avgspr,
-                   "beginn": beginn,
-                   "beginndate": beginndate,
+                   "begin": begin,
+                   "begindate": begindate,
                    "date": date,
                    "end": end,
                    "enddate": enddate,

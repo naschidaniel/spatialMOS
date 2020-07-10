@@ -15,7 +15,7 @@ from py_middleware import logger_module
 
 
 # Functions
-def fetch_wetter_at_data(beginndate, enddate):
+def fetch_wetter_at_data(begindate, enddate):
     """This function loads data from the API interface of at-wetter.tk website and saves it as csv files."""
     # Provide folder structure.
     data_path = "./data/get_available_data/wetter_at"
@@ -47,17 +47,17 @@ def fetch_wetter_at_data(beginndate, enddate):
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
 
-    # beginndateformat, enddateformat and timedelta for URL
-    startdate_time = datetime.strptime(beginndate, "%Y%m%d")
+    # begindateformat, enddateformat and timedelta for URL
+    startdate_time = datetime.strptime(begindate, "%Y%m%d")
     enddate_time = datetime.strptime(enddate, "%Y%m%d")
     timedelta_time = enddate_time - startdate_time
     timedelta = timedelta_time.days
 
     # Fetch data from API
-    with tqdm(total=stationinfo_all.shape[0], desc=f"Data download from API of the weather service at-wetter.tk | {beginndate} to {enddate} | |", leave=False) as pbar:
+    with tqdm(total=stationinfo_all.shape[0], desc=f"Data download from API of the weather service at-wetter.tk | {begindate} to {enddate} | |", leave=False) as pbar:
         for index, stationinfo in stationinfo_all.iterrows():
             time.sleep(10)
-            csvfile = f"{data_path}/{beginndate}_{enddate}_{stationinfo['station']}.csv"
+            csvfile = f"{data_path}/{begindate}_{enddate}_{stationinfo['station']}.csv"
             if not os.path.exists(csvfile):
                 df = None
                 # Loop over parameters
@@ -65,11 +65,11 @@ def fetch_wetter_at_data(beginndate, enddate):
                     df = download_data_wetter_at(
                         data_path, stationinfo["station"], enddate, timedelta, parameter=p, df=df)
                 pbar.set_description(
-                    f"Download {stationinfo['station']} | from {beginndate} to {enddate} | ", refresh=False)
+                    f"Download {stationinfo['station']} | from {begindate} to {enddate} | ", refresh=False)
                 df.to_csv(csvfile, sep=";", index=False,
                           quoting=csv.QUOTE_MINIMAL)
                 logging.info(
-                    "The data of for the station %s from %s to %s has been saved in the file %s.", stationinfo["station"], enddate, beginndate, csvfile)
+                    "The data of for the station %s from %s to %s has been saved in the file %s.", stationinfo["station"], enddate, begindate, csvfile)
             else:
                 tqdm.write(
                     f"The data has already been saved in the file {csvfile}.")
@@ -78,9 +78,9 @@ def fetch_wetter_at_data(beginndate, enddate):
             pbar.update(1)
 
 
-def download_data_wetter_at(data_path, station, beginndate, timeseries, parameter, df):
+def download_data_wetter_at(data_path, station, begindate, timeseries, parameter, df):
     """This function downloads data from the API interface and returns it as a panda dataframe."""
-    url_parameter = f"http://at-wetter.tk/api/v1/station/{station}/{parameter}/{beginndate}/{timeseries}"
+    url_parameter = f"http://at-wetter.tk/api/v1/station/{station}/{parameter}/{begindate}/{timeseries}"
     req_parameter = requests.get(url_parameter)
 
     if req_parameter.status_code == 200:
@@ -121,6 +121,6 @@ def download_data_wetter_at(data_path, station, beginndate, timeseries, paramete
 # Main
 if __name__ == "__main__":
     starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
-    fetch_wetter_at_data(parser_dict["beginndate"], parser_dict["enddate"])
+    parser_dict = spatial_parser.spatial_parser(begindate=True, enddate=True)
+    fetch_wetter_at_data(parser_dict["begindate"], parser_dict["enddate"])
     logger_module.end_logging(starttime)

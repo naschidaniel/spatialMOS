@@ -27,7 +27,7 @@ def rename_sensor_name(parameter):
     return name
 
 
-def fetch_suedirol_data(beginndate, enddate):
+def fetch_suedtirol_data(begindate, enddate):
     """The function is used to load data from the South Tyrolean weather service. The data is stored as a csv file."""
     # Provide folder structure.
     data_path = "./data/get_available_data/suedtirol"
@@ -98,13 +98,13 @@ def fetch_suedirol_data(beginndate, enddate):
             result[key] = value
         station_sensor_dict = result
 
-        with tqdm(total=station_data.shape[0], desc=f"Data download from API of the weather service Province of Bolzano. | {beginndate} to {enddate} |", leave=False) as pbar:
+        with tqdm(total=station_data.shape[0], desc=f"Data download from API of the weather service Province of Bolzano. | {begindate} to {enddate} |", leave=False) as pbar:
             for index, row in station_data.iterrows():
                 df = None
                 for sensor in station_sensor_dict[str(row["station"])]:
                     url_values = "http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={}&output_format=JSON&" \
                         "sensor_code={}&date_from={}0000&date_to={}0000".format(
-                            str(row["station"]), str(sensor), beginndate, enddate)
+                            str(row["station"]), str(sensor), begindate, enddate)
                     req_values = requests.get(url_values)
 
                     if req_values.status_code == 200:
@@ -133,7 +133,7 @@ def fetch_suedirol_data(beginndate, enddate):
 
                 if df is None:
                     tqdm.write(
-                        f"No data for the date range {beginndate} to {enddate} are available for station {str(row['station'])}.")
+                        f"No data for the date range {begindate} to {enddate} are available for station {str(row['station'])}.")
                 else:
                     tzinfos = {"CET": dateutil.tz.gettz(
                         "Europe/Vienna"), "CEST": dateutil.tz.gettz("Europe/Vienna")}
@@ -157,6 +157,6 @@ def fetch_suedirol_data(beginndate, enddate):
 # Main
 if __name__ == "__main__":
     starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(beginndate=True, enddate=True)
-    fetch_suedirol_data(parser_dict["beginndate"], parser_dict["enddate"])
+    parser_dict = spatial_parser.spatial_parser(begindate=True, enddate=True)
+    fetch_suedtirol_data(parser_dict["begindate"], parser_dict["enddate"])
     logger_module.end_logging(starttime)

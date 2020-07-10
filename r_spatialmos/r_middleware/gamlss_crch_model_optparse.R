@@ -4,7 +4,7 @@ library("optparse")
 # Functions
 check_input <- function(rawinput){
   if (is.null(rawinput)){
-    print("-h Get help | Please enter one day a year for --beginn and --end | -b [0, ..., 364] -e [1, ..., 365]")
+    print("-h Get help | Please enter one day a year for --begin and --end | -b [0, ..., 364] -e [1, ..., 365]")
     quit()
   }else if (rawinput > 0 & rawinput <= 365){
     yday <- rawinput
@@ -16,12 +16,9 @@ check_input <- function(rawinput){
 }
 
 
-
-# Main
-if (required_gamlss_model_inputs) {
+if (required_gamlss_model_inputs && !required_climatologies_model_inputs) {
 required_climatologies_model_inputs <- FALSE
 }
-
 if (required_climatologies_model_inputs) {
 required_gamlss_model_inputs <- FALSE
 }
@@ -30,7 +27,7 @@ required_gamlss_model_inputs <- FALSE
 option_list <- list(
   make_option(c("-p", "--parameter"), type="character", default=NULL, 
               help="Ein Parameter | tmp_2m oder rh_2m", metavar="character"),
-  make_option(c("-b", "--beginn"), type="integer", default=NULL, 
+  make_option(c("-b", "--begin"), type="integer", default=NULL, 
               help="Ein Tag im Jahr | <interger>", metavar="integer"),
   make_option(c("-e", "--end"), type="integer", default=NULL, 
               help="Ein Tag im Jahr | <interger>", metavar="integer"),
@@ -56,7 +53,7 @@ if (is.null(opt$parameter)){
   quit()
 }
 
-if (required_gamlss_model_inputs){
+if (isTRUE(required_gamlss_model_inputs)){
   if (is.null(opt$validation)){
     print("-h Get help | Enter an option for --validation | -v [True, False]")
     quit()
@@ -82,14 +79,14 @@ if (required_gamlss_model_inputs){
   }
 }
 
-if (required_climatologies_model_inputs){
-  daybegin <- check_input(opt$beginn)
-  print(paste0("--beginn: ", daybegin))
+if (isTRUE(required_climatologies_model_inputs)){
+  daybegin <- check_input(opt$begin)
+  print(paste0("--begin: ", daybegin))
   dayend <- check_input(opt$end)
   print(paste0("--end: ", dayend))
   
-  if ((dayend - dayend) < 1) {
-    print("Please check your entered --beginn and --end options.")
+  if ((dayend - daybegin) < 1) {
+    print("Please check your entered --begin and --end options.")
     quit()
   }
 }
