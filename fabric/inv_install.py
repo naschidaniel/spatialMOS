@@ -40,18 +40,18 @@ def check_upstream(c):
         
 @task
 def quickinstallation(c):
-    """A task for quick installation of spatialMOS and start of a development server"""
+    """A task for quick installation of spatialMOS"""
     inv_logging.task(quickinstallation.__name__)
     folders(c)
     setenvironment(c, "development")
     inv_docker.rebuild(c)
-    inv_node.npm(c, "install")
-    inv_django.migrate(c)
-    inv_django.createsuperuser(c)
-    inv_django.loadexampledata(c)
-    inv_node.build(c)
-    inv_django.collectstatic(c)
-    inv_docker.serve(c)
+    #inv_node.npm(c, "install")
+    #inv_django.migrate(c)
+    #inv_django.createsuperuser(c)
+    #inv_django.loadexampledata(c)
+    #inv_node.build(c)
+    #inv_django.collectstatic(c)
+    #inv_docker.serve(c)
     inv_logging.success(quickinstallation.__name__)
 
 
