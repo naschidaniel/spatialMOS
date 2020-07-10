@@ -9,41 +9,32 @@
       "./data/archive",
       "./data/get_available_data",
       "./data/get_available_data/gefs_reforcast",
+      "./data/get_available_data/gefs_reforcast/nwp",
+      "./data/spatialmos_climatology",
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
       "./data/postgresdata_backup_server",
       "./data/static",
       "./log/fabric",
-      "./log/get_available_data",
       "./log/nginx",
       "./spool"
     ],
     "docker": {}
   },
-  "test": {
-    "collection": "test",
-    "docker_compose_files": [
-      "./docker-compose.yml",
-      "./docker-compose.test.yml"
-    ],
-    "docker": {
-      "INSTALLFOLDER": "./"
-    }
-  },
   "production": {
     "collection": "production",
     "initFolders": [
+      "./data/.well-known",
       "./data/archive",
       "./data/get_available_data",
-      "./data/get_available_data/gefs_reforcast",
+      "./data/spatialmos_climatology",
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
       "./data/postgresdata_backup_server",
       "./data/static",
       "./log/fabric",
-      "./log/get_available_data",
       "./log/nginx",
       "./spool"
     ],
