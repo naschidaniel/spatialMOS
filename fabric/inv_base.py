@@ -16,7 +16,7 @@ def read_settings(what):
     settings_file = os.path.join(os.path.join(
         os.getcwd(), "settings.json"))
 
-    if what not in ["development", "test", "production"]:
+    if what not in ["development", "production"]:
         logging.error(
             f"No settings could be found in the file {settings_file} for your input: {what}")
         sys.exit(1)
@@ -30,8 +30,6 @@ def read_settings(what):
             f"There is no {settings_file} file available. Edit the settings.example.json file in the {fabric_folder} folder and save it in the main folder.")
         sys.exit(1)
 
-    if what == "test":
-        settings["test"]["docker"]["INSTALLFOLDER"] = os.getcwd()
     return settings[what]
 
 
@@ -49,7 +47,7 @@ def docker_environment(c):
     """The function generates the docker environment variables."""
     settings = read_settings(c.config["collection"])
     docker_environment = settings["docker"]
-    if c.config["collection"] in ["development", "test"]:
+    if c.config["collection"] in ["development"]:
         uid, gid = uid_gid(c)
         docker_environment["USERID"] = f"{uid}"
         docker_environment["GROUPID"] = f"{gid}"
