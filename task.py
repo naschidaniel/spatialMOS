@@ -9,7 +9,6 @@ from fabric import inv_logging
 from fabric import inv_django
 from fabric import inv_node
 from fabric import inv_install
-from fabric import inv_test
 from fabric import inv_rsync
 from fabric import inv_postgres
 from fabric import inv_spatialmos
@@ -33,13 +32,6 @@ local_ns.add_collection(inv_postgres.postgresql_development_ns)
 local_ns.add_collection(inv_spatialmos.spatialmos_development_ns)
 local_ns.add_collection(inv_node.node_ns)
 MAIN_NS.add_collection(local_ns)
-
-# Testing Collection
-test_ns = Collection("test")
-test_ns.configure(inv_base.read_settings("test"))
-test_ns.add_task(inv_test.starttest)
-test_ns.add_task(inv_docker.stop)
-MAIN_NS.add_collection(test_ns)
 
 # Production Collection
 production_ns = Collection("production")
