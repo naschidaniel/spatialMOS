@@ -13,7 +13,7 @@ import pandas as pd
 from py_middleware import logger_module
 from py_middleware import scandir
 from py_middleware import spatial_parser
-from py_middleware import log_spread
+from py_middleware import log_spread_calc
 
 # Functions
 def kfold(date, k):
@@ -51,7 +51,7 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     df_reforecasts.insert(4, "dayminute", df_reforecasts["utctimestamp"].dt.hour * 60 + df_reforecasts["utctimestamp"].dt.minute)
 
     # conversion to log(spread) important, so that only positive values are simulated
-    log_spread_col = [log_spread.log_spread(s) for s in df_reforecasts["spread"]]
+    log_spread_col = [log_spread_calc.log_spread(s) for s in df_reforecasts["spread"]]
     df_reforecasts.insert(15, "log_spread", log_spread_col)
 
     # TODO make type conversion unnecessary
