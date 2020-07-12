@@ -13,17 +13,9 @@ import pandas as pd
 from py_middleware import logger_module
 from py_middleware import scandir
 from py_middleware import spatial_parser
-
+from py_middleware import log_spread
 
 # Functions
-def log_spread(spread):
-    if spread == float(0):
-        log_spread_val = np.log(0.001)
-    else:
-        log_spread_val = np.log(spread)
-    return round(log_spread_val, 3)
-
-
 def kfold(date, k):
     """A function to create a dict for cross-validation based on a date vector."""
     kfold = []
@@ -59,7 +51,7 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     df_reforecasts.insert(4, "dayminute", df_reforecasts["utctimestamp"].dt.hour * 60 + df_reforecasts["utctimestamp"].dt.minute)
 
     # conversion to log(spread) important, so that only positive values are simulated
-    log_spread_col = [log_spread(s) for s in df_reforecasts["spread"]]
+    log_spread_col = [log_spread.log_spread(s) for s in df_reforecasts["spread"]]
     df_reforecasts.insert(15, "log_spread", log_spread_col)
 
     # TODO make type conversion unnecessary
