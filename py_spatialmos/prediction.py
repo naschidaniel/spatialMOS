@@ -122,14 +122,14 @@ def spatial_predictions(parser_dict):
 
         #Korrturen am Mean Wert
         if parser_dict["parameter"] == "tmp_2m":
-            constant_offset = 273.15
+            constant_offset = 0 #273.15
         else:
             constant_offset = 0
         df = []
         for x in lons:
             for y in lats:
                 mean = grb_avg.data(lat1=y, lon1=x)
-                mean = round(mean[0][0][0] / 100 - constant_offset, 2)
+                mean = round(mean[0][0][0] - constant_offset, 2)
                 spread = grb_spr.data(lat1=y, lon1=x)
                 log_spread = log_spread_calc.log_spread(spread[0][0][0])
                 df.append([mean, log_spread, x, y])

@@ -22,14 +22,6 @@ RUN conda init bash
 
 RUN conda install -n spatialmos -c conda-forge --file requirements.txt
 
-RUN conda install -n spatialmos -c conda-forge gdal
-
-RUN conda install -n spatialmos -c conda-forge pygrib
-
-RUN conda install -n spatialmos -c conda-forge pyarrow 
-
-RUN conda install -n spatialmos -c conda-forge requests 
-
 WORKDIR /usr/src/app
 
 RUN echo "source activate spatialmos" > ~/.bashrc

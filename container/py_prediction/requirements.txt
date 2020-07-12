@@ -5,3 +5,6 @@ pyproj
 scipy
 pyarrow
 basemap
+gdal
+pygrib
+requests
