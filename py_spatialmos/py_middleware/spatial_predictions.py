@@ -8,13 +8,14 @@ def nwp_gribfiles_avalibel_steps(parameter, date, available_steps):
     """Eine Funktion zum durchsuchen der zur Verfügung stehenden NWP forecasts
     """
     import os
-    path_nwp_forecasts = f"./data/grib/gfs_forecast/{parameter}/{date}0000/"
+    path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
     
-    def mainfunktion(path_nwp_forecast, avg_spr):
+    def mainfunktion(path_nwp_forecasts, avg_spr):
         nwp_gribfiles_available_steps: List[Union[bytes, str]] = []
         for dirpath, subdirs, files in os.walk(path_nwp_forecasts):
             for file in files:
                 for step in available_steps:
+                    searchstring = None
                     if avg_spr == "mean":
                         searchstring = "_avg_f{:03d}".format(step)
                     elif avg_spr == "spread":
@@ -26,9 +27,9 @@ def nwp_gribfiles_avalibel_steps(parameter, date, available_steps):
                         continue
 
         if nwp_gribfiles_available_steps == []:
-            logging.error("parameter: {:8} | Verfuegabe Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
+            logging.error("parameter: {:8} | available Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
         else:
-            logging.info("parameter: {:8} | Verfuegabe Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
+            logging.info("parameter: {:8} | available Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
 
         return (sorted(nwp_gribfiles_available_steps))
     return mainfunktion(path_nwp_forecasts, "mean"), mainfunktion(path_nwp_forecasts, "spread")
@@ -57,6 +58,7 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     import os
     import matplotlib.pyplot as plt
     import numpy as np
+    import requests
 
     fig = plt.figure(figsize=(15, 15), dpi=96)
 
@@ -113,7 +115,16 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     plt.title("Gültig für {} | Step +{}".format(validDate, step), loc="left")
     plt.title("GFS Lauf {}".format(analDate), loc="right")
     m.colorbar(location="right")
-    m.readshapefile("./data/DGM/gadm36_AUT_shp/gadm36_AUT_0", "aut")
+    
+    gadm36_AUT_shp = "./data/get_available_data/gadm/gadm36_AUT_shp"
+    if not os.path.exists(gadm36_AUT_shp):
+        req_shapefile = requests.get("https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip", stream=True)
+        if req_shapefile.status_code == 200:
+            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
+                for chunk in req_shapefile.iter_content(chunk_size=128):
+                    f.write(chunk)
+
+    m.readshapefile("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0", "aut")
 
     parallels = np.arange(44.5, 52.5, 1.)
     m.drawparallels(parallels, labels=[False, False, False, False], fontsize=8, color="lightgrey")
@@ -150,7 +161,7 @@ def avaliblelSteps(parameter, date, available_steps):
     import sys
     import os
 
-    path_nwp_forecasts = "./data/grib/gfs_forecast/{}/{}0000/".format(parameter, date)
+    path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
     nwp_gribfiles_avalibel_mean_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "mean", available_steps)
     nwp_gribfiles_avalibel_spread_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "spread", available_steps)
 

@@ -19,20 +19,19 @@ import numpy as np
 import numpy.ma as ma
 import pandas as pd
 from scipy.interpolate import griddata
-from mpl_toolkits.basemap import Basemap
 from osgeo import gdal
+from mpl_toolkits.basemap import Basemap
 
 
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import spatial_predictions as pf
 
-import PyspatialMOS.datamanipulation.modelclimatetologies as modelclimatetologies
-
 
 # Functions
 def spatial_predictions(parser_dict):
-    
+    from py_middleware import log_spread_calc
+
     # Available Steps for predictions
     available_steps = np.arange(6, 193, 6, int)
 
@@ -53,9 +52,9 @@ def spatial_predictions(parser_dict):
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=miny, urcrnrlat=48, ellps="WGS84", lat_0=y_center, lon_0=x_center)
 
     # Datein für U und V
-    if parser_dict["parm"] in ["wind_10m"]:
-        nwp_gribfiles_avalibel_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = pf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["datum"], available_steps)
-        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = pf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["datum"], available_steps)
+    if parser_dict["parameter"] in ["wind_10m"]:
+        nwp_gribfiles_avalibel_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = pf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], available_steps)
+        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = pf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["date"], available_steps)
 
         nwpFiles = zip(nwp_gribfiles_avalibel_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps, nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps)
         for u_mean_file, u_spread_file, v_mean_file, v_spread_file in nwpFiles:
@@ -73,7 +72,7 @@ def spatial_predictions(parser_dict):
             wind_mean_file = u_mean_file[u_mean_file.rfind("/")+1:]
             wind_spread_file = u_spread_file[u_spread_file.rfind("/")+1:]
 
-            path_nwp_forecasts = "./data/get_available_data/gefs_forecast/{}/{}0000/".format("wind_10m", parser_dict["datum"])
+            path_nwp_forecasts = "./data/get_available_data/gefs_forecast/{}/{}0000/".format("wind_10m", parser_dict["date"])
             if not os.path.exists(path_nwp_forecasts):
                 os.makedirs(path_nwp_forecasts)
             else:
@@ -92,17 +91,16 @@ def spatial_predictions(parser_dict):
             grbout_spread = open(file_spread, "wb")
             grbout_spread.write(wind_10m_spread)
             grbout_spread.close()
-    else:
-        pass
+
 
     # Dateneinleseroutine für die NWP forecasts
-    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = pf.nwp_gribfiles_avalibel_steps(logger, parser_dict["parm"], parser_dict["datum"] , available_steps)
+    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = pf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], available_steps)
 
     # MainLOOP
     for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
         # Öffen der Gribfiles und Basis Configuration
         grb_avg, analDate_avg, validDate_avg = pf.open_gribfile(nwp_gribfiles_mean_step)
-        grb_spr, analDate_spr, validDate_spr = pf.open_gribfile(nwp_gribfiles_mean_step)
+        grb_spr, analDate_spr, validDate_spr = pf.open_gribfile(nwp_gribfiles_spread_step)
 
         yday = grb_avg.validDate.timetuple().tm_yday
         dayminute = grb_avg.validDate.timetuple().tm_hour * 60
@@ -123,22 +121,21 @@ def spatial_predictions(parser_dict):
         xx_samos, yy_samos = m_samos(*np.meshgrid(lons_linespace, lats_linespace))
 
         #Korrturen am Mean Wert
-        if parser_dict["parm"] == "tmp_2m":
+        if parser_dict["parameter"] == "tmp_2m":
             constant_offset = 273.15
         else:
             constant_offset = 0
-
         df = []
         for x in lons:
             for y in lats:
                 mean = grb_avg.data(lat1=y, lon1=x)
-                mean = round(mean[0][0][0] - constant_offset, 2)
+                mean = round(mean[0][0][0] / 100 - constant_offset, 2)
                 spread = grb_spr.data(lat1=y, lon1=x)
-                log_spread = modelclimatetologies.log_spread(spread[0][0][0]) ### von Kelvin in Celsius
+                log_spread = log_spread_calc.log_spread(spread[0][0][0])
                 df.append([mean, log_spread, x, y])
 
         nwp_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
-
+        print(nwp_df)
         # NWP Interpolationen
         mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_samos, yy_samos), method="linear")
         log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_samos, yy_samos), method="linear")
@@ -146,18 +143,18 @@ def spatial_predictions(parser_dict):
         log_spread_interpolation_spatial_area = ma.masked_where(np.isnan(alt) == True, log_spread_interpolation)
 
         # Einlesen von climatedaten und umwandlung in float Format; Setindex lat, lon für pd.concat
-        climate_samos_file = "./data/spatialmos_climatology/gam/{}/climate_samos/yday_{:03d}_dayminute_{}.feather".format(parser_dict["parm"], yday, dayminute)
-        try:
+        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{yday:03d}_dayminute_{dayminute}.feather"
+        if os.path.exists(climate_samos_file):
             climate_samos = pd.read_feather(climate_samos_file)
-        except:
-            logging.error("parm: {:9} | Step: {:03d} | NO climate_samos_file: {}".format(parser_dict["parm"], step, climate_samos_file))
+        else:
+            logging.error("parm: {:9} | Step: {:03d} | NO climate_samos_file: {}".format(parser_dict["parameter"], step, climate_samos_file))
             continue
 
-        climate_samos_nwp_file = "./data/spatialmos_climatology/gam/{}/climate_samos_nwp/yday_{:03d}_dayminute_{}_step_{:03d}.feather".format(parser_dict["parm"], yday, dayminute, step)
-        try:
+        climate_samos_nwp_file = "./data/spatialmos_climatology/gam/{}/climate_samos_nwp/yday_{:03d}_dayminute_{}_step_{:03d}.feather".format(parser_dict["parameter"], yday, dayminute, step)
+        if os.path.exists(climate_samos_nwp_file):
             climate_samos_nwp = pd.read_feather(climate_samos_nwp_file)
-        except:
-            logging.error("parm: {:9} | Step: {:03d} | NO climate_samos_nwp_file: {}".format(parser_dict["parm"], step, climate_samos_nwp_file))
+        else:
+            logging.error("parm: {:9} | Step: {:03d} | NO climate_samos_nwp_file: {}".format(parser_dict["parameter"], step, climate_samos_nwp_file))
             continue
 
         cols = climate_samos.select_dtypes(exclude=["float"]).columns
@@ -168,7 +165,7 @@ def spatial_predictions(parser_dict):
         climate_samos_nwp[cols_nwp] = climate_samos_nwp[cols_nwp].apply(pd.to_numeric, downcast="float", errors="coerce")
         climate_samos_nwp = climate_samos_nwp.set_index(["lat", "lon"])
 
-        samos = pd.read_feather("./data/DGM/SPATIAL_ALT_area_df.feather")
+        samos = pd.read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
         cols_samos = samos.select_dtypes(exclude=["float"]).columns
         samos[cols_samos] = samos[cols_samos].apply(pd.to_numeric, downcast="float", errors="coerce")
         samos = samos.set_index(["lat", "lon"])
@@ -190,11 +187,11 @@ def spatial_predictions(parser_dict):
         log_spread_nwp_anom = (log_spread_interpolation_spatial_area.data - log_spread_fit) / log_spread_sd
 
         ##samos Prediction
-        samos_coef_file = "./data/get_available_data/gadm/{}/samos_coef/samos_coef_{}_{:03d}.csv".format(parser_dict["parm"], parser_dict["parm"], step)
-        try:
+        samos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/SAMOS_coef/SAMOS_coef_{parser_dict['parameter']}_{step:03d}.csv"
+        if os.path.exists(samos_coef_file):
             samos_coef = pd.read_csv(samos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
-        except:
-            logging.error("There is no spatialMOS climate available for day %s and step %s parm. '%s'", parser_dict["parm"], step, samos_coef_file)
+        else:
+            logging.error("There is no spatialMOS climate available for day %s and step %s parm. '%s'", parser_dict["parameter"], step, samos_coef_file)
             continue
 
         samos_coef = samos_coef.apply(pd.to_numeric)
@@ -209,19 +206,19 @@ def spatial_predictions(parser_dict):
 
         # Plot von den Vorhersagekarten
         ##NWP
-        figname_nwp = pf.plot_forecast(parser_dict["parm"], m_nwp, xx_nwp, yy_nwp, grb_avg.values - constant_offset, analDate_avg, validDate_avg, grb_avg.analDate, step, what="nwp_mean")
-        figname_nwp_sd = pf.plot_forecast(parser_dict["parm"], m_nwp, xx_nwp, yy_nwp, grb_spr.values, analDate_avg, validDate_avg, grb_avg.analDate, step, what="nwp_spread")
+        figname_nwp = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_avg.values - constant_offset, analDate_avg, validDate_avg, grb_avg.analDate, step, what="nwp_mean")
+        figname_nwp_sd = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_spr.values, analDate_avg, validDate_avg, grb_avg.analDate, step, what="nwp_spread")
 
-        figname_samos = pf.plot_forecast(parser_dict["parm"], m_samos, xx_samos, yy_samos, samos_pred, analDate_avg, validDate_avg, grb_avg.analDate, step, what="samos_mean")
-        figname_samos_sd = pf.plot_forecast(parser_dict["parm"], m_samos, xx_samos, yy_samos, samos_pred_spread, analDate_avg, validDate_avg, grb_avg.analDate, step, what="samos_spread")
+        figname_samos = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, analDate_avg, validDate_avg, grb_avg.analDate, step, what="samos_mean")
+        figname_samos_sd = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, analDate_avg, validDate_avg, grb_avg.analDate, step, what="samos_spread")
 
         timezone = pytz.timezone("UTC")
         analDate_aware = timezone.localize(grb_avg.analDate)
         validDate_aware = timezone.localize(grb_avg.validDate)
 
-        jsonFile = {"Modellauf": {"analDate": analDate_aware.strftime("%Y-%m-%d %H:%M"), "parm": parser_dict["parm"]}, "VorhersageStep": {"validDate": validDate_aware.strftime("%Y-%m-%d %H:%M"), "step": step, "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd }, "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), "samos_spread": samos_pred_spread.flatten().tolist()}}
+        jsonFile = {"Modellauf": {"analDate": analDate_aware.strftime("%Y-%m-%d %H:%M"), "parm": parser_dict["parameter"]}, "VorhersageStep": {"validDate": validDate_aware.strftime("%Y-%m-%d %H:%M"), "step": step, "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd }, "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), "samos_spread": samos_pred_spread.flatten().tolist()}}
 
-        filepath = "./spool/{}/samos/".format(parser_dict["parm"])
+        filepath = "./spool/{}/samos/".format(parser_dict["parameter"])
         if not os.path.exists(filepath):
             os.makedirs(filepath)
 
