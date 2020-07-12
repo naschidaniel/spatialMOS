@@ -36,38 +36,38 @@ def kfold(date, k):
 
 def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     """"Multithreading worker function to create the climatologies."""
-    df_reforcasts = None
+    df_reforecasts = None
     for file in csvfiles_sorted:
-        df_reforcasts_new = pd.read_csv(file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
-        if df_reforcasts is None:
-            df_reforcasts = df_reforcasts_new
+        df_reforecasts_new = pd.read_csv(file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
+        if df_reforecasts is None:
+            df_reforecasts = df_reforecasts_new
         else:
-            df_reforcasts = df_reforcasts.append(df_reforcasts_new)
+            df_reforecasts = df_reforecasts.append(df_reforecasts_new)
 
     try:
-        obstime_grib_no_tz = df_reforcasts["validDate"].apply(
+        obstime_grib_no_tz = df_reforecasts["validDate"].apply(
             lambda x: dateutil.parser.parse(x))  # obstimeformat is str("%Y-%m-%d %H:%M") no timezoneinfo
     except TypeError:
-        logging.error("df_reforcasts: {} | parameter: {} | Datum: {}".format(df_reforcasts, parameter, df["datum"]))
+        logging.error("df_reforecasts: {} | parameter: {} | Datum: {}".format(df_reforecasts, parameter, df["datum"]))
 
     # Datatable preperations for GAMLSS
-    df_reforcasts["utctimestamp"] = obstime_grib_no_tz.dt.tz_localize("UTC", ambiguous="NaT")
-    df_reforcasts.insert(0, "datum", df_reforcasts["utctimestamp"].dt.strftime("%Y-%m-%d"))
-    df_reforcasts.insert(1, "yday", df_reforcasts["utctimestamp"].dt.dayofyear)
-    df_reforcasts.insert(2, "hour", df_reforcasts["utctimestamp"].dt.hour)
-    df_reforcasts.insert(3, "minute", df_reforcasts["utctimestamp"].dt.minute)
-    df_reforcasts.insert(4, "dayminute", df_reforcasts["utctimestamp"].dt.hour * 60 + df_reforcasts["utctimestamp"].dt.minute)
+    df_reforecasts["utctimestamp"] = obstime_grib_no_tz.dt.tz_localize("UTC", ambiguous="NaT")
+    df_reforecasts.insert(0, "datum", df_reforecasts["utctimestamp"].dt.strftime("%Y-%m-%d"))
+    df_reforecasts.insert(1, "yday", df_reforecasts["utctimestamp"].dt.dayofyear)
+    df_reforecasts.insert(2, "hour", df_reforecasts["utctimestamp"].dt.hour)
+    df_reforecasts.insert(3, "minute", df_reforecasts["utctimestamp"].dt.minute)
+    df_reforecasts.insert(4, "dayminute", df_reforecasts["utctimestamp"].dt.hour * 60 + df_reforecasts["utctimestamp"].dt.minute)
 
     # conversion to log(spread) important, so that only positive values are simulated
-    log_spread_col = [log_spread(s) for s in df_reforcasts["spread"]]
-    df_reforcasts.insert(15, "log_spread", log_spread_col)
+    log_spread_col = [log_spread(s) for s in df_reforecasts["spread"]]
+    df_reforecasts.insert(15, "log_spread", log_spread_col)
 
     # TODO make type conversion unnecessary
     df["alt"] = df["alt"].astype(int)
-    df_reforcasts["alt"] = df_reforcasts["alt"].astype(int)
+    df_reforecasts["alt"] = df_reforecasts["alt"].astype(int)
     
     # Merge Dataframe von Messungen und Gribfiles
-    df = pd.merge(df, df_reforcasts, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
+    df = pd.merge(df, df_reforecasts, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
     df[["datum", "analDate", "validDate", "station"]] = df[["datum", "analDate", "validDate", "station"]].astype(str)  # .astype("|S")
     df[["alt", "step", "yday", "hour", "minute", "dayminute"]] = df[["alt", "step", "yday", "hour", "minute", "dayminute"]].astype(int)
     df[["lon", "lat", station_parameter, "mean", "log_spread"]] = df[["lon", "lat", station_parameter, "mean", "log_spread"]].astype(float)
@@ -83,7 +83,7 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
 def create_gamlss_climatologies(parameter):
     """Main function to create climatologies for further processing."""
 
-    data_path_csvfiles = os.path.join("./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/", parameter)
+    data_path_csvfiles = os.path.join("./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/", parameter)
 
     # Assignment of the parameters and the designation of the parameters at the station.
     if parameter == "tmp_2m":
@@ -103,7 +103,7 @@ def create_gamlss_climatologies(parameter):
     if not os.path.exists("./data/spatialmos_climatology/gam/{}/climate_nwp".format(parameter)):
         os.mkdir("./data/spatialmos_climatology/gam/{}/climate_nwp".format(parameter))
 
-    # Read in interpolated reforcast
+    # Read in interpolated reforecast
     csvfiles = scandir.scandir(data_path_csvfiles, parameter)
 
     # Generate Steps from CSV Filename
@@ -115,11 +115,11 @@ def create_gamlss_climatologies(parameter):
         csvfiles_step = [s for s in csvfiles if files in s]
         csvfiles_sorted.append(csvfiles_step)
 
-    station_observations_and_reforcasts = "./data/spatialmos_climatology/station_observations_and_reforcasts.h5"
+    station_observations_and_reforecasts = "./data/spatialmos_climatology/station_observations_and_reforecasts.h5"
     try:
-        df_h5 = pd.read_hdf(f"{station_observations_and_reforcasts}", "table")
+        df_h5 = pd.read_hdf(f"{station_observations_and_reforecasts}", "table")
     except Exception as e:
-        logging.error("The file %s could not be found. %s", station_observations_and_reforcasts, e)
+        logging.error("The file %s could not be found. %s", station_observations_and_reforecasts, e)
         sys.exit(1)
 
     # Structure of the observation dataset

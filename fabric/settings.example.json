@@ -8,8 +8,8 @@
     "initFolders": [
       "./data/archive",
       "./data/get_available_data",
-      "./data/get_available_data/gefs_reforcast",
-      "./data/get_available_data/gefs_reforcast/nwp",
+      "./data/get_available_data/gefs_reforecast",
+      "./data/get_available_data/gefs_reforecast/nwp",
       "./data/spatialmos_climatology",
       "./data/media",
       "./data/postgresdata",

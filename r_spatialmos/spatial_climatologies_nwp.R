@@ -61,7 +61,7 @@ for (i in 1:length(climate_nwp_files)){
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, log_spread_fit)
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, log_spread_sd)
       
-      # export GEFS Reforcast climatologies for further processing in Python 
+      # export GEFS Reforecast climatologies for further processing in Python 
       write_feather(save_predict_climate_day_df, filename_feather)
       
       # erase main memory

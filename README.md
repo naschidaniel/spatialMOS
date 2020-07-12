@@ -55,10 +55,10 @@ Current values from the ZAMG web page or from the UIBK API interface can be done
 ```
 
 
-#### GEFS Weather Reforcasts (Forecast Archive)
+#### GEFS Weather Reforecasts (Forecast Archive)
 
 Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
-A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive GEFS Reforcasts can be downloaded. The program creates folders based on the year numbers. These folders can be stored directly in `./data/get_available_data/gefs_reforcast/nwp` for further statistical processing. 
+A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive GEFS Reforecasts can be downloaded. The program creates folders based on the year numbers. These folders can be stored directly in `./data/get_available_data/gefs_reforecast/nwp` for further statistical processing. 
 
 
 #### GEFS Weather Forecasts
@@ -81,36 +81,36 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ### Raw data pre processing for further statistical processing
 
 
-#### Bilinear interpolation of GEFS Weather Reforcasts to station locations
+#### Bilinear interpolation of GEFS Weather Reforecasts to station locations
 
-The Global Weather Model data from the GEFS Model is bilinear interpolated to the station location. The predictions are saved per model run and step in CSV-Format. The data is stored under `./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/*`. 
+The Global Weather Model data from the GEFS Model is bilinear interpolated to the station location. The predictions are saved per model run and step in CSV-Format. The data is stored under `./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/*`. 
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts tmp_2m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts spfh_2m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts pres_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts apcp_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts ugrd_10m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts vgrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts tmp_2m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts spfh_2m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts apcp_sfc
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts ugrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts vgrd_10m
 ```
 
 The data for relative humidity and wind are calculated from other parameters. These parameters must be interpolated in advance.
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts rh_2m #Required parameters: tmp_2m, spfh_2m, pres_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforcasts wind_10m #Required parameters: ugrd_10m, vgrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts rh_2m #Required parameters: tmp_2m, spfh_2m, pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts wind_10m #Required parameters: ugrd_10m, vgrd_10m
 ```
 
 
-#### Combination of GEFS Reforcasts and Station Observations
+#### Combination of GEFS Reforecasts and Station Observations
 
 For further statistical processing a data set with all station observations for all parameters and forecasts of at least two past years are required. 
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-observations-and-reforcasts-to-stations
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-observations-and-reforecasts-to-stations
 ```
 
-The observations and the GEFS Reforcasts still need to be pre-processed. The observations and the GEFS Reforcasts will be combined. From these files the area-wide valid climatologies are generated.
+The observations and the GEFS Reforecasts still need to be pre-processed. The observations and the GEFS Reforecasts will be combined. From these files the area-wide valid climatologies are generated.
 
 ```
 ./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies tmp_2m
@@ -177,8 +177,8 @@ The calculated predictions are available in the exchange folder `./data/spool`. 
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
 ```
-./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_forcast"
-./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_reforcast"
+./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_forecast"
+./task.py local.spatialmos.py-spatialmos--archive-available-data "gefs_reforecast"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "suedtirol"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "uibk"
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "wetter_at"

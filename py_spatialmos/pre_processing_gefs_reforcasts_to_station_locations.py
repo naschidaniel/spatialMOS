@@ -31,11 +31,11 @@ def filename_csv(parameter, df):
     analDate = pd.to_datetime(df["analDate"][0]).strftime("%Y%m%d%H")
     step = int(df["step"][0])
     
-    path_interpolated_station_reforcasts = f"./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/{parameter}"
-    if not os.path.exists(path_interpolated_station_reforcasts):
-        os.makedirs(path_interpolated_station_reforcasts)
+    path_interpolated_station_reforecasts = f"./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/{parameter}"
+    if not os.path.exists(path_interpolated_station_reforecasts):
+        os.makedirs(path_interpolated_station_reforecasts)
     
-    return f"{path_interpolated_station_reforcasts}/GFSV2_{parameter}_{analDate}_{step:03d}.csv"
+    return f"{path_interpolated_station_reforecasts}/GFSV2_{parameter}_{analDate}_{step:03d}.csv"
 
 
 def spfh2rh(spfh_2m, pres_sfc, tmp_2m):
@@ -57,17 +57,17 @@ def uv2wind(ugrd_10m, vgrd_10m):
 
 
 def predictions_for_stations(gribfile, parameter):
-    """A function to create a pandas dataframe for the GEFS Reforcasts for the respective stations."""
+    """A function to create a pandas dataframe for the GEFS Reforecasts for the respective stations."""
     df = pd.read_csv(gribfile, sep=";", quoting=csv.QUOTE_NONNUMERIC)
     df.columns = ["analDate", "validDate", "step", "station", "alt", "lon", "lat", f"mean_{parameter}", f"spread_{parameter}"]
     df.set_index("station")
     return df
 
 
-def gefs_reforcasts_to_station_location(parameter, cores=8):
-    """Main function of the program to interpolate GEFS Reforcasts on ward locations. Existing GEFS Reforcasts are interpolated. Data wich is not included in the GEFS Reforcasts are calculated. The predictions are saved per model run and step in CSV-Format"""
+def gefs_reforecasts_to_station_location(parameter, cores=8):
+    """Main function of the program to interpolate GEFS Reforecasts on ward locations. Existing GEFS Reforecasts are interpolated. Data wich is not included in the GEFS Reforecasts are calculated. The predictions are saved per model run and step in CSV-Format"""
     if parameter in ["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "ugrd_10m", "vgrd_10m"]:
-        data_path = "./data/get_available_data/gefs_reforcast/nwp/"
+        data_path = "./data/get_available_data/gefs_reforecast/nwp/"
         gribfiles = scandir.scandir(data_path, parameter)
 
         if gribfiles == []:
@@ -92,7 +92,7 @@ def gefs_reforcasts_to_station_location(parameter, cores=8):
             p.map(interpolate_grib_files, gribfiles_mean_spread)
     
     elif parameter in ["rh_2m", "wind_10m"]:
-        data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforcast/interpolated_station_reforcasts/"
+        data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/"
         parameter_calc = []
         if parameter == "rh_2m":
             parameter_calc = ["spfh_2m", "pres_sfc", "tmp_2m"]
@@ -262,5 +262,5 @@ def interpolate_grib_files(gribfiles_mean_spread_parameter):
 if __name__ == "__main__":
     starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     parser_dict = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "rh_2m", "ugrd_10m", "vgrd_10m", "rh_2m", "wind_10m"])
-    gefs_reforcasts_to_station_location(parser_dict["parameter"])
+    gefs_reforecasts_to_station_location(parser_dict["parameter"])
     logger_module.end_logging(starttime)

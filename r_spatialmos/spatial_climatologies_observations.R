@@ -27,7 +27,7 @@ folder <- "climate_samos"
 spatial_alt_area_df <- read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
 
 climate <- read.csv(file=paste0("./data/spatialmos_climatology/gam/", parameter, "/", parameter, "_station_observations.csv"), sep=";", header = TRUE)
-load(paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforcasts.RData"))
+load(paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforecasts.RData"))
 
 #TODO Check Dayminutes
 dayminutes <- sort(unique(climate$dayminute))
@@ -53,7 +53,7 @@ for (yday in dayseq){
       save_predict_climate_day_df <- cbind(predict_climate_day_df_na_omit, climate_fit)
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, climate_sd)
 
-      # export GEFS Reforcast climatologies for further processing in Python 
+      # export GEFS Reforecast climatologies for further processing in Python 
       write_feather(save_predict_climate_day_df, filename_feather)
       
       # erase main memory

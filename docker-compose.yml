@@ -15,3 +15,10 @@ services:
       - log:/log:z
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
+  py_prediction:
+    build: ./container/py_prediction/
+    container_name: spatialMOS_py_prediction
+    volumes:
+      - log:/log:z
+      - py_spatialmos:/usr/src/app/py_spatialmos:z
+      - get_available_data:/usr/src/app/data/get_available_data:z

@@ -28,7 +28,7 @@ if (!dir.exists(paste0("./data/spatialmos_climatology/gam/", parameter))){
   quit(status=1)
 }
 
-# Station Observations and Reforcasts Data
+# Station Observations and Reforecasts Data
 climate <- read.csv(paste0("./data/spatialmos_climatology/gam/", parameter, "/", parameter, "_station_observations.csv"), sep=";", header = TRUE)
 colnamesObsclimate <- colnames(climate)
 colnamesObsclimate <- colnamesObsclimate[1:6]
@@ -42,7 +42,7 @@ if (validation == FALSE){
   #Erstellen des Verzeichniss für die GAM NWP climatetologien
   dir.create(file.path(paste0('./data/spatialmos_climatology/gam/', parameter, '/'), 'gam_nwp'), showWarnings = FALSE)
 
-  file <- paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforcasts.RData")
+  file <- paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforecasts.RData")
 }else{
   # Create validation directory structure
   validationDir <- paste0("./data/spatialmos_climatology/gam/", parameter, "/validation/")
@@ -88,7 +88,7 @@ if(!file.exists(file)){
 
 
 
-# Spatial climatologies for GEFS Reforcasts
+# Spatial climatologies for GEFS Reforecasts
 nwp_files <- list.files(path = paste0("./data/spatialmos_climatology/gam/", parameter ,"/climate_nwp"), pattern=".csv", full.names = TRUE, recursive = FALSE)
 
 start_time <- Sys.time()
@@ -124,7 +124,7 @@ for(i in 1:length(nwp_files)){
     gam_nwp_log_sdFilename <- paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_nwp/gam_nwp_log_sd_", parameter, "_", stepstr, ".RData")
   }
 
-  # GAMLSS Spatial climatologies for GEFS Reforcasts
+  # GAMLSS Spatial climatologies for GEFS Reforecasts
   if (!file.exists(gam_nwp_climateFilename)){
     diff_time = Sys.time() - start_time
     print(paste('Time:               | ', diff_time))
@@ -147,7 +147,7 @@ for(i in 1:length(nwp_files)){
     load(gam_nwp_climateFilename)
   }
 
-  # GAMLSS Spatial climatologies for GEFS Reforcasts LOG SD
+  # GAMLSS Spatial climatologies for GEFS Reforecasts LOG SD
   if (!file.exists(gam_nwp_log_sdFilename)){
     diff_time = Sys.time() - start_time
     print(paste('Time:               | ', diff_time))
@@ -200,7 +200,7 @@ for(i in 1:length(nwp_files)){
   SAMOS_coef <- as.data.frame(t(c(stepstr, SAMOS_coef)))
   colnames(SAMOS_coef)<- c("step", "intercept", "mean_anom", "intercept_log_spread", "log_spread_anom")
   
-  # Creating the directory structure for the SAMOS coefecients for GEFS Reforcasts climatetologies
+  # Creating the directory structure for the SAMOS coefecients for GEFS Reforecasts climatetologies
   if (validation == FALSE){
     write.csv2(SAMOS_coef, file = paste0(SAMOS_coef_dir, "/SAMOS_coef_", parameter, "_", stepstr, ".csv"), row.names=FALSE, quote = TRUE)
   }else {

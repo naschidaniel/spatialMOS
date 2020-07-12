@@ -21,7 +21,7 @@ def py_spatialmos__archive_available_data(c, cmd):
 def py_spatialmos__get_gefs(c, cmd):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_get_gefs", "python", "./py_spatialmos/get_gefs_forcasts.py", cmd]
+    cmd = ["py_get_gefs", "python", "./py_spatialmos/get_gefs_forecasts.py", cmd]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_gefs.__name__)
@@ -68,23 +68,23 @@ def py_spatialmos__get_zamg(c):
     inv_logging.success(py_spatialmos__get_zamg.__name__)
 
 @task
-def py_spatialmos__pre_proccessing_reforcasts(c, parameter):
-    """GEFS Reforcasts are bilinearly interpolated at station locations."""
-    inv_logging.task(py_spatialmos__pre_proccessing_reforcasts.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gefs_reforcasts_to_station_locations.py", "--parameter", parameter]
+def py_spatialmos__pre_proccessing_reforecasts(c, parameter):
+    """GEFS Reforecasts are bilinearly interpolated at station locations."""
+    inv_logging.task(py_spatialmos__pre_proccessing_reforecasts.__name__)
+    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_proccessing_reforcasts.__name__)
+    inv_logging.success(py_spatialmos__pre_proccessing_reforecasts.__name__)
 
 
 @task
-def py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations(c):
-    """Station Observations and GEFS Reforcasts are combined."""
-    inv_logging.task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_station_observations_and_reforcasts.py"]
+def py_spatialmos__pre_proccessing_observations_and_reforecasts_to_stations(c):
+    """Station Observations and GEFS Reforecasts are combined."""
+    inv_logging.task(py_spatialmos__pre_proccessing_observations_and_reforecasts_to_stations.__name__)
+    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations.__name__)
+    inv_logging.success(py_spatialmos__pre_proccessing_observations_and_reforecasts_to_stations.__name__)
 
 @task
 def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
@@ -131,6 +131,15 @@ def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
 
+@task
+def py_spatialmos__prediction(c, parameter, date):
+    """Create daily climatologies."""
+    inv_logging.task(py_spatialmos__prediction.__name__)
+    cmd = ["py_prediction", "python", "./py_spatialmos/prediction.py", "--parameter", parameter, "--date", date]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__prediction.__name__)
+
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
 spatialmos_development_ns.add_task(py_spatialmos__get_gefs)
@@ -138,13 +147,14 @@ spatialmos_development_ns.add_task(py_spatialmos__get_suedtirol)
 spatialmos_development_ns.add_task(py_spatialmos__get_uibk)
 spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
 spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
-spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforcasts)
-spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_observations_and_reforcasts_to_stations)
+spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_reforecasts)
+spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_observations_and_reforecasts_to_stations)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 spatialmos_development_ns.add_task(r_spatialmos__gam_init_shapefiles)
 spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_obs)
+spatialmos_development_ns.add_task(py_spatialmos__prediction)
 
 
 spatialmos_production_ns = Collection("spatialmos")
@@ -152,3 +162,4 @@ spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
 spatialmos_production_ns.add_task(py_spatialmos__get_gefs)
 spatialmos_production_ns.add_task(py_spatialmos__get_uibk)
 spatialmos_production_ns.add_task(py_spatialmos__get_zamg)
+spatialmos_production_ns.add_task(py_spatialmos__prediction)

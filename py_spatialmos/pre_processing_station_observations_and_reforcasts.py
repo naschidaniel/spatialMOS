@@ -101,7 +101,7 @@ def spatialmos_dataframe():
     df_suedtirol["utctimestamp"] = df_suedtirol["timestamp"].dt.tz_convert("UTC")
 
 
-    # Create a large dataset from station observations and reforcasts
+    # Create a large dataset from station observations and reforecasts
     df_wetter_at["wg"] = df_wetter_at["wg"] * 0.277  # km/h in m/s
     df_wetter_at["wsg"] = df_wetter_at["wsg"] * 0.277
     df_suedtirol["sonne"] = 600 / df_suedtirol["sonne"] * 100  # sonnenscheindaur in s nach prozent
@@ -153,7 +153,7 @@ def spatialmos_dataframe():
     df[["lon", "lat"]] = df[["lon", "lat"]].astype(float)
     df[["alt"]] = df[["alt"]].astype(int)
 
-    h5filename = "./data/spatialmos_climatology/station_observations_and_reforcasts.h5"
+    h5filename = "./data/spatialmos_climatology/station_observations_and_reforecasts.h5"
     df.to_hdf(h5filename, "table", append=False, complevel=9, complib="zlib")
     logging.info("The data was saved in the h5 format under %s", h5filename)
 
