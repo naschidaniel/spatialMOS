@@ -16,20 +16,22 @@ ADD ./requirements.txt .
 
 RUN conda config --set allow_conda_downgrades true
 
-RUN conda create --name spatialMOS
+RUN conda create -n spatialmos python=3.6 
 
-RUN conda activate spatialMOS
+RUN conda init bash
 
-RUN conda install python=3.6
+RUN conda install -n spatialmos -c conda-forge --file requirements.txt
 
-RUN conda install -c conda-forge --file requirements.txt
+RUN conda install -n spatialmos -c conda-forge gdal
 
-RUN conda install -c conda-forge gdal
+RUN conda install -n spatialmos -c conda-forge pygrib
 
-RUN conda install -c conda-forge pygrib
+RUN conda install -n spatialmos -c conda-forge pyarrow 
+
+RUN conda install -n spatialmos -c conda-forge requests 
 
 WORKDIR /usr/src/app
 
-RUN echo "source activate prediction-env" > ~/.bashrc
+RUN echo "source activate spatialmos" > ~/.bashrc
 
 ENV PATH /opt/conda/envs/env/bin:$PATH
