@@ -109,7 +109,7 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, avgspr):
     """With this function the file names from the server are preprocessed."""
 
     # Create URL  	geavg.t00z.pgrb2af00.idx
-    if avgspr in ['avg', 'spr']:
+    if avgspr in ["avg", "spr"]:
         gribfile = os.path.join(date.strftime(baseurl),
                             "ge{:s}.t{:s}z.pgrb2af{:s}".format(avgspr, date.strftime("%H"),
                             "{:02d}".format(step) if step < 100 else "{:03d}".format(step)))
@@ -146,7 +146,7 @@ def parse_index_file(idxfile, params):
         if len(line) == 0: continue
         mtch = re.findall(comp, line)
         if not mtch:
-            raise Exception("whoops, pattern mismatch \"{:s}\"".format(line))
+            raise Exception("whoops, pattern mismatch \'{:s}\'".format(line))
         # Else crate the variable hash
         idx_entries.append(idx_entry(mtch[0]))
 
@@ -166,23 +166,23 @@ def parse_index_file(idxfile, params):
 def download_grib(grib, local):
     req_grib = requests.get(grib)
 
-    with open(local, 'wb') as f:
+    with open(local, "wb") as f:
         f.write(req_grib.content)
         f.close()
     return True
 
 
 def fetch_gefs_data(avgspr, date, parameter, runhour):
-    if parameter == 'tmp_2m':
+    if parameter == "tmp_2m":
         params = ["TMP:2 m above ground"]
-    elif parameter == 'rh_2m':
+    elif parameter == "rh_2m":
         params = ["RH:2 m above ground"]
-    elif parameter == 'ugrd_10m':
+    elif parameter == "ugrd_10m":
         params = ["UGRD:10 m above ground"]
-    elif parameter == 'vgrd_10m':
+    elif parameter == "vgrd_10m":
         params = ["VGRD:10 m above ground"]
-
-    data_path = "./data/get_available_data/gefs_forecast/{}".format(parameter)
+    
+    data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
     baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
     baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.
@@ -195,7 +195,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
     steps = np.arange(6, 300+1, 6, dtype = int)
 
     logging.info("{:s}".format("".join(["-"]*70)))
-    if avgspr in ['avg', 'spr']:
+    if avgspr in ["avg", "spr"]:
         members = np.arange(0, 1, 1, dtype = int)
         logging.info("Downloading members: {:s}:  ".format(avgspr))
         baseurl = baseurl_avgspr
@@ -215,7 +215,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
         # Looping over forecast lead times
         for step in steps:
             logging.info("{:s}".format("".join(["-"]*70)))
-            if avgspr in ['avg', 'spr']:
+            if avgspr in ["avg", "spr"]:
                 logging.info("Processing +{:03d}h forecast, {:s}".format(step, avgspr))
             else:
                 logging.info("Processing +{:03d}h forecast, member {:02d}".format(step, mem))
