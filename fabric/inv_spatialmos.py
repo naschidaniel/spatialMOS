@@ -135,7 +135,7 @@ def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
 def py_spatialmos__prediction(c, parameter, date):
     """Create daily climatologies."""
     inv_logging.task(py_spatialmos__prediction.__name__)
-    cmd = ["py_prediction", "python", "./py_spatialmos/prediction.py", "--parameter", parameter, "--date", date]
+    cmd = ["py_prediction", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/prediction.py", "--parameter", parameter, "--date", date]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__prediction.__name__)
