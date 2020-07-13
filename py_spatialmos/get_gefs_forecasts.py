@@ -163,8 +163,9 @@ def parse_index_file(idxfile, params):
     return res
 
 
-def download_grib(grib, local):
-    req_grib = requests.get(grib)
+def download_grib(grib, local, required):
+    headers = {"Range": "bytes={:s}".format(",".join(required))}
+    req_grib = requests.get(grib, headers=headers)
 
     with open(local, "wb") as f:
         f.write(req_grib.content)
@@ -181,7 +182,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
         params = ["UGRD:10 m above ground"]
     elif parameter == "vgrd_10m":
         params = ["VGRD:10 m above ground"]
-    
+
     data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
     baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
     baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
@@ -250,7 +251,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
             if required is None: continue
             if len(required) == 0: continue
 
-            download_grib(files["grib"], files["local"])
+            download_grib(files["grib"], files["local"], required)
 
             # If wgrib2 ist installed: crate subset (small_grib)
             if not subset is None:
@@ -260,7 +261,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
                 logging.info("- Subsetting: {:s}".format(" ".join(cmd)))
                 p = sub.Popen(cmd, stdout = sub.PIPE, stderr = sub.PIPE) 
                 out, err = p.communicate()
-
+                
                 if p.returncode == 0:
                     os.remove(files["local"])
                     logging.info("Subset created, delete global file: %s", files["local"])
