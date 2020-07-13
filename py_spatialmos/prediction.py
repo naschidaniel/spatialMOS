@@ -101,7 +101,7 @@ def spatial_predictions(parser_dict):
         # Öffen der Gribfiles und Basis Configuration
         grb_avg, analDate_avg, validDate_avg = pf.open_gribfile(nwp_gribfiles_mean_step)
         grb_spr, analDate_spr, validDate_spr = pf.open_gribfile(nwp_gribfiles_spread_step)
-
+        
         yday = grb_avg.validDate.timetuple().tm_yday
         dayminute = grb_avg.validDate.timetuple().tm_hour * 60
         step = grb_avg.startStep
@@ -122,7 +122,7 @@ def spatial_predictions(parser_dict):
 
         #Korrturen am Mean Wert
         if parser_dict["parameter"] == "tmp_2m":
-            constant_offset = 0 #273.15
+            constant_offset = 273.15
         else:
             constant_offset = 0
         df = []
