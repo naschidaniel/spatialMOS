@@ -164,6 +164,7 @@ def parse_index_file(idxfile, params):
 
 
 def download_grib(grib, local, required):
+    """A function to download GRIB files."""
     headers = {"Range": "bytes={:s}".format(",".join(required))}
     req_grib = requests.get(grib, headers=headers)
 
@@ -174,6 +175,7 @@ def download_grib(grib, local, required):
 
 
 def fetch_gefs_data(avgspr, date, parameter, runhour):
+    """Function for downloading gribfiles from the GEFS NCEP server."""
     if parameter == "tmp_2m":
         params = ["TMP:2 m above ground"]
     elif parameter == "rh_2m":
