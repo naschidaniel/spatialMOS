@@ -185,6 +185,19 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "zamg"
 ```
 
+### Source files and spatial climatologies exchange with the server
+
+With the help of `rsync` and `scp` data can be exchanged between server and local computer. In the file `settings.json` the necessary settings are made.
+
+The source files are synchronized using the fabric command:
+```
+./task.py production.rsync.push sourcefiles
+```
+
+The climatologies needed for the daily calculation can be uploaded using the command:
+```
+./task.py production.rsync.push climatologies
+```
 
 ### Website
 
