@@ -156,7 +156,7 @@ def fetch_suedtirol_data(begindate, enddate):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(begindate=True, enddate=True)
-    fetch_suedtirol_data(parser_dict["begindate"], parser_dict["enddate"])
-    logger_module.end_logging(starttime)
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    PARSER_DICT = spatial_parser.spatial_parser(begindate=True, enddate=True)
+    fetch_suedtirol_data(PARSER_DICT["begindate"], PARSER_DICT["enddate"])
+    logger_module.end_logging(STARTTIME)

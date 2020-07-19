@@ -43,29 +43,27 @@ class idx_entry(object):
 
     def end_byte(self):
         """end_byte()
-
         Returns end byte.
         """
         try:
             x = getattr(self, "_byte_end")
+            return x 
         except:
             logging.error("whoops, _byte_end attribute not found.")
-        return x 
 
     def start_byte(self):
         """start_byte()
-
         Returns start byte.
         """
         try:
             x = getattr(self, "_byte_start")
+            return x
         except:
             logging.error("whoops, _byte_start attribute not found.")
-        return x 
+ 
 
     def key(self):
         """key()
-
         Returns
         -------
         Returns a character string "<param name>:<param level>".
@@ -176,6 +174,8 @@ def download_grib(grib, local, required):
 
 def fetch_gefs_data(avgspr, date, parameter, runhour):
     """Function for downloading gribfiles from the GEFS NCEP server."""
+    
+    params = None
     if parameter == "tmp_2m":
         params = ["TMP:2 m above ground"]
     elif parameter == "rh_2m":
@@ -257,13 +257,13 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
 
             # If wgrib2 ist installed: crate subset (small_grib)
             if not subset is None:
-                WE  = "{:.2f}:{:.2f}".format(subset["W"], subset["E"])
-                SN  = "{:.2f}:{:.2f}".format(subset["S"], subset["N"])
-                cmd = ["wgrib2", files["local"], "-small_grib", WE, SN, files["subset"]]
+                we_bounds = "{:.2f}:{:.2f}".format(subset["W"], subset["E"])
+                sn_bounds = "{:.2f}:{:.2f}".format(subset["S"], subset["N"])
+                cmd = ["wgrib2", files["local"], "-small_grib", we_bounds, sn_bounds, files["subset"]]
                 logging.info("- Subsetting: {:s}".format(" ".join(cmd)))
-                p = sub.Popen(cmd, stdout = sub.PIPE, stderr = sub.PIPE) 
+                p = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE)
                 out, err = p.communicate()
-                
+
                 if p.returncode == 0:
                     os.remove(files["local"])
                     logging.info("Subset created, delete global file: %s", files["local"])
@@ -274,8 +274,9 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
-    fetch_gefs_data(parser_dict["avgspr"], parser_dict["date"], parser_dict["parameter"], parser_dict["runhour"])
-    logger_module.end_logging(starttime)
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    PARSER_DICT = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], \
+        parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
+    fetch_gefs_data(PARSER_DICT["avgspr"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
+    logger_module.end_logging(STARTTIME)
  

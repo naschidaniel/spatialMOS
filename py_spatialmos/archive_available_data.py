@@ -12,8 +12,8 @@ from py_middleware import logger_module
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("get_available_data", "archive", docker=False)
-    parser_dict = spatial_parser.spatial_parser(folder=True, name_folder=["gefs_forecast", "gefs_reforecast", "suedtirol", "uibk", "wetter_at", "zamg"])
+    STARTTIME = logger_module.start_logging("get_available_data", "archive", docker=False)
+    PARSER_DICT = spatial_parser.spatial_parser(folder=True, name_folder=["gefs_forecast", "gefs_reforecast", "suedtirol", "uibk", "wetter_at", "zamg"])
 
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # Folder to tar
     path_to_tar = os.path.join(basedir, "data")
     path_to_tar = os.path.join(path_to_tar, "get_available_data")
-    path_to_tar = os.path.join(path_to_tar, parser_dict["folder"])
+    path_to_tar = os.path.join(path_to_tar, PARSER_DICT["folder"])
     if not os.path.exists(archive_path):
         os.makedirs(archive_path)
         logging.info("The archive folder '%s' was created.", archive_path)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if os.path.exists(path_to_tar):
         for root, dirs, files in os.walk(path_to_tar):
             count_files_to_tar += len(files)
-        tarfile = os.path.join(archive_path, "{}_{}.tar.gz".format(parser_dict["folder"], datetime.utcnow().strftime("%Y-%m-%d_%H_%M_%S")))
+        tarfile = os.path.join(archive_path, "{}_{}.tar.gz".format(PARSER_DICT["folder"], datetime.utcnow().strftime("%Y-%m-%d_%H_%M_%S")))
 
         logging.info("Action: {:35} | Files: {} | {}".format("count_files_to_tar ", count_files_to_tar, tarfile))
         tarfileStatus = os.system(f"tar -czvf {tarfile} -C {path_to_tar} .")
@@ -56,4 +56,4 @@ if __name__ == "__main__":
         logging.error("The data folder '%s' could not be deleted.", path_to_tar)
         sys.exit(1)
 
-    logger_module.end_logging(starttime)
+    logger_module.end_logging(STARTTIME)
