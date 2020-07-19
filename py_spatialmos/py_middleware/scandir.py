@@ -18,11 +18,11 @@ def scandir(data_path, parameter):
                     continue
             else:
                 continue
-    
+
     file_list = sorted(file_list)
-    
+
     if file_list == []:
         logging.error("There is no data in the %s folder.", data_path)
         sys.exit(1)
-    
+
     return file_list

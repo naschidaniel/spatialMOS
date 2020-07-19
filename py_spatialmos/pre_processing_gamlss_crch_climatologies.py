@@ -18,12 +18,12 @@ from py_middleware import log_spread_calc
 # Functions
 def kfold(date, k):
     """A function to create a dict for cross-validation based on a date vector."""
-    kfold = []
+    kfold_value = []
     for j in np.arange(1, k + 1):
         for i in np.arange(0, len(date) / k):
-            kfold.append(j)
-    kfold = kfold[0:len(date)]
-    return dict(zip(date, kfold))
+            kfold_value.append(j)
+    kfold_value = kfold_value[0:len(date)]
+    return dict(zip(date, kfold_value))
 
 
 def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
@@ -37,12 +37,11 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
             df_reforecasts = df_reforecasts.append(df_reforecasts_new)
 
     try:
-        obstime_grib_no_tz = df_reforecasts["validDate"].apply(
-            lambda x: dateutil.parser.parse(x))  # obstimeformat is str("%Y-%m-%d %H:%M") no timezoneinfo
+        obstime_grib_no_tz = df_reforecasts["validDate"].apply(lambda x: dateutil.parser.parse(x))  # obstimeformat is str("%Y-%m-%d %H:%M") no timezoneinfo
     except TypeError:
-        logging.error("df_reforecasts: {} | parameter: {} | Datum: {}".format(df_reforecasts, parameter, df["datum"]))
+        logging.error("Typeerror in df_reforecasts: %s | parameter: %s | date: %s", df_reforecasts, parameter, df["datum"])
 
-    # Datatable preperations for GAMLSS
+    # Datatable preperations for gamlss
     df_reforecasts["utctimestamp"] = obstime_grib_no_tz.dt.tz_localize("UTC", ambiguous="NaT")
     df_reforecasts.insert(0, "datum", df_reforecasts["utctimestamp"].dt.strftime("%Y-%m-%d"))
     df_reforecasts.insert(1, "yday", df_reforecasts["utctimestamp"].dt.dayofyear)
@@ -57,7 +56,7 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     # TODO make type conversion unnecessary
     df["alt"] = df["alt"].astype(int)
     df_reforecasts["alt"] = df_reforecasts["alt"].astype(int)
-    
+
     # Merge Dataframe von Messungen und Gribfiles
     df = pd.merge(df, df_reforecasts, on=["datum", "yday", "minute", "dayminute", "hour", "alt", "lon", "lat", "station"])
     df[["datum", "analDate", "validDate", "station"]] = df[["datum", "analDate", "validDate", "station"]].astype(str)  # .astype("|S")
@@ -69,7 +68,7 @@ def combine_df_csvfiles(df, csvfiles_sorted, parameter, station_parameter):
     df = df[["yday", "kfold", "dayminute", "alt", "lon", "lat", station_parameter, "mean", "log_spread"]]
     df.columns = ["yday", "kfold", "dayminute", "alt", "lon", "lat", "obs", "mean", "log_spread"]
     df.to_csv(f"./data/spatialmos_climatology/gam/{parameter}/climate_nwp/{parameter}_{stepstr:03d}.csv", sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
-    logging.info(f"Finished Thread for Step {stepstr:03d}")
+    logging.info("Finished Thread for Step %03d", stepstr)
     return df
 
 def create_gamlss_climatologies(parameter):
@@ -78,6 +77,7 @@ def create_gamlss_climatologies(parameter):
     data_path_csvfiles = os.path.join("./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/", parameter)
 
     # Assignment of the parameters and the designation of the parameters at the station.
+    station_parameter = None
     if parameter == "tmp_2m":
         station_parameter = "t"
     elif parameter == "rh_2m":
@@ -135,10 +135,11 @@ def create_gamlss_climatologies(parameter):
     df_save.columns = ["yday", "kfold", "dayminute", "alt", "lon", "lat", "obs"]
     df_save.to_csv(f"./data/spatialmos_climatology/gam/{parameter}/{parameter}_station_observations.csv", sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
 
+    return None
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "apcp_sfc", "wind_10m"])
-    create_gamlss_climatologies(parser_dict["parameter"])
-    logger_module.end_logging(starttime)
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "apcp_sfc", "wind_10m"])
+    create_gamlss_climatologies(PARSER_DICT["parameter"])
+    logger_module.end_logging(STARTTIME)

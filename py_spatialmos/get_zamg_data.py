@@ -214,6 +214,6 @@ def download_zamg_page_data(data_path, state, pressure):
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     fetch_zamg_data()
-    logger_module.end_logging(starttime)
+    logger_module.end_logging(STARTTIME)
