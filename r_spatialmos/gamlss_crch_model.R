@@ -36,8 +36,8 @@ colnamesObsclimate <- colnamesObsclimate[1:6]
 
 if (validation == FALSE){
   # Create directory structure
-  SAMOS_coef_dir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/', 'SAMOS_coef')
-  dir.create(SAMOS_coef_dir, showWarnings = FALSE)
+  samos_coef_dir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/', 'samos_coef')
+  dir.create(samos_coef_dir, showWarnings = FALSE)
   
   #Erstellen des Verzeichniss für die GAM NWP climatetologien
   dir.create(file.path(paste0('./data/spatialmos_climatology/gam/', parameter, '/'), 'gam_nwp'), showWarnings = FALSE)
@@ -51,8 +51,8 @@ if (validation == FALSE){
   validation_gam_NWP_dir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/validation/', 'gam_nwp')
   dir.create(file.path(validation_gam_NWP_dir), showWarnings = FALSE)
   
-  validation_SAMOS_coef_dir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/validation/', 'SAMOS_coef')
-  dir.create(file.path(validation_SAMOS_coef_dir), showWarnings = FALSE)
+  validation_samos_coef_dir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/validation/', 'samos_coef')
+  dir.create(file.path(validation_samos_coef_dir), showWarnings = FALSE)
   
   predictionsdir <- paste0('./data/spatialmos_climatology/gam/', parameter, '/validation/', 'predictions')
   dir.create(file.path(predictionsdir), showWarnings = FALSE)
@@ -195,16 +195,16 @@ for(i in 1:length(nwp_files)){
   climateNWP <- cbind(climateNWP, mean_anom)
   climateNWP <- cbind(climateNWP, log_spread_anom)
   
-  SAMOS <- crch(climateNWP$climate_anom ~ climateNWP$mean_anom | climateNWP$log_spread_anom)
-  SAMOS_coef <- coef(SAMOS)
-  SAMOS_coef <- as.data.frame(t(c(stepstr, SAMOS_coef)))
-  colnames(SAMOS_coef)<- c("step", "intercept", "mean_anom", "intercept_log_spread", "log_spread_anom")
+  samos <- crch(climateNWP$climate_anom ~ climateNWP$mean_anom | climateNWP$log_spread_anom)
+  samos_coef <- coef(samos)
+  samos_coef <- as.data.frame(t(c(stepstr, samos_coef)))
+  colnames(samos_coef)<- c("step", "intercept", "mean_anom", "intercept_log_spread", "log_spread_anom")
   
-  # Creating the directory structure for the SAMOS coefecients for GEFS Reforecasts climatetologies
+  # Creating the directory structure for the samos coefecients for GEFS Reforecasts climatetologies
   if (validation == FALSE){
-    write.csv2(SAMOS_coef, file = paste0(SAMOS_coef_dir, "/SAMOS_coef_", parameter, "_", stepstr, ".csv"), row.names=FALSE, quote = TRUE)
+    write.csv2(samos_coef, file = paste0(samos_coef_dir, "/samos_coef_", parameter, "_", stepstr, ".csv"), row.names=FALSE, quote = TRUE)
   }else {
-    write.csv2(SAMOS_coef, file = paste0(validation_SAMOS_coef_dir, "/SAMOS_coef_", parameter, "_", stepstr, "_kfold_", kfold, ".csv"), row.names=FALSE, quote = TRUE)
+    write.csv2(samos_coef, file = paste0(validation_samos_coef_dir, "/samos_coef_", parameter, "_", stepstr, "_kfold_", kfold, ".csv"), row.names=FALSE, quote = TRUE)
 
     # TODO Check if the calculation is correct
     climate_fit_Validation_kfold <- predict(gam_climate, what= "mu", type="response", data = climate, newdata = climateNWPValidation[colnamesObsclimate])
@@ -219,11 +219,11 @@ for(i in 1:length(nwp_files)){
     nwp_anom <- (climateNWPValidation$mean - mean_fit) / mean_fit_sd
     log_spread_nwp_anom <- (climateNWPValidation$log_spread - log_spread_fit) / log_spread_fit_sd
     
-    samos_anom <- SAMOS$coefficients$location[1] + SAMOS$coefficients$location[2] * nwp_anom
+    samos_anom <- samos$coefficients$location[1] + samos$coefficients$location[2] * nwp_anom
     samos_pred <- samos_anom * climate_fit_sd_Validation_kfold + climate_fit_Validation_kfold
     
     # TODO Check formula: The formula must also be checked in the prediction file
-    samos_log_anom_spread <- SAMOS$coefficients$scale[1] + SAMOS$coefficients$scale[2] * exp(log_spread_nwp_anom) 
+    samos_log_anom_spread <- samos$coefficients$scale[1] + samos$coefficients$scale[2] * exp(log_spread_nwp_anom) 
     # TODO Check formula: The formula in the paper is -> exp(samos_log_anom_spread) * climate_fit_sd_Validation_kfold
     samos_pred_spread = samos_log_anom_spread * climate_fit_sd_Validation_kfold
 
