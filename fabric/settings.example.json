@@ -55,7 +55,7 @@
     "REMOTE_USER": "example",
     "REMOTE_HOST": "example.com",
     "rsync_push": {
-      "spatialMOSv2": {
+      "sourcefiles": {
         "local_dir": ".",
         "remote_dir": "/www/spatialMOSv2",
         "include": [
@@ -72,6 +72,23 @@
         ],
         "exclude-from": [
           ".gitignore"
+        ]
+      },
+      "climatologies": {
+        "local_dir": ".",
+        "remote_dir": "/www/spatialMOSv2",
+        "ignore-existing": "True",
+        "include": [
+          "data/spatialmos_climatology/gam/tmp_2m/climate_samos_nwp",
+          "data/spatialmos_climatology/gam/rh_2m/climate_samos_nwp",
+          "data/spatialmos_climatology/gam/wind_10m/climate_samos_nwp",
+          "data/spatialmos_climatology/gam/tmp_2m/climate_samos",
+          "data/spatialmos_climatology/gam/rh_2m/climate_samos",
+          "data/spatialmos_climatology/gam/wind_10m/climate_samos",
+          "data/get_available_data/gadm",
+          "data/spatialmos_climatology/gam/tmp_2m/samos_coef",
+          "data/spatialmos_climatology/gam/tmp_2m/samos_coef",
+          "data/spatialmos_climatology/gam/tmp_2m/samos_coef"
         ]
       }
     }
