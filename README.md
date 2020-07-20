@@ -233,7 +233,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-07-20 The Codestyle embellishments were tested and merged
+- 2020-07-20 The codestyle embellishments were tested and merged
 - 2020-07-19 Embellish codestyle with prettier
 - 2020-07-10 Daily valid climatology files for tmp_2m can be created
 - 2020-07-09 A spatial valid climatology file for tmp_2m can be created
