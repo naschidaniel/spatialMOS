@@ -146,7 +146,7 @@ For the statistical processing of the Direct Model Output, climatologies for the
 
 ##### GEFS Forecast climatologies for the day of the year and model step 
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp mp_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp tmp_2m 192 195
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp rh_2m 192 195
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp wind_10m 192 195
 ```
@@ -233,6 +233,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-07-20 The Codestyle embellishments were tested and merged
 - 2020-07-19 Embellish codestyle with prettier
 - 2020-07-10 Daily valid climatology files for tmp_2m can be created
 - 2020-07-09 A spatial valid climatology file for tmp_2m can be created
