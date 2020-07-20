@@ -11,13 +11,14 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal
 from scipy.interpolate import griddata
-from mpl_toolkits.basemap import Basemap
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import spatial_predictions as pf
 from py_middleware import log_spread_calc
 
+# Import Basemap
 os.environ["PROJ_LIB"] = "/usr/share/proj"
+from mpl_toolkits.basemap import Basemap
 
 # Functions
 def spatial_predictions(parser_dict):
