@@ -118,6 +118,12 @@ def fetch_suedtirol_data(begindate, enddate):
                             os.remove(tmp_data_file)
 
                             new_df = pd.json_normalize(data_stations_value)
+
+                            # check if Data exists
+                            if new_df.empty:
+                                logging.warning("The station contains no data and was skipped.")
+                                continue
+
                             new_df.columns = ["obstime", rename_sensor_name(sensor)]
                             new_df = new_df.set_index("obstime")
 
