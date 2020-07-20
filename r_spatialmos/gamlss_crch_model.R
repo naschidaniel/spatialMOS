@@ -42,7 +42,7 @@ if (validation == FALSE){
   #Erstellen des Verzeichniss für die GAM NWP climatetologien
   dir.create(file.path(paste0('./data/spatialmos_climatology/gam/', parameter, '/'), 'gam_nwp'), showWarnings = FALSE)
 
-  file <- paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "station_observations_and_reforecasts.RData")
+  file <- paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_", parameter, "_station_observations_and_reforecasts.RData")
 }else{
   # Create validation directory structure
   validationDir <- paste0("./data/spatialmos_climatology/gam/", parameter, "/validation/")
