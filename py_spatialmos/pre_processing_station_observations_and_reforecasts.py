@@ -6,7 +6,6 @@ import csv
 import logging
 import os
 import datetime
-import logging
 import dateutil
 import numpy as np
 import pandas as pd
@@ -27,7 +26,7 @@ def plausibility_check(df, parameter, lowerlimit, upperlimit):
     return df
 
 def combine_dataframes(data_path, columns):
-    """A function to combine the data frames of North and South Tyrol."""
+    """A function to combine the data frames of North- and South-Tyrol."""
     data_files = []
     for filename in os.listdir(data_path):
         path = os.path.join(data_path, filename)
@@ -161,6 +160,6 @@ def spatialmos_dataframe():
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     spatialmos_dataframe()
-    logger_module.end_logging(starttime)
+    logger_module.end_logging(STARTTIME)

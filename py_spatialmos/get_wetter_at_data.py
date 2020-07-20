@@ -89,8 +89,7 @@ def download_data_wetter_at(data_path, station, begindate, timeseries, parameter
             f.write(req_parameter.text)
             f.close()
 
-        new_df = pd.read_csv(temporaryfile, delimiter=";", quotechar="'", header=None, names=[
-                             "station", "name", "altdown", "datum", "uhr", parameter, "einheit", "downloaddate"])
+        new_df = pd.read_csv(temporaryfile, delimiter=";", quotechar="'", header=None, names=["station", "name", "altdown", "datum", "uhr", parameter, "einheit", "downloaddate"])
         os.remove(temporaryfile)
 
         # Data manipulation
@@ -98,8 +97,7 @@ def download_data_wetter_at(data_path, station, begindate, timeseries, parameter
             str) + " " + new_df["uhr"].astype(str)
         new_df["timestamp_datetime"] = pd.to_datetime(
             new_df["obstime"], format="%Y-%m-%d %H:%M")
-        new_df = new_df.drop(columns=[
-                             "name", "altdown", "datum", "uhr", "einheit", "downloaddate", "timestamp_datetime"])
+        new_df = new_df.drop(columns=["name", "altdown", "datum", "uhr", "einheit", "downloaddate", "timestamp_datetime"])
         new_df = new_df[["obstime", "station", parameter]]
 
         # Set missing values to -999
@@ -120,7 +118,7 @@ def download_data_wetter_at(data_path, station, begindate, timeseries, parameter
 
 # Main
 if __name__ == "__main__":
-    starttime = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    parser_dict = spatial_parser.spatial_parser(begindate=True, enddate=True)
-    fetch_wetter_at_data(parser_dict["begindate"], parser_dict["enddate"])
-    logger_module.end_logging(starttime)
+    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
+    PARSER_DICT = spatial_parser.spatial_parser(begindate=True, enddate=True)
+    fetch_wetter_at_data(PARSER_DICT["begindate"], PARSER_DICT["enddate"])
+    logger_module.end_logging(STARTTIME)

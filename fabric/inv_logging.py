@@ -31,25 +31,25 @@ def start_logging():
     logging.info("spatialMOS fabric logging module was started.")
 
 
-def task(task=None):
+def task(entry=None):
     """A logging message is created with the task name.
     """
-    logging.info(f"The task {task} was started.")
+    logging.info("The task %s was started.", entry)
 
 
-def cmd(cmd=None):
+def cmd(entry=None):
     """A logging message is created with the additional command.
     """
-    if cmd is not None and cmd != "":
-        logging.info(f"The following command was entered: {cmd}")
-    else:
-        logging.info(f"The program was successfully completed.")
+    logging.info("The following command was entered: %s", entry)
 
+def error(entry=None):
+    """A function which returns the error for wrong entries."""
+    logging.error("Your entry %s was incorrect. Please read the Readme.md", entry)
 
-def success(task=None):
+def success(entry=None):
     """A function which returns the successful completion of the logging.
     """
-    if task is not None and task != "":
-        logging.info(f"The task {task} was successfully completed.")
+    if entry is not None and entry != "":
+        logging.info("The task %s was successfully completed.", entry)
     else:
-        logging.info(f"The program was successfully completed.")
+        logging.info("The program was successfully completed.")

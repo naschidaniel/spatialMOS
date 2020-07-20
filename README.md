@@ -146,7 +146,7 @@ For the statistical processing of the Direct Model Output, climatologies for the
 
 ##### GEFS Forecast climatologies for the day of the year and model step 
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp mp_2m 192 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp tmp_2m 192 195
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp rh_2m 192 195
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp wind_10m 192 195
 ```
@@ -185,6 +185,19 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 ./task.py local.spatialmos.py-spatialmos--archive-available-data "zamg"
 ```
 
+### Source files and spatial climatologies exchange with the server
+
+With the help of `rsync` and `scp` data can be exchanged between server and local computer. In the file `settings.json` the necessary settings are made.
+
+The source files are synchronized using the fabric command:
+```
+./task.py production.rsync.push sourcefiles
+```
+
+The climatologies needed for the daily calculation can be uploaded using the command:
+```
+./task.py production.rsync.push climatologies
+```
 
 ### Website
 
@@ -220,6 +233,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-07-20 The codestyle embellishments were tested and merged
+- 2020-07-19 Embellish codestyle with prettier
 - 2020-07-10 Daily valid climatology files for tmp_2m can be created
 - 2020-07-09 A spatial valid climatology file for tmp_2m can be created
 - 2020-07-08 Download Shapefiles with R
