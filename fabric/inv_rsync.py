@@ -6,12 +6,21 @@ import os
 import sys
 import subprocess
 import logging
+import distutils
 from itertools import chain, repeat
 from invoke import task, Collection
 import inv_base
 import inv_logging
 import inv_install
 
+def str2bool(string):
+    if "True" in string:
+        return True
+    elif "False" in string:
+        return False
+    else:
+        logging.error("Check the typo (True || False) of ignore-existing in the settings file.")
+        sys.exit(1)
 
 def exclude_include_ignore(settings, rsync_task):
     """A function to process include and exclude arguments."""
@@ -31,12 +40,7 @@ def exclude_include_ignore(settings, rsync_task):
         exclude_from = None
 
     if "ignore-existing" in settings["rsync_push"][rsync_task]:
-        ignore_existing = settings["rsync_push"][rsync_task]["ignore-existing"]
-        if isinstance(ignore_existing, bool):
-            ignore_existing = bool(ignore_existing)
-        else:
-            logging.error("Check the typo (True || False) of ignore-existing in the settings file.")
-            sys.exit(1)
+        ignore_existing = str2bool(settings["rsync_push"][rsync_task]["ignore-existing"])
     else:
         ignore_existing = False
 
@@ -94,7 +98,7 @@ def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude,
         cp = [ssh_str, local_dir]
 
     if ignore_existing:
-        rsync_cmd = ["rsync", "-a", "--progress", "--ignore-existing"] + include_args + exclude_args + exclude_from_args + cp
+        rsync_cmd = ["rsync", "-a", "--progress", "--ignore-existing", "--recursive"] + include_args + exclude_args + exclude_from_args + cp
     else:
         rsync_cmd = ["rsync", "-a", "--progress", "--delete-before"] + include_args + exclude_args + exclude_from_args + cp
     logging.info("The following rsync command is executed: %s", rsync_cmd)

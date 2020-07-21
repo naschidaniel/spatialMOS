@@ -75,20 +75,24 @@
         ]
       },
       "climatologies": {
-        "local_dir": ".",
-        "remote_dir": "/www/spatialMOSv2",
+        "local_dir": "./data",
+        "remote_dir": "/www/spatialMOSv2/data",
         "ignore-existing": "True",
         "include": [
-          "data/spatialmos_climatology/gam/tmp_2m/climate_samos_nwp",
-          "data/spatialmos_climatology/gam/rh_2m/climate_samos_nwp",
-          "data/spatialmos_climatology/gam/wind_10m/climate_samos_nwp",
-          "data/spatialmos_climatology/gam/tmp_2m/climate_samos",
-          "data/spatialmos_climatology/gam/rh_2m/climate_samos",
-          "data/spatialmos_climatology/gam/wind_10m/climate_samos",
-          "data/get_available_data/gadm",
-          "data/spatialmos_climatology/gam/tmp_2m/samos_coef",
-          "data/spatialmos_climatology/gam/tmp_2m/samos_coef",
-          "data/spatialmos_climatology/gam/tmp_2m/samos_coef"
+          "get_available_data/gadm",
+          "spatialmos_climatology/gam/"
+        ],
+        "exclude": [
+          "get_available_data/*",
+          "*.h5",
+          "*.RData",
+          "*_station_observations.csv",
+          "archive",
+          "media",
+          "postgresdata",
+          "bostgresdata_backup",
+          "postgresdata_backup_server",
+          "static"
         ]
       }
     }

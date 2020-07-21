@@ -19,3 +19,8 @@ settings.json
 
 # Environment
 .env
+
+# Datafiles
+*.tar.gz
+*.Rdata
+*.h5
