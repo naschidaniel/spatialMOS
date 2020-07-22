@@ -8,20 +8,20 @@ import inv_docker
 
 
 @task
-def py_spatialmos__archive_available_data(c, cmd):
+def py_spatialmos__archive_available_data(c, folder):
     """The csv-files are created with the 7zip. The folder must be specified e.g. uibk."""
     inv_logging.task(py_spatialmos__archive_available_data.__name__)
-    command = ["python", "./py_spatialmos/archive_available_data.py", "--folder", cmd]
+    command = ["python", "./py_spatialmos/archive_available_data.py", "--folder", folder]
     command = ' '.join(command)
     c.run(command)
     inv_logging.success(py_spatialmos__archive_available_data.__name__)
 
 
 @task
-def py_spatialmos__get_gefs(c, cmd):
+def py_spatialmos__get_gefs(c, date, runhour, parameter, avgspr):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_get_gefs", "python", "./py_spatialmos/get_gefs_forecasts.py", cmd]
+    cmd = ["py_get_gefs", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--runhour", runhour, "--parameter", parameter, "--avgspr", avgspr]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_gefs.__name__)
