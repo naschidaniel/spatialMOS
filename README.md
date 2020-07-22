@@ -165,8 +165,11 @@ The current forecasts and the climatologies created are used to produce correcte
 
 For this step, current forecasts ([GEFS Weather Forecasts](#GEFS-Weather-Forecasts)) and calculated climatologies ([Create daily climatologies for post processing of GEFS forecasts](#Create-daily-climatologies-for-post-processing-of-GEFS-forecasts)) must be available.
 
+
 ```
-./task.py *TODO*
+./task.py local.spatialmos.py-spatialmos--prediction --parameter tmp_2m --date 2020-07-22
+./task.py local.spatialmos.py-spatialmos--prediction --parameter rh_2m --date 2020-07-22
+./task.py local.spatialmos.py-spatialmos--prediction --parameter wind_10m --date 2020-07-22
 ```
 
 The calculated predictions are available in the exchange folder `./data/spool`. The presentation of the data is made with the help of django. 
@@ -203,11 +206,13 @@ The climatologies needed for the daily calculation can be uploaded using the com
 
 The online presence was implemented with the web framework django written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made. The API of openstreetmap is used for the address query. *TODO*
 
+
 #### Data import from spool directory to PostgreSQL database
 
 ```
 ./task.py *TODO*
 ```
+
 
 #### API Website interface 
 
