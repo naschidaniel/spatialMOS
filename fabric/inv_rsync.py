@@ -107,19 +107,19 @@ def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude,
 
 #@task(inv_install.check_upstream)
 @task
-def push(c, rsync_task):
+def push(c, what):
     """This task synchronizes the local folders to the server"""
     inv_logging.task(push.__name__)
     settings = inv_base.read_settings("production")
 
-    if rsync_task not in ["sourcefiles", "climatologies"]:
-        inv_logging.error(rsync_task)
+    if what not in ["sourcefiles", "climatologies"]:
+        inv_logging.error(what)
         sys.exit(1)
 
-    include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_task)
+    include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, what)
     rsync_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], \
-        settings["rsync_push"][rsync_task]["local_dir"], \
-        settings["rsync_push"][rsync_task]["remote_dir"], \
+        settings["rsync_push"][what]["local_dir"], \
+        settings["rsync_push"][what]["remote_dir"], \
         include, exclude, exclude_from, ignore_existing)
     inv_logging.success(push.__name__)
 
