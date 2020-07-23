@@ -3,6 +3,6 @@ pandas
 pyproj
 scipy
 pyarrow
-gdal
 requests
 basemap
+gdal

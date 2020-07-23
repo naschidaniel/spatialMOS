@@ -18,7 +18,9 @@ RUN conda config --set allow_conda_downgrades true
 
 RUN conda update conda
 
-RUN conda create -n spatialmos python 
+RUN conda config --set channel_priority strict
+
+RUN conda create -n spatialmos python=3.7
 
 ADD requirements.txt /usr/src/app/requirements.txt
 
