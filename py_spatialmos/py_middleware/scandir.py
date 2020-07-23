@@ -6,7 +6,7 @@ import os
 import logging
 import sys
 
-def scandir(data_path, parameter):
+def scandir(data_path, parameter, ending=None):
     """A function to browse a directory"""
     file_list = []
     for main_folder, sub_folder, files in os.walk(data_path):
@@ -20,6 +20,13 @@ def scandir(data_path, parameter):
                 continue
 
     file_list = sorted(file_list)
+
+    if file_list == []:
+        logging.error("There is no data in the %s folder.", data_path)
+        sys.exit(1)
+
+    if ending is not None:
+        file_list = [file_list for entry in file_list if ending in entry]
 
     if file_list == []:
         logging.error("There is no data in the %s folder.", data_path)
