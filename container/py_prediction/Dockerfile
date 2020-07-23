@@ -16,7 +16,7 @@ ADD ./requirements.txt .
 
 RUN conda config --set allow_conda_downgrades true
 
-RUN conda create -n spatialmos python=3.6 
+RUN conda create -n spatialmos python 
 
 RUN conda init bash
 

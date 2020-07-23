@@ -64,15 +64,6 @@ volumes:
 
 
 services:  
-  py_pre_processing_gefs:
-    build: ./container/py_pre_processing_gefs/
-    container_name: spatialMOS_py_pre_processing_gefs
-    volumes:
-      - log:/log:z
-      - py_spatialmos:/usr/src/app/py_spatialmos:z
-      - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
-      - get_available_data:/usr/src/app/data/get_available_data:z
-
   r_spatialmos_climatology:
     build: ./container/r_spatialmos_climatology/
     container_name: spatialMOS_r_spatialmos_climatology

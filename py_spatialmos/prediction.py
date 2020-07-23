@@ -3,6 +3,8 @@
 """ A script for generating surface forecasts based on GEFS predictions and GAMLSS climatologies."""
 
 import os
+os.environ["PROJ_LIB"] = "/usr/share/proj"
+
 import json
 import csv
 import logging
@@ -13,11 +15,10 @@ from osgeo import gdal
 from scipy.interpolate import griddata
 from py_middleware import logger_module
 from py_middleware import spatial_parser
-from py_middleware import spatial_predictions as pf
+from py_middleware import plot_fuctions
 from py_middleware import log_spread_calc
 
 # Import Basemap
-os.environ["PROJ_LIB"] = "/usr/share/proj"
 from mpl_toolkits.basemap import Basemap
 
 # Functions
@@ -48,51 +49,13 @@ def spatial_predictions(parser_dict):
     m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
-    # Read in files for U and V Component of wind at 10 m hight
-    if parser_dict["parameter"] == "wind_10m":
-        nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = pf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], available_steps)
-        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = pf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["date"], available_steps)
-
-        nwp_files = zip(nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps, nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps)
-        for u_mean_file, u_spread_file, v_mean_file, v_spread_file in nwp_files:
-            # Create folder structure
-            path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
-            if not os.path.exists(path_nwp_forecasts):
-                os.makedirs(path_nwp_forecasts)
-
-            u_mean, anal_date_u_mean, valid_date_u_mean = pf.open_gribfile(u_mean_file)
-            u_spread, anal_date_u_spread, valid_date_u_spread = pf.open_gribfile(u_spread_file)
-            v_mean, anal_date_v_mean, valid_date_v_mean = pf.open_gribfile(v_mean_file)
-            v_spread, anal_date_v_spread, valid_date_v_spread = pf.open_gribfile(v_spread_file)
-
-            wind_10m = pd.DataFrame()
-            wind_10m_spread = pd.DataFrame()
-            wind_10m["values"] = np.sqrt(u_mean["values"] ** 2 + v_mean["values"] ** 2)
-            wind_10m_spread["values"] = np.sqrt(u_spread["values"] ** 2 + v_spread["values"] ** 2)
-
-            wind_mean_file = u_mean_file[u_mean_file.rfind("/")+1:]
-            wind_spread_file = u_spread_file[u_spread_file.rfind("/")+1:]
-
-            wind_10m_mean = wind_10m.tostring()
-            wind_10m_spread = wind_10m_spread.tostring()
-
-            file_mean = os.path.join(path_nwp_forecasts, wind_mean_file)
-            file_spread = os.path.join(path_nwp_forecasts, wind_spread_file)
-
-            grbout_mean = open(file_mean, "wb")
-            grbout_mean.write(wind_10m_mean)
-            grbout_mean.close()
-
-            grbout_spread = open(file_spread, "wb")
-            grbout_spread.write(wind_10m_spread)
-            grbout_spread.close()
+    
 
     # Provide available NWP forecasts
-    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = pf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], available_steps)
 
     for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
-        grb_avg, anal_date_avg, valid_date_avg = pf.open_gribfile(nwp_gribfiles_mean_step)
-        grb_spr, anal_date_spr, valid_date_spr = pf.open_gribfile(nwp_gribfiles_spread_step)
+        grb_avg, anal_date_avg, valid_date_avg = plot_fuctions.open_gribfile(nwp_gribfiles_mean_step)
+        grb_spr, anal_date_spr, valid_date_spr = plot_fuctions.open_gribfile(nwp_gribfiles_spread_step)
         yday = grb_avg.validDate.timetuple().tm_yday
         dayminute = grb_avg.validDate.timetuple().tm_hour * 60
         step = grb_avg.startStep
@@ -165,12 +128,12 @@ def spatial_predictions(parser_dict):
         samos = samos.loc[:, ~samos.columns.duplicated()]
 
         ## Reshape dataframe
-        climate_fit = pf.reshapearea(samos["climate_fit"], alt)
-        climate_sd = pf.reshapearea(samos["climate_sd"], alt)
-        mean_fit = pf.reshapearea(samos["mean_fit"], alt)
-        mean_sd = pf.reshapearea(samos["mean_sd"], alt)
-        log_spread_fit = pf.reshapearea(samos["log_spread_fit"], alt)
-        log_spread_sd = pf.reshapearea(samos["log_spread_sd"], alt)
+        climate_fit = plot_fuctions.reshapearea(samos["climate_fit"], alt)
+        climate_sd = plot_fuctions.reshapearea(samos["climate_sd"], alt)
+        mean_fit = plot_fuctions.reshapearea(samos["mean_fit"], alt)
+        mean_sd = plot_fuctions.reshapearea(samos["mean_sd"], alt)
+        log_spread_fit = plot_fuctions.reshapearea(samos["log_spread_fit"], alt)
+        log_spread_sd = plot_fuctions.reshapearea(samos["log_spread_sd"], alt)
 
         # Generate anomalies
         nwp_anom = (mean_interpolation_spatial_area.data - mean_fit) / mean_sd
@@ -196,10 +159,10 @@ def spatial_predictions(parser_dict):
         samos_pred_spread = np.round(samos_pred_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        figname_nwp = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_avg.values - constant_offset, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_mean")
-        figname_nwp_sd = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_spr.values, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_spread")
-        figname_samos = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_mean")
-        figname_samos_sd = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_spread")
+        figname_nwp = plot_fuctions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_avg.values - constant_offset, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_mean")
+        figname_nwp_sd = plot_fuctions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_spr.values, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_spread")
+        figname_samos = plot_fuctions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_mean")
+        figname_samos_sd = plot_fuctions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_spread")
 
         timezone = pytz.timezone("UTC")
         anal_date_aware = timezone.localize(grb_avg.analDate)
