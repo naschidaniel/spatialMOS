@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import numpy as np
 import csv
-import pandas as pd
 import logging
 import json
+import numpy as np
+import pandas as pd
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import gribfile_to_pandasdf
@@ -15,6 +15,9 @@ from py_middleware import log_spread_calc
 
 # Functions
 def gribfiles_to_pandasdataframe(parser_dict):
+    """This function converts the gribfiles into a CSV-File and an a Json-Filefile."""
+    # Create an array with for the available steps
+    available_steps = np.arange(6, 193, 6, int)
     # Read in files for U and V Component of wind at 10 m hight
     if parser_dict["parameter"] == "wind_10m":
         nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], available_steps)
@@ -53,9 +56,8 @@ def gribfiles_to_pandasdataframe(parser_dict):
             grbout_spread = open(file_spread, "wb")
             grbout_spread.write(wind_10m_spread)
             grbout_spread.close()
-    
-    # Create an array with for the available steps
-    available_steps = np.arange(6, 193, 6, int)
+
+
 
     # Provide available NWP forecasts
     nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], available_steps)
@@ -77,29 +79,6 @@ def gribfiles_to_pandasdataframe(parser_dict):
         else:
             constant_offset = 0
 
-        gribfile_info = {
-            "parameter": parser_dict["parameter"],
-            "anal_date_avg": anal_date_avg,
-            "valid_date_avg": valid_date_avg,
-            "yday": yday,
-            "dayminute": dayminute,
-            "step": step,
-            "lons": lons.tolist(),
-            "lats": lats.tolist()
-        }
-
-        data_path = f"data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
-        if not os.path.exists(data_path):
-            os.makedirs(data_path)
-            logging.info("The folder '%s' was created", data_path)
-        json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_info.json")
-        gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_data.csv")
-
-        with open(json_info_filename, "w") as f:
-            json.dump(gribfile_info, f)
-            f.close()
-        logging.info("The infofile '%s' was written.", json_info_filename)
-
         df = []
         for lon in lons:
             for lat in lats:
@@ -110,9 +89,48 @@ def gribfiles_to_pandasdataframe(parser_dict):
                 df.append([mean, log_spread, lon, lat])
 
         prediction_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
+
+        data_path = f"data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+        if not os.path.exists(data_path):
+            os.makedirs(data_path)
+            logging.info("The folder '%s' was created", data_path)
+        json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_info.json")
+        gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_data.csv")
+        
+
+        gribfile_info = {
+            "parameter": parser_dict["parameter"],
+            "anal_date_avg": anal_date_avg,
+            "valid_date_avg": valid_date_avg,
+            "yday": yday,
+            "dayminute": dayminute,
+            "step": step,
+            "lons": lons.tolist(),
+            "lats": lats.tolist(),
+            "gribfile_data_filename": gribfile_data_filename
+        }
+        
         prediction_df.to_csv(gribfile_data_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
-        logging.info("The file '%s' was written.", gribfile_data_filename)
-        logging.info("The forecast fro the parameter %s was saved in CSV format and the infofile was created.", parser_dict["parameter"], )
+        logging.info("The infofile '%s' was written.", gribfile_data_filename)
+
+        gribfile_info = {
+            "parameter": parser_dict["parameter"],
+            "anal_date_avg": anal_date_avg,
+            "valid_date_avg": valid_date_avg,
+            "yday": yday,
+            "dayminute": dayminute,
+            "step": step,
+            "lons": lons.tolist(),
+            "lats": lats.tolist(),
+            "gribfile_data_filename": gribfile_data_filename
+        }
+
+        with open(json_info_filename, "w") as f:
+            json.dump(gribfile_info, f)
+            f.close()
+        logging.info("The infofile '%s' was written.", json_info_filename)
+
+        logging.info("The forecast for the parameter %s was saved in CSV format and the infofile was created.", parser_dict["parameter"], )
 
 # Main
 if __name__ == "__main__":
