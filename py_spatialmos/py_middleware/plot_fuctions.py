@@ -111,17 +111,3 @@ def reshapearea(column, alt):
     reshapedarea = data.reshape(alt.shape)
     reshapedarea = reshapedarea[::-1]
     return reshapedarea
-
-
-def avaliblelSteps(parameter, date, available_steps):
-    import sys
-    import os
-
-    path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
-    nwp_gribfiles_avalibel_mean_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "mean", available_steps)
-    nwp_gribfiles_avalibel_spread_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "spread", available_steps)
-
-    if nwp_gribfiles_avalibel_mean_steps is [] or nwp_gribfiles_avalibel_spread_steps is []:
-        logging.error("There are no predictions in the folder %s for the entered date %s | {}", path_nwp_forecasts, date)
-        
-    return nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps
