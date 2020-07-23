@@ -16,7 +16,7 @@ from scipy.interpolate import griddata
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import plot_fuctions
-from py_middleware import log_spread_calc
+from py_middleware import scandir
 
 # Import Basemap
 from mpl_toolkits.basemap import Basemap
@@ -49,20 +49,27 @@ def spatial_predictions(parser_dict):
     m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
+    data_path = f"data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+    gribinfofilelist = scandir.scandir(data_path, parser_dict["parameter"], ending=".json")
     
+    print(gribinfofilelist)
 
     # Provide available NWP forecasts
+    for json_info_filename in gribinfofilelist:
 
-    for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
-        grb_avg, anal_date_avg, valid_date_avg = plot_fuctions.open_gribfile(nwp_gribfiles_mean_step)
-        grb_spr, anal_date_spr, valid_date_spr = plot_fuctions.open_gribfile(nwp_gribfiles_spread_step)
-        yday = grb_avg.validDate.timetuple().tm_yday
-        dayminute = grb_avg.validDate.timetuple().tm_hour * 60
-        step = grb_avg.startStep
+        with open(json_info_filename) as json_file:
+            gribfile_info = json.load(json_file)
+            json_file.close()
+
+        anal_date_avg = gribfile_info["anal_date_avg"]
+        valid_date_avg = gribfile_info["valid_date_avg"]
+        yday = gribfile_info["yday"]
+        dayminute = gribfile_info["dayminute"]
+        step = gribfile_info["step"]
+        lons = gribfile_info["lons"]
+        lats = gribfile_info["lats"]
 
         # Create required grids for NWP
-        lons = np.linspace(float(grb_avg["longitudeOfFirstGridPointInDegrees"]), float(grb_avg["longitudeOfLastGridPointInDegrees"]), int(grb_avg["Ni"]))
-        lats = np.linspace(float(grb_avg["latitudeOfFirstGridPointInDegrees"]), float(grb_avg["latitudeOfLastGridPointInDegrees"]), int(grb_avg["Nj"]))
         xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons - 0.5, lats - 0.5))
 
         # Create required meshgrid for spatialMOS
@@ -71,22 +78,7 @@ def spatial_predictions(parser_dict):
 
         xx_samos, yy_samos = m_samos(*np.meshgrid(lons_linespace, lats_linespace))
 
-        # Corrections of the values
-        if parser_dict["parameter"] == "tmp_2m":
-            constant_offset = 273.15
-        else:
-            constant_offset = 0
-
-        df = []
-        for lon in lons:
-            for lat in lats:
-                mean = grb_avg.data(lat1=lat, lon1=lon)
-                mean = round(mean[0][0][0] - constant_offset, 2)
-                spread = grb_spr.data(lat1=lat, lon1=lon)
-                log_spread = log_spread_calc.log_spread(spread[0][0][0])
-                df.append([mean, log_spread, lon, lat])
-
-        nwp_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
+        nwp_df = pd.read_csv (gribfile_info["gribfile_data_filename"])
 
         # Interpolation of NWP forecasts
         mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_samos, yy_samos), method="linear")
