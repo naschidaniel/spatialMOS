@@ -12,17 +12,19 @@ RUN apt-get install gdal-bin libgdal-dev libproj-dev proj-bin -y
 
 RUN apt-get clean all
 
-ADD ./requirements.txt .
+WORKDIR /usr/src/app
 
 RUN conda config --set allow_conda_downgrades true
 
+RUN conda update conda
+
 RUN conda create -n spatialmos python 
 
+ADD requirements.txt /usr/src/app/requirements.txt
+
+RUN conda install -n spatialmos -c anaconda --file /usr/src/app/requirements.txt
+
 RUN conda init bash
-
-RUN conda install -n spatialmos -c conda-forge --file requirements.txt
-
-WORKDIR /usr/src/app
 
 RUN echo "source activate spatialmos" > ~/.bashrc
 

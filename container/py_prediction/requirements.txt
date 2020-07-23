@@ -1,9 +1,8 @@
 numpy
 pandas
-matplotlib
 pyproj
 scipy
 pyarrow
-basemap
 gdal
 requests
+basemap
