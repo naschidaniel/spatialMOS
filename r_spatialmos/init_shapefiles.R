@@ -3,7 +3,6 @@ rm(list = ls())
 library(raster)
 library(rgdal)
 library(rasterVis)
-library(feather)
 
 setwd('/usr/src/app/')
 plotpdf = TRUE
@@ -68,8 +67,7 @@ spatial_alt_area_df = data.frame(lon = lonlat[,1],
                                  lat = lonlat[,2],
                                  alt = values(spatial_alt_area))
 
-write_feather(spatial_alt_area_df, './data/get_available_data/gadm/spatial_alt_area_df.feather')
-write.csv2(spatial_alt_area_df, './data/get_available_data/gadm/spatial_alt_area_df.csv')
+write.csv(spatial_alt_area_df, './data/get_available_data/gadm/spatial_alt_area_df.csv')
 
 ##### Plot a map with used Stations
 if (plotpdf == TRUE) jpeg("./data/static/measuring_stations.jpg", height=500, width=800, pointsize = 20, quality=99)

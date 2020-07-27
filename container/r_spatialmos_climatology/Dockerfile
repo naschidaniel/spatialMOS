@@ -16,8 +16,6 @@ RUN R -e "install.packages(c('raster'), repos='http://cran.rstudio.com/')"
 
 RUN R -e "install.packages(c('rasterVis'), repos='http://cran.rstudio.com/')"
 
-RUN R -e "install.packages(c('feather'), repos='http://cran.rstudio.com/')"
-
 RUN R -e "install.packages(c('optparse'), repos='http://cran.rstudio.com/')"
 
 RUN R -e "install.packages(c('crch'), repos='http://cran.rstudio.com/')"

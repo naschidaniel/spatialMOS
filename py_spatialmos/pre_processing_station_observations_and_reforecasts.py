@@ -103,7 +103,7 @@ def spatialmos_dataframe():
     # Create a large dataset from station observations and reforecasts
     df_wetter_at["wg"] = df_wetter_at["wg"] * 0.277  # km/h in m/s
     df_wetter_at["wsg"] = df_wetter_at["wsg"] * 0.277
-    df_suedtirol["sonne"] = 600 / df_suedtirol["sonne"] * 100  # sonnenscheindaur in s nach prozent
+    df_suedtirol["sonne"] = 600 / df_suedtirol["sonne"] * 100  # sunnshine duration in seconds in %
 
     df_wetter_at_test = df_wetter_at
     df_suedtirol_test = df_suedtirol

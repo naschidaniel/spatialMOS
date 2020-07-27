@@ -10,11 +10,9 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
         step = integer
         what, parameter = string
     """
-    import io
     import os
     import matplotlib.pyplot as plt
     import numpy as np
-    import requests
 
     fig = plt.figure(figsize=(15, 15), dpi=96)
 
@@ -72,14 +70,6 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     plt.title("GFS Lauf {}".format(analDate), loc="right")
     m.colorbar(location="right")
     
-    gadm36_AUT_shp = "./data/get_available_data/gadm/gadm36_AUT_shp"
-    if not os.path.exists(gadm36_AUT_shp):
-        req_shapefile = requests.get("https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip", stream=True)
-        if req_shapefile.status_code == 200:
-            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
-                for chunk in req_shapefile.iter_content(chunk_size=128):
-                    f.write(chunk)
-
     m.readshapefile("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0", "aut")
 
     parallels = np.arange(44.5, 52.5, 1.)
@@ -96,7 +86,7 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    figname = "{}_step_{:03d}.png".format(grb_analDate.strftime("%Y%m%d%H%M"), step)
+    figname = "{}_step_{:03d}.png".format(grb_analDate, step)
     file = os.path.join(filepath, figname)
     fig.savefig(file, bbox_inches="tight")
     plt.close(fig=None)

@@ -140,6 +140,18 @@ def py_spatialmos__pre_proccessing_gribfiles(c, parameter, date):
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_proccessing_gribfiles.__name__)
 
+
+@task
+def py_spatialmos__pre_proccessing_topography(c):
+    """Create the predictions and the spatialMOS plots."""
+    inv_logging.task(py_spatialmos__pre_proccessing_topography.__name__)
+    cmd = ["py_pre_processing_topography", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/pre_processing_topography.py"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__pre_proccessing_topography.__name__)
+
+
+
 @task
 def py_spatialmos__prediction(c, parameter, date):
     """Create the predictions and the spatialMOS plots."""
@@ -148,6 +160,7 @@ def py_spatialmos__prediction(c, parameter, date):
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__prediction.__name__)
+
 
 spatialmos_development_ns = Collection("spatialmos")
 spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
@@ -160,6 +173,7 @@ spatialmos_development_ns.add_task(py_spatialmos__pre_processing_reforecasts)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_gribfiles)
+spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_topography)
 spatialmos_development_ns.add_task(r_spatialmos__gam_init_shapefiles)
 spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)

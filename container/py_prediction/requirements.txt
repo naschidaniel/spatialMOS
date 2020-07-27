@@ -1,8 +1,4 @@
 numpy
 pandas
-pyproj
 scipy
-pyarrow
-requests
 basemap
-gdal
