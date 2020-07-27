@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-""" A script for generating surface forecasts based on GEFS predictions and GAMLSS climatologies."""
+"""A script for generating surface forecasts based on GEFS predictions and GAMLSS climatologies."""
 
 import os
 import json
@@ -9,12 +9,13 @@ import logging
 import pytz
 import numpy as np
 import pandas as pd
-from osgeo import gdal
+import datetime as dt
 from scipy.interpolate import griddata
 from py_middleware import logger_module
 from py_middleware import spatial_parser
-from py_middleware import spatial_predictions as pf
-from py_middleware import log_spread_calc
+from py_middleware import plot_functions
+from py_middleware import scandir
+
 
 # Import Basemap
 os.environ["PROJ_LIB"] = "/usr/share/proj"
@@ -29,78 +30,44 @@ def spatial_predictions(parser_dict):
     if not os.path.exists(data_path_spool):
         os.makedirs(data_path_spool)
 
-    # Create an array with for the available steps
-    available_steps = np.arange(6, 193, 6, int)
-
-    spatial_alt_area = gdal.Open("./data/get_available_data/gadm/spatial_alt_area.grd")
-    alt = spatial_alt_area.ReadAsArray()
-    width = spatial_alt_area.RasterXSize
-    height = spatial_alt_area.RasterYSize
-    geo_transform = spatial_alt_area.GetGeoTransform()
-    min_lon = geo_transform[0]
-    min_lat = geo_transform[3] + width * geo_transform[4] + height * geo_transform[5]
-    max_lon = geo_transform[0] + width * geo_transform[1] + height * geo_transform[2]
-    max_lat = geo_transform[3]
-    center_lon = (min_lon + max_lon) / 2
-    center_lat = (min_lat + max_lat) / 2
+    with open("./data/get_available_data/gadm/spatial_alt_area.json") as f:
+        alt_area = json.load(f)
+        f.close()
+    
+    min_lon = alt_area["min_lon"]
+    min_lat = alt_area["min_lat"]
+    max_lon = alt_area["max_lon"]
+    max_lat = alt_area["max_lat"]
+    center_lon = alt_area["center_lon"]
+    center_lat = alt_area["center_lat"]
+    alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
 
     # BASEMAPS for GEFS predictions and spatialMOS
     m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
-    # Read in files for U and V Component of wind at 10 m hight
-    if parser_dict["parameter"] == "wind_10m":
-        nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = pf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], available_steps)
-        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = pf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["date"], available_steps)
-
-        nwp_files = zip(nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps, nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps)
-        for u_mean_file, u_spread_file, v_mean_file, v_spread_file in nwp_files:
-            # Create folder structure
-            path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
-            if not os.path.exists(path_nwp_forecasts):
-                os.makedirs(path_nwp_forecasts)
-
-            u_mean, anal_date_u_mean, valid_date_u_mean = pf.open_gribfile(u_mean_file)
-            u_spread, anal_date_u_spread, valid_date_u_spread = pf.open_gribfile(u_spread_file)
-            v_mean, anal_date_v_mean, valid_date_v_mean = pf.open_gribfile(v_mean_file)
-            v_spread, anal_date_v_spread, valid_date_v_spread = pf.open_gribfile(v_spread_file)
-
-            wind_10m = pd.DataFrame()
-            wind_10m_spread = pd.DataFrame()
-            wind_10m["values"] = np.sqrt(u_mean["values"] ** 2 + v_mean["values"] ** 2)
-            wind_10m_spread["values"] = np.sqrt(u_spread["values"] ** 2 + v_spread["values"] ** 2)
-
-            wind_mean_file = u_mean_file[u_mean_file.rfind("/")+1:]
-            wind_spread_file = u_spread_file[u_spread_file.rfind("/")+1:]
-
-            wind_10m_mean = wind_10m.tostring()
-            wind_10m_spread = wind_10m_spread.tostring()
-
-            file_mean = os.path.join(path_nwp_forecasts, wind_mean_file)
-            file_spread = os.path.join(path_nwp_forecasts, wind_spread_file)
-
-            grbout_mean = open(file_mean, "wb")
-            grbout_mean.write(wind_10m_mean)
-            grbout_mean.close()
-
-            grbout_spread = open(file_spread, "wb")
-            grbout_spread.write(wind_10m_spread)
-            grbout_spread.close()
+    data_path = f"./data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+    gribinfofilelist = scandir.scandir(data_path, parameter=None, ending=".json")
 
     # Provide available NWP forecasts
-    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = pf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], available_steps)
+    for json_info_filename in gribinfofilelist:
+        with open(json_info_filename) as json_file:
+            gribfile_info = json.load(json_file)
+            json_file.close()
+        
+        anal_date_avg = gribfile_info["anal_date_avg"]
+        valid_date_avg = gribfile_info["valid_date_avg"]
+        yday = gribfile_info["yday"]
+        dayminute = gribfile_info["dayminute"]
+        step = gribfile_info["step"]
+        lons = gribfile_info["lons"]
+        lats = gribfile_info["lats"]
 
-    for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
-        grb_avg, anal_date_avg, valid_date_avg = pf.open_gribfile(nwp_gribfiles_mean_step)
-        grb_spr, anal_date_spr, valid_date_spr = pf.open_gribfile(nwp_gribfiles_spread_step)
-        yday = grb_avg.validDate.timetuple().tm_yday
-        dayminute = grb_avg.validDate.timetuple().tm_hour * 60
-        step = grb_avg.startStep
+        lons = [x - 0.5 for x in lons]
+        lats = [x - 0.5 for x in lats]
 
         # Create required grids for NWP
-        lons = np.linspace(float(grb_avg["longitudeOfFirstGridPointInDegrees"]), float(grb_avg["longitudeOfLastGridPointInDegrees"]), int(grb_avg["Ni"]))
-        lats = np.linspace(float(grb_avg["latitudeOfFirstGridPointInDegrees"]), float(grb_avg["latitudeOfLastGridPointInDegrees"]), int(grb_avg["Nj"]))
-        xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons - 0.5, lats - 0.5))
+        xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons, lats))
 
         # Create required meshgrid for spatialMOS
         lons_linespace = np.linspace(min_lon, max_lon, alt.shape[1])
@@ -108,31 +75,16 @@ def spatial_predictions(parser_dict):
 
         xx_samos, yy_samos = m_samos(*np.meshgrid(lons_linespace, lats_linespace))
 
-        # Corrections of the values
-        if parser_dict["parameter"] == "tmp_2m":
-            constant_offset = 273.15
-        else:
-            constant_offset = 0
-
-        df = []
-        for lon in lons:
-            for lat in lats:
-                mean = grb_avg.data(lat1=lat, lon1=lon)
-                mean = round(mean[0][0][0] - constant_offset, 2)
-                spread = grb_spr.data(lat1=lat, lon1=lon)
-                log_spread = log_spread_calc.log_spread(spread[0][0][0])
-                df.append([mean, log_spread, lon, lat])
-
-        nwp_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
-
+        nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
+    
         # Interpolation of NWP forecasts
         mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_samos, yy_samos), method="linear")
         log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_samos, yy_samos), method="linear")
         mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
-        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{yday:03d}_dayminute_{dayminute}.feather"
-        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{yday:03d}_dayminute_{dayminute}_step_{step:03d}.feather"
+        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{yday:03d}_dayminute_{dayminute}.csv"
+        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{yday:03d}_dayminute_{dayminute}_step_{step:03d}.csv"
 
         # Check if climatologies files are available
         if not os.path.exists(climate_samos_file) or not os.path.exists(climate_samos_nwp_file):
@@ -140,8 +92,8 @@ def spatial_predictions(parser_dict):
             continue
 
         # Read in GAMLSS climatologies
-        climate_samos = pd.read_feather(climate_samos_file)
-        climate_samos_nwp = pd.read_feather(climate_samos_nwp_file)
+        climate_samos = pd.read_csv(climate_samos_file, header=0, index_col=0)
+        climate_samos_nwp = pd.read_csv(climate_samos_nwp_file, header=0, index_col=0)
 
         # Set dytypes to float
         cols = climate_samos.select_dtypes(exclude=["float"]).columns
@@ -154,7 +106,7 @@ def spatial_predictions(parser_dict):
         climate_samos = climate_samos.set_index(["lat", "lon"])
         climate_samos_nwp = climate_samos_nwp.set_index(["lat", "lon"])
 
-        spatial_alt_area = pd.read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
+        spatial_alt_area = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area_df.csv", header=0, index_col=0)
         cols_samos = spatial_alt_area.select_dtypes(exclude=["float"]).columns
         spatial_alt_area[cols_samos] = spatial_alt_area[cols_samos].apply(pd.to_numeric, downcast="float", errors="coerce")
         spatial_alt_area = spatial_alt_area.set_index(["lat", "lon"])
@@ -165,12 +117,12 @@ def spatial_predictions(parser_dict):
         samos = samos.loc[:, ~samos.columns.duplicated()]
 
         ## Reshape dataframe
-        climate_fit = pf.reshapearea(samos["climate_fit"], alt)
-        climate_sd = pf.reshapearea(samos["climate_sd"], alt)
-        mean_fit = pf.reshapearea(samos["mean_fit"], alt)
-        mean_sd = pf.reshapearea(samos["mean_sd"], alt)
-        log_spread_fit = pf.reshapearea(samos["log_spread_fit"], alt)
-        log_spread_sd = pf.reshapearea(samos["log_spread_sd"], alt)
+        climate_fit = plot_functions.reshapearea(samos["climate_fit"], alt)
+        climate_sd = plot_functions.reshapearea(samos["climate_sd"], alt)
+        mean_fit = plot_functions.reshapearea(samos["mean_fit"], alt)
+        mean_sd = plot_functions.reshapearea(samos["mean_sd"], alt)
+        log_spread_fit = plot_functions.reshapearea(samos["log_spread_fit"], alt)
+        log_spread_sd = plot_functions.reshapearea(samos["log_spread_sd"], alt)
 
         # Generate anomalies
         nwp_anom = (mean_interpolation_spatial_area.data - mean_fit) / mean_sd
@@ -196,14 +148,16 @@ def spatial_predictions(parser_dict):
         samos_pred_spread = np.round(samos_pred_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        figname_nwp = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_avg.values - constant_offset, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_mean")
-        figname_nwp_sd = pf.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, grb_spr.values, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="nwp_spread")
-        figname_samos = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_mean")
-        figname_samos_sd = pf.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, anal_date_avg, valid_date_avg, grb_avg.analDate, step, what="samos_spread")
+        nwp_mean = nwp_df["mean"].values.reshape(len(lats), len(lons))
+        nwp_spread = np.exp(nwp_df["log_spread"].values.reshape(len(lats), len(lons)))
+        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, nwp_mean, anal_date_avg, valid_date_avg, anal_date_avg, step, what="nwp_mean")
+        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, nwp_spread, anal_date_avg, valid_date_avg, anal_date_avg, step, what="nwp_spread")
+        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, anal_date_avg, valid_date_avg, anal_date_avg, step, what="samos_mean")
+        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, anal_date_avg, valid_date_avg, anal_date_avg, step, what="samos_spread")
 
         timezone = pytz.timezone("UTC")
-        anal_date_aware = timezone.localize(grb_avg.analDate)
-        valid_date_aware = timezone.localize(grb_avg.validDate)
+        anal_date_aware = timezone.localize(dt.datetime.strptime(anal_date_avg, "%Y-%m-%d %H:%M"))
+        valid_date_aware = timezone.localize(dt.datetime.strptime(anal_date_avg, "%Y-%m-%d %H:%M"))
 
         # TODO adaptations to the django models
         prediction_json_file = {"Modellauf": {"analDate": anal_date_aware.strftime("%Y-%m-%d %H:%M"), "parameter": parser_dict["parameter"]}, \

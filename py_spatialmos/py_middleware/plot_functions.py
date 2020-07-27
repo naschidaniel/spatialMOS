@@ -1,50 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import logging
-from typing import List, Union
-
-def nwp_gribfiles_avalibel_steps(parameter, date, available_steps):
-    """Eine Funktion zum durchsuchen der zur Verfügung stehenden NWP forecasts
-    """
-    import os
-    path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
-    
-    def mainfunktion(path_nwp_forecasts, avg_spr):
-        nwp_gribfiles_available_steps: List[Union[bytes, str]] = []
-        for dirpath, subdirs, files in os.walk(path_nwp_forecasts):
-            for file in files:
-                for step in available_steps:
-                    searchstring = None
-                    if avg_spr == "mean":
-                        searchstring = "_avg_f{:03d}".format(step)
-                    elif avg_spr == "spread":
-                        searchstring = "_spr_f{:03d}".format(step)
-
-                    if searchstring in file:
-                        nwp_gribfiles_available_steps.append(os.path.join(dirpath, file))
-                    else:
-                        continue
-
-        if nwp_gribfiles_available_steps == []:
-            logging.error("parameter: {:8} | available Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
-        else:
-            logging.info("parameter: {:8} | available Files: {} | {} | {}".format(parameter, len(nwp_gribfiles_available_steps), avg_spr, path_nwp_forecasts))
-
-        return (sorted(nwp_gribfiles_available_steps))
-    return mainfunktion(path_nwp_forecasts, "mean"), mainfunktion(path_nwp_forecasts, "spread")
-
-
-def open_gribfile(file):
-    import pygrib
-    file = pygrib.open(file)
-    file = file.select()[0]
-    analDate = file.analDate.strftime("%Y-%m-%d %H:%M")
-    validDate = file.validDate.strftime("%Y-%m-%d %H:%M")
-
-    return file, analDate, validDate
-
-
 def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate, grb_analDate, step, what):
     """Plotfunktion für forecast Grafiken
         m = Object vom type BASEMAP
@@ -54,11 +10,9 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
         step = integer
         what, parameter = string
     """
-    import io
     import os
     import matplotlib.pyplot as plt
     import numpy as np
-    import requests
 
     fig = plt.figure(figsize=(15, 15), dpi=96)
 
@@ -116,14 +70,6 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     plt.title("GFS Lauf {}".format(analDate), loc="right")
     m.colorbar(location="right")
     
-    gadm36_AUT_shp = "./data/get_available_data/gadm/gadm36_AUT_shp"
-    if not os.path.exists(gadm36_AUT_shp):
-        req_shapefile = requests.get("https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip", stream=True)
-        if req_shapefile.status_code == 200:
-            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
-                for chunk in req_shapefile.iter_content(chunk_size=128):
-                    f.write(chunk)
-
     m.readshapefile("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0", "aut")
 
     parallels = np.arange(44.5, 52.5, 1.)
@@ -140,7 +86,7 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, analDate, validDate,
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    figname = "{}_step_{:03d}.png".format(grb_analDate.strftime("%Y%m%d%H%M"), step)
+    figname = "{}_step_{:03d}.png".format(grb_analDate, step)
     file = os.path.join(filepath, figname)
     fig.savefig(file, bbox_inches="tight")
     plt.close(fig=None)
@@ -155,17 +101,3 @@ def reshapearea(column, alt):
     reshapedarea = data.reshape(alt.shape)
     reshapedarea = reshapedarea[::-1]
     return reshapedarea
-
-
-def avaliblelSteps(parameter, date, available_steps):
-    import sys
-    import os
-
-    path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
-    nwp_gribfiles_avalibel_mean_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "mean", available_steps)
-    nwp_gribfiles_avalibel_spread_steps = nwp_gribfiles_avalibel_steps(path_nwp_forecasts, "spread", available_steps)
-
-    if nwp_gribfiles_avalibel_mean_steps is [] or nwp_gribfiles_avalibel_spread_steps is []:
-        logging.error("There are no predictions in the folder %s for the entered date %s | {}", path_nwp_forecasts, date)
-
-    return nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps

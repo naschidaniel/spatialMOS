@@ -2,7 +2,6 @@ rm(list = ls())
 setwd('/usr/src/app/')
 start_time = Sys.time()
 
-library(feather)
 library(crch)
 library(gamlss)
 library(gamlss.add)
@@ -23,7 +22,7 @@ dayseq <- seq(daybegin,dayend,by=1)
 source("./r_spatialmos/gamlss_crch_model.R.conf")
 
 folder <- "climate_samos_nwp"
-spatial_alt_area_df <- read_feather("./data/get_available_data/gadm/spatial_alt_area_df.feather")
+spatial_alt_area_df <- read.csv("./data/get_available_data/gadm/spatial_alt_area_df.csv")
 
 climate_nwp_files = list.files(path = paste0("./data/spatialmos_climatology/gam/", parameter, "/climate_nwp/"), pattern=".csv", full.names = TRUE, recursive = FALSE)
 
@@ -44,9 +43,9 @@ for (i in 1:length(climate_nwp_files)){
     data_path_climatologies <- paste0("./data/spatialmos_climatology/gam/", parameter, "/", folder)
     dir.create(file.path(data_path_climatologies), showWarnings = FALSE)
     
-    filename_feather <- paste0(data_path_climatologies, "/yday_", daystring, "_dayminute_", as.character(unique(climate$dayminute)), "_step_", stepstr, ".feather")
-    print(filename_feather)
-    if (!file.exists(filename_feather)){
+    filename_csv <- paste0(data_path_climatologies, "/yday_", daystring, "_dayminute_", as.character(unique(climate$dayminute)), "_step_", stepstr, ".csv")
+    print(filename_csv)
+    if (!file.exists(filename_csv)){
       predict_climate_day_df <- data.frame(yday = yday, dayminute=dayminute, alt = spatial_alt_area_df["alt"], lon= spatial_alt_area_df["lon"], lat=spatial_alt_area_df["lat"])
       predict_climate_day_df_na_omit <- na.omit(predict_climate_day_df)
 
@@ -62,7 +61,7 @@ for (i in 1:length(climate_nwp_files)){
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, log_spread_sd)
       
       # export GEFS Reforecast climatologies for further processing in Python 
-      write_feather(save_predict_climate_day_df, filename_feather)
+      write.csv(save_predict_climate_day_df, filename_csv)
       
       # erase main memory
       rm(predict_climate_day_df)
