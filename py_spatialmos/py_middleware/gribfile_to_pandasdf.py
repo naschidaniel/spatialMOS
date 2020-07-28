@@ -7,7 +7,7 @@ from typing import List, Union
 import pygrib
 
 
-
+# Functions
 def available_files(path_nwp_forecasts, avg_spr, available_steps, parameter):
     """A function to determine the available files."""
     nwp_gribfiles_available_steps: List[Union[bytes, str]] = []
@@ -32,13 +32,15 @@ def available_files(path_nwp_forecasts, avg_spr, available_steps, parameter):
 
     return sorted(nwp_gribfiles_available_steps)
 
+
 def nwp_gribfiles_avalibel_steps(parameter, date, available_steps):
     """A function which returns the available files as array"""
     path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parameter}/{date}0000/"
     return available_files(path_nwp_forecasts, "mean", available_steps, parameter), available_files(path_nwp_forecasts, "spread", available_steps, parameter)
 
+
 def open_gribfile(file):
-    """A function to open grib files"""
+    """A function to open gribfiles"""
     file = pygrib.open(file)
     file = file.select()[0]
     analDate = file.analDate.strftime("%Y-%m-%d %H:%M")
