@@ -12,6 +12,4 @@ RUN conda install python=3.6
 
 RUN conda install -c conda-forge --file requirements.txt
 
-RUN conda install -c conda-forge pygrib
-
 WORKDIR /usr/src/app
