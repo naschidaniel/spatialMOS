@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 """This collection is used to execute commands for spatialMOS."""
 
+import os
+import sys
+import requests
+import logging
 from invoke import task, Collection
 import inv_logging
 import inv_docker
-
 
 @task
 def py_spatialmos__archive_available_data(c, folder):
@@ -140,7 +143,6 @@ def py_spatialmos__pre_proccessing_gribfiles(c, parameter, date):
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_proccessing_gribfiles.__name__)
 
-
 @task
 def py_spatialmos__pre_proccessing_topography(c):
     """Create the predictions and the spatialMOS plots."""
@@ -148,9 +150,21 @@ def py_spatialmos__pre_proccessing_topography(c):
     cmd = ["py_pre_processing_topography", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/pre_processing_topography.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
+
+    # Download Shapefile and unzip it
+    if not os.path.exists("./data/get_available_data/gadm/gadm36_AUT_shp"):
+        gadm36_zip_file = "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip"
+        req_shapefile = requests.get(gadm36_zip_file, stream=True)
+        if req_shapefile.status_code == 200:
+            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
+                for chunk in req_shapefile.iter_content(chunk_size=128):
+                    f.write(chunk)
+            logging.info("The shapefile '%s' has been downloaded.", gadm36_zip_file)
+            c.run(f"unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp")
+        else:
+            logging.error("There was a problem with the download of the shapefile '%s'", gadm36_zip_file)
+            sys.exit(1)
     inv_logging.success(py_spatialmos__pre_proccessing_topography.__name__)
-
-
 
 @task
 def py_spatialmos__prediction(c, parameter, date):
