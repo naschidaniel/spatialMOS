@@ -153,16 +153,17 @@ def py_spatialmos__pre_proccessing_topography(c):
 
     # Download Shapefile and unzip it
     if not os.path.exists("./data/get_available_data/gadm/gadm36_AUT_shp"):
-        gadm36_zip_file = "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip"
-        req_shapefile = requests.get(gadm36_zip_file, stream=True)
+        req_gadm36_zip_file = "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip"
+        gadm36_zip_file = "./data/get_available_data/gadm/gadm36_AUT_shp.zip"
+        req_shapefile = requests.get(req_gadm36_zip_file, stream=True)
         if req_shapefile.status_code == 200:
-            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
+            with open(gadm36_zip_file, mode="wb") as f:
                 for chunk in req_shapefile.iter_content(chunk_size=128):
                     f.write(chunk)
-            logging.info("The shapefile '%s' has been downloaded.", gadm36_zip_file)
+            logging.info("The shapefile '%s' has been downloaded.", req_gadm36_zip_file)
             c.run(f"unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp")
         else:
-            logging.error("There was a problem with the download of the shapefile '%s'", gadm36_zip_file)
+            logging.error("There was a problem with the download of the shapefile '%s'", req_gadm36_zip_file)
             sys.exit(1)
     inv_logging.success(py_spatialmos__pre_proccessing_topography.__name__)
 
