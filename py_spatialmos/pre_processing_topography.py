@@ -6,11 +6,9 @@ import os
 import json
 import logging
 import csv
-import requests
 from osgeo import gdal
 from py_middleware import logger_module
 from py_middleware import spatial_parser
-
 
 
 # Functions
@@ -53,19 +51,6 @@ def spatial_predictions():
         writer.writerows(alt)
 
     logging.info("The spatial_alt_area '%s' was written.", alt_area_filename)
-
-    gadm36_AUT_shp = "./data/get_available_data/gadm/gadm36_AUT_shp"
-    if not os.path.exists(gadm36_AUT_shp):
-        gadm36_zip_file = "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip"
-        req_shapefile = requests.get(gadm36_zip_file, stream=True)
-        if req_shapefile.status_code == 200:
-            with open("./data/get_available_data/gadm/gadm36_AUT_shp.zip", mode="wb") as f:
-                for chunk in req_shapefile.iter_content(chunk_size=128):
-                    f.write(chunk)
-            logging.info("The shapefile '%s' has been downloaded.", gadm36_zip_file)
-        else:
-            logging.error("There was a problem with the download of the shapefile '%s'", gadm36_zip_file)
-
 
 
 # Main

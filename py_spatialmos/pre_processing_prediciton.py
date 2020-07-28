@@ -97,19 +97,6 @@ def gribfiles_to_pandasdataframe(parser_dict):
         json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_info.json")
         gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_data.csv")
         
-
-        gribfile_info = {
-            "parameter": parser_dict["parameter"],
-            "anal_date_avg": anal_date_avg,
-            "valid_date_avg": valid_date_avg,
-            "yday": yday,
-            "dayminute": dayminute,
-            "step": step,
-            "lons": lons.tolist(),
-            "lats": lats.tolist(),
-            "gribfile_data_filename": gribfile_data_filename
-        }
-        
         prediction_df.to_csv(gribfile_data_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
         logging.info("The infofile '%s' was written.", gribfile_data_filename)
 
@@ -117,6 +104,8 @@ def gribfiles_to_pandasdataframe(parser_dict):
             "parameter": parser_dict["parameter"],
             "anal_date_avg": anal_date_avg,
             "valid_date_avg": valid_date_avg,
+            "mean": grb_avg.values,
+            "spread": grb_spr.values,
             "yday": yday,
             "dayminute": dayminute,
             "step": step,

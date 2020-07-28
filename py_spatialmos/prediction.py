@@ -46,35 +46,27 @@ def spatial_predictions(parser_dict):
     m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
+    # Read preprocessed Info Files
     data_path = f"./data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
-    gribinfofilelist = scandir.scandir(data_path, parameter=None, ending=".json")
+    gribinfo_files = scandir.scandir(data_path, parameter=None, ending=".json")
 
     # Provide available NWP forecasts
-    for json_info_filename in gribinfofilelist:
+    for json_info_filename in gribinfo_files:
         with open(json_info_filename) as json_file:
             gribfile_info = json.load(json_file)
             json_file.close()
-        
-        anal_date_avg = gribfile_info["anal_date_avg"]
-        valid_date_avg = gribfile_info["valid_date_avg"]
-        yday = gribfile_info["yday"]
-        dayminute = gribfile_info["dayminute"]
-        step = gribfile_info["step"]
-        lons = gribfile_info["lons"]
-        lats = gribfile_info["lats"]
-
-        lons = [x - 0.5 for x in lons]
-        lats = [x - 0.5 for x in lats]
 
         # Create required grids for NWP
+        lons = [x - 0.5 for x in gribfile_info["lons"]]
+        lats = [x - 0.5 for x in gribfile_info["lats"]]
         xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons, lats))
 
         # Create required meshgrid for spatialMOS
-        lons_linespace = np.linspace(min_lon, max_lon, alt.shape[1])
-        lats_linespace = np.linspace(max_lat, min_lat, alt.shape[0])
+        lons_samos = np.linspace(min_lon, max_lon, alt.shape[1])
+        lats_samos = np.linspace(max_lat, min_lat, alt.shape[0])
+        xx_samos, yy_samos = m_samos(*np.meshgrid(lons_samos, lats_samos))
 
-        xx_samos, yy_samos = m_samos(*np.meshgrid(lons_linespace, lats_linespace))
-
+        # Read in preprocessed NWP CSV file with the predictions
         nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
     
         # Interpolation of NWP forecasts
@@ -83,12 +75,12 @@ def spatial_predictions(parser_dict):
         mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
-        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{yday:03d}_dayminute_{dayminute}.csv"
-        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{yday:03d}_dayminute_{dayminute}_step_{step:03d}.csv"
+        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}.csv"
+        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info["step"]:03d}.csv"
 
         # Check if climatologies files are available
         if not os.path.exists(climate_samos_file) or not os.path.exists(climate_samos_nwp_file):
-            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], step, climate_samos_nwp_file, climate_samos_file)
+            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_samos_nwp_file, climate_samos_file)
             continue
 
         # Read in GAMLSS climatologies
@@ -129,11 +121,11 @@ def spatial_predictions(parser_dict):
         log_spread_nwp_anom = (log_spread_interpolation_spatial_area.data - log_spread_fit) / log_spread_sd
 
         # Check if samos coefficients are available
-        samos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/samos_coef/samos_coef_{parser_dict['parameter']}_{step:03d}.csv"
+        samos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/samos_coef/samos_coef_{parser_dict['parameter']}_{gribfile_info['step']:03d}.csv"
         if os.path.exists(samos_coef_file):
             samos_coef = pd.read_csv(samos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
         else:
-            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], step, samos_coef_file)
+            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], samos_coef_file)
             continue
 
         # Generate samos spatial predictions
@@ -148,23 +140,22 @@ def spatial_predictions(parser_dict):
         samos_pred_spread = np.round(samos_pred_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        nwp_mean = nwp_df["mean"].values.reshape(len(lats), len(lons))
-        nwp_spread = np.exp(nwp_df["log_spread"].values.reshape(len(lats), len(lons)))
-        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, nwp_mean, anal_date_avg, valid_date_avg, anal_date_avg, step, what="nwp_mean")
-        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, nwp_spread, anal_date_avg, valid_date_avg, anal_date_avg, step, what="nwp_spread")
-        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, anal_date_avg, valid_date_avg, anal_date_avg, step, what="samos_mean")
-        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, anal_date_avg, valid_date_avg, anal_date_avg, step, what="samos_spread")
+        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, gribfile_info["mean"], gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
+        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, gribfile_info["spread"], gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
+        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
+        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
+        # Consider Timezone
         timezone = pytz.timezone("UTC")
-        anal_date_aware = timezone.localize(dt.datetime.strptime(anal_date_avg, "%Y-%m-%d %H:%M"))
-        valid_date_aware = timezone.localize(dt.datetime.strptime(anal_date_avg, "%Y-%m-%d %H:%M"))
+        anal_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
+        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
 
         # TODO adaptations to the django models
         prediction_json_file = {"Modellauf": {"analDate": anal_date_aware.strftime("%Y-%m-%d %H:%M"), "parameter": parser_dict["parameter"]}, \
-                                "VorhersageStep": {"validDate": valid_date_aware.strftime("%Y-%m-%d %H:%M"), "step": step, "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd}, \
+                                "VorhersageStep": {"validDate": valid_date_aware.strftime("%Y-%m-%d %H:%M"), "step": gribfile_info["step"], "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd}, \
                                 "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), "samos_spread": samos_pred_spread.flatten().tolist()}}
 
-        prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d%H%M"), step))
+        prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d%H%M"), gribfile_info["step"]))
         with open(prediction_filename, "w") as f:
             json.dump(prediction_json_file, f)
             f.close()
