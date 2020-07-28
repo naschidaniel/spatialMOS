@@ -90,22 +90,29 @@ def gribfiles_to_pandasdataframe(parser_dict):
 
         prediction_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
 
-        data_path = f"data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+        data_path = f"./data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
         if not os.path.exists(data_path):
             os.makedirs(data_path)
             logging.info("The folder '%s' was created", data_path)
         json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_info.json")
         gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_data.csv")
-        
+        grb_avg_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_avg")
+        grb_spr_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_spz")
+
         prediction_df.to_csv(gribfile_data_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
         logging.info("The infofile '%s' was written.", gribfile_data_filename)
-
+        
+        np.save(grb_avg_filename, grb_avg.values - constant_offset)
+        logging.info("The grb_avg file '%s' was written.", f"{grb_avg_filename}.npy")
+        np.save(grb_spr_filename, grb_spr.values)
+        logging.info("The grb_avg file '%s' was written.", f"{grb_spr_filename}.npy")
+        
         gribfile_info = {
             "parameter": parser_dict["parameter"],
             "anal_date_avg": anal_date_avg,
             "valid_date_avg": valid_date_avg,
-            "mean": grb_avg.values,
-            "spread": grb_spr.values,
+            "grb_avg_filename": f"{grb_avg_filename}.npy",
+            "grb_spr_filename": f"{grb_spr_filename}.npy",
             "yday": yday,
             "dayminute": dayminute,
             "step": step,

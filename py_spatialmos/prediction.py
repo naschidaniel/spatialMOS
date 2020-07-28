@@ -76,7 +76,7 @@ def spatial_predictions(parser_dict):
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
         climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}.csv"
-        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info["step"]:03d}.csv"
+        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info['step']:03d}.csv"
 
         # Check if climatologies files are available
         if not os.path.exists(climate_samos_file) or not os.path.exists(climate_samos_nwp_file):
@@ -140,8 +140,8 @@ def spatial_predictions(parser_dict):
         samos_pred_spread = np.round(samos_pred_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, gribfile_info["mean"], gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, gribfile_info["spread"], gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
+        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
+        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
         figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
         figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
