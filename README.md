@@ -76,7 +76,17 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr spr
 ```
 
+#### TODO GEFS Weather Forecasts Pre Processing
 
+```
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-topography
+```
+
+#### TODO Topography
+
+```
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-topography
+```
 
 ### Raw data pre processing for further statistical processing
 
