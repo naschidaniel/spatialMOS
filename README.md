@@ -39,6 +39,14 @@ A list for spatialMOSv2 implemented invoke commands:
 ***For statistical postprocessing of weather forecasts, past values of at least two years are required.***
 
 
+#### Digital Ground Model and Shapefiles for North- and South Tyrol
+
+The required shapefiles are prepared for further processing with the help of the R libraries rgdal and raster. For the topography the GADM topography of North and South Tyrol is used. For the predictions, which are generated in python, the required [GADM](https://gadm.org/) files are downloaded and unpacked using unzip. The will be downloaded from the website  and stored in folder `./data/get_available_data/gadm`. 
+
+```
+./task.py local.spatialmos.spatialmos--init-topography
+```
+
 #### Meteorological station values
 Past measured values are obtained via the API interfaces of [http://wetter.provinz.bz.it/](http://wetter.provinz.bz.it/) and [http://at-wetter.tk/](http://at-wetter.tk/). The required stations.csv file for [http://at-wetter.tk/](http://at-wetter.tk/) is downloaded from moses.tirol.
 
@@ -76,10 +84,14 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 ./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr spr
 ```
 
-#### TODO GEFS Weather Forecasts Pre Processing
+#### GEFS Weather Forecasts Pre Processing
+
+Due to problems with dependencies it was decided to create custom containers for pygrib, basemap and gdal. The downloaded data must therefore be pre-processed for the forecasts.
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-topography
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter tmp_2m 
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter rh_2m
+./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter wind_10m
 ```
 
 #### TODO Topography
@@ -130,14 +142,6 @@ The observations and the GEFS Reforecasts still need to be pre-processed. The ob
 ```
 
 ### Statistical processing for spatial of the spatially valid climatologies
-
-#### Digital Ground Model and Shapefiles for North- and South Tyrol
-
-The required shapefiles are prepared for further processing with the help of the R libraries rgdal and raster. For the topography the GADM topography of North and South Tyrol is used. The will be downloaded from the website [GADM](https://gadm.org/) and stored in folder `./data/get_available_data/gadm`. 
-
-```
-./task.py local.spatialmos.r-spatialmos--gam-init-shapefiles
-```
 
 
 #### Climatologies for the daily calculation of forecasts
@@ -247,6 +251,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 
 ## Changelog
+- 2020-08-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created.
 - 2020-07-22 The fabric commands for spatialMOS has been improved
 - 2020-07-20 The codestyle embellishments were tested and merged
 - 2020-07-19 Embellish codestyle with prettier
