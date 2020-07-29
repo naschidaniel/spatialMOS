@@ -27,9 +27,9 @@ services:
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
       - spool:/usr/src/app/spool:z
   
-  py_pre_processing_gefs:
-    build: ./container/py_pre_processing_gefs/
-    container_name: spatialMOS_py_pre_processing_gefs
+  py_pygrib:
+    build: ./container/py_pygrib/
+    container_name: spatialMOS_py_pygrib
     volumes:
       - log:/log:z
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
