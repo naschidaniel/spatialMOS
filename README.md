@@ -1,11 +1,11 @@
-# spatialMOSv2
+# spatialMOS
 
-spatialMOSv2 is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed.
+spatialMOS is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed.
 
 
 ## Introduction
-With spatialMOSv2 weather forecasts of the global weather model GEFS (1 x 1° Grid) can be improved for the regions North- and South Tyrol. Based on past station observations and past predictions, future predictions are corrected with statistical methods. 
-The spatial resolution of the statistically corrected predictions corresponds to the SRTM Data (Further information can be obtained from [https://gadm.org](https://gadm.org)), with leads to a of 90 x 90 m. With spatialMOSv2 temperature, relative humidity and wind forecasts can be made at ground level.
+With spatialMOS weather forecasts of the global weather model GEFS (1 x 1° Grid) can be improved for the regions North- and South Tyrol. Based on past station observations and past predictions, future predictions are corrected with statistical methods. 
+The spatial resolution of the statistically corrected predictions corresponds to the SRTM Data (Further information can be obtained from [https://gadm.org](https://gadm.org)), with leads to a of 90 x 90 m. With spatialMOS temperature, relative humidity and wind forecasts can be made at ground level.
 
 A detailed description of the method can be found in the master thesis [Flächenhafte Vorhersagen von Temperatur und relativer Luftfeuchte im Flachland](http://diglib.uibk.ac.at/urn:nbn:at:at-ubi:1-16130).
 
@@ -16,7 +16,7 @@ You will need [python](https://www.python.org/) **version 3.7+**, [invoke](http:
 ## Configuration and Installation
 Copy the `fabric/settings.example.json` to `./settings.json` and adapt the file to your individual needs. Two environments are provided in the file: `development` and `production`. For local operation, only the dictionary `development` must be edited. The `production` dictionary entries are optional and only relevant for the server.
 
-spatialMOSv2 can be installed locally using the command:
+spatialMOS can be installed locally using the command:
 
 ```
 ./task.py local.install.quickinstallation
@@ -27,7 +27,7 @@ The required folder structure and environment variables are set.
 
 ## Usage
 
-A list for spatialMOSv2 implemented invoke commands: 
+A list for spatialMOS implemented invoke commands: 
 
 ```
 ./task.py
