@@ -251,7 +251,9 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 
 ## Changelog
-- 2020-08-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created.
+
+- 2020-07-29 The new version was installed on the server. Daily two meter Temperature spatialMOS forecasts are now generated.
+- 2020-07-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created
 - 2020-07-22 The fabric commands for spatialMOS has been improved
 - 2020-07-20 The codestyle embellishments were tested and merged
 - 2020-07-19 Embellish codestyle with prettier
