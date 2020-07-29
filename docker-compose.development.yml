@@ -64,9 +64,9 @@ volumes:
 
 
 services:  
-  r_spatialmos_climatology:
-    build: ./container/r_spatialmos_climatology/
-    container_name: spatialMOS_r_spatialmos_climatology
+  r_base:
+    build: ./container/r_base/
+    container_name: spatialMOS_r_base
     volumes:
       - log:/log:z
       - r_spatialmos:/usr/src/app/r_spatialmos:z

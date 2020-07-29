@@ -15,7 +15,7 @@ import inv_docker
 def spatialmos__init_topography(c):
     """Create shapefiles for spatialMOS"""
     inv_logging.task(spatialmos__init_topography.__name__)
-    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/init_shapefiles.R"]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/init_shapefiles.R"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
 
@@ -134,7 +134,7 @@ def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
 def r_spatialmos__gamlss_crch_model(c, parameter, validation):
     """Create the required spatial climatologies."""
     inv_logging.task(r_spatialmos__gamlss_crch_model.__name__)
-    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/gamlss_crch_model.R", "--parameter", parameter, "--validation", validation]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/gamlss_crch_model.R", "--parameter", parameter, "--validation", validation]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__gamlss_crch_model.__name__)
@@ -143,7 +143,7 @@ def r_spatialmos__gamlss_crch_model(c, parameter, validation):
 def r_spatialmos__spatial_climatologies_nwp(c, parameter, begin, end):
     """Create daily climatologies for the NWP."""
     inv_logging.task(r_spatialmos__spatial_climatologies_nwp.__name__)
-    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/spatial_climatologies_nwp.R", "--parameter", parameter, "--begin", begin, "--end", end]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_nwp.R", "--parameter", parameter, "--begin", begin, "--end", end]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_nwp.__name__)
@@ -152,7 +152,7 @@ def r_spatialmos__spatial_climatologies_nwp(c, parameter, begin, end):
 def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
     """Create daily climatologies for the observations."""
     inv_logging.task(r_spatialmos__spatial_climatologies_obs.__name__)
-    cmd = ["r_spatialmos_climatology", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--parameter", parameter, "--begin", begin, "--end", end]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--parameter", parameter, "--begin", begin, "--end", end]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
