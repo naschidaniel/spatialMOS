@@ -1,12 +1,6 @@
 version: '3.7'
 
 volumes:
-  get_available_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${INSTALLFOLDER}/data/get_available_data
   log:
     driver: local
     driver_opts:
@@ -49,3 +43,15 @@ volumes:
       type: none
       o: bind
       device: ${INSTALLFOLDER}/py_spatialmos
+  get_available_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/get_available_data
+  spatialmos_climatology:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/data/spatialmos_climatology
