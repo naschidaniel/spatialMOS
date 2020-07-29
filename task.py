@@ -41,7 +41,7 @@ production_ns.add_task(inv_install.setproductionenvironment)
 production_ns.add_collection(inv_docker.docker_compose_production_ns)
 production_ns.add_collection(inv_django.django_production_ns)
 production_ns.add_task(inv_docker.docker)
-production_ns.add_collection(inv_spatialmos.spatialmos_development_ns)
+production_ns.add_collection(inv_spatialmos.spatialmos_production_ns)
 production_ns.add_collection(inv_postgres.postgresql_production_ns)
 MAIN_NS.add_collection(production_ns)
 
