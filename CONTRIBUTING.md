@@ -1,5 +1,5 @@
-# spatialMOSv2 Contributing Guide
-Hi! I'm really excited that you are interested in contributing to spatialMOSv2. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
+# spatialMOS Contributing Guide
+Hi! I'm really excited that you are interested in contributing to spatialMOS. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
 
 - [Style Guide](#style-guide)
 - [Development Setup](#development-setup)

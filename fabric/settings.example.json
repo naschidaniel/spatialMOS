@@ -41,7 +41,7 @@
     "docker": {
       "USERID": "1001",
       "GROUPID": "1001",
-      "INSTALLFOLDER": "/www/spatialMOSv2",
+      "INSTALLFOLDER": "/www/spatialMOS",
       "HOST": "production",
       "DOCKER_TLS_VERIFY": "1",
       "DOCKER_HOST": "tcp://example@example.com:2376",
@@ -57,7 +57,7 @@
     "rsync_push": {
       "sourcefiles": {
         "local_dir": ".",
-        "remote_dir": "/www/spatialMOSv2",
+        "remote_dir": "/www/spatialMOS",
         "include": [
           "fabric/cert/ca.pem",
           "fabric/cert/cert.pem",
@@ -76,7 +76,7 @@
       },
       "climatologies": {
         "local_dir": "./data",
-        "remote_dir": "/www/spatialMOSv2/data",
+        "remote_dir": "/www/spatialMOS/data",
         "ignore-existing": "True",
         "include": [
           "get_available_data/gadm",
