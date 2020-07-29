@@ -16,6 +16,7 @@ from py_middleware import log_spread_calc
 # Functions
 def gribfiles_to_pandasdataframe(parser_dict):
     """This function converts the gribfiles into a CSV-File and an a Json-Filefile."""
+    
     # Create an array with for the available steps
     available_steps = np.arange(6, 193, 6, int)
     # Read in files for U and V Component of wind at 10 m hight

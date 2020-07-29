@@ -6,20 +6,20 @@ import os
 import json
 import csv
 import logging
-import pytz
+import datetime as dt
 import numpy as np
 import pandas as pd
-import datetime as dt
+import pytz
 from scipy.interpolate import griddata
+from mpl_toolkits.basemap import Basemap
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import plot_functions
 from py_middleware import scandir
 
-
-# Import Basemap
+# Environment Variables
 os.environ["PROJ_LIB"] = "/usr/share/proj"
-from mpl_toolkits.basemap import Basemap
+
 
 # Functions
 def spatial_predictions(parser_dict):
@@ -33,7 +33,7 @@ def spatial_predictions(parser_dict):
     with open("./data/get_available_data/gadm/spatial_alt_area.json") as f:
         alt_area = json.load(f)
         f.close()
-    
+
     min_lon = alt_area["min_lon"]
     min_lat = alt_area["min_lat"]
     max_lon = alt_area["max_lon"]
@@ -68,7 +68,7 @@ def spatial_predictions(parser_dict):
 
         # Read in preprocessed NWP CSV file with the predictions
         nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
-    
+
         # Interpolation of NWP forecasts
         mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_samos, yy_samos), method="linear")
         log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_samos, yy_samos), method="linear")
@@ -140,10 +140,14 @@ def spatial_predictions(parser_dict):
         samos_pred_spread = np.round(samos_pred_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
-        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, samos_pred_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
+        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+            np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
+        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+            np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
+        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+            samos_pred, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
+        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+            samos_pred_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
         # Consider Timezone
         timezone = pytz.timezone("UTC")
@@ -152,8 +156,10 @@ def spatial_predictions(parser_dict):
 
         # TODO adaptations to the django models
         prediction_json_file = {"Modellauf": {"analDate": anal_date_aware.strftime("%Y-%m-%d %H:%M"), "parameter": parser_dict["parameter"]}, \
-                                "VorhersageStep": {"validDate": valid_date_aware.strftime("%Y-%m-%d %H:%M"), "step": gribfile_info["step"], "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd}, \
-                                "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), "samos_spread": samos_pred_spread.flatten().tolist()}}
+                                "VorhersageStep": {"validDate": valid_date_aware.strftime("%Y-%m-%d %H:%M"), "step": gribfile_info["step"], \
+                                "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd}, \
+                                "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), \
+                                "samos_spread": samos_pred_spread.flatten().tolist()}}
 
         prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d%H%M"), gribfile_info["step"]))
         with open(prediction_filename, "w") as f:
