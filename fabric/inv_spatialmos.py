@@ -64,7 +64,7 @@ def py_spatialmos__get_gefs(c, date, runhour, parameter, avgspr):
 def py_spatialmos__get_suedtirol(c, begindate, enddate):
     """Download data from South Tyrol."""
     inv_logging.task(py_spatialmos__get_suedtirol.__name__)
-    cmd = ["py_get", "python", "./py_spatialmos/get_suedtirol_data.py",
+    cmd = ["py_requests", "python", "./py_spatialmos/get_suedtirol_data.py",
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
@@ -75,7 +75,7 @@ def py_spatialmos__get_suedtirol(c, begindate, enddate):
 def py_spatialmos__get_uibk(c):
     """Download data from uibk."""
     inv_logging.task(py_spatialmos__get_uibk.__name__)
-    cmd = ["py_get", "python", "./py_spatialmos/get_uibk_data.py"]
+    cmd = ["py_requests", "python", "./py_spatialmos/get_uibk_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_uibk.__name__)
@@ -85,7 +85,7 @@ def py_spatialmos__get_uibk(c):
 def py_spatialmos__get_wetter_at(c, begindate, enddate):
     """Download data from wetter_at."""
     inv_logging.task(py_spatialmos__get_wetter_at.__name__)
-    cmd = ["py_get", "python", "./py_spatialmos/get_wetter_at_data.py",
+    cmd = ["py_requests", "python", "./py_spatialmos/get_wetter_at_data.py",
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
@@ -96,7 +96,7 @@ def py_spatialmos__get_wetter_at(c, begindate, enddate):
 def py_spatialmos__get_zamg(c):
     """Download data from zamg webpage."""
     inv_logging.task(py_spatialmos__get_zamg.__name__)
-    cmd = ["py_get", "python", "./py_spatialmos/get_zamg_data.py"]
+    cmd = ["py_requests", "python", "./py_spatialmos/get_zamg_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_zamg.__name__)

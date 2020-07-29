@@ -1,9 +1,9 @@
 version: '3.7'
 
 services:  
-  py_get:
-    build: ./container/py_get/
-    container_name: spatialMOS_py_get
+  py_requests:
+    build: ./container/py_requests/
+    container_name: spatialMOS_py_requests
     volumes:
       - log:/log:z
       - py_spatialmos:/usr/src/app/py_spatialmos:z
