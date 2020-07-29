@@ -9,9 +9,9 @@ services:
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
   
-  py_get_gefs:
-    build: ./container/py_get_gefs/
-    container_name: spatialMOS_py_get_gefs
+  py_wgrbi2:
+    build: ./container/py_wgrbi2/
+    container_name: spatialMOS_py_wgrbi2
     volumes:
       - log:/log:z
       - py_spatialmos:/usr/src/app/py_spatialmos:z
