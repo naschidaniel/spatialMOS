@@ -158,13 +158,13 @@ def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
 
 @task
-def py_spatialmos__pre_proccessing_gribfiles(c, date, parameter):
+def py_spatialmos__pre_processing_gribfiles(c, date, parameter):
     """Create the csv file and the jsonfile from the avalible gribfiles."""
-    inv_logging.task(py_spatialmos__pre_proccessing_gribfiles.__name__)
+    inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
     cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediciton.py", "--date", date, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_proccessing_gribfiles.__name__)
+    inv_logging.success(py_spatialmos__pre_processing_gribfiles.__name__)
 
 @task
 def py_spatialmos__prediction(c, date, parameter):
@@ -187,7 +187,7 @@ spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_reforecasts)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
-spatialmos_development_ns.add_task(py_spatialmos__pre_proccessing_gribfiles)
+spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gribfiles)
 spatialmos_development_ns.add_task(py_spatialmos__prediction)
 spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)

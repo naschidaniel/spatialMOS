@@ -89,15 +89,15 @@ Current Ensemble weather forecasts can be obtained from the FTP server. Please u
 Due to problems with dependencies it was decided to create custom containers for pygrib, basemap and gdal. The downloaded data must therefore be pre-processed for the forecasts.
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter tmp_2m 
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter rh_2m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-gribfiles --date 2020-07-22 --parameter wind_10m
+./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter tmp_2m 
+./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter rh_2m
+./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter wind_10m
 ```
 
 #### TODO Topography
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-topography
+./task.py local.spatialmos.py-spatialmos--pre-processing-topography
 ```
 
 ### Raw data pre processing for further statistical processing
@@ -108,19 +108,19 @@ Due to problems with dependencies it was decided to create custom containers for
 The Global Weather Model data from the GEFS Model is bilinear interpolated to the station location. The predictions are saved per model run and step in CSV-Format. The data is stored under `./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/*`. 
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter tmp_2m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter spfh_2m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter pres_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter apcp_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter ugrd_10m
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter vgrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter tmp_2m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter spfh_2m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter apcp_sfc
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter ugrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter vgrd_10m
 ```
 
 The data for relative humidity and wind are calculated from other parameters. These parameters must be interpolated in advance.
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter rh_2m #Required pre calculated parameters: tmp_2m, spfh_2m, pres_sfc
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-reforecasts --parameter wind_10m #Required pre calculated parameters: ugrd_10m, vgrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter rh_2m #Required pre calculated parameters: tmp_2m, spfh_2m, pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter wind_10m #Required pre calculated parameters: ugrd_10m, vgrd_10m
 ```
 
 
@@ -129,7 +129,7 @@ The data for relative humidity and wind are calculated from other parameters. Th
 For further statistical processing a data set with all station observations for all parameters and forecasts of at least two past years are required. 
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-proccessing-observations-and-reforecasts-to-stations
+./task.py local.spatialmos.py-spatialmos--pre-processing-observations-and-reforecasts-to-stations
 ```
 
 The observations and the GEFS Reforecasts still need to be pre-processed. The observations and the GEFS Reforecasts will be combined. From these files the area-wide valid climatologies are generated.
