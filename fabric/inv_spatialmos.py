@@ -55,7 +55,7 @@ def py_spatialmos__archive_available_data(c, folder):
 def py_spatialmos__get_gefs(c, date, runhour, parameter, avgspr):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_wgrbi2", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--runhour", runhour, "--parameter", parameter, "--avgspr", avgspr]
+    cmd = ["py_wgrib2", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--runhour", runhour, "--parameter", parameter, "--avgspr", avgspr]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_gefs.__name__)
