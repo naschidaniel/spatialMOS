@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""With this Python script the GEFS Ensemble predictions can be interpolated bilinearly to the station locations."""
+"""With this Python script the GEFS Ensemble predictions can be interpolated bilinear to the station locations."""
 
 import csv
 import os
