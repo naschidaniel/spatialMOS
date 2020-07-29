@@ -105,7 +105,7 @@ def py_spatialmos__get_zamg(c):
 def py_spatialmos__pre_processing_reforecasts(c, parameter):
     """GEFS Reforecasts are bilinear interpolated at station locations."""
     inv_logging.task(py_spatialmos__pre_processing_reforecasts.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_processing_reforecasts.__name__)
@@ -115,7 +115,7 @@ def py_spatialmos__pre_processing_reforecasts(c, parameter):
 def py_spatialmos__pre_processing_observations_and_reforecasts_to_stations(c):
     """Station Observations and GEFS Reforecasts are combined."""
     inv_logging.task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__)
@@ -124,7 +124,7 @@ def py_spatialmos__pre_processing_observations_and_reforecasts_to_stations(c):
 def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
     """Create climatologies for further processing in R with gamlss."""
     inv_logging.task(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
@@ -161,7 +161,7 @@ def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
 def py_spatialmos__pre_proccessing_gribfiles(c, date, parameter):
     """Create the csv file and the jsonfile from the avalible gribfiles."""
     inv_logging.task(py_spatialmos__pre_proccessing_gribfiles.__name__)
-    cmd = ["py_pre_processing_gefs", "python", "./py_spatialmos/pre_processing_prediciton.py", "--date", date, "--parameter", parameter]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediciton.py", "--date", date, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_proccessing_gribfiles.__name__)
