@@ -36,8 +36,8 @@ def check_upstream(c):
     if c.run("git status --short", hide=True).stdout.strip() != "":
         logging.error("You have a dirty working directory (run git status)")
         sys.exit(1)
-    
-        
+
+
 @task
 def quickinstallation(c):
     """A task for quick installation of spatialMOS"""
@@ -169,7 +169,7 @@ def deploy(c):
     c.run("./task.py local.node.build")
     c.run("./task.py local.django.collectstatic")
     inv_docker.stop(c)
-    inv_rsync.push(c)
+    inv_rsync.push(c, "sourcecode")
     setproductionenvironment(c)
     inv_docker.rebuild(c)
     inv_django.migrate(c)
