@@ -94,6 +94,8 @@ services:
       - "80:80"
     build:
       context: "./container/nginx"
+      args: 
+        NGINX_CONF: ${NGINX_CONF}
     volumes:
       - website:/www/site:z
       - static:/www/static:z
