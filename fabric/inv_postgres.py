@@ -27,11 +27,10 @@ def dump_backup(c, host):
     inv_docker.start(c)
     settings = inv_base.read_settings(host)
 
-    if host == "development":
-        postgres_backup_folder = f"{settings['postgres_backup_folder']}"
-    elif host == "production":
+    if host == "production":
         postgres_backup_folder = f"{settings['docker']['INSTALLFOLDER']}{settings['postgres_backup_server_folder']}"
-
+    else:
+        postgres_backup_folder = f"{settings['postgres_backup_folder']}"
     user, group = inv_base.uid_gid(c)
     file = f"postgres_{host}_backup_{datetime.datetime.now().strftime('%Y%m%d%H%M')}"
     inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'pg_dumpall -c -U postgres -h postgres > /var/backup/{file}.out'", pty=True)
