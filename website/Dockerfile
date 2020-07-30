@@ -1,0 +1,13 @@
+FROM python:buster AS base
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /www/site
+
+COPY ./requirements.txt /www/site/requirements.txt
+
+RUN pip install --no-cache-dir -r /www/site/requirements.txt
+
+EXPOSE 8000
+
+ENV DJANGO_SETTINGS_MODULE "website.settings"

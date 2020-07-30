@@ -55,3 +55,9 @@ volumes:
       type: none
       o: bind
       device: ${INSTALLFOLDER}/data/spatialmos_climatology
+  website:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${INSTALLFOLDER}/website
