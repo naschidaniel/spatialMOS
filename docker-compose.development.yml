@@ -68,7 +68,11 @@ volumes:
       o: bind
       device: ${PWD}/website
 
-services:  
+services:
+  website:
+    build:
+      target: development
+
   r_base:
     build: ./container/r_base/
     container_name: spatialMOS_r_base
@@ -97,7 +101,6 @@ services:
       args: 
         NGINX_CONF: ${NGINX_CONF}
     volumes:
-      - website:/www/site:z
       - static:/www/static:z
       - media:/www/media:z
       - log:/log:z
