@@ -11,3 +11,16 @@ RUN pip install --no-cache-dir -r /www/site/requirements.txt
 EXPOSE 8000
 
 ENV DJANGO_SETTINGS_MODULE "website.settings"
+
+# PRODUCTION
+FROM base as production
+
+RUN pip install gunicorn
+
+CMD gunicorn -u ${UID} -c /www/site/gunicorn_config.py cigsanalysistool.wsgi
+
+
+# DEVELOPMENT
+FROM base as development
+
+CMD uvicorn --reload --host 0.0.0.0 djangoVue.asgi:application
