@@ -216,6 +216,21 @@ The climatologies needed for the daily calculation can be uploaded using the com
 The online presence was implemented with the web framework django written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made. The API of openstreetmap is used for the address query. *TODO*
 
 
+#### TODO
+
+```
+./task.py *TODO* setenvironment
+./task.py serve ... start ... quickinstall
+```
+
+#### TODO URLS
+```
+http://localhost/
+http://localhost/admin
+```
+
+
+
 #### Data import from spool directory to PostgreSQL database
 
 ```
@@ -247,6 +262,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-07-30 Django was added to the project and tested locally.
 - 2020-07-29 The new version was installed on the server. Daily two meter Temperature spatialMOS forecasts are now generated.
 - 2020-07-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created
 - 2020-07-22 The fabric commands for spatialMOS has been improved
