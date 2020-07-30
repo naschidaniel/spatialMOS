@@ -54,6 +54,10 @@ services:
   postgres:
     restart: always
     build: "./container/postgres"
+    container_name: spatialMOS_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data:z
       - postgres_backup_server:/var/backup:z
