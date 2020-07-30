@@ -11,14 +11,13 @@ import numpy as np
 import pandas as pd
 import pytz
 from scipy.interpolate import griddata
+os.environ["PROJ_LIB"] = "/usr/share/proj" # Environment Variable for basemap
 from mpl_toolkits.basemap import Basemap
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import plot_functions
 from py_middleware import scandir
 
-# Environment Variables
-os.environ["PROJ_LIB"] = "/usr/share/proj"
 
 
 # Functions
@@ -47,7 +46,7 @@ def spatial_predictions(parser_dict):
     m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
     # Read preprocessed Info Files
-    data_path = f"./data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+    data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
     gribinfo_files = scandir.scandir(data_path, parameter=None, ending=".json")
 
     # Provide available NWP forecasts

@@ -94,11 +94,6 @@ Due to problems with dependencies it was decided to create custom containers for
 ./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter wind_10m
 ```
 
-#### TODO Topography
-
-```
-./task.py local.spatialmos.py-spatialmos--pre-processing-topography
-```
 
 ### Raw data pre processing for further statistical processing
 

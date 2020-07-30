@@ -91,7 +91,7 @@ def gribfiles_to_pandasdataframe(parser_dict):
 
         prediction_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
 
-        data_path = f"./data/get_available_data/gefs_pre_procesd_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+        data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
         if not os.path.exists(data_path):
             os.makedirs(data_path)
             logging.info("The folder '%s' was created", data_path)
