@@ -79,7 +79,7 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, anal_date, valid_dat
     meridians = np.arange(8., 20., 1.)
     m.drawmeridians(meridians, labels=[False, False, False, True], fontsize=8, linewidth=0.0)
 
-    filepath = "./spool/{}/{}/".format(name_parameter, what)
+    filepath = "./data/spool/{}/{}/".format(name_parameter, what)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 

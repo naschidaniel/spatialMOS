@@ -26,7 +26,7 @@ def spatial_predictions(parser_dict):
     """The main function to create surface forecasts based on GEFS forecasts and GAMLSS climatologies."""
 
     # Create folder structure
-    data_path_spool = "./spool/{}/samos/".format(parser_dict["parameter"])
+    data_path_spool = "./data/spool/{}/samos/".format(parser_dict["parameter"])
     if not os.path.exists(data_path_spool):
         os.makedirs(data_path_spool)
 

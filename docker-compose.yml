@@ -25,7 +25,7 @@ services:
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
-      - spool:/usr/src/app/spool:z
+      - spool:/usr/src/app/data/spool:z
   
   py_pygrib:
     build: ./container/py_pygrib/

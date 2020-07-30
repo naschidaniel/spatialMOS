@@ -24,7 +24,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${INSTALLFOLDER}/spool
+      device: ${INSTALLFOLDER}/data/spool
   postgresdata:
     driver: local
     driver_opts:

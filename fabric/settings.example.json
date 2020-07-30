@@ -15,10 +15,10 @@
       "./data/postgresdata",
       "./data/postgresdata_backup",
       "./data/postgresdata_backup_server",
+      "./data/spool",
       "./data/static",
       "./log/fabric",
-      "./log/nginx",
-      "./spool"
+      "./log/nginx"
     ],
     "docker": {}
   },
@@ -33,10 +33,10 @@
       "./data/postgresdata",
       "./data/postgresdata_backup",
       "./data/postgresdata_backup_server",
+      "./data/spool",
       "./data/static",
       "./log/fabric",
-      "./log/nginx",
-      "./spool"
+      "./log/nginx"
     ],
     "docker": {
       "USERID": "1001",
@@ -76,7 +76,7 @@
       },
       "climatologies": {
         "local_dir": "./data",
-        "remote_dir": "/www/spatialMOS/data",
+        "remote_dir": "/www/spatialMOS/",
         "ignore-existing": "True",
         "include": [
           "get_available_data/gadm",
