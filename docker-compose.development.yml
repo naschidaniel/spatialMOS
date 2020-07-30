@@ -86,3 +86,16 @@ services:
       - log:/log:z
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
+
+  nginx:
+    restart: always
+    container_name: spatialMOS_nginx
+    ports: 
+      - "80:80"
+    build:
+      context: "./container/nginx"
+    volumes:
+      - website:/www/site:z
+      - static:/www/static:z
+      - media:/www/media:z
+      - log:/log:z

@@ -50,3 +50,10 @@ services:
       - log:/log:z
     depends_on:
       - postgres
+
+  postgres:
+    restart: always
+    build: "./container/postgres"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:z
+      - postgres_backup_server:/var/backup:z
