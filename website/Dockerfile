@@ -17,10 +17,10 @@ FROM base as production
 
 RUN pip install gunicorn
 
-CMD gunicorn -u ${UID} -c /www/site/gunicorn_config.py cigsanalysistool.wsgi
+CMD gunicorn -u ${UID} -c /www/site/gunicorn_config.py website.wsgi
 
 
 # DEVELOPMENT
 FROM base as development
 
-CMD uvicorn --reload --host 0.0.0.0 djangoVue.asgi:application
+CMD uvicorn --reload --host 0.0.0.0 website.asgi:application
