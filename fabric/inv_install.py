@@ -108,7 +108,7 @@ def setenvironment(c, cmd):
         filename = ".env"
 
     dict_env = {
-        #"django": os.path.join(development_dir, f"django/spatialmos/{filename}"),
+        "django": os.path.join(development_dir, f"website/website/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
 
