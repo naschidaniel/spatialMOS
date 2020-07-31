@@ -55,14 +55,14 @@ volumes:
       type: none
       o: bind
       device: ${INSTALLFOLDER}/data/spatialmos_climatology
-  website:
+  django:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${INSTALLFOLDER}/website
+      device: ${INSTALLFOLDER}/django
 
 services:
-  website:
+  django:
     build:
       target: production

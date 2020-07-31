@@ -8,7 +8,7 @@ import copy
 def manage_py(c, cmd, **kwargs):
     """The function executes the django manage.py command."""
     user, group = uid_gid(c)
-    docker_compose(c, f"run -u {user}:{group} website python3 /www/site/manage.py {cmd}", pty=True)
+    docker_compose(c, f"run -u {user}:{group} django python3 /www/site/manage.py {cmd}", pty=True)
 
 
 def read_settings(what):

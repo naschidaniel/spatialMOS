@@ -36,15 +36,15 @@ services:
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
 
-  website:
+  django:
     restart: always
-    build: ./website/
-    container_name: spatialMOS_website
+    build: ./django/
+    container_name: spatialMOS_django
     expose:
       - "8000"
     user: "${USERID}:${GROUPID}"
     volumes:
-      - website:/www/site:z
+      - django:/www/site:z
       - static:/www/static:z
       - media:/www/media:z
       - log:/log:z
