@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # spatialMOS app
+    'predictions.apps.PredictionsConfig',
     'pages.apps.PagesConfig',
 ]
 
