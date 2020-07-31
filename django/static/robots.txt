@@ -1,0 +1,24 @@
+User-agent: *
+Disallow: /admin
+Disallow: /static
+Disallow: /media
+Disallow: /api
+Disallow: /impressum
+
+Allow: /
+Allow: /punktvorhersage
+Allow: /projekt
+Allow: /kontakt
+Allow: /media
+
+User-agent: MSNBot
+Crawl-delay: 16
+
+User-agent: bingbot
+Crawl-delay: 17
+
+User-agent: Slurp
+Crawl-delay: 18
+
+User-agent: Yahoo! Slurp
+Crawl-delay: 19
