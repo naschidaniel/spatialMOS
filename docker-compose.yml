@@ -47,6 +47,7 @@ services:
       - django:/www/site:z
       - static:/www/static:z
       - media:/www/media:z
+      - spool:/www/data/spool:z
       - log:/log:z
     depends_on:
       - postgres
