@@ -94,20 +94,20 @@ class Command(BaseCommand):
                 step = create_SpatialMosStep(prediction_json_file, spatialmos_run, valid_date_aware)
                 logging.info('parameter: {:9} | anal_date: {} | valid_date: {} | Step: {:03d}'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date'], prediction_json_file['SpatialMosStep']['valid_date'], prediction_json_file['SpatialMosStep']['step']))
                 create_SpatialMosPoint(prediction_json_file['SpatialMosPoint'], step)
+                logging.info('parameter: {:9} | datum: {} | The spatialMos run was successfully imported. {}'.format(parameter, date, filename_spatialmos_step))
+
+                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_SpatialMosStep']))
+                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_nwp_mean']))
+                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_nwp_spread']))
+                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_samos_mean']))
+                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_samos_spread']))
+                logging.info('parameter: {:9} | anal_date: {} | There are no files available in the spool directory'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
 
             else:
                 logging.error('parameter: {:9} | datum: {} | No files could be found. {}'.format(parameter, date, filename_spatialmos_step))
                 continue
-    
+            
         if spatialmos_run is not None:
             spatialmos_run.complete = True
             spatialmos_run.save()
             logging.info('parameter: {:9} | anal_date: {} | Complete'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
-
-            os.remove(prediction_json_file['SpatialMosStep']['filename_SpatialMosStep'])
-            os.remove(prediction_json_file['SpatialMosStep']['filename_nwp_mean'])
-            os.remove(prediction_json_file['SpatialMosStep']['filename_nwp_spread'])
-            os.remove(prediction_json_file['SpatialMosStep']['path_filename_samos_mean'])
-            os.remove(prediction_json_file['SpatialMosStep']['path_filename_samos_spread'])
-
-            logging.info('parameter: {:9} | anal_date: {} | There are no files available in the spool directory'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
