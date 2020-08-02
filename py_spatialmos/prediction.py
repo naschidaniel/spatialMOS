@@ -130,23 +130,23 @@ def spatial_predictions(parser_dict):
         # Generate samos spatial predictions
         samos_coef = samos_coef.apply(pd.to_numeric)
         samos_anom = samos_coef["intercept"][0] + samos_coef["mean_anom"][0] * nwp_anom
-        samos_pred = samos_anom * climate_sd + climate_fit
+        samos_mean = samos_anom * climate_sd + climate_fit
         samos_log_anom_spread = samos_coef["intercept_log_spread"][0] + samos_coef["log_spread_anom"][0] * log_spread_nwp_anom
-        samos_pred_spread = np.exp(samos_log_anom_spread) * climate_sd
+        samos_spread = np.exp(samos_log_anom_spread) * climate_sd
 
         # Round predicted values
-        samos_pred = np.round(samos_pred, decimals=2)
-        samos_pred_spread = np.round(samos_pred_spread, decimals=5)
+        samos_mean = np.round(samos_mean, decimals=2)
+        samos_spread = np.round(samos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        figname_nwp = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+        filename_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
             np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        figname_nwp_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+        filename_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
             np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        figname_samos = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
-            samos_pred, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
-        figname_samos_sd = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
-            samos_pred_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
+        filename_samos_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+            samos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
+        filename_samos_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+            samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
         # Consider Timezone
         timezone = pytz.timezone("UTC")
@@ -154,20 +154,37 @@ def spatial_predictions(parser_dict):
         valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
 
         # TODO adaptations to the django models
-        prediction_json_file = {"Modellauf": {"analDate": anal_date_aware.strftime("%Y-%m-%d %H:%M"), "parameter": parser_dict["parameter"]}, \
-                                "VorhersageStep": {"validDate": valid_date_aware.strftime("%Y-%m-%d %H:%M"), "step": gribfile_info["step"], \
-                                "fig_nwp": figname_nwp, "fig_nwp_sd": figname_nwp_sd, "fig_samos": figname_samos, "fig_samos_sd": figname_samos_sd}, \
-                                "points": {"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_pred.flatten().tolist(), \
-                                "samos_spread": samos_pred_spread.flatten().tolist()}}
+        prediction_json_file = {"SpatialMosRun": 
+                                    {
+                                    "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M"), 
+                                    "parameter": parser_dict["parameter"]
+                                    },
+                                "SpatialMosStep": 
+                                    {
+                                    "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M"), 
+                                    "step": gribfile_info["step"],
+                                    "filename_nwp_mean": filename_nwp_mean, 
+                                    "filename_nwp_spread": filename_nwp_spread, 
+                                    "filename_samos": filename_samos_mean, 
+                                    "filename_samos_sd": filename_samos_spread
+                                    },
+                                "SpatialMosPoint": 
+                                    {
+                                    "lat": yy_samos.flatten().tolist(), 
+                                    "lon": xx_samos.flatten().tolist(), 
+                                    "samos_mean": samos_mean.flatten().tolist(),
+                                    "samos_spread": samos_spread.flatten().tolist()
+                                    }
+                                }
 
-        prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d%H%M"), gribfile_info["step"]))
+        prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
         with open(prediction_filename, "w") as f:
             json.dump(prediction_json_file, f)
             f.close()
 
-        logging.info("parameter: %9s | analDate: %s | validDate: %s | step: %03d | %s", \
-            prediction_json_file["Modellauf"]["parameter"], prediction_json_file["Modellauf"]["analDate"], \
-            prediction_json_file["VorhersageStep"]["validDate"], prediction_json_file["VorhersageStep"]["step"], prediction_filename)
+        logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
+            prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
+            prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], prediction_filename)
 
 
 
