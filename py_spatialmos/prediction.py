@@ -161,7 +161,7 @@ def spatial_predictions(parser_dict):
                                     "parameter": parser_dict["parameter"]
                                     },
                                 "SpatialMosStep": 
-                                    {"filename_SpatialMosStep": filename_spatialmos_step,
+                                    {"path_filename_SpatialMosStep": filename_spatialmos_step,
                                     "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"), 
                                     "step": gribfile_info["step"],
                                     "filename_nwp_mean": filename_nwp_mean,
