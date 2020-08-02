@@ -22,10 +22,10 @@ class SpatialMosRun(models.Model):
         ordering = ['-anal_date', 'parameter']
 
 class SpatialMosStep(models.Model):
-    fig_nwp = models.ImageField(upload_to='')
-    fig_nwp_sd = models.ImageField(upload_to='')
-    fig_spatialmos = models.ImageField(upload_to='')
-    fig_spatialmos_sd = models.ImageField(upload_to='')
+    filename_nwp_mean = models.ImageField(upload_to='')
+    filename_nwp_spread = models.ImageField(upload_to='')
+    filename_spatialmos = models.ImageField(upload_to='')
+    filename_spatialmos_sd = models.ImageField(upload_to='')
     spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="spatialmos_run", on_delete=models.CASCADE)
     valid_date = models.DateTimeField()
     step = models.IntegerField(default=-999)
