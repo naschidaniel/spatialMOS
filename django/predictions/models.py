@@ -14,7 +14,7 @@ class SpatialMosRun(models.Model):
 
     def __str__(self):
         if self.complete is False:
-            return "{:30s} | {} | Not the entire model run is available.".format(self.get_parameter_display(), self.anal_date.strftime("%Y-%m-%d"))
+            return "{:30s} | {} | Not all steps were imported successfully..".format(self.get_parameter_display(), self.anal_date.strftime("%Y-%m-%d"))
         else:
             return "{:30s} | {} ".format(self.get_parameter_display(), self.anal_date.strftime("%Y-%m-%d"))
 
