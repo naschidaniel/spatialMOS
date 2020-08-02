@@ -24,8 +24,8 @@ class SpatialMosRun(models.Model):
 class SpatialMosStep(models.Model):
     filename_nwp_mean = models.ImageField(upload_to='')
     filename_nwp_spread = models.ImageField(upload_to='')
-    filename_spatialmos = models.ImageField(upload_to='')
-    filename_spatialmos_sd = models.ImageField(upload_to='')
+    filename_spatialmos_mean = models.ImageField(upload_to='')
+    filename_spatialmos_spread = models.ImageField(upload_to='')
     spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="spatialmos_run", on_delete=models.CASCADE)
     valid_date = models.DateTimeField()
     step = models.IntegerField(default=-999)
