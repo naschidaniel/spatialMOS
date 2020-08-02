@@ -85,11 +85,11 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
 
     anal_date_timestamp = dt.datetime.strptime(anal_date, "%Y-%m-%d %H:%M")
     anal_date_str = anal_date_timestamp.strftime("%Y%m%d")
-    figname = "{}_step_{:03d}.png".format(anal_date_str, step)
-    file = os.path.join(filepath, figname)
-    fig.savefig(file, bbox_inches="tight")
+    filename = "{}_step_{:03d}.png".format(anal_date_str, step)
+    path_filename = os.path.join(filepath, filename)
+    fig.savefig(path_filename, bbox_inches="tight")
     plt.close(fig=None)
-    return figname
+    return path_filename, filename
 
 
 def reshapearea(series, array):
