@@ -23,8 +23,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         """Adding additional arguments"""
-        parser.add_argument('parameter', type=str)
         parser.add_argument('date', type=str)
+        parser.add_argument('parameter', type=str)
 
     def handle(self, *args, **options):
         """Main Function"""
