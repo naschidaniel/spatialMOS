@@ -139,13 +139,13 @@ def spatial_predictions(parser_dict):
         samos_spread = np.round(samos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        filename_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+        path_filename_nwp_mean, filename_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
             np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        filename_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
+        path_filename_nwp_spread, filename_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
             np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        filename_samos_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+        path_filename_samos_mean, filename_samos_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
             samos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
-        filename_samos_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
+        path_filename_samos_spread, filename_samos_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
             samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
         # Consider Timezone
@@ -154,19 +154,24 @@ def spatial_predictions(parser_dict):
         valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
 
         # TODO adaptations to the django models
+        filename_spatialmos_step = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
         prediction_json_file = {"SpatialMosRun": 
                                     {
-                                    "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M"), 
+                                    "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"), 
                                     "parameter": parser_dict["parameter"]
                                     },
                                 "SpatialMosStep": 
-                                    {
-                                    "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M"), 
+                                    {"filename_SpatialMosStep": filename_spatialmos_step,
+                                    "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"), 
                                     "step": gribfile_info["step"],
-                                    "filename_nwp_mean": filename_nwp_mean, 
+                                    "filename_nwp_mean": filename_nwp_mean,
+                                    "path_filename_nwp_mean": path_filename_nwp_mean,
                                     "filename_nwp_spread": filename_nwp_spread, 
-                                    "filename_samos": filename_samos_mean, 
-                                    "filename_samos_sd": filename_samos_spread
+                                    "path_filename_nwp_spread": path_filename_nwp_spread,
+                                    "filename_samos_mean": filename_samos_mean, 
+                                    "path_filename_samos_mean": path_filename_samos_mean,
+                                    "filename_samos_spread": filename_samos_spread,
+                                    "path_filename_samos_spread": path_filename_samos_spread
                                     },
                                 "SpatialMosPoint": 
                                     {
@@ -177,14 +182,13 @@ def spatial_predictions(parser_dict):
                                     }
                                 }
 
-        prediction_filename = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
-        with open(prediction_filename, "w") as f:
+        with open(filename_spatialmos_step, "w") as f:
             json.dump(prediction_json_file, f)
             f.close()
 
         logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
             prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
-            prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], prediction_filename)
+            prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)
 
 
 
