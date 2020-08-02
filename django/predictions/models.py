@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class SpatialmosRun(models.Model):
+class SpatialMosRun(models.Model):
     available_parameter = (
         ("tmp_2m", "Temperatur 2m"),
         ("rh_2m", "Relative Luftfeuchte 2m"),
@@ -26,7 +26,7 @@ class SpatialMosStep(models.Model):
     fig_nwp_sd = models.ImageField(upload_to='')
     fig_spatialmos = models.ImageField(upload_to='')
     fig_spatialmos_sd = models.ImageField(upload_to='')
-    spatialmos_run = models.ForeignKey(SpatialmosRun, related_name="spatialmos_run", on_delete=models.CASCADE)
+    spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="spatialmos_run", on_delete=models.CASCADE)
     valid_date = models.DateTimeField()
     step = models.IntegerField(default=-999)
 
@@ -35,3 +35,19 @@ class SpatialMosStep(models.Model):
 
     class Meta:
         ordering = ("spatialmos_run", "step")
+
+class SpatialMosPoint(models.Model):
+    lat = models.DecimalField(max_digits=16, decimal_places=14, default=None)
+    lon = models.DecimalField(max_digits=16, decimal_places=14, default=None)
+    samos_mean = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    samos_spread = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    spatialmos_step = models.ForeignKey(SpatialMosStep, related_name="spatialmos_step", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{} | Location: {}, {} | mean: {} spread: {}".format(self.spatialmos_step, self.lat, self.lon, self.samos_mean, self.samos_spread)
+
+    class Meta:
+        ordering = ("spatialmos_step", "-lat", "lon")
+        indexes = [
+            models.Index(fields=['spatialmos_step', 'lat', 'lon'])
+        ]
