@@ -8,56 +8,56 @@ import numpy as np
 import datetime as dt
 
 # Functions
-def plot_forecast(name_parameter, m, xx, yy, plotparameter, anal_date, valid_date, step, what):
+def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, step, what):
     """A function to create the GEFS and spatialMOS forecast plots."""
 
     fig = plt.figure(figsize=(15, 15), dpi=96)
 
-    if name_parameter == "tmp_2m" and what == "samos_mean":
+    if parameter == "tmp_2m" and what == "samos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
         plt.title("2m Temperatur SAMOS MEAN [°C]", loc="center")
         plt.clim(-40, 40)
-    elif name_parameter == "tmp_2m" and what == "samos_spread":
+    elif parameter == "tmp_2m" and what == "samos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("2m Temperatur SAMOS SPREAD [°C]", loc="center")
         plt.clim(0, 5)
-    elif name_parameter == "tmp_2m" and what == "nwp_mean":
+    elif parameter == "tmp_2m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
         plt.title("2m Temperatur GEFS MEAN [°C]", loc="center")
         plt.clim(-40, 40)
-    elif name_parameter == "tmp_2m" and what == "nwp_spread":
+    elif parameter == "tmp_2m" and what == "nwp_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("2m Temperatur GEFS SPREAD [°C]", loc="center")
         plt.clim(0, 5)
-    elif name_parameter == "rh_2m" and what == "samos_mean":
+    elif parameter == "rh_2m" and what == "samos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
         plt.title("2m Relative Luftfeuchte SAMOS MEAN [%]", loc="center")
         plt.clim(0, 100)
-    elif name_parameter == "rh_2m" and what == "samos_spread":
+    elif parameter == "rh_2m" and what == "samos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("2m Relative Luftfeuchte SAMOS SPREAD [%]", loc="center")
         plt.clim(0, 5)
-    elif name_parameter == "rh_2m" and what == "nwp_mean":
+    elif parameter == "rh_2m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
         plt.title("2m Relative Luftfeuchte GEFS MEAN [%]", loc="center")
         plt.clim(0, 100)
-    elif name_parameter == "rh_2m" and what == "nwp_spread":
+    elif parameter == "rh_2m" and what == "nwp_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("2m Relative Luftfeuchte GEFS SPREAD [%]", loc="center")
         plt.clim(0, 5)
-    elif name_parameter == "wind_10m" and what == "samos_mean":
+    elif parameter == "wind_10m" and what == "samos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
         plt.title("10m Windgeschwindigkeit SAMOS MEAN [km/h]", loc="center")
         plt.clim(0, 10)
-    elif name_parameter == "wind_10m" and what == "samos_spread":
+    elif parameter == "wind_10m" and what == "samos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("10m Windgeschwindigkeit SAMOS SPREAD [km/h]", loc="center")
         plt.clim(0, 10)
-    elif name_parameter == "wind_10m" and what == "nwp_mean":
+    elif parameter == "wind_10m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
         plt.title("10m Windgeschwindigkeit GEFS MEAN [km/h]", loc="center")
         plt.clim(0, 10)
-    elif name_parameter == "wind_10m" and what == "nwp_spread":
+    elif parameter == "wind_10m" and what == "nwp_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plt.title("10m Windgeschwindigkeit GEFS SPREAD [km/h]", loc="center")
         plt.clim(0, 10)
@@ -79,11 +79,12 @@ def plot_forecast(name_parameter, m, xx, yy, plotparameter, anal_date, valid_dat
     meridians = np.arange(8., 20., 1.)
     m.drawmeridians(meridians, labels=[False, False, False, True], fontsize=8, linewidth=0.0)
 
-    filepath = "./data/spool/{}/{}/".format(name_parameter, what)
+    filepath = "./data/spool/{}/{}/".format(parameter, what)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    anal_date_str = dt.datetime.strptime(anal_date, "%Y-%m-%d %H:%M")
+    anal_date_timestamp = dt.datetime.strptime(anal_date, "%Y-%m-%d %H:%M")
+    anal_date_str = anal_date_timestamp.strftime("%Y%m%d")
     figname = "{}_step_{:03d}.png".format(anal_date_str, step)
     file = os.path.join(filepath, figname)
     fig.savefig(file, bbox_inches="tight")
