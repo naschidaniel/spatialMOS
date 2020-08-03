@@ -56,9 +56,13 @@ INSTALLED_APPS = [
     # django-cleanup
     'django_cleanup.apps.CleanupConfig',
 
+    # django rest framework
+    'rest_framework',
+
     # spatialMOS app
     'predictions.apps.PredictionsConfig',
     'pages.apps.PagesConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +131,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django REST framework
+# https://www.django-rest-framework.org
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
