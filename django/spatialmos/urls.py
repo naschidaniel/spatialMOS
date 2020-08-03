@@ -27,5 +27,6 @@ urlpatterns = [
 # Add urls for apps
 urlpatterns += [
     path('', include('predictions.urls')),
+    path('api/', include('api.urls')),
     url(r'^(?P<url>.*)/$', page)
     ]
