@@ -53,6 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # django-cleanup
+    'django_cleanup.apps.CleanupConfig',
+
     # spatialMOS app
     'predictions.apps.PredictionsConfig',
     'pages.apps.PagesConfig',
