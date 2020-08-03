@@ -6,3 +6,4 @@ Pillow
 uvicorn
 jinja2
 markdown
+django-cleanup
