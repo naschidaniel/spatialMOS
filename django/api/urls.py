@@ -1,13 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import SpatialMosRunViewSet
+from .views import SpatialMosRunViewSet, SpatialMosStepViewSet
 
 
 # ViewSets define the view behavior.
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'vorhersagelauf', SpatialMosRunViewSet)
+router.register(r'runs', SpatialMosRunViewSet)
+router.register(r'steps', SpatialMosStepViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
