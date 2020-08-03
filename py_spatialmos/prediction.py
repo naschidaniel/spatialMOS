@@ -3,6 +3,7 @@
 """A script for generating surface forecasts based on GEFS predictions and GAMLSS climatologies."""
 
 import os
+import sys
 import json
 import csv
 import logging
@@ -21,6 +22,19 @@ from py_middleware import scandir
 
 
 # Functions
+def write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status):
+    """A function to create an Info File"""
+    filename_spatialmos_run = os.path.join(data_path_spool, "{}_run.json".format(anal_date_aware.strftime("%Y%m%d")))
+    with open(filename_spatialmos_run, "w") as f:
+        json.dump(spatialmos_run_status, f)
+        f.close()
+    logging.info("The Info File '%s' for the spatialMOS run was written.", filename_spatialmos_run)
+
+def write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, step, reason):
+    """A function to write missing spatialMOS data."""
+    spatialmos_run_status[f"{step:03d}"] = {"status": "failed", "reason": reason, "step": f"{step:03d}"}
+    write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
+
 def spatial_predictions(parser_dict):
     """The main function to create surface forecasts based on GEFS forecasts and GAMLSS climatologies."""
 
@@ -48,12 +62,20 @@ def spatial_predictions(parser_dict):
     # Read preprocessed Info Files
     data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
     gribinfo_files = scandir.scandir(data_path, parameter=None, ending=".json")
+    
+    # A complete infofile about the status of the forecast
+    spatialmos_run_status = dict()
 
     # Provide available NWP forecasts
     for json_info_filename in gribinfo_files:
         with open(json_info_filename) as json_file:
             gribfile_info = json.load(json_file)
             json_file.close()
+
+        # Consider Timezone
+        timezone = pytz.timezone("UTC")
+        anal_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
+        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
 
         # Create required grids for NWP
         lons = [x - 0.5 for x in gribfile_info["lons"]]
@@ -80,6 +102,8 @@ def spatial_predictions(parser_dict):
         # Check if climatologies files are available
         if not os.path.exists(climate_samos_file) or not os.path.exists(climate_samos_nwp_file):
             logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_samos_nwp_file, climate_samos_file)
+            # Write info file to spool directory
+            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS NWP or spatialMOS climatologies")
             continue
 
         # Read in GAMLSS climatologies
@@ -125,6 +149,8 @@ def spatial_predictions(parser_dict):
             samos_coef = pd.read_csv(samos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
         else:
             logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], samos_coef_file)
+            # Write info file to spool directory
+            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS coefficients")
             continue
 
         # Generate samos spatial predictions
@@ -148,48 +174,44 @@ def spatial_predictions(parser_dict):
         path_filename_samos_spread, filename_samos_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
             samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
-        # Consider Timezone
-        timezone = pytz.timezone("UTC")
-        anal_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
-        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
-
-        # TODO adaptations to the django models
+        # Point Forecasts for North and South Tyrol without consideration of values outside the borders
+        spatialmos_point = pd.DataFrame({"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_mean.flatten().tolist(), "samos_spread": samos_spread.flatten().tolist()})
+        spatialmos_point = spatialmos_point.dropna()
+        spatialmos_point_dict = spatialmos_point.to_dict('records')
+        
+        # Exchange file for spatialMOS Run in JSON format. This file is imported into the database.
         filename_spatialmos_step = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
-        prediction_json_file = {"SpatialMosRun": 
+        prediction_json_file = {"SpatialMosRun":
                                     {
-                                    "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"), 
-                                    "parameter": parser_dict["parameter"]
+                                     "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
+                                     "parameter": parser_dict["parameter"]
                                     },
-                                "SpatialMosStep": 
+                                "SpatialMosStep":
                                     {"path_filename_SpatialMosStep": filename_spatialmos_step,
-                                    "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"), 
-                                    "step": gribfile_info["step"],
-                                    "filename_nwp_mean": filename_nwp_mean,
-                                    "path_filename_nwp_mean": path_filename_nwp_mean,
-                                    "filename_nwp_spread": filename_nwp_spread, 
-                                    "path_filename_nwp_spread": path_filename_nwp_spread,
-                                    "filename_samos_mean": filename_samos_mean, 
-                                    "path_filename_samos_mean": path_filename_samos_mean,
-                                    "filename_samos_spread": filename_samos_spread,
-                                    "path_filename_samos_spread": path_filename_samos_spread
+                                     "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
+                                     "step": gribfile_info["step"],
+                                     "filename_nwp_mean": filename_nwp_mean,
+                                     "path_filename_nwp_mean": path_filename_nwp_mean,
+                                     "filename_nwp_spread": filename_nwp_spread,
+                                     "path_filename_nwp_spread": path_filename_nwp_spread,
+                                     "filename_samos_mean": filename_samos_mean,
+                                     "path_filename_samos_mean": path_filename_samos_mean,
+                                     "filename_samos_spread": filename_samos_spread,
+                                     "path_filename_samos_spread": path_filename_samos_spread
                                     },
-                                "SpatialMosPoint": 
-                                    {
-                                    "lat": yy_samos.flatten().tolist(), 
-                                    "lon": xx_samos.flatten().tolist(), 
-                                    "samos_mean": samos_mean.flatten().tolist(),
-                                    "samos_spread": samos_spread.flatten().tolist()
-                                    }
+                                "SpatialMosPoint": spatialmos_point_dict
                                 }
-
         with open(filename_spatialmos_step, "w") as f:
             json.dump(prediction_json_file, f)
             f.close()
 
+        # Write info file to spool directory
+        spatialmos_run_status[f"{gribfile_info['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfile_info['step']:03d}"}
+        write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
+        
         logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
             prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
             prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)
-
 
 
 # Main
