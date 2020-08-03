@@ -9,8 +9,6 @@ import json
 import logging
 import datetime as dt
 import pytz
-import numpy as np
-import pandas as pd
 from django.db import connection, transaction
 from django.core.management.base import BaseCommand, CommandError
 from predictions.models import SpatialMosRun, SpatialMosStep, SpatialMosPoint
@@ -57,12 +55,11 @@ class Command(BaseCommand):
             spatialmos_step.save()
             return spatialmos_step
 
-        def create_SpatialMosPoint(spatialmos_point_entrys, spatialmos_step):
+        def create_SpatialMosPoint(spatialmos_point_dict, spatialmos_step):
             """A function to create an entry in the table of the model SpatialMosPoint"""
-            df = pd.DataFrame.from_dict(spatialmos_point_entrys)
-            df = df.dropna()
+
             insert_list = []
-            for item in df.to_dict('records'):
+            for item in spatialmos_point_dict:
                 newrecord = SpatialMosPoint(spatialmos_step=spatialmos_step, **item)
                 insert_list.append(newrecord)
 
@@ -72,11 +69,23 @@ class Command(BaseCommand):
         parameter = options['parameter']
         date_timestamp = dt.datetime.strptime(options['date'], "%Y-%m-%d")
         date = date_timestamp.strftime("%Y%m%d")
-       
+
+        # Read status file of the spatialMOS model run
+        filename_spatialmos_run_status = os.path.join("/www", f"./data/spool/{parameter}/samos/{date}_run.json")
+        if os.path.isfile(filename_spatialmos_run_status):
+            with open(filename_spatialmos_run_status, 'r') as f:
+                spatialmos_run_status = json.load(f)
+        else:
+            logging.error("No status file could be found for the parameter '%s' and date '%s'.", parameter, date)
+            sys.exit(1)
+
         spatialmos_run = None
-        available_steps = np.arange(6, 193, 6, int)
-        for step in available_steps:
-            filename_spatialmos_step = os.path.join("/www", f"./data/spool/{parameter}/samos/{date}_step_{step:03d}.json")
+        for step in spatialmos_run_status:
+            if spatialmos_run_status[step]['status'] != "ok":
+                logging.error("The run '%s' for the parameter '%s' and date '%s' was not imported.", step, parameter, date)
+                continue
+
+            filename_spatialmos_step = os.path.join("/www", f"{spatialmos_run_status[step]['prediction_json_file']}")
             if os.path.isfile(filename_spatialmos_step):
                 with open(filename_spatialmos_step, 'r') as f:
                     prediction_json_file = json.load(f)
