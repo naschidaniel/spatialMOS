@@ -31,7 +31,7 @@ class SpatialMosStep(models.Model):
     step = models.IntegerField(default=-999)
 
     def __str__(self):
-        return "{} | Valid: {} | Step: {}".format(self.spatialmos_run, self.valid_date.strftime("%Y-%m-%d %H:%M"), self.step)
+        return "{} | Valid: {} | Step: {:03d}".format(self.spatialmos_run, self.valid_date.strftime("%Y-%m-%d %H:%M"), self.step)
 
     class Meta:
         ordering = ("spatialmos_run", "step")
