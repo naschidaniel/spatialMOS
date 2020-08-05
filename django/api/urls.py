@@ -4,9 +4,6 @@ from api.views import SpatialMosRunDetails
 from . import views
 
 
-# ViewSets define the view behavior.
-
-
 # Wire up our API using automatic URL routing.
 urlpatterns = [
     path('spatailmosrun/', views.SpatialMosRunList.as_view()),
