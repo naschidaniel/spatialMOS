@@ -20,7 +20,20 @@
       "./log/fabric",
       "./log/nginx"
     ],
-    "docker": {}
+    "django": {
+      "DEBUG": "True",
+      "ALLOWED_HOSTS": "127.0.0.1,localhost",
+      "DB": "postgres",
+      "POSTGRES_HOST": "postgres",
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "postgres",
+      "SECRET_KEY": "jd3jqb@r1jaaj^(2e&$qam8#fbp)6qqu+9cz8u^u+4)%scl^f#"
+    },
+    "docker": {
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "postgres",
+      "NGINX_CONF": "development.conf"
+    }
   },
   "production": {
     "collection": "production",
@@ -92,7 +105,8 @@
           "postgresdata",
           "bostgresdata_backup",
           "postgresdata_backup_server",
-          "static"
+          "static",
+          "spool"
         ]
       }
     }
