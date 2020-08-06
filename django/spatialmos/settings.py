@@ -22,10 +22,12 @@ env = environ.Env(
     POSTGRES_HOST=(str, 'postgres'),
     POSTGRES_USER=(str, 'postgres'),
     POSTGRES_PASSWORD=(str, 'postgres'),
-    SECRET_KEY=(str, 'jd3jqb@r1jaaj^(2e&$qam8#fbp)6qqu+9cz8u^u+4)%scl^f#')
+    SECRET_KEY=(str, 'jd3jqb@r1jaaj^(2e&$qam8#fbp)6qqu+9cz8u^u+4)%scl^f#'),
+    LASTCOMMIT=(str, 'LASTCOMMIT')
 )
 
 environ.Env.read_env()
+LASTCOMMIT = env('LASTCOMMIT')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
