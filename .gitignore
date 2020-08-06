@@ -24,3 +24,6 @@ settings.json
 *.Rdata
 *.h5
 *.sqlite3
+
+# Shellscripts for testing
+*.sh
