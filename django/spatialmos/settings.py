@@ -27,6 +27,7 @@ env = environ.Env(
 )
 
 environ.Env.read_env()
+# The commit in all templates is displayed in the footer.
 LASTCOMMIT = env('LASTCOMMIT')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
