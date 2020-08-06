@@ -75,7 +75,7 @@ def spatial_predictions(parser_dict):
         # Consider Timezone
         timezone = pytz.timezone("UTC")
         anal_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
-        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
+        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["valid_date_avg"], "%Y-%m-%d %H:%M"))
 
         # Create required grids for NWP
         lons = [x - 0.5 for x in gribfile_info["lons"]]
