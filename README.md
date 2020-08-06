@@ -262,6 +262,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-05 Data in JSON format can be obtained from the API interface.
 - 2020-07-30 Django was added to the project and tested locally.
 - 2020-07-29 The new version was installed on the server. Daily two meter Temperature spatialMOS forecasts are now generated.
 - 2020-07-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created
