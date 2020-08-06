@@ -6,4 +6,11 @@ def predictions(request):
     context = {
         'content': 'modelrun',
     }
-    return render(request, 'predictions/spatialmos.html', context)
+    return render(request, 'predictions/predictions.html', context)
+
+def pointpredictions(request):
+    """The function to display the spatialMOS predictions."""
+    context = {
+        'content': 'modelrun',
+    }
+    return render(request, 'predictions/pointpredictions.html', context)
