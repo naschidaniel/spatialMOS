@@ -180,12 +180,19 @@ def py_spatialmos__prediction(c, date, parameter):
 def py_spatialmos__django_import_spatialmos_run(c, date, parameter):
     """Create the predictions and the spatialMOS plots."""
     inv_logging.task(py_spatialmos__django_import_spatialmos_run.__name__)
-
     cmd = ["import_spatialmos_run", date, parameter]
     cmd = ' '.join(cmd)
     inv_django.managepy(c, cmd)
     inv_logging.success(py_spatialmos__django_import_spatialmos_run.__name__)
 
+@task
+def py_spatialmos__django_delete_spatialmos_runs(c, parameter, days):
+    """Delete the predictions and the spatialMOS plots from the database."""
+    inv_logging.task(py_spatialmos__django_delete_spatialmos_runs.__name__)
+    cmd = ["delete_spatialmos_run", parameter, days]
+    cmd = ' '.join(cmd)
+    inv_django.managepy(c, cmd)
+    inv_logging.success(py_spatialmos__django_delete_spatialmos_runs.__name__)
 
 
 spatialmos_development_ns = Collection("spatialmos")
@@ -202,6 +209,7 @@ spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_cli
 spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gribfiles)
 spatialmos_development_ns.add_task(py_spatialmos__prediction)
 spatialmos_development_ns.add_task(py_spatialmos__django_import_spatialmos_run)
+spatialmos_development_ns.add_task(py_spatialmos__django_delete_spatialmos_runs)
 spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)
 spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_obs)
@@ -215,4 +223,5 @@ spatialmos_production_ns.add_task(py_spatialmos__get_zamg)
 spatialmos_production_ns.add_task(py_spatialmos__pre_processing_gribfiles)
 spatialmos_production_ns.add_task(py_spatialmos__prediction)
 spatialmos_production_ns.add_task(py_spatialmos__django_import_spatialmos_run)
+spatialmos_production_ns.add_task(py_spatialmos__django_delete_spatialmos_runs)
 
