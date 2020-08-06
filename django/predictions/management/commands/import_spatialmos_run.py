@@ -9,10 +9,8 @@ import json
 import logging
 import datetime as dt
 import pytz
-from django.db import connection, transaction
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from predictions.models import SpatialMosRun, SpatialMosStep, SpatialMosPoint
-from datetime import datetime, timedelta
 from django.core.files import File
 
 
@@ -91,9 +89,9 @@ class Command(BaseCommand):
                     prediction_json_file = json.load(f)
 
                 timezone = pytz.timezone('UTC')
-                anal_date = datetime.strptime(prediction_json_file['SpatialMosRun']['anal_date'], '%Y-%m-%d %H:%M:%S')
+                anal_date = dt.datetime.strptime(prediction_json_file['SpatialMosRun']['anal_date'], '%Y-%m-%d %H:%M:%S')
                 anal_date_aware = timezone.localize(anal_date)
-                valid_date = datetime.strptime(prediction_json_file['SpatialMosStep']['valid_date'], '%Y-%m-%d %H:%M:%S')
+                valid_date = dt.datetime.strptime(prediction_json_file['SpatialMosStep']['valid_date'], '%Y-%m-%d %H:%M:%S')
                 valid_date_aware = timezone.localize(valid_date)
 
                 if spatialmos_run is None:
