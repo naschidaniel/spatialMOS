@@ -111,7 +111,11 @@ def setenvironment(c, cmd):
         "django": os.path.join(development_dir, f"django/spatialmos/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
-
+    
+    lastcommit = c.run("git rev-parse --short HEAD")
+    lastcommit = lastcommit.stdout.strip()
+    logging.info("Last commit number is %s", lastcommit)
+    settings["django"]["LASTCOMMIT"] = lastcommit
     for dict_env_key, dict_env_file in dict_env.items():
         try:
             with open(dict_env_file, "w") as f:
@@ -138,18 +142,15 @@ def setproductionenvironment(c):
 
     dict_env = setenvironment(c, "production")
     remote_env = {
-        #"django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/spatialmos/.env"),
+        "django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/spatialmos/.env"),
         "docker": os.path.join(settings["docker"]["INSTALLFOLDER"], ".env")
     }
 
-    inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"],
-        dict_env["docker"], remote_env["docker"])
-    #inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"],
-    #    dict_env["django"], remote_env["django"])
+    inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["docker"], remote_env["docker"])
+    inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["django"], remote_env["django"])
 
     os.system(f"rm {dict_env['docker']}")
-    logging.info(
-        f"The environment '{dict_env['docker']}' variable was deleted.")
+    logging.info(f"The environment '{dict_env['docker']}' variable was deleted.")
     #os.system(f"rm {dict_env['django']}")
     #logging.info(
     #    f"The environment '{dict_env['django']}' variable was deleted.")
