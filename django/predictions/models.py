@@ -7,28 +7,28 @@ class SpatialMosRun(models.Model):
         ("rh_2m", "Relative Luftfeuchte 2m"),
         ("wind_10m", "Windgeschwindigkeit 10m"),
     )
-    anal_date = models.DateTimeField()
     parameter = models.CharField(max_length=10, default="tmp_2m", choices=available_parameter)
+    anal_date = models.DateTimeField()
     complete = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        return_string = f"{self.get_parameter_display():30s} | {self.anal_date.strftime('%Y-%m-%d')}"
         if self.complete is False:
-            return "{:30s} | {} | Not all steps were imported successfully..".format(self.get_parameter_display(), self.anal_date.strftime("%Y-%m-%d"))
+            return f"{return_string} | Not all steps were imported successfully."
         else:
-            return "{:30s} | {} ".format(self.get_parameter_display(), self.anal_date.strftime("%Y-%m-%d"))
+            return return_string
 
     class Meta:
         ordering = ['-anal_date', 'parameter']
 
 class SpatialMosStep(models.Model):
+    spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="steps", on_delete=models.CASCADE)
+    valid_date = models.DateTimeField()
+    step = models.IntegerField(default=-999)
     filename_nwp_mean = models.ImageField(upload_to='')
     filename_nwp_spread = models.ImageField(upload_to='')
     filename_spatialmos_mean = models.ImageField(upload_to='')
     filename_spatialmos_spread = models.ImageField(upload_to='')
-    spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="spatialmos_run", on_delete=models.CASCADE)
-    valid_date = models.DateTimeField()
-    step = models.IntegerField(default=-999)
 
     def __str__(self):
         return "{} | Valid: {} | Step: {:03d}".format(self.spatialmos_run, self.valid_date.strftime("%Y-%m-%d %H:%M"), self.step)
@@ -36,15 +36,16 @@ class SpatialMosStep(models.Model):
     class Meta:
         ordering = ("spatialmos_run", "step")
 
+
 class SpatialMosPoint(models.Model):
+    spatialmos_step = models.ForeignKey(SpatialMosStep, related_name="points", on_delete=models.CASCADE)
     lat = models.DecimalField(max_digits=16, decimal_places=14, default=None)
     lon = models.DecimalField(max_digits=16, decimal_places=14, default=None)
     samos_mean = models.DecimalField(max_digits=6, decimal_places=2, default=None)
     samos_spread = models.DecimalField(max_digits=6, decimal_places=2, default=None)
-    spatialmos_step = models.ForeignKey(SpatialMosStep, related_name="spatialmos_step", on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{} | Location: {}, {} | mean: {} spread: {}".format(self.spatialmos_step, self.lat, self.lon, self.samos_mean, self.samos_spread)
+        return f"{self.spatialmos_step} | Location: {self.lat}, {self.lon} | mean: {self.samos_mean} spread: {self.samos_spread}"
 
     class Meta:
         ordering = ("spatialmos_step", "-lat", "lon")
