@@ -2,8 +2,6 @@
 #  -*- coding: utf-8 -*-
 """The collection is needed for node."""
 
-import os
-import sys
 import logging
 from invoke import task, Collection
 import inv_base
@@ -40,7 +38,7 @@ def npm(c, cmd):
     inv_logging.success(npm.__name__)
 
 
-node_ns = Collection("node")
-node_ns.add_task(build)
-node_ns.add_task(lint)
-node_ns.add_task(npm)
+NODE_NS = Collection("node")
+NODE_NS.add_task(build)
+NODE_NS.add_task(lint)
+NODE_NS.add_task(npm)

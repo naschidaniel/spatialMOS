@@ -16,35 +16,32 @@ from fabric import inv_spatialmos
 # Logging
 inv_logging.start_logging()
 
-
 # Namespace
 MAIN_NS = Collection()
 
-
 # Local Collection
-local_ns = Collection("local")
-local_ns.configure(inv_base.read_settings("development"))
-local_ns.add_task(inv_docker.docker)
-local_ns.add_collection(inv_install.install_ns)
-local_ns.add_collection(inv_django.django_development_ns)
-local_ns.add_collection(inv_docker.docker_compose_development_ns)
-local_ns.add_collection(inv_postgres.postgresql_development_ns)
-local_ns.add_collection(inv_spatialmos.spatialmos_development_ns)
-local_ns.add_collection(inv_node.node_ns)
-MAIN_NS.add_collection(local_ns)
+LOCAL_NS = Collection("local")
+LOCAL_NS.configure(inv_base.read_settings("development"))
+LOCAL_NS.add_task(inv_docker.docker)
+LOCAL_NS.add_collection(inv_install.INSTALL_NS)
+LOCAL_NS.add_collection(inv_django.DJANGO_DEVELOPMENT_NS)
+LOCAL_NS.add_collection(inv_docker.DOCKER_COMPOSE_DEVELOPMENT_NS)
+LOCAL_NS.add_collection(inv_postgres.POSTGRESQL_DEVELOPMENT_NS)
+LOCAL_NS.add_collection(inv_spatialmos.SPATIALMOS_DEVELOPMENT_NS)
+LOCAL_NS.add_collection(inv_node.NODE_NS)
+MAIN_NS.add_collection(LOCAL_NS)
 
 # Production Collection
-production_ns = Collection("production")
-production_ns.configure(inv_base.read_settings("production"))
-production_ns.add_collection(inv_rsync.rsync_ns)
-production_ns.add_task(inv_install.setproductionenvironment)
-production_ns.add_collection(inv_docker.docker_compose_production_ns)
-production_ns.add_collection(inv_django.django_production_ns)
-production_ns.add_task(inv_docker.docker)
-production_ns.add_collection(inv_spatialmos.spatialmos_production_ns)
-production_ns.add_collection(inv_postgres.postgresql_production_ns)
-MAIN_NS.add_collection(production_ns)
-
+PRODUCTION_NS = Collection("production")
+PRODUCTION_NS.configure(inv_base.read_settings("production"))
+PRODUCTION_NS.add_collection(inv_rsync.RSYNC_NS)
+PRODUCTION_NS.add_task(inv_install.setproductionenvironment)
+PRODUCTION_NS.add_collection(inv_docker.DOCKER_COMPOSE_PRODUCTION_NS)
+PRODUCTION_NS.add_collection(inv_django.DJANGO_PRODUCTION_NS)
+PRODUCTION_NS.add_task(inv_docker.docker)
+PRODUCTION_NS.add_collection(inv_spatialmos.SPATIALMOS_PRODUCTION_NS)
+PRODUCTION_NS.add_collection(inv_postgres.POSTGRESQL_PRODUCTION_NS)
+MAIN_NS.add_collection(PRODUCTION_NS)
 
 # Program
 PROGRAM = Program(namespace=MAIN_NS)
