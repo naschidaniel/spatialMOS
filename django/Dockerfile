@@ -17,7 +17,7 @@ FROM base as production
 
 RUN pip install gunicorn
 
-CMD gunicorn -u ${UID} -c /www/site/gunicorn_config.py spatialmos.wsgi
+CMD gunicorn -u 1001 -c /www/site/gunicorn_config.py spatialmos.wsgi
 
 
 # DEVELOPMENT
