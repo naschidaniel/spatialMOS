@@ -2,18 +2,16 @@
 #  -*- coding: utf-8 -*-
 """This collection is used to ensure data exchange between local PC and server."""
 
-import os
 import sys
 import subprocess
 import logging
-import distutils
 from itertools import chain, repeat
 from invoke import task, Collection
 import inv_base
 import inv_logging
-import inv_install
 
 def str2bool(string):
+    """A function to convert strings of the settings file to Bool variables"""
     if "True" in string:
         return True
     elif "False" in string:
@@ -130,14 +128,14 @@ def get(c):
     settings = inv_base.read_settings("production")
 
     for rsync_task in settings["rsync_get"]:
-        include, exclude, exclude_from = exclude_include_ignore(settings, rsync_task)
+        include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_task)
         rsync_get(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], \
             settings["rsync_get"][rsync_task]["local_dir"], \
             settings["rsync_get"][rsync_task]["remote_dir"], \
-            include, exclude, exclude_from)
+            include, exclude, exclude_from, ignore_existing)
     inv_logging.success(get.__name__)
 
 
-rsync_ns = Collection("rsync")
-rsync_ns.add_task(push)
-rsync_ns.add_task(get)
+RSYNC_NS = Collection("rsync")
+RSYNC_NS.add_task(push)
+RSYNC_NS.add_task(get)

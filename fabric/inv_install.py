@@ -40,7 +40,7 @@ def check_upstream(c):
     if c.run("git diff origin/master", hide=True).stdout.strip() != "":
         logging.error("Your local branch differs from upstream master (run git diff)")
         sys.exit(1)
-    
+
     if c.run("git status --short", hide=True).stdout.strip() != "":
         logging.error("You have a dirty working directory (run git status)")
         sys.exit(1)
@@ -69,14 +69,14 @@ def getdockercert(c):
     inv_logging.task(getdockercert.__name__)
     settings = inv_base.read_settings("production")
     cert_path = settings["docker"]["DOCKER_CERT_PATH"]
-    logging.info(f"The following path is used to store the certificates: {cert_path}")
+    logging.info("The following path is used to store the certificates: %s", cert_path)
     if os.path.exists(cert_path):
         shutil.rmtree(cert_path)
         logging.info("The old certificates were deleted.")
-    
+
     if not os.path.exists(cert_path):
         os.mkdir(cert_path)
-        logging.info(f"The {cert_path} folder was created.")
+        logging.info("The folder %s was created.", cert_path)
 
     inv_rsync.scp_get(c, "", settings["REMOTE_HOST"], "~/.docker/*", cert_path)
     inv_logging.success(getdockercert.__name__)
@@ -86,18 +86,18 @@ def getdockercert(c):
 def folders(c):
     """This task is used to create the folder structure"""
     inv_logging.task(folders.__name__)
-    for d in c.config["initFolders"]:
-        d = os.path.join(os.getcwd(), d)
+    for folder in c.config["initFolders"]:
+        folder = os.path.join(os.getcwd(), folder)
 
-        if not os.path.exists(d):
+        if not os.path.exists(folder):
             try:
-                os.makedirs(d)
-                logging.info(f"The folder {d} has been created.")
+                os.makedirs(folder)
+                logging.info("The folder %s has been created.", folder)
             except:
-                logging.error(f"The folder {d} could not be created.")
+                logging.error("The folder %s could not be created.", folder)
                 sys.exit(1)
         else:
-            logging.warning(f"The folder {d} already exists.")
+            logging.warning("The folder %s already exists.", folder)
 
     inv_logging.success(folders.__name__)
 
@@ -107,7 +107,7 @@ def setenvironment(c, cmd):
     """The task writes the local environment variables for django and docker, for example: development"""
     inv_logging.task(setenvironment.__name__)
     inv_logging.cmd(cmd)
-    
+
     settings = inv_base.read_settings(cmd)
     development_dir = os.getcwd()
     if cmd == "production":
@@ -119,14 +119,14 @@ def setenvironment(c, cmd):
         "django": os.path.join(development_dir, f"django/spatialmos/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
-    
+   
     # set the last commit msg
     settings["django"]["LASTCOMMIT"] = generate_lastcommit(c, settings)
 
     for dict_env_key, dict_env_file in dict_env.items():
         try:
             with open(dict_env_file, "w") as f:
-                for key, value in settings[dict_env_key].items():                          
+                for key, value in settings[dict_env_key].items():
                     f.write(f"{key}={value}\n")
                 f.close()
             logging.info(f"The environment variable for '{dict_env_key}'' from the settings.json file was successfully written to the .env file.: '{dict_env_file}'")
@@ -166,8 +166,7 @@ def setproductionenvironment(c):
 
     for folder in settings['initFolders']:
         folder = os.path.join(settings["docker"]["INSTALLFOLDER"], folder)
-        inv_rsync.ssh(c, settings["REMOTE_USER"],
-            settings["REMOTE_HOST"], f"mkdir -p {folder}")
+        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], f"mkdir -p {folder}")
 
     inv_logging.success(setproductionenvironment.__name__)
 
@@ -197,3 +196,4 @@ install_production_ns = Collection("install")
 install_production_ns.add_task(folders)
 install_production_ns.add_task(setproductionenvironment)
 install_production_ns.add_task(deploy)
+

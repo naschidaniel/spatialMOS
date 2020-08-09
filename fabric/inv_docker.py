@@ -2,12 +2,9 @@
 #  -*- coding: utf-8 -*-
 """This function contains the most important docker commands."""
 
-import logging
 from invoke import task, Collection
 import inv_base
 import inv_logging
-import inv_django
-import inv_node
 
 @task
 def docker(c, cmd):
@@ -104,25 +101,24 @@ def logs(c, cmd):
     inv_logging.success(logs.__name__)
 
 
-docker_compose_development_ns = Collection("docker-compose")
-docker_compose_development_ns.add_task(restart)
-docker_compose_development_ns.add_task(fullrestart)
-docker_compose_development_ns.add_task(rebuildhard)
-docker_compose_development_ns.add_task(rebuild)
-docker_compose_development_ns.add_task(start)
-docker_compose_development_ns.add_task(stop)
-docker_compose_development_ns.add_task(run)
-docker_compose_development_ns.add_task(run_as_root)
-docker_compose_development_ns.add_task(logs)
+DOCKER_COMPOSE_DEVELOPMENT_NS = Collection("docker-compose")
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(restart)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(fullrestart)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(rebuildhard)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(rebuild)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(start)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(stop)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(run)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(run_as_root)
+DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(logs)
 
 
-docker_compose_production_ns = Collection("docker-compose")
-docker_compose_production_ns.add_task(restart)
-docker_compose_production_ns.add_task(fullrestart)
-docker_compose_production_ns.add_task(rebuildhard)
-docker_compose_production_ns.add_task(rebuild)
-docker_compose_production_ns.add_task(start)
-docker_compose_development_ns.add_task(serve)
-docker_compose_production_ns.add_task(stop)
-docker_compose_production_ns.add_task(run)
-docker_compose_production_ns.add_task(logs)
+DOCKER_COMPOSE_PRODUCTION_NS = Collection("docker-compose")
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(restart)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(fullrestart)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(rebuildhard)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(rebuild)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(start)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(stop)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(run)
+DOCKER_COMPOSE_PRODUCTION_NS.add_task(logs)

@@ -16,12 +16,10 @@ from fabric import inv_spatialmos
 # Logging
 inv_logging.start_logging()
 
-
 # Namespace
 MAIN_NS = Collection()
 
-
-# Local Collection
+# Development Collection
 local_ns = Collection("local")
 local_ns.configure(inv_base.read_settings("development"))
 local_ns.add_task(inv_docker.docker)

@@ -4,8 +4,8 @@
 
 import os
 import sys
-import requests
 import logging
+import requests
 from invoke import task, Collection
 import inv_logging
 import inv_django
@@ -160,9 +160,9 @@ def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
 
 @task
 def py_spatialmos__pre_processing_gribfiles(c, date, parameter):
-    """Create the csv file and the jsonfile from the avalible gribfiles."""
+    """Create the csv file and the jsonfile from the available gribfiles."""
     inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
-    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediciton.py", "--date", date, "--parameter", parameter]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediction.py", "--date", date, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_processing_gribfiles.__name__)
@@ -195,33 +195,32 @@ def py_spatialmos__django_delete_spatialmos_runs(c, parameter, days):
     inv_logging.success(py_spatialmos__django_delete_spatialmos_runs.__name__)
 
 
-spatialmos_development_ns = Collection("spatialmos")
-spatialmos_development_ns.add_task(spatialmos__init_topography)
-spatialmos_development_ns.add_task(py_spatialmos__archive_available_data)
-spatialmos_development_ns.add_task(py_spatialmos__get_gefs)
-spatialmos_development_ns.add_task(py_spatialmos__get_suedtirol)
-spatialmos_development_ns.add_task(py_spatialmos__get_uibk)
-spatialmos_development_ns.add_task(py_spatialmos__get_wetter_at)
-spatialmos_development_ns.add_task(py_spatialmos__get_zamg)
-spatialmos_development_ns.add_task(py_spatialmos__pre_processing_reforecasts)
-spatialmos_development_ns.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
-spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
-spatialmos_development_ns.add_task(py_spatialmos__pre_processing_gribfiles)
-spatialmos_development_ns.add_task(py_spatialmos__prediction)
-spatialmos_development_ns.add_task(py_spatialmos__django_import_spatialmos_run)
-spatialmos_development_ns.add_task(py_spatialmos__django_delete_spatialmos_runs)
-spatialmos_development_ns.add_task(r_spatialmos__gamlss_crch_model)
-spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_nwp)
-spatialmos_development_ns.add_task(r_spatialmos__spatial_climatologies_obs)
+SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
+SPATIALMOS_DEVELOPMENT_NS.add_task(spatialmos__init_topography)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_available_data)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_uibk)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_wetter_at)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_reforecasts)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__prediction)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_import_spatialmos_run)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_delete_spatialmos_runs)
+SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__gamlss_crch_model)
+SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_nwp)
+SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
 
 
-spatialmos_production_ns = Collection("spatialmos")
-spatialmos_production_ns.add_task(py_spatialmos__archive_available_data)
-spatialmos_production_ns.add_task(py_spatialmos__get_gefs)
-spatialmos_production_ns.add_task(py_spatialmos__get_uibk)
-spatialmos_production_ns.add_task(py_spatialmos__get_zamg)
-spatialmos_production_ns.add_task(py_spatialmos__pre_processing_gribfiles)
-spatialmos_production_ns.add_task(py_spatialmos__prediction)
-spatialmos_production_ns.add_task(py_spatialmos__django_import_spatialmos_run)
-spatialmos_production_ns.add_task(py_spatialmos__django_delete_spatialmos_runs)
-
+SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_available_data)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_gefs)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_uibk)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__pre_processing_gribfiles)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__prediction)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__django_import_spatialmos_run)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__django_delete_spatialmos_runs)
