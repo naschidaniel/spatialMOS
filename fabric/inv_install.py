@@ -15,6 +15,14 @@ import inv_django
 import inv_docker
 import inv_rsync
 
+
+def generate_lastcommit(c, settings):
+    """A function to create the last commit ID"""
+    lastcommit = c.run("git rev-parse --short HEAD")
+    lastcommit = lastcommit.stdout.strip()
+    logging.info("Last commit number is %s", lastcommit)
+    return lastcommit
+
 @task
 def check_upstream(c):
     """Check master """
@@ -112,10 +120,9 @@ def setenvironment(c, cmd):
         "docker": os.path.join(development_dir, f"{filename}")
     }
     
-    lastcommit = c.run("git rev-parse --short HEAD")
-    lastcommit = lastcommit.stdout.strip()
-    logging.info("Last commit number is %s", lastcommit)
-    settings["django"]["LASTCOMMIT"] = lastcommit
+    # set the last commit msg
+    settings["django"]["LASTCOMMIT"] = generate_lastcommit(c, settings)
+
     for dict_env_key, dict_env_file in dict_env.items():
         try:
             with open(dict_env_file, "w") as f:
@@ -146,14 +153,16 @@ def setproductionenvironment(c):
         "docker": os.path.join(settings["docker"]["INSTALLFOLDER"], ".env")
     }
 
+    # set the last commit msg
+    settings["django"]["LASTCOMMIT"] = generate_lastcommit(c, settings)
+
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["docker"], remote_env["docker"])
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["django"], remote_env["django"])
 
     os.system(f"rm {dict_env['docker']}")
     logging.info(f"The environment '{dict_env['docker']}' variable was deleted.")
-    #os.system(f"rm {dict_env['django']}")
-    #logging.info(
-    #    f"The environment '{dict_env['django']}' variable was deleted.")
+    os.system(f"rm {dict_env['django']}")
+    logging.info(f"The environment '{dict_env['django']}' variable was deleted.")
 
     for folder in settings['initFolders']:
         folder = os.path.join(settings["docker"]["INSTALLFOLDER"], folder)
@@ -167,10 +176,10 @@ def setproductionenvironment(c):
 def deploy(c):
     """Everything you need to deploy"""
     inv_logging.task(deploy.__name__)
-    c.run("./task.py local.node.build")
+    #c.run("./task.py local.node.build")
     c.run("./task.py local.django.collectstatic")
     inv_docker.stop(c)
-    inv_rsync.push(c, "sourcecode")
+    inv_rsync.push(c, "sourcefiles")
     setproductionenvironment(c)
     inv_docker.rebuild(c)
     inv_django.migrate(c)
@@ -178,8 +187,13 @@ def deploy(c):
     inv_logging.success(deploy.__name__)
 
 
-install_ns = Collection("install")
-install_ns.add_task(folders)
-install_ns.add_task(getdockercert)
-install_ns.add_task(setenvironment)
-install_ns.add_task(quickinstallation)
+install_development_ns = Collection("install")
+install_development_ns.add_task(folders)
+install_development_ns.add_task(getdockercert)
+install_development_ns.add_task(setenvironment)
+install_development_ns.add_task(quickinstallation)
+
+install_production_ns = Collection("install")
+install_production_ns.add_task(folders)
+install_production_ns.add_task(setproductionenvironment)
+install_production_ns.add_task(deploy)

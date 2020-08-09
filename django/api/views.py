@@ -12,7 +12,7 @@ class SpatialMosRunList(APIView):
     permission_classes = [AllowAny]
     def get(self, request, format=None):
         spatialmos_runs = SpatialMosRun.objects.all()
-        serializer = SpatialMosRunSerializer(spatialmos_runs, many=True)
+        serializer = SpatialMosRunSerializer(spatialmos_runs, context={'request': request}, many=True)
         return JsonResponse(serializer.data, safe=False)
 
 class SpatialMosRunDetails(APIView):  
@@ -27,7 +27,7 @@ class SpatialMosRunDetails(APIView):
 
     def get(self, request, pk, format=None):
         spatialmos_run = self.get_object(pk)
-        serializer = SpatialMosRunSerializer(spatialmos_run)
+        serializer = SpatialMosRunSerializer(spatialmos_run, context={'request': request})
         return JsonResponse(serializer.data, safe=False)
 
 class SpatialMosRunLastDetails(APIView):  
@@ -42,7 +42,7 @@ class SpatialMosRunLastDetails(APIView):
 
     def get(self, request, parameter, format=None):
         spatialmos_run = self.get_object(parameter)
-        serializer = SpatialMosRunSerializer(spatialmos_run)
+        serializer = SpatialMosRunSerializer(spatialmos_run, context={'request': request})
         return JsonResponse(serializer.data, safe=False)
 
 class SpatialMosLastRunSteps(APIView):  
@@ -57,7 +57,7 @@ class SpatialMosLastRunSteps(APIView):
 
     def get(self, request, parameter, format=None):
         spatialmos_steps = self.get_object(parameter)
-        serializer = SpatialMosStepSerializer(spatialmos_steps, many=True)
+        serializer = SpatialMosStepSerializer(spatialmos_steps, context={'request': request}, many=True)
         return JsonResponse(serializer.data, safe=False)
 
 class SpatialMosLastRunPointPrediction(APIView):  
