@@ -186,13 +186,13 @@ def deploy(c):
     inv_logging.success(deploy.__name__)
 
 
-install_development_ns = Collection("install")
-install_development_ns.add_task(folders)
-install_development_ns.add_task(getdockercert)
-install_development_ns.add_task(setenvironment)
-install_development_ns.add_task(quickinstallation)
+INSTALL_DEVELOPMENT_NS = Collection("install")
+INSTALL_DEVELOPMENT_NS.add_task(folders)
+INSTALL_DEVELOPMENT_NS.add_task(getdockercert)
+INSTALL_DEVELOPMENT_NS.add_task(setenvironment)
+INSTALL_DEVELOPMENT_NS.add_task(quickinstallation)
 
-install_production_ns = Collection("install")
-install_production_ns.add_task(folders)
-install_production_ns.add_task(setproductionenvironment)
-install_production_ns.add_task(deploy)
+INSTALL_PRODUCTION_NS = Collection("install")
+INSTALL_PRODUCTION_NS.add_task(folders)
+INSTALL_PRODUCTION_NS.add_task(setproductionenvironment)
+INSTALL_PRODUCTION_NS.add_task(deploy)

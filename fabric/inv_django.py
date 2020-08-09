@@ -3,8 +3,6 @@
 """The collection is needed for django commands."""
 
 import logging
-import os
-import sys
 from invoke import task, Collection
 import inv_base
 import inv_logging
