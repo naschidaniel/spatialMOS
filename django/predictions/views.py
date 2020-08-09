@@ -4,11 +4,15 @@ import requests
 # Create your views here.
 def predictions(request):
     """The function to display the spatialMOS predictions."""
-    spatialmos_run_req = requests.get('https://moses.tirol/api/spatialmosstep/last/tmp_2m/')
-    spatialmos_run = spatialmos_run_req.json()
+    spatialmosrun_req = requests.get('https://moses.tirol/api/spatialmosrun/last/tmp_2m/')
+    
+    if spatialmosrun_req.status_code == 200:
+        spatialmosrun = spatialmosrun_req.json()
+    else:
+        spatialmosrun = None
 
     context = {
-        'content': spatialmos_run,
+        'spatialmosrun': spatialmosrun,
     }
     return render(request, 'predictions/predictions.html', context)
 

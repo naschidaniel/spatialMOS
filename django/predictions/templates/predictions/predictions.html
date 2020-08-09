@@ -1,7 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
   <div class="content">
-    {{ content }}
-    <a href="/api/spatialmosstep/last/tmp_2m/" target="_blank">/api/spatialmosstep/last/tmp_2m/</a>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Last</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Parameter</th>
+          <td>{{ spatialmosrun.parameter_longname }}</td>
+
+        </tr>
+        <tr>
+          <th scope="row">Analysedatum</th>
+          <td>{{ spatialmosrun.anal_date }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Alle Steps sind vorhanden:</th>
+          <td>{{ spatialmosrun.complete }}</td>
+        </tr>
+        <tr>
+          <th scope="row">API URL</th>
+          <td>
+            <a href="/api/spatialmosrun/last/tmp_2m/" target="_blank">/api/spatialmosrun/last/tmp_2m/</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    {% for step in spatialmosrun.steps %}
+      <p>
+        <img src="{{ step.filename_spatialmos_mean}}">
+      </p>
+    {% endfor %}
+
   </div>
 {% endblock content %}
