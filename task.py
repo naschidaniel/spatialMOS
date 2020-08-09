@@ -16,10 +16,8 @@ from fabric import inv_spatialmos
 # Logging
 inv_logging.start_logging()
 
-
 # Namespace
 MAIN_NS = Collection()
-
 
 # Local Collection
 local_ns = Collection("local")

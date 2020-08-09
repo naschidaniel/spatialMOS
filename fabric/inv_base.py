@@ -2,8 +2,7 @@ import json
 import sys
 import os
 import logging
-import copy
-
+import getpass
 
 def manage_py(c, cmd, **kwargs):
     """The function executes the django manage.py command."""

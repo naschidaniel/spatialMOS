@@ -34,18 +34,18 @@ def dump_backup(c, host):
     user, group = inv_base.uid_gid(c)
     file = f"postgres_{host}_backup_{datetime.datetime.now().strftime('%Y%m%d%H%M')}"
     inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'pg_dumpall -c -U postgres -h postgres > /var/backup/{file}.out'", pty=True)
-    logging.info(f"A database dump was saved in the file: '{postgres_backup_folder}/{file}.out")
-    
+    logging.info("A database dump was saved in the file: '%s/%s.out", postgres_backup_folder, file)
+
     command = f"tar -czf {postgres_backup_folder}/{file}.tar.gz -C {postgres_backup_folder} {file}.out"
     if host == "development":
         c.run(command)
     elif host == "production":
-        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)  
-    logging.info(f"A database dump was saved in the file: '{postgres_backup_folder}/{file}.tar.gz'")
-    
+        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)
+    logging.info("A database dump was saved in the file: '%s/%s.tar.gz'", postgres_backup_folder, file)
+
     delete_db_dump(c, host, postgres_backup_folder, file)
 
-    logging.info(f"The uncompressed database dump was deleted: '{postgres_backup_folder}/{file}.out'")
+    logging.info("The uncompressed database dump was deleted: '%s/%s.out'", postgres_backup_folder, file)
 
     inv_docker.stop(c)
     inv_docker.start(c)
@@ -61,15 +61,15 @@ def read_backup(c, folder, docker_volume, host):
     postgresdata_backup_server_files = os.popen(f"ls {postgres_backup_folder}").read().strip().split("\n")
     file = postgresdata_backup_server_files[-1]
     file = file[:file.rfind(".tar.gz")]
-    logging.info(f"The database dump archive is unpacked.: '{postgres_backup_folder}/{file}.tar.gz'")
+    logging.info("The database dump archive is unpacked.: '%s/%s.tar.gz'", postgres_backup_folder, file)
 
     command = f"tar -xzf {postgres_backup_folder}/{file}.tar.gz -C {postgres_backup_folder}"
     if host == "development":
         c.run(command)
     elif host == "production":
         inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)
-    
-    logging.info(f"The database dump was unpacked.: '{postgres_backup_folder}/{file}.out'")
+
+    logging.info("The database dump was unpacked.: '%s/%s.out'", postgres_backup_folder, file)
     inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'psql -h postgres -U postgres -f {docker_volume}/{file}.out --quiet'")
     delete_db_dump(c, host, postgres_backup_folder, file)
     inv_docker.stop(c)
@@ -89,7 +89,7 @@ def dump_production_backup(c):
     dump_backup(c, host="production")
     inv_logging.success(dump_production_backup.__name__)
 
-@task 
+@task
 def import_last_development_backup(c):
     """With this task the last development database dump can be imported from a tar.gz file."""
     inv_logging.task(import_last_development_backup.__name__)
@@ -103,7 +103,7 @@ def import_last_production_backup_into_local_db(c):
     read_backup(c, "postgres_backup_server_folder", "/var/backup_server", "development")
     inv_logging.success(import_last_production_backup_into_local_db.__name__)
 
-@task 
+@task
 def import_last_production_backup(c):
     """With this task the last production database dump can be imported from a tar.gz file."""
     inv_logging.task(import_last_production_backup.__name__)
@@ -119,7 +119,8 @@ def get_last_production_backup(c):
     postgres_backup_server_folder = f"{settings_production['docker']['INSTALLFOLDER']}{settings_production['postgres_backup_server_folder']}"
     remote_postgresdata_backup_server_files = os.popen(f"ssh {settings_production['REMOTE_USER']}@{settings_production['REMOTE_HOST']} ls {postgres_backup_server_folder}").read().strip().split("\n")
     backup_file = f"{remote_postgresdata_backup_server_files[-1]}"
-    inv_rsync.scp_get(c, settings_production["REMOTE_USER"], settings_production["REMOTE_HOST"], f"{postgres_backup_server_folder}/{backup_file}", f"{settings_development['postgres_backup_server_folder']}/{backup_file}")
+    inv_rsync.scp_get(c, settings_production["REMOTE_USER"], settings_production["REMOTE_HOST"],\
+        f"{postgres_backup_server_folder}/{backup_file}", f"{settings_development['postgres_backup_server_folder']}/{backup_file}")
     inv_logging.success(get_last_production_backup.__name__)
 
 @task
@@ -133,13 +134,13 @@ def reset_db(c):
     inv_django.migrate(c)
     inv_logging.success(reset_db.__name__)
 
-postgresql_development_ns = Collection("postgres")
-postgresql_development_ns.add_task(dump_development_backup)
-postgresql_development_ns.add_task(import_last_development_backup)
-postgresql_development_ns.add_task(import_last_production_backup_into_local_db)
-postgresql_development_ns.add_task(get_last_production_backup)
-postgresql_development_ns.add_task(reset_db)
+POSTGRESQL_DEVELOPMENT_NS = Collection("postgres")
+POSTGRESQL_DEVELOPMENT_NS.add_task(dump_development_backup)
+POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_development_backup)
+POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_production_backup_into_local_db)
+POSTGRESQL_DEVELOPMENT_NS.add_task(get_last_production_backup)
+POSTGRESQL_DEVELOPMENT_NS.add_task(reset_db)
 
-postgresql_production_ns = Collection("postgres")
-postgresql_production_ns.add_task(dump_production_backup)
-postgresql_production_ns.add_task(import_last_production_backup)
+POSTGRESQL_PRODUCTION_NS = Collection("postgres")
+POSTGRESQL_PRODUCTION_NS.add_task(dump_production_backup)
+POSTGRESQL_PRODUCTION_NS.add_task(import_last_production_backup)
