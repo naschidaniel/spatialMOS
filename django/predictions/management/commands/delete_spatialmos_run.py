@@ -10,6 +10,7 @@ from predictions.models import SpatialMosRun, SpatialMosStep, SpatialMosPoint
 from datetime import datetime, timedelta
 
 class Command(BaseCommand):
+    """A management command for deleting the spatialMos predictions from the database."""
     help = "With this management command old model runs can be removed from the database. Options: --parameter ['tmp_2m', 'rh_2m', 'wind_10m'] --days 5"
 
     def add_arguments(self, parser):
