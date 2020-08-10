@@ -249,12 +249,10 @@ A web server is started and the project is accessible under the following URLS:
 
 The predictions can also be loaded as JSON data via the Api Rest interface.
 
-```
 [http://localhost/api/spatailmosrun/](http://localhost/api/spatailmosrun/)
 [http://localhost/api/spatialmosrun/last/tmp_2m/](http://localhost/api/spatialmosrun/last/tmp_2m/)
 [http://localhost/api/spatialmosstep/last/tmp_2m/](http://localhost/api/spatialmosstep/last/tmp_2m/)
 [http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/](http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/)
-```
 
 
 #### Delete model runs from the PostgreSQL database
