@@ -1,12 +1,19 @@
 from django.shortcuts import render
-from .models import Pages
-
 from django.shortcuts import get_object_or_404
+from django.http import Http404
+from .models import Pages
 
 def page(request, url):
     """A function to output simple markdown pages."""
-    
-    if url in Pages.objects.values_list('slug', flat=True):
+
+    def get_object():
+        """The function to generate the database query."""
+        try:
+            return Pages.objects.values_list('slug', flat=True)
+        except Pages.DoesNotExist:
+            raise Http404
+
+    if url in get_object():
         query = Pages.objects.get(slug=url)
         context = {
             'content': query,

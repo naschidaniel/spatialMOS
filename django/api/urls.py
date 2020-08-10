@@ -1,9 +1,10 @@
+"""The URL configuration file for the api app"""
+
 from django.urls import path, include
+from api import views
 
-from . import views
 
-
-# Wire up our API using automatic URL routing.
+# API urls
 urlpatterns = [
     path('spatailmosrun/', views.SpatialMosRunList.as_view()),
     path('spatailmosrun/<int:pk>', views.SpatialMosRunDetails.as_view()),

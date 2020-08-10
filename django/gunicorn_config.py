@@ -1,3 +1,5 @@
+"""GUNICORN config for spatialmos project."""
+
 import multiprocessing
 import os
 

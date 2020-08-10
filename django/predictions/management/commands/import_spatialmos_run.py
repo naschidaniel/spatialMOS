@@ -15,6 +15,7 @@ from django.core.files import File
 
 
 class Command(BaseCommand):
+    """A management command for importing the spatialMos predictions into the database."""
     help = "Import the pre-processed forecast into the database. Options: --parameter ['tmp_2m', 'rh_2m', 'wind_10m'] --date '2020-08-02'"
 
     def add_arguments(self, parser):

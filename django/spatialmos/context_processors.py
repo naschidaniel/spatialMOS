@@ -1,3 +1,5 @@
+"""The context pre processors for the spatialMOS project"""
+
 from django.conf import settings
 
 def custom_context(request):
