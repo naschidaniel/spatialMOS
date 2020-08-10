@@ -206,6 +206,11 @@ The source files are synchronized using the fabric command:
 ./task.py production.rsync.push --what sourcefiles
 ```
 
+The source files are synchronized using the fabric command:
+```
+./task.py production.rsync.push --what staticfiles
+```
+
 The climatologies needed for the daily calculation can be uploaded using the command:
 ```
 ./task.py production.rsync.push --what climatologies
@@ -234,7 +239,7 @@ http://localhost/admin
 #### Data import from spool directory to PostgreSQL database
 
 ```
-./task.py *TODO*
+./task.py local.spatialmos.py-spatialmos--django-import-spatialmos-run --date 2020-07-22 --parameter tmp_2m
 ```
 
 
@@ -244,6 +249,15 @@ The predictions can also be loaded as JSON data via the Api Rest interface.
 
 ```
 API urls *TODO*
+```
+
+
+#### Delete model runs from the PostgreSQL database
+
+With this managing command model runs older than 5 days are removed from the database.
+
+```
+./task.py local.spatialmos.py-spatialmos--django-import-spatialmos-run --parameter tmp_2m --days 5
 ```
 
 
@@ -262,6 +276,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-10 Prettier Django docstrings and remarks.
+- 2020-08-09 The Django website was put online on [moses.tirol](https://moses.tirol).
 - 2020-08-05 Data in JSON format can be obtained from the API interface.
 - 2020-07-30 Django was added to the project and tested locally.
 - 2020-07-29 The new version was installed on the server. Daily two meter Temperature spatialMOS forecasts are now generated.
