@@ -122,8 +122,8 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
+# HTTPS Support 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Language and Time Zones
