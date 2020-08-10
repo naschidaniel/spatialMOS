@@ -228,11 +228,13 @@ The online presence was implemented with the web framework django written in pyt
 ./task.py serve ... start ... quickinstall
 ```
 
-#### TODO URLS
-```
-http://localhost/
-http://localhost/admin
-```
+#### Urls for local development
+
+A web server is started and the project is accessible under the following URLS:
+
+[http://localhost/](http://localhost/)
+
+[http://localhost/admin](http://localhost/admin)
 
 
 
@@ -248,7 +250,10 @@ http://localhost/admin
 The predictions can also be loaded as JSON data via the Api Rest interface.
 
 ```
-API urls *TODO*
+[http://localhost/api/spatailmosrun/](http://localhost/api/spatailmosrun/)
+[http://localhost/api/spatialmosrun/last/tmp_2m/](http://localhost/api/spatialmosrun/last/tmp_2m/)
+[http://localhost/api/spatialmosstep/last/tmp_2m/](http://localhost/api/spatialmosstep/last/tmp_2m/)
+[http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/](http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/)
 ```
 
 
@@ -257,7 +262,7 @@ API urls *TODO*
 With this managing command model runs older than 5 days are removed from the database.
 
 ```
-./task.py local.spatialmos.py-spatialmos--django-import-spatialmos-run --parameter tmp_2m --days 5
+./task.py local.spatialmos.py-spatialmos--django-delete-spatialmos_runs --parameter tmp_2m --days 5
 ```
 
 
