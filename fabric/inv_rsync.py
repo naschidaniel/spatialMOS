@@ -110,7 +110,7 @@ def push(c, what):
     inv_logging.task(push.__name__)
     settings = inv_base.read_settings("production")
 
-    if what not in ["sourcefiles", "climatologies"]:
+    if what not in ["sourcefiles", "climatologies", "staticfiles"]:
         inv_logging.error(what)
         sys.exit(1)
 
