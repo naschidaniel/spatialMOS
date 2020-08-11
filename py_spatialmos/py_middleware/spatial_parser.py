@@ -8,10 +8,10 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
+def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
-    parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
+    parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_modeltype}", default="avg", type=str)
     parser.add_argument("--begin", dest="begin", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--begindate", dest="begindate", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
@@ -26,11 +26,11 @@ def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False
 
 
     if modeltype is True:
-        if options.modeltype in name_avgspr:
+        if options.modeltype in name_modeltype:
             modeltype = options.modeltype
             logging.info("PARSER | {:>20} | {}".format("--modeltype", modeltype))
         else:
-            logging.error("--modeltype | Enter a modeltype from the list: {}".format(name_avgspr))
+            logging.error("PARSER | {:>20} | {}".format("--modeltype", name_modeltype))
             sys.exit(1)
     else:
         modeltype = None
@@ -40,8 +40,7 @@ def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False
             begin = options.begin
             logging.info("PARSER | {:>20} | {}".format("--begin", enddate))
         else:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--begin", options.begin))
+            logging.error("PARSER | {:>20} | {}".format("--begin", options.begin))
             sys.exit(1)
     else:
         begin = None
@@ -52,8 +51,7 @@ def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False
             begindate = datetime.strftime(begindate, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--begindate", begindate))
         except ValueError:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--begindate", options.begindate))
+            logging.error("PARSER | {:>20} | {}".format("--begindate", options.begindate))
             raise ValueError("The begindate is not entered in the correct format: YYYY-MM-DD")
     else:
         begindate = None
@@ -64,8 +62,7 @@ def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False
             date = datetime.strftime(date, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--date", date))
         except ValueError:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--date", options.date))
+            logging.error("PARSER | {:>20} | {}".format("--date", options.date))
             raise ValueError("The date is not entered in the correct format: YYYY-MM-DD")
     else:
         date = None
