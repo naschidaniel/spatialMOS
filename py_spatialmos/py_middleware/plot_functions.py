@@ -11,7 +11,7 @@ import datetime as dt
 def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, step, what):
     """A function to create the GEFS and spatialMOS forecast plots."""
 
-    fig_dpi=96
+    fig_dpi=72
     fig = plt.figure(figsize=(1200/fig_dpi, 1200/fig_dpi), dpi=fig_dpi)
 
     if parameter == "tmp_2m" and what == "samos_mean":
@@ -88,7 +88,7 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
     anal_date_str = anal_date_timestamp.strftime("%Y%m%d")
     filename = f"{anal_date_str}_step_{step:03d}.jpg"
     path_filename = os.path.join(filepath, filename)
-    fig.savefig(path_filename, bbox_inches="tight", quality=95, optimize=True, progressive=True)
+    fig.savefig(path_filename, bbox_inches="tight", quality=70, optimize=True, progressive=True)
     plt.close(fig=None)
     return path_filename, filename
 
