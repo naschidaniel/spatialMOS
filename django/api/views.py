@@ -27,7 +27,7 @@ class SpatialMosRunList(APIView):
 class SpatialMosRunDetails(APIView):
     """List details for one SpatialMosRun."""
     permission_classes = [AllowAny]
-    
+
     def get_object(self, pk):
         """The function to generate the database query."""
         try:
@@ -94,8 +94,8 @@ class SpatialMosLastRunPointPrediction(APIView):
         except SpatialMosStep.DoesNotExist:
             raise Http404
 
-    def get(self, parameter, lat, lon):
+    def get(self, request, parameter, lat, lon):
         """This function returns the data as JSON"""
         spatialmos_steps = self.get_object(parameter, lat, lon)
-        serializer = SpatialMosPointSerializer(spatialmos_steps, many=True)
+        serializer = SpatialMosPointSerializer(spatialmos_steps, context={'request': request}, many=True)
         return JsonResponse(serializer.data, safe=False)
