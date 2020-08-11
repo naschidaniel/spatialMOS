@@ -217,10 +217,10 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
             data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
             baseurl = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
         else:
-            data_path = f"./data/get_available_data/gefs_forecast_p05/{parameter}"
+            data_path = f"./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}"
             baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/"
     elif modeltype in ["ens"]:
-        data_path = f"./data/get_available_data/gefs_ens_forecast/{parameter}"
+        data_path = f"./data/get_available_data/gefs_ens_forecast_p1/{parameter}"
         members = np.arange(0, 20+1, 1, dtype=int)
         logging.info("Downloading members: {:s}".format(", ".join(["{:d}".format(x) for x in members])))
         baseurl = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
