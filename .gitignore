@@ -27,3 +27,6 @@ settings.json
 
 # Shellscripts for testing
 *.sh
+
+# Nginx
+.well-known
