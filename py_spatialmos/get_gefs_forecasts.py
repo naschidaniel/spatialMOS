@@ -107,14 +107,21 @@ class idx_entry(object):
                 end, self.key())
 
 # Functions
-def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype):
+def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution):
     """With this function the file names from the server are preprocessed."""
 
-    # Create URL  	geavg.t00z.pgrb2af00.idx
     if modeltype in ["avg", "spr"]:
-        gribfile = os.path.join(date.strftime(baseurl),
-                            "ge{:s}.t{:s}z.pgrb2af{:s}".format(modeltype, date.strftime("%H"),
-                            "{:02d}".format(step) if step < 100 else "{:03d}".format(step)))
+        if resolution == 0.5:
+            #Create URL geavg.t00z.pgrb2a.0p50.f000.idx
+            filename = "ge{:s}.t{:s}z.pgrb2a.0p50.f{:03d}".format(modeltype, date.strftime("%H"), step)
+        elif resolution == 1:
+            # Create URL geavg.t00z.pgrb2af00.idx
+            filename = "ge{:s}.t{:s}z.pgrb2af{:s}".format(modeltype, date.strftime("%H"), "{:02d}".format(step) if step < 100 else "{:03d}".format(step))
+        else:
+            logging.error("The resolution %d ist not supported", resolution)
+            sys.exit(1)
+        
+        gribfile = os.path.join(date.strftime(baseurl), filename)
         local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(modeltype, step)
         subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(modeltype, step)
     else:
@@ -246,7 +253,7 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                 except:
                     raise Exception("Cannot create directory {:s}!".format(data_path_gribfile))
 
-            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype)
+            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
             if os.path.isfile(files["subset"]):
                 logging.info("Local subset exists, skip: %s", files["subset"])
                 logging.info("{:s}".format("".join(["-"]*70)))

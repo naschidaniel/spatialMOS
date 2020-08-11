@@ -20,7 +20,7 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
     parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
     parser.add_argument("--host", dest="host", help=f"Specify the host: {name_host}", default="moses.tirol", type=str)
     parser.add_argument("--parameter", dest="parameter", help=f"Enter a parameter from the list: {name_parameter}", default="", type=str)
-    parser.add_argument("--resolution", dest="resolution", help=f"Model initialization hour: {name_resolution}", default=1, type=int)
+    parser.add_argument("--resolution", dest="resolution", help=f"Model initialization hour: {name_resolution}", default=1, type=float)
 
     options = parser.parse_args()
 
@@ -126,7 +126,7 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
     if resolution is True:
         logging.info("PARSER | {:>20} | {}".format("name_resolution options", name_resolution))
         if options.resolution in name_resolution:
-            if isinstance(options.resolution, int):
+            if isinstance(options.resolution, float):
                 resolution = options.resolution
                 logging.info("PARSER | {:>20} | {}".format("--resolution", resolution))
             else:
