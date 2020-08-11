@@ -51,6 +51,15 @@
       "./log/fabric",
       "./log/nginx"
     ],
+    "django": {
+      "DEBUG": "False",
+      "ALLOWED_HOSTS": "moses.tirol,www.moses.tirol",
+      "DB": "postgres",
+      "POSTGRES_HOST": "postgres",
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "postgres",
+      "SECRET_KEY": "ENTER A VALID SECRET KEY"
+    },
     "docker": {
       "USERID": "1001",
       "GROUPID": "1001",
@@ -58,7 +67,9 @@
       "HOST": "production",
       "DOCKER_TLS_VERIFY": "1",
       "DOCKER_HOST": "tcp://example@example.com:2376",
-      "DOCKER_CERT_PATH": "./fabric/cert/"
+      "DOCKER_CERT_PATH": "./fabric/cert/",
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "postgres"
     },
     "postgres_backup_server_folder": "./postgresdata_backup_server",
     "docker_compose_files": [
@@ -85,6 +96,28 @@
         ],
         "exclude-from": [
           ".gitignore"
+        ]
+      },
+      "staticfiles": {
+        "local_dir": "./data",
+        "remote_dir": "/www/spatialMOS",
+        "include": [
+          "static"
+        ],
+        "exclude": [
+          "get_available_data/gadm",
+          "spatialmos_climatology/gam/",
+          "get_available_data/*",
+          "*.h5",
+          "*.RData",
+          "*_station_observations.csv",
+          "archive",
+          "media",
+          "postgresdata",
+          "bostgresdata_backup",
+          "postgresdata_backup_server",
+          "static",
+          "spool"
         ]
       },
       "climatologies": {
