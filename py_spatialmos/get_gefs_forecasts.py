@@ -213,12 +213,15 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
     if modeltype in ["avg", "spr"]:
         members = np.arange(0, 1, 1, dtype = int)
         logging.info("Downloading members: {:s}:  ".format(modeltype))
-        if resolution == "1":
-            data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
+        if resolution == 1:
+            data_path = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}"
             baseurl = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
-        else:
+        elif resolution == 0.5:
             data_path = f"./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}"
             baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/"
+        else:
+            logging.error("The resolution is not supported")
+            sys.exit(1)
     elif modeltype in ["ens"]:
         data_path = f"./data/get_available_data/gefs_ens_forecast_p1/{parameter}"
         members = np.arange(0, 20+1, 1, dtype=int)

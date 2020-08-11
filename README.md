@@ -189,7 +189,7 @@ The calculated predictions are available in the exchange folder `./data/spool`. 
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
 ```
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_forecast
+./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p1
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_reforecast
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder suedtirol
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder uibk
