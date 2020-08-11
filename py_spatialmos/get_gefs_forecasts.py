@@ -275,7 +275,7 @@ def fetch_gefs_data(modeltype, date, parameter, runhour):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(modeltype=True, date=True, name_avgspr=[None, "avg", "spr"], \
+    PARSER_DICT = spatial_parser.spatial_parser(modeltype=True, date=True, name_modeltype=["avg", "spr", "ens"], \
         parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
     fetch_gefs_data(PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
     logger_module.end_logging(STARTTIME)
