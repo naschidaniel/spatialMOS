@@ -190,6 +190,7 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 
 ```
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p1
+./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p05
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_reforecast
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder suedtirol
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder uibk
@@ -282,6 +283,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
 - 2020-08-10 Prettier Django docstrings and remarks.
 - 2020-08-09 The Django website was put online on [moses.tirol](https://moses.tirol).
 - 2020-08-05 Data in JSON format can be obtained from the API interface.
