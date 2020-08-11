@@ -7,6 +7,7 @@ https://github.com/retostauffer/GEFS_Downloader_Simple"""
 
 
 import os
+import sys
 import re
 import logging
 from datetime import datetime
@@ -43,6 +44,7 @@ class idx_entry(object):
 
     def end_byte(self):
         """end_byte()
+
         Returns end byte.
         """
         try:
@@ -53,6 +55,7 @@ class idx_entry(object):
 
     def start_byte(self):
         """start_byte()
+
         Returns start byte.
         """
         try:
@@ -64,6 +67,7 @@ class idx_entry(object):
 
     def key(self):
         """key()
+
         Returns
         -------
         Returns a character string "<param name>:<param level>".
@@ -172,7 +176,7 @@ def download_grib(grib, local, required):
     return True
 
 
-def fetch_gefs_data(modeltype, date, parameter, runhour):
+def fetch_gefs_data(modeltype, date, parameter, resolution):
     """Function for downloading gribfiles from the GEFS NCEP server."""
     
     params = None
@@ -185,27 +189,38 @@ def fetch_gefs_data(modeltype, date, parameter, runhour):
     elif parameter == "vgrd_10m":
         params = ["VGRD:10 m above ground"]
 
-    data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
-    baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
-    baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.
     # Else a dict with N/S/E/W in degrees (0-360!)
     subset = {"E": 20, "W": 8, "S": 45, "N": 53}
 
+    # runhour is in [0, 6, 12, 18]
+    runhour = 0
     date = datetime.strptime("{:s} {:02d}:00:00".format(date, runhour), "%Y%m%d %H:%M:%S")
 
     # Steps/members. The +1 is required to get the required sequence!
     steps = np.arange(6, 300+1, 6, dtype = int)
 
     logging.info("{:s}".format("".join(["-"]*70)))
+    
+    # https://www.nco.ncep.noaa.gov/pmb/products/gens/
     if modeltype in ["avg", "spr"]:
         members = np.arange(0, 1, 1, dtype = int)
         logging.info("Downloading members: {:s}:  ".format(modeltype))
-        baseurl = baseurl_avgspr
-    else:
+        if resolution == "1":
+            data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
+            baseurl = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
+        else:
+            data_path = f"./data/get_available_data/gefs_forecast_p05/{parameter}"
+            baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/"
+    elif modeltype in ["ens"]:
+        data_path = f"./data/get_available_data/gefs_ens_forecast/{parameter}"
         members = np.arange(0, 20+1, 1, dtype=int)
         logging.info("Downloading members: {:s}".format(", ".join(["{:d}".format(x) for x in members])))
-        baseurl = baseurl_ens
+        baseurl = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
+    else:
+        logging.info("The modeltype is not supported: %s", modeltype)
+        sys.exit(1)
+   
 
     steps_str = ", ".join(["{:d}".format(x) for x in steps])
     logging.info("Downloading steps: %s", steps_str)
@@ -276,7 +291,7 @@ def fetch_gefs_data(modeltype, date, parameter, runhour):
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
     PARSER_DICT = spatial_parser.spatial_parser(modeltype=True, date=True, name_modeltype=["avg", "spr", "ens"], \
-        parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
-    fetch_gefs_data(PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
+        parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], resolution=True, name_resolution=[0.5, 1])
+    fetch_gefs_data(PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["resolution"])
     logger_module.end_logging(STARTTIME)
  

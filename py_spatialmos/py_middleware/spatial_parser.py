@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
+def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", resolution=False, name_resolution=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
     parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_modeltype}", default="avg", type=str)
@@ -20,7 +20,7 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
     parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
     parser.add_argument("--host", dest="host", help=f"Specify the host: {name_host}", default="moses.tirol", type=str)
     parser.add_argument("--parameter", dest="parameter", help=f"Enter a parameter from the list: {name_parameter}", default="", type=str)
-    parser.add_argument("--runhour", dest="runhour", help=f"Model initialization hour: {name_runhour}", default=0, type=int)
+    parser.add_argument("--resolution", dest="resolution", help=f"Model initialization hour: {name_resolution}", default=1, type=int)
 
     options = parser.parse_args()
 
@@ -123,20 +123,20 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
     else:
         parameter = None
 
-    if runhour is True:
-        logging.info("PARSER | {:>20} | {}".format("name_runhour options", name_runhour))
-        if options.runhour in name_runhour:
-            if isinstance(options.runhour, int):
-                runhour = options.runhour
-                logging.info("PARSER | {:>20} | {}".format("--runhour", runhour))
+    if resolution is True:
+        logging.info("PARSER | {:>20} | {}".format("name_resolution options", name_resolution))
+        if options.resolution in name_resolution:
+            if isinstance(options.resolution, int):
+                resolution = options.resolution
+                logging.info("PARSER | {:>20} | {}".format("--resolution", resolution))
             else:
-                logging.error("PARSER | {:>20} | {}".format("--runhour", options.runhour))
+                logging.error("PARSER | {:>20} | {}".format("--resolution", options.resolution))
                 sys.exit(1)
         else:
-            logging.error("--runhour | Enter a runhour from the list: {}".format(name_runhour))
+            logging.error("--resolution | Enter a resolution from the list: {}".format(name_resolution))
             sys.exit(1)
     else:
-        runhour = None
+        resolution = None
 
     parser_dict = {"modeltype": modeltype,
                    "begin": begin,
@@ -147,6 +147,6 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
                    "folder": folder,
                    "host": host,
                    "parameter": parameter,
-                   "runhour": runhour
+                   "resolution": resolution
                    }
     return parser_dict
