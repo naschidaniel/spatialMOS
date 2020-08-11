@@ -7,6 +7,7 @@ https://github.com/retostauffer/GEFS_Downloader_Simple"""
 
 
 import os
+import sys
 import re
 import logging
 from datetime import datetime
@@ -43,6 +44,7 @@ class idx_entry(object):
 
     def end_byte(self):
         """end_byte()
+
         Returns end byte.
         """
         try:
@@ -53,6 +55,7 @@ class idx_entry(object):
 
     def start_byte(self):
         """start_byte()
+
         Returns start byte.
         """
         try:
@@ -64,6 +67,7 @@ class idx_entry(object):
 
     def key(self):
         """key()
+
         Returns
         -------
         Returns a character string "<param name>:<param level>".
@@ -103,16 +107,23 @@ class idx_entry(object):
                 end, self.key())
 
 # Functions
-def get_file_names(data_path_gribfile, baseurl, date, mem, step, avgspr):
+def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution):
     """With this function the file names from the server are preprocessed."""
 
-    # Create URL  	geavg.t00z.pgrb2af00.idx
-    if avgspr in ["avg", "spr"]:
-        gribfile = os.path.join(date.strftime(baseurl),
-                            "ge{:s}.t{:s}z.pgrb2af{:s}".format(avgspr, date.strftime("%H"),
-                            "{:02d}".format(step) if step < 100 else "{:03d}".format(step)))
-        local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(avgspr, step)
-        subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(avgspr, step)
+    if modeltype in ["avg", "spr"]:
+        if resolution == 0.5:
+            #Create URL geavg.t00z.pgrb2a.0p50.f000.idx
+            filename = "ge{:s}.t{:s}z.pgrb2a.0p50.f{:03d}".format(modeltype, date.strftime("%H"), step)
+        elif resolution == 1:
+            # Create URL geavg.t00z.pgrb2af00.idx
+            filename = "ge{:s}.t{:s}z.pgrb2af{:s}".format(modeltype, date.strftime("%H"), "{:02d}".format(step) if step < 100 else "{:03d}".format(step))
+        else:
+            logging.error("The resolution %d ist not supported", resolution)
+            sys.exit(1)
+        
+        gribfile = os.path.join(date.strftime(baseurl), filename)
+        local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(modeltype, step)
+        subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(modeltype, step)
     else:
         gribfile = os.path.join(date.strftime(baseurl),
                             "ge{:s}{:02d}.t{:s}z.pgrb2f{:s}".format(
@@ -172,7 +183,7 @@ def download_grib(grib, local, required):
     return True
 
 
-def fetch_gefs_data(avgspr, date, parameter, runhour):
+def fetch_gefs_data(modeltype, date, parameter, resolution):
     """Function for downloading gribfiles from the GEFS NCEP server."""
     
     params = None
@@ -185,27 +196,41 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
     elif parameter == "vgrd_10m":
         params = ["VGRD:10 m above ground"]
 
-    data_path = f"./data/get_available_data/gefs_forecast/{parameter}"
-    baseurl_avgspr = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
-    baseurl_ens = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
     # Subset (requires wgrib2), can also be None.
     # Else a dict with N/S/E/W in degrees (0-360!)
     subset = {"E": 20, "W": 8, "S": 45, "N": 53}
 
+    # runhour is in [0, 6, 12, 18]
+    runhour = 0
     date = datetime.strptime("{:s} {:02d}:00:00".format(date, runhour), "%Y%m%d %H:%M:%S")
 
     # Steps/members. The +1 is required to get the required sequence!
     steps = np.arange(6, 300+1, 6, dtype = int)
 
     logging.info("{:s}".format("".join(["-"]*70)))
-    if avgspr in ["avg", "spr"]:
+    
+    # https://www.nco.ncep.noaa.gov/pmb/products/gens/
+    if modeltype in ["avg", "spr"]:
         members = np.arange(0, 1, 1, dtype = int)
-        logging.info("Downloading members: {:s}:  ".format(avgspr))
-        baseurl = baseurl_avgspr
-    else:
+        logging.info("Downloading members: {:s}:  ".format(modeltype))
+        if resolution == 1:
+            data_path = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}"
+            baseurl = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
+        elif resolution == 0.5:
+            data_path = f"./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}"
+            baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/"
+        else:
+            logging.error("The resolution is not supported")
+            sys.exit(1)
+    elif modeltype in ["ens"]:
+        data_path = f"./data/get_available_data/gefs_ens_forecast_p1/{parameter}"
         members = np.arange(0, 20+1, 1, dtype=int)
         logging.info("Downloading members: {:s}".format(", ".join(["{:d}".format(x) for x in members])))
-        baseurl = baseurl_ens
+        baseurl = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
+    else:
+        logging.info("The modeltype is not supported: %s", modeltype)
+        sys.exit(1)
+   
 
     steps_str = ", ".join(["{:d}".format(x) for x in steps])
     logging.info("Downloading steps: %s", steps_str)
@@ -218,8 +243,8 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
         # Looping over forecast lead times
         for step in steps:
             logging.info("{:s}".format("".join(["-"]*70)))
-            if avgspr in ["avg", "spr"]:
-                logging.info("Processing +{:03d}h forecast, {:s}".format(step, avgspr))
+            if modeltype in ["avg", "spr"]:
+                logging.info("Processing +{:03d}h forecast, {:s}".format(step, modeltype))
             else:
                 logging.info("Processing +{:03d}h forecast, member {:02d}".format(step, mem))
 
@@ -231,7 +256,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
                 except:
                     raise Exception("Cannot create directory {:s}!".format(data_path_gribfile))
 
-            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, avgspr)
+            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
             if os.path.isfile(files["subset"]):
                 logging.info("Local subset exists, skip: %s", files["subset"])
                 logging.info("{:s}".format("".join(["-"]*70)))
@@ -275,8 +300,8 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], \
-        parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
-    fetch_gefs_data(PARSER_DICT["avgspr"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
+    PARSER_DICT = spatial_parser.spatial_parser(modeltype=True, date=True, name_modeltype=["avg", "spr", "ens"], \
+        parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], resolution=True, name_resolution=[0.5, 1])
+    fetch_gefs_data(PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["resolution"])
     logger_module.end_logging(STARTTIME)
  

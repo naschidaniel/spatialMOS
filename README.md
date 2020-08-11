@@ -74,14 +74,14 @@ A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.c
 Current Ensemble weather forecasts can be obtained from the FTP server. Please use today's date
 
 ```
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter tmp_2m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter tmp_2m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter rh_2m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter rh_2m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter vgrd_10m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter vgrd_10m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter ugrd_10m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter ugrd_10m --modeltype spr
 ```
 
 #### GEFS Weather Forecasts Pre Processing
@@ -189,7 +189,7 @@ The calculated predictions are available in the exchange folder `./data/spool`. 
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
 ```
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_forecast
+./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p1
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_reforecast
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder suedtirol
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder uibk

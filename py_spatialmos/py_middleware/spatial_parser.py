@@ -8,10 +8,10 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
+def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", resolution=False, name_resolution=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
-    parser.add_argument("--avgspr", dest="avgspr", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
+    parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_modeltype}", default="avg", type=str)
     parser.add_argument("--begin", dest="begin", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--begindate", dest="begindate", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
@@ -20,28 +20,27 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
     parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
     parser.add_argument("--host", dest="host", help=f"Specify the host: {name_host}", default="moses.tirol", type=str)
     parser.add_argument("--parameter", dest="parameter", help=f"Enter a parameter from the list: {name_parameter}", default="", type=str)
-    parser.add_argument("--runhour", dest="runhour", help=f"Model initialization hour: {name_runhour}", default=0, type=int)
+    parser.add_argument("--resolution", dest="resolution", help=f"Model initialization hour: {name_resolution}", default=1, type=float)
 
     options = parser.parse_args()
 
 
-    if avgspr is True:
-        if options.avgspr in name_avgspr:
-            avgspr = options.avgspr
-            logging.info("PARSER | {:>20} | {}".format("--avgspr", avgspr))
+    if modeltype is True:
+        if options.modeltype in name_modeltype:
+            modeltype = options.modeltype
+            logging.info("PARSER | {:>20} | {}".format("--modeltype", modeltype))
         else:
-            logging.error("--avgspr | Enter a avgspr from the list: {}".format(name_avgspr))
+            logging.error("PARSER | {:>20} | {}".format("--modeltype", name_modeltype))
             sys.exit(1)
     else:
-        avgspr = None
+        modeltype = None
 
     if begin is True:
         if isinstance(options.begin, str):
             begin = options.begin
             logging.info("PARSER | {:>20} | {}".format("--begin", enddate))
         else:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--begin", options.begin))
+            logging.error("PARSER | {:>20} | {}".format("--begin", options.begin))
             sys.exit(1)
     else:
         begin = None
@@ -52,8 +51,7 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
             begindate = datetime.strftime(begindate, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--begindate", begindate))
         except ValueError:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--begindate", options.begindate))
+            logging.error("PARSER | {:>20} | {}".format("--begindate", options.begindate))
             raise ValueError("The begindate is not entered in the correct format: YYYY-MM-DD")
     else:
         begindate = None
@@ -64,8 +62,7 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
             date = datetime.strftime(date, "%Y%m%d")
             logging.info("PARSER | {:>20} | {}".format("--date", date))
         except ValueError:
-            logging.error("PARSER | {:>20} | {}".format(
-                "--date", options.date))
+            logging.error("PARSER | {:>20} | {}".format("--date", options.date))
             raise ValueError("The date is not entered in the correct format: YYYY-MM-DD")
     else:
         date = None
@@ -126,22 +123,22 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
     else:
         parameter = None
 
-    if runhour is True:
-        logging.info("PARSER | {:>20} | {}".format("name_runhour options", name_runhour))
-        if options.runhour in name_runhour:
-            if isinstance(options.runhour, int):
-                runhour = options.runhour
-                logging.info("PARSER | {:>20} | {}".format("--runhour", runhour))
+    if resolution is True:
+        logging.info("PARSER | {:>20} | {}".format("name_resolution options", name_resolution))
+        if options.resolution in name_resolution:
+            if isinstance(options.resolution, float):
+                resolution = options.resolution
+                logging.info("PARSER | {:>20} | {}".format("--resolution", resolution))
             else:
-                logging.error("PARSER | {:>20} | {}".format("--runhour", options.runhour))
+                logging.error("PARSER | {:>20} | {}".format("--resolution", options.resolution))
                 sys.exit(1)
         else:
-            logging.error("--runhour | Enter a runhour from the list: {}".format(name_runhour))
+            logging.error("--resolution | Enter a resolution from the list: {}".format(name_resolution))
             sys.exit(1)
     else:
-        runhour = None
+        resolution = None
 
-    parser_dict = {"avgspr": avgspr,
+    parser_dict = {"modeltype": modeltype,
                    "begin": begin,
                    "begindate": begindate,
                    "date": date,
@@ -150,6 +147,6 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
                    "folder": folder,
                    "host": host,
                    "parameter": parameter,
-                   "runhour": runhour
+                   "resolution": resolution
                    }
     return parser_dict

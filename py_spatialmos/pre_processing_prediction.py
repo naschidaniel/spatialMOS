@@ -27,7 +27,7 @@ def gribfiles_to_pandasdataframe(parser_dict):
         nwp_files = zip(nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps, nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps)
         for u_mean_file, u_spread_file, v_mean_file, v_spread_file in nwp_files:
             # Create folder structure
-            path_nwp_forecasts = f"./data/get_available_data/gefs_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+            path_nwp_forecasts = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parser_dict['parameter']}/{parser_dict['date']}0000/"
             if not os.path.exists(path_nwp_forecasts):
                 os.makedirs(path_nwp_forecasts)
 
