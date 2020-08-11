@@ -103,16 +103,16 @@ class idx_entry(object):
                 end, self.key())
 
 # Functions
-def get_file_names(data_path_gribfile, baseurl, date, mem, step, avgspr):
+def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype):
     """With this function the file names from the server are preprocessed."""
 
     # Create URL  	geavg.t00z.pgrb2af00.idx
-    if avgspr in ["avg", "spr"]:
+    if modeltype in ["avg", "spr"]:
         gribfile = os.path.join(date.strftime(baseurl),
-                            "ge{:s}.t{:s}z.pgrb2af{:s}".format(avgspr, date.strftime("%H"),
+                            "ge{:s}.t{:s}z.pgrb2af{:s}".format(modeltype, date.strftime("%H"),
                             "{:02d}".format(step) if step < 100 else "{:03d}".format(step)))
-        local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(avgspr, step)
-        subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(avgspr, step)
+        local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(modeltype, step)
+        subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(modeltype, step)
     else:
         gribfile = os.path.join(date.strftime(baseurl),
                             "ge{:s}{:02d}.t{:s}z.pgrb2f{:s}".format(
@@ -172,7 +172,7 @@ def download_grib(grib, local, required):
     return True
 
 
-def fetch_gefs_data(avgspr, date, parameter, runhour):
+def fetch_gefs_data(modeltype, date, parameter, runhour):
     """Function for downloading gribfiles from the GEFS NCEP server."""
     
     params = None
@@ -198,9 +198,9 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
     steps = np.arange(6, 300+1, 6, dtype = int)
 
     logging.info("{:s}".format("".join(["-"]*70)))
-    if avgspr in ["avg", "spr"]:
+    if modeltype in ["avg", "spr"]:
         members = np.arange(0, 1, 1, dtype = int)
-        logging.info("Downloading members: {:s}:  ".format(avgspr))
+        logging.info("Downloading members: {:s}:  ".format(modeltype))
         baseurl = baseurl_avgspr
     else:
         members = np.arange(0, 20+1, 1, dtype=int)
@@ -218,8 +218,8 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
         # Looping over forecast lead times
         for step in steps:
             logging.info("{:s}".format("".join(["-"]*70)))
-            if avgspr in ["avg", "spr"]:
-                logging.info("Processing +{:03d}h forecast, {:s}".format(step, avgspr))
+            if modeltype in ["avg", "spr"]:
+                logging.info("Processing +{:03d}h forecast, {:s}".format(step, modeltype))
             else:
                 logging.info("Processing +{:03d}h forecast, member {:02d}".format(step, mem))
 
@@ -231,7 +231,7 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
                 except:
                     raise Exception("Cannot create directory {:s}!".format(data_path_gribfile))
 
-            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, avgspr)
+            files = get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype)
             if os.path.isfile(files["subset"]):
                 logging.info("Local subset exists, skip: %s", files["subset"])
                 logging.info("{:s}".format("".join(["-"]*70)))
@@ -275,8 +275,8 @@ def fetch_gefs_data(avgspr, date, parameter, runhour):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(avgspr=True, date=True, name_avgspr=[None, "avg", "spr"], \
+    PARSER_DICT = spatial_parser.spatial_parser(modeltype=True, date=True, name_avgspr=[None, "avg", "spr"], \
         parameter=True, name_parameter=["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"], runhour=True, name_runhour=[0, 6, 12, 18])
-    fetch_gefs_data(PARSER_DICT["avgspr"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
+    fetch_gefs_data(PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["runhour"])
     logger_module.end_logging(STARTTIME)
  
