@@ -74,14 +74,14 @@ A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.c
 Current Ensemble weather forecasts can be obtained from the FTP server. Please use today's date
 
 ```
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --avgspr spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --avgspr spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter tmp_2m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter rh_2m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter vgrd_10m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --modeltype avg
+./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --runhour 0 --parameter ugrd_10m --modeltype spr
 ```
 
 #### GEFS Weather Forecasts Pre Processing

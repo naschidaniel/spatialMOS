@@ -8,10 +8,10 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
+def spatial_parser(modeltype=False, name_avgspr="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", runhour=False, name_runhour=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
-    parser.add_argument("--avgspr", dest="avgspr", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
+    parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_avgspr}", default="avg", type=str)
     parser.add_argument("--begin", dest="begin", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--begindate", dest="begindate", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
@@ -25,15 +25,15 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
     options = parser.parse_args()
 
 
-    if avgspr is True:
-        if options.avgspr in name_avgspr:
-            avgspr = options.avgspr
-            logging.info("PARSER | {:>20} | {}".format("--avgspr", avgspr))
+    if modeltype is True:
+        if options.modeltype in name_avgspr:
+            modeltype = options.modeltype
+            logging.info("PARSER | {:>20} | {}".format("--modeltype", modeltype))
         else:
-            logging.error("--avgspr | Enter a avgspr from the list: {}".format(name_avgspr))
+            logging.error("--modeltype | Enter a modeltype from the list: {}".format(name_avgspr))
             sys.exit(1)
     else:
-        avgspr = None
+        modeltype = None
 
     if begin is True:
         if isinstance(options.begin, str):
@@ -141,7 +141,7 @@ def spatial_parser(avgspr=False, name_avgspr="", begin=False, begindate=False, d
     else:
         runhour = None
 
-    parser_dict = {"avgspr": avgspr,
+    parser_dict = {"modeltype": modeltype,
                    "begin": begin,
                    "begindate": begindate,
                    "date": date,
