@@ -25,6 +25,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Main Function"""
+        global available_fields
+        available_fields = ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'samos_mean', 'samos_mean_sm', 'samos_spread', 'samos_spread_sm']
+
         def create_SpatialMosRun(anal_date_aware, parameter):
             """A function to create an entry in the table of the model SpatialMosRun"""
             spatialmos_run = SpatialMosRun(anal_date=anal_date_aware, parameter=parameter)
@@ -42,7 +45,7 @@ class Command(BaseCommand):
 
             spatialmos_step = SpatialMosStep(spatialmos_run=spatialmos_run, valid_date=valid_date_aware, step=prediction_json_file['SpatialMosStep']['step'])
 
-            for what in ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'samos_mean', 'samos_mean_sm', 'samos_spread', 'samos_spread_sm']:
+            for what in available_fields:
                 filename, file = filename_figure(prediction_json_file, what)
                 spatialmos_step.__dict__[f'filename_{what}'].save(filename, file)
 
@@ -100,10 +103,9 @@ class Command(BaseCommand):
                 logging.info('parameter: {:9} | datum: {} | The spatialMos run was successfully imported. {}'.format(parameter, date, filename_spatialmos_step))
 
                 os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_SpatialMosStep']))
-                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_nwp_mean']))
-                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_nwp_spread']))
-                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_samos_mean']))
-                os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep']['path_filename_samos_spread']))
+                for what in available_fields:
+                    os.remove(os.path.join("/www/", prediction_json_file['SpatialMosStep'][f'path_filename_{what}']))
+
                 logging.info('parameter: {:9} | anal_date: {} | There are no files available in the spool directory'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
 
             else:
@@ -113,4 +115,5 @@ class Command(BaseCommand):
         if spatialmos_run is not None:
             spatialmos_run.complete = True
             spatialmos_run.save()
+            os.remove(filename_spatialmos_run_status)
             logging.info('parameter: {:9} | anal_date: {} | Complete'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
