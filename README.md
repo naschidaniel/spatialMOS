@@ -264,7 +264,7 @@ The predictions can also be loaded as JSON data via the Api Rest interface.
 With this managing command model runs older than 5 days are removed from the database.
 
 ```
-./task.py local.spatialmos.py-spatialmos--django-delete-spatialmos_runs --parameter tmp_2m --days 5
+./task.py local.spatialmos.py-spatialmos--django-delete-spatialmos-runs --parameter tmp_2m --days 5
 ```
 
 
