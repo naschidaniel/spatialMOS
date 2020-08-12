@@ -15,7 +15,12 @@ class SpatialMosStepSerializer(serializers.ModelSerializer):
     class Meta:
         """Return values"""
         model = SpatialMosStep
-        fields = ['step', 'parameter', 'anal_date', 'valid_date', 'valid_time', 'filename_nwp_mean', 'filename_nwp_spread', 'filename_spatialmos_mean', 'filename_spatialmos_spread']
+        fields = ['step', 'parameter', 'anal_date', 'valid_date', 'valid_time', \
+            'filename_nwp_mean', 'filename_nwp_mean_sm', \
+            'filename_nwp_spread', 'filename_nwp_spread_sm', \
+            'filename_samos_mean', 'filename_samos_mean_sm', \
+            'filename_samos_spread', 'filename_samos_spread_sm' \
+            ]
 
 
 class SpatialMosRunSerializer(serializers.ModelSerializer):
