@@ -3,9 +3,13 @@
 """Help functions to create the spatialMOS plots,."""
 
 import os
+import sys
+import logging
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import loglog
 import numpy as np
 import datetime as dt
+from PIL import Image
 
 # Functions
 def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, step, what):
@@ -90,7 +94,25 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
     path_filename = os.path.join(filepath, filename)
     fig.savefig(path_filename, bbox_inches="tight", quality=70, optimize=True, progressive=True)
     plt.close(fig=None)
-    return path_filename, filename
+    logging.info("The prediction plot '%s' was created.", path_filename)
+    
+    # Create a small Version of the plot
+    try:
+        im = Image.open(path_filename)
+        oldsize = im.size
+        ratio = float(oldsize[0]) / float(640)
+        newsize = (int(round(oldsize[0] / ratio)), int(round(oldsize[1] / ratio)))
+        im.thumbnail(newsize, Image.ANTIALIAS)
+        file, ext = os.path.splitext(os.path.basename(path_filename))
+        filename_sm = f"{file}_sm{ext}"
+        path_filename_sm = os.path.join(filepath, filename_sm)
+        im.save(path_filename_sm, "JPEG")
+        logging.info("The small prediction '%s' plot was created.", path_filename_sm)
+    except IOError:
+        logging.error("The small file from '%s' could not be created.", path_filename)
+        sys.exit(1)
+
+    return path_filename, filename, path_filename_sm, filename_sm
 
 
 def reshapearea(series, array):

@@ -165,14 +165,14 @@ def spatial_predictions(parser_dict):
         samos_spread = np.round(samos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        path_filename_nwp_mean, filename_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
-            np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        path_filename_nwp_spread, filename_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_nwp, xx_nwp, yy_nwp, \
-            np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        path_filename_samos_mean, filename_samos_mean = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
-            samos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
-        path_filename_samos_spread, filename_samos_spread = plot_functions.plot_forecast(parser_dict["parameter"], m_samos, xx_samos, yy_samos, \
-            samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
+        path_filename_nwp_mean, filename_nwp_mean, path_filename_nwp_mean_sm, filename_nwp_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
+        path_filename_nwp_spread, filename_nwp_spread, path_filename_nwp_spread_sm, filename_nwp_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
+        path_filename_samos_mean, filename_samos_mean, path_filename_samos_mean_sm, filename_samos_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_samos, xx_samos, yy_samos, samos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
+        path_filename_samos_spread, filename_samos_spread, path_filename_samos_spread_sm, filename_samos_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_samos, xx_samos, yy_samos, samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
         spatialmos_point = pd.DataFrame({"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_mean.flatten().tolist(), "samos_spread": samos_spread.flatten().tolist()})
@@ -192,12 +192,20 @@ def spatial_predictions(parser_dict):
                                      "step": gribfile_info["step"],
                                      "filename_nwp_mean": filename_nwp_mean,
                                      "path_filename_nwp_mean": path_filename_nwp_mean,
+                                     "filename_nwp_mean_sm": filename_nwp_mean_sm,
+                                     "path_filename_nwp_mean_sm": path_filename_nwp_mean_sm,                                     
                                      "filename_nwp_spread": filename_nwp_spread,
                                      "path_filename_nwp_spread": path_filename_nwp_spread,
+                                     "filename_nwp_spread_sm": filename_nwp_spread_sm,
+                                     "path_filename_nwp_spread_sm": path_filename_nwp_spread_sm,
                                      "filename_samos_mean": filename_samos_mean,
                                      "path_filename_samos_mean": path_filename_samos_mean,
+                                     "filename_samos_mean_sm": filename_samos_mean_sm,
+                                     "path_filename_samos_mean_sm": path_filename_samos_mean_sm,                                     
                                      "filename_samos_spread": filename_samos_spread,
-                                     "path_filename_samos_spread": path_filename_samos_spread
+                                     "path_filename_samos_spread": path_filename_samos_spread,
+                                     "filename_samos_spread_sm": filename_samos_spread_sm,
+                                     "path_filename_samos_spread_sm": path_filename_samos_spread_sm                                     
                                     },
                                 "SpatialMosPoint": spatialmos_point_dict
                                 }
