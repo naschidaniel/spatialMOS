@@ -42,15 +42,10 @@ class Command(BaseCommand):
 
             spatialmos_step = SpatialMosStep(spatialmos_run=spatialmos_run, valid_date=valid_date_aware, step=prediction_json_file['SpatialMosStep']['step'])
 
-            filename_nwp_mean, file_nwp_mean = filename_figure(prediction_json_file, 'nwp_mean')
-            filename_samos_spread, file_nwp_spread = filename_figure(prediction_json_file, 'nwp_spread')
-            filename_samos_mean, file_samos_mean = filename_figure(prediction_json_file, 'samos_mean')
-            filename_nwp_spread, file_samos_spread = filename_figure(prediction_json_file, 'samos_spread')
+            for what in ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'samos_mean', 'samos_mean_sm', 'samos_spread', 'samos_spread_sm']:
+                filename, file = filename_figure(prediction_json_file, what)
+                spatialmos_step.__dict__[f'filename_{what}'].save(filename, file)
 
-            spatialmos_step.filename_nwp_mean.save(filename_nwp_mean, file_nwp_mean)
-            spatialmos_step.filename_nwp_spread.save(filename_nwp_spread, file_nwp_spread)
-            spatialmos_step.filename_spatialmos_mean.save(filename_samos_mean, file_samos_mean)
-            spatialmos_step.filename_spatialmos_spread.save(filename_samos_spread, file_samos_spread)
             spatialmos_step.save()
             return spatialmos_step
 
