@@ -21,7 +21,7 @@ source("./r_spatialmos/r_middleware/gamlss_crch_model_optparse.R")
 dayseq <- seq(daybegin,dayend,by=1)
 source("./r_spatialmos/gamlss_crch_model.R.conf")
 
-folder <- "climate_samos_nwp"
+folder <- "climate_spatialmos_nwp"
 spatial_alt_area_df <- read.csv("./data/get_available_data/gadm/spatial_alt_area_df.csv")
 
 climate_nwp_files = list.files(path = paste0("./data/spatialmos_climatology/gam/", parameter, "/climate_nwp/"), pattern=".csv", full.names = TRUE, recursive = FALSE)

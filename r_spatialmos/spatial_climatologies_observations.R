@@ -22,7 +22,7 @@ dayseq <- seq(daybegin,dayend,by=1)
 source("./r_spatialmos/gamlss_crch_model.R.conf")
 
 
-folder <- "climate_samos"
+folder <- "climate_spatialmos"
 spatial_alt_area_df <- read.csv("./data/get_available_data/gadm/spatial_alt_area_df.csv")
 
 climate <- read.csv(file=paste0("./data/spatialmos_climatology/gam/", parameter, "/", parameter, "_station_observations.csv"), sep=";", header = TRUE)

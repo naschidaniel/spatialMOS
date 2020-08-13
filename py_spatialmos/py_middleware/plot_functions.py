@@ -18,13 +18,13 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
     fig_dpi=72
     fig = plt.figure(figsize=(1200/fig_dpi, 1200/fig_dpi), dpi=fig_dpi)
 
-    if parameter == "tmp_2m" and what == "samos_mean":
+    if parameter == "tmp_2m" and what == "spatialmos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
-        plot_title="2m Temperatur SAMOS MEAN [°C]"
+        plot_title="2m Temperatur spatialmos MEAN [°C]"
         plt.clim(-40, 40)
-    elif parameter == "tmp_2m" and what == "samos_spread":
+    elif parameter == "tmp_2m" and what == "spatialmos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="2m Temperatur SAMOS SPREAD [°C]"
+        plot_title="2m Temperatur spatialmos SPREAD [°C]"
         plt.clim(0, 5)
     elif parameter == "tmp_2m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
@@ -34,13 +34,13 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plot_title="2m Temperatur GEFS SPREAD [°C]"
         plt.clim(0, 5)
-    elif parameter == "rh_2m" and what == "samos_mean":
+    elif parameter == "rh_2m" and what == "spatialmos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
-        plot_title="2m Relative Luftfeuchte SAMOS MEAN [%]"
+        plot_title="2m Relative Luftfeuchte spatialmos MEAN [%]"
         plt.clim(0, 100)
-    elif parameter == "rh_2m" and what == "samos_spread":
+    elif parameter == "rh_2m" and what == "spatialmos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="2m Relative Luftfeuchte SAMOS SPREAD [%]"
+        plot_title="2m Relative Luftfeuchte spatialmos SPREAD [%]"
         plt.clim(0, 5)
     elif parameter == "rh_2m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
@@ -50,13 +50,13 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, anal_date, valid_date, st
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
         plot_title="2m Relative Luftfeuchte GEFS SPREAD [%]"
         plt.clim(0, 5)
-    elif parameter == "wind_10m" and what == "samos_mean":
+    elif parameter == "wind_10m" and what == "spatialmos_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
-        plot_title="10m Windgeschwindigkeit SAMOS MEAN [km/h]"
+        plot_title="10m Windgeschwindigkeit spatialmos MEAN [km/h]"
         plt.clim(0, 10)
-    elif parameter == "wind_10m" and what == "samos_spread":
+    elif parameter == "wind_10m" and what == "spatialmos_spread":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="10m Windgeschwindigkeit SAMOS SPREAD [km/h]"
+        plot_title="10m Windgeschwindigkeit spatialmos SPREAD [km/h]"
         plt.clim(0, 10)
     elif parameter == "wind_10m" and what == "nwp_mean":
         m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
