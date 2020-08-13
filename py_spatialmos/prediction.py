@@ -39,7 +39,7 @@ def spatial_predictions(parser_dict):
     """The main function to create surface forecasts based on GEFS forecasts and GAMLSS climatologies."""
 
     # Create folder structure
-    data_path_spool = "./data/spool/{}/spatialmos/".format(parser_dict["parameter"])
+    data_path_spool = f"./data/spool/{parser_dict['parameter']}/"
     if not os.path.exists(data_path_spool):
         os.makedirs(data_path_spool)
 
@@ -165,14 +165,14 @@ def spatial_predictions(parser_dict):
         spatialmos_spread = np.round(spatialmos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        path_filename_nwp_mean, filename_nwp_mean, path_filename_nwp_mean_sm, filename_nwp_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
-        path_filename_nwp_spread, filename_nwp_spread, path_filename_nwp_spread_sm, filename_nwp_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        path_filename_spatialmos_mean, filename_spatialmos_mean, path_filename_spatialmos_mean_sm, filename_spatialmos_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="spatialmos_mean")
-        path_filename_spatialmos_spread, filename_spatialmos_spread, path_filename_spatialmos_spread_sm, filename_spatialmos_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="spatialmos_spread")
+        plot_filenames_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
+        plot_filenames_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
+        plot_filenames_spatialmos_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
+        plot_filenames_spatialmos_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
         spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
@@ -190,22 +190,30 @@ def spatial_predictions(parser_dict):
                                     {"path_filename_SpatialMosStep": filename_spatialmos_step,
                                      "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
                                      "step": gribfile_info["step"],
-                                     "filename_nwp_mean": filename_nwp_mean,
-                                     "path_filename_nwp_mean": path_filename_nwp_mean,
-                                     "filename_nwp_mean_sm": filename_nwp_mean_sm,
-                                     "path_filename_nwp_mean_sm": path_filename_nwp_mean_sm,                                     
-                                     "filename_nwp_spread": filename_nwp_spread,
-                                     "path_filename_nwp_spread": path_filename_nwp_spread,
-                                     "filename_nwp_spread_sm": filename_nwp_spread_sm,
-                                     "path_filename_nwp_spread_sm": path_filename_nwp_spread_sm,
-                                     "filename_spatialmos_mean": filename_spatialmos_mean,
-                                     "path_filename_spatialmos_mean": path_filename_spatialmos_mean,
-                                     "filename_spatialmos_mean_sm": filename_spatialmos_mean_sm,
-                                     "path_filename_spatialmos_mean_sm": path_filename_spatialmos_mean_sm,                                     
-                                     "filename_spatialmos_spread": filename_spatialmos_spread,
-                                     "path_filename_spatialmos_spread": path_filename_spatialmos_spread,
-                                     "filename_spatialmos_spread_sm": filename_spatialmos_spread_sm,
-                                     "path_filename_spatialmos_spread_sm": path_filename_spatialmos_spread_sm                                     
+                                     "filename_nwp_mean_sm": plot_filenames_nwp_mean["filename_sm"],
+                                     "filename_nwp_mean_md": plot_filenames_nwp_mean["filename_md"],
+                                     "filename_nwp_mean_lg": plot_filenames_nwp_mean["filename_lg"],
+                                     "filename_nwp_spread_sm": plot_filenames_nwp_spread["filename_sm"],
+                                     "filename_nwp_spread_md": plot_filenames_nwp_spread["filename_md"],
+                                     "filename_nwp_spread_lg": plot_filenames_nwp_spread["filename_lg"],
+                                     "filename_spatialmos_mean_sm": plot_filenames_spatialmos_mean["filename_sm"],
+                                     "filename_spatialmos_mean_md": plot_filenames_spatialmos_mean["filename_md"],
+                                     "filename_spatialmos_mean_lg": plot_filenames_spatialmos_mean["filename_lg"],
+                                     "filename_spatialmos_spread_sm": plot_filenames_spatialmos_spread["filename_sm"],
+                                     "filename_spatialmos_spread_md": plot_filenames_spatialmos_spread["filename_md"],
+                                     "filename_spatialmos_spread_lg": plot_filenames_spatialmos_spread["filename_lg"],
+                                     "path_filename_nwp_mean_sm": plot_filenames_nwp_mean["path_filename_sm"],
+                                     "path_filename_nwp_mean_md": plot_filenames_nwp_mean["path_filename_md"],
+                                     "path_filename_nwp_mean_lg": plot_filenames_nwp_mean["path_filename_lg"],
+                                     "path_filename_nwp_spread_sm": plot_filenames_nwp_spread["path_filename_sm"],
+                                     "path_filename_nwp_spread_md": plot_filenames_nwp_spread["path_filename_md"],
+                                     "path_filename_nwp_spread_lg": plot_filenames_nwp_spread["path_filename_lg"],
+                                     "path_filename_spatialmos_mean_sm": plot_filenames_spatialmos_mean["path_filename_sm"],
+                                     "path_filename_spatialmos_mean_md": plot_filenames_spatialmos_mean["path_filename_md"],
+                                     "path_filename_spatialmos_mean_lg": plot_filenames_spatialmos_mean["path_filename_lg"],
+                                     "path_filename_spatialmos_spread_sm": plot_filenames_spatialmos_spread["path_filename_sm"],
+                                     "path_filename_spatialmos_spread_md": plot_filenames_spatialmos_spread["path_filename_md"],
+                                     "path_filename_spatialmos_spread_lg": plot_filenames_spatialmos_spread["path_filename_lg"]
                                     },
                                 "SpatialMosPoint": spatialmos_point_dict
                                 }
