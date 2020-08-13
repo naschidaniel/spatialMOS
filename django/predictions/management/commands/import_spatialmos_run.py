@@ -26,7 +26,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Main Function"""
         global available_fields
-        available_fields = ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'spatialmos_mean', 'spatialmos_mean_sm', 'spatialmos_spread', 'spatialmos_spread_sm']
+        available_fields = ['nwp_mean_sm', 'nwp_mean_md', 'nwp_mean_lg', \
+                            'nwp_spread_sm', 'nwp_spread_md', 'nwp_spread_lg', \
+                            'spatialmos_mean_sm', 'spatialmos_mean_md', 'spatialmos_mean_lg', \
+                            'spatialmos_spread_sm', 'spatialmos_spread_md', 'spatialmos_spread_lg' \
+                            ]
 
         def create_SpatialMosRun(anal_date_aware, parameter):
             """A function to create an entry in the table of the model SpatialMosRun"""
@@ -38,7 +42,7 @@ class Command(BaseCommand):
             """A function to create an entry in the table of the model SpatialMosStep"""
             def filename_figure(prediction_json_file, what):
                 spool_path_filename = os.path.join("/www/", prediction_json_file['SpatialMosStep'][f'path_filename_{what}'])
-                django_path = os.path.join(f"./predictions/{prediction_json_file['SpatialMosRun']['parameter']}/{what}")
+                django_path = os.path.join(f"./predictions/{prediction_json_file['SpatialMosRun']['parameter']}/")
                 binary_file = File(open(spool_path_filename, 'rb'))
                 django_path_filename = os.path.join(django_path, prediction_json_file['SpatialMosStep'][f'filename_{what}'])
                 return django_path_filename, binary_file
@@ -68,7 +72,7 @@ class Command(BaseCommand):
         date = date_timestamp.strftime("%Y%m%d")
 
         # Read status file of the spatialMOS model run
-        filename_spatialmos_run_status = os.path.join("/www", f"./data/spool/{parameter}/spatialmos/{date}_run.json")
+        filename_spatialmos_run_status = os.path.join("/www", f"./data/spool/{parameter}/{date}_run.json")
         if os.path.isfile(filename_spatialmos_run_status):
             with open(filename_spatialmos_run_status, 'r') as f:
                 spatialmos_run_status = json.load(f)
