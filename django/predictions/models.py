@@ -36,10 +36,10 @@ class SpatialMosStep(models.Model):
     filename_nwp_mean_sm = models.ImageField(upload_to='', default='')
     filename_nwp_spread = models.ImageField(upload_to='', default='')
     filename_nwp_spread_sm = models.ImageField(upload_to='', default='')
-    filename_samos_mean = models.ImageField(upload_to='', default='')
-    filename_samos_mean_sm = models.ImageField(upload_to='', default='')
-    filename_samos_spread = models.ImageField(upload_to='', default='')
-    filename_samos_spread_sm = models.ImageField(upload_to='', default='')
+    filename_spatialmos_mean = models.ImageField(upload_to='', default='')
+    filename_spatialmos_mean_sm = models.ImageField(upload_to='', default='')
+    filename_spatialmos_spread = models.ImageField(upload_to='', default='')
+    filename_spatialmos_spread_sm = models.ImageField(upload_to='', default='')
 
     def __str__(self):
         """Return Value in the Admin Panel"""
@@ -55,12 +55,12 @@ class SpatialMosPoint(models.Model):
     spatialmos_step = models.ForeignKey(SpatialMosStep, related_name="points", on_delete=models.CASCADE)
     lat = models.DecimalField(max_digits=16, decimal_places=14, default=None)
     lon = models.DecimalField(max_digits=16, decimal_places=14, default=None)
-    samos_mean = models.DecimalField(max_digits=6, decimal_places=2, default=None)
-    samos_spread = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    spatialmos_mean = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    spatialmos_spread = models.DecimalField(max_digits=6, decimal_places=2, default=None)
 
     def __str__(self):
         """Return Value in the Admin Panel"""
-        return f"{self.spatialmos_step} | Location: {self.lat}, {self.lon} | mean: {self.samos_mean} spread: {self.samos_spread}"
+        return f"{self.spatialmos_step} | Location: {self.lat}, {self.lon} | mean: {self.spatialmos_mean} spread: {self.spatialmos_spread}"
 
     class Meta:
         """Settings"""

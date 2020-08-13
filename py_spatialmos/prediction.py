@@ -39,7 +39,7 @@ def spatial_predictions(parser_dict):
     """The main function to create surface forecasts based on GEFS forecasts and GAMLSS climatologies."""
 
     # Create folder structure
-    data_path_spool = "./data/spool/{}/samos/".format(parser_dict["parameter"])
+    data_path_spool = "./data/spool/{}/spatialmos/".format(parser_dict["parameter"])
     if not os.path.exists(data_path_spool):
         os.makedirs(data_path_spool)
 
@@ -57,7 +57,7 @@ def spatial_predictions(parser_dict):
 
     # BASEMAPS for GEFS predictions and spatialMOS
     m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
-    m_samos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
+    m_spatialmos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
     # Read preprocessed Info Files
     data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
@@ -83,99 +83,99 @@ def spatial_predictions(parser_dict):
         xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons, lats))
 
         # Create required meshgrid for spatialMOS
-        lons_samos = np.linspace(min_lon, max_lon, alt.shape[1])
-        lats_samos = np.linspace(max_lat, min_lat, alt.shape[0])
-        xx_samos, yy_samos = m_samos(*np.meshgrid(lons_samos, lats_samos))
+        lons_spatialmos = np.linspace(min_lon, max_lon, alt.shape[1])
+        lats_spatialmos = np.linspace(max_lat, min_lat, alt.shape[0])
+        xx_spatialmos, yy_spatialmos = m_spatialmos(*np.meshgrid(lons_spatialmos, lats_spatialmos))
 
         # Read in preprocessed NWP CSV file with the predictions
         nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
 
         # Interpolation of NWP forecasts
-        mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_samos, yy_samos), method="linear")
-        log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_samos, yy_samos), method="linear")
+        mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_spatialmos, yy_spatialmos), method="linear")
+        log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_spatialmos, yy_spatialmos), method="linear")
         mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
-        climate_samos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}.csv"
-        climate_samos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_samos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info['step']:03d}.csv"
+        climate_spatialmos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}.csv"
+        climate_spatialmos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info['step']:03d}.csv"
 
         # Check if climatologies files are available
-        if not os.path.exists(climate_samos_file) or not os.path.exists(climate_samos_nwp_file):
-            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_samos_nwp_file, climate_samos_file)
+        if not os.path.exists(climate_spatialmos_file) or not os.path.exists(climate_spatialmos_nwp_file):
+            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_spatialmos_nwp_file, climate_spatialmos_file)
             # Write info file to spool directory
             write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS NWP or spatialMOS climatologies")
             continue
 
         # Read in GAMLSS climatologies
-        climate_samos = pd.read_csv(climate_samos_file, header=0, index_col=0)
-        climate_samos_nwp = pd.read_csv(climate_samos_nwp_file, header=0, index_col=0)
+        climate_spatialmos = pd.read_csv(climate_spatialmos_file, header=0, index_col=0)
+        climate_spatialmos_nwp = pd.read_csv(climate_spatialmos_nwp_file, header=0, index_col=0)
 
         # Set dytypes to float
-        cols = climate_samos.select_dtypes(exclude=["float"]).columns
-        climate_samos[cols] = climate_samos[cols].apply(pd.to_numeric, downcast="float", errors="coerce")
+        cols = climate_spatialmos.select_dtypes(exclude=["float"]).columns
+        climate_spatialmos[cols] = climate_spatialmos[cols].apply(pd.to_numeric, downcast="float", errors="coerce")
 
-        cols_nwp = climate_samos_nwp.select_dtypes(exclude=["float"]).columns
-        climate_samos_nwp[cols_nwp] = climate_samos_nwp[cols_nwp].apply(pd.to_numeric, downcast="float", errors="coerce")
+        cols_nwp = climate_spatialmos_nwp.select_dtypes(exclude=["float"]).columns
+        climate_spatialmos_nwp[cols_nwp] = climate_spatialmos_nwp[cols_nwp].apply(pd.to_numeric, downcast="float", errors="coerce")
 
         # Set index of climate dataframes to lat, lon
-        climate_samos = climate_samos.set_index(["lat", "lon"])
-        climate_samos_nwp = climate_samos_nwp.set_index(["lat", "lon"])
+        climate_spatialmos = climate_spatialmos.set_index(["lat", "lon"])
+        climate_spatialmos_nwp = climate_spatialmos_nwp.set_index(["lat", "lon"])
 
         spatial_alt_area = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area_df.csv", header=0, index_col=0)
-        cols_samos = spatial_alt_area.select_dtypes(exclude=["float"]).columns
-        spatial_alt_area[cols_samos] = spatial_alt_area[cols_samos].apply(pd.to_numeric, downcast="float", errors="coerce")
+        cols_spatialmos = spatial_alt_area.select_dtypes(exclude=["float"]).columns
+        spatial_alt_area[cols_spatialmos] = spatial_alt_area[cols_spatialmos].apply(pd.to_numeric, downcast="float", errors="coerce")
         spatial_alt_area = spatial_alt_area.set_index(["lat", "lon"])
 
         # Concate altitude and NWP und spatialMOS Dataframes to one big Dataframe
-        samos = pd.concat([spatial_alt_area, climate_samos], axis=1, sort=True)
-        samos = pd.concat([samos, climate_samos_nwp], axis=1, sort=True)
-        samos = samos.loc[:, ~samos.columns.duplicated()]
+        spatialmos = pd.concat([spatial_alt_area, climate_spatialmos], axis=1, sort=True)
+        spatialmos = pd.concat([spatialmos, climate_spatialmos_nwp], axis=1, sort=True)
+        spatialmos = spatialmos.loc[:, ~spatialmos.columns.duplicated()]
 
         ## Reshape dataframe
-        climate_fit = plot_functions.reshapearea(samos["climate_fit"], alt)
-        climate_sd = plot_functions.reshapearea(samos["climate_sd"], alt)
-        mean_fit = plot_functions.reshapearea(samos["mean_fit"], alt)
-        mean_sd = plot_functions.reshapearea(samos["mean_sd"], alt)
-        log_spread_fit = plot_functions.reshapearea(samos["log_spread_fit"], alt)
-        log_spread_sd = plot_functions.reshapearea(samos["log_spread_sd"], alt)
+        climate_fit = plot_functions.reshapearea(spatialmos["climate_fit"], alt)
+        climate_sd = plot_functions.reshapearea(spatialmos["climate_sd"], alt)
+        mean_fit = plot_functions.reshapearea(spatialmos["mean_fit"], alt)
+        mean_sd = plot_functions.reshapearea(spatialmos["mean_sd"], alt)
+        log_spread_fit = plot_functions.reshapearea(spatialmos["log_spread_fit"], alt)
+        log_spread_sd = plot_functions.reshapearea(spatialmos["log_spread_sd"], alt)
 
         # Generate anomalies
         nwp_anom = (mean_interpolation_spatial_area.data - mean_fit) / mean_sd
         log_spread_nwp_anom = (log_spread_interpolation_spatial_area.data - log_spread_fit) / log_spread_sd
 
-        # Check if samos coefficients are available
-        samos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/samos_coef/samos_coef_{parser_dict['parameter']}_{gribfile_info['step']:03d}.csv"
-        if os.path.exists(samos_coef_file):
-            samos_coef = pd.read_csv(samos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
+        # Check if spatialmos coefficients are available
+        spatialmos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/spatialmos_coef/spatialmos_coef_{parser_dict['parameter']}_{gribfile_info['step']:03d}.csv"
+        if os.path.exists(spatialmos_coef_file):
+            spatialmos_coef = pd.read_csv(spatialmos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
         else:
-            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], samos_coef_file)
+            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], spatialmos_coef_file)
             # Write info file to spool directory
             write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS coefficients")
             continue
 
-        # Generate samos spatial predictions
-        samos_coef = samos_coef.apply(pd.to_numeric)
-        samos_anom = samos_coef["intercept"][0] + samos_coef["mean_anom"][0] * nwp_anom
-        samos_mean = samos_anom * climate_sd + climate_fit
-        samos_log_anom_spread = samos_coef["intercept_log_spread"][0] + samos_coef["log_spread_anom"][0] * log_spread_nwp_anom
-        samos_spread = np.exp(samos_log_anom_spread) * climate_sd
+        # Generate spatialmos spatial predictions
+        spatialmos_coef = spatialmos_coef.apply(pd.to_numeric)
+        spatialmos_anom = spatialmos_coef["intercept"][0] + spatialmos_coef["mean_anom"][0] * nwp_anom
+        spatialmos_mean = spatialmos_anom * climate_sd + climate_fit
+        spatialmos_log_anom_spread = spatialmos_coef["intercept_log_spread"][0] + spatialmos_coef["log_spread_anom"][0] * log_spread_nwp_anom
+        spatialmos_spread = np.exp(spatialmos_log_anom_spread) * climate_sd
 
         # Round predicted values
-        samos_mean = np.round(samos_mean, decimals=2)
-        samos_spread = np.round(samos_spread, decimals=5)
+        spatialmos_mean = np.round(spatialmos_mean, decimals=2)
+        spatialmos_spread = np.round(spatialmos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
         path_filename_nwp_mean, filename_nwp_mean, path_filename_nwp_mean_sm, filename_nwp_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
             m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_mean")
         path_filename_nwp_spread, filename_nwp_spread, path_filename_nwp_spread_sm, filename_nwp_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
             m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="nwp_spread")
-        path_filename_samos_mean, filename_samos_mean, path_filename_samos_mean_sm, filename_samos_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_samos, xx_samos, yy_samos, samos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_mean")
-        path_filename_samos_spread, filename_samos_spread, path_filename_samos_spread_sm, filename_samos_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_samos, xx_samos, yy_samos, samos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="samos_spread")
+        path_filename_spatialmos_mean, filename_spatialmos_mean, path_filename_spatialmos_mean_sm, filename_spatialmos_mean_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="spatialmos_mean")
+        path_filename_spatialmos_spread, filename_spatialmos_spread, path_filename_spatialmos_spread_sm, filename_spatialmos_spread_sm = plot_functions.plot_forecast(parser_dict["parameter"], \
+            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info["anal_date_avg"], gribfile_info["valid_date_avg"], gribfile_info["step"], what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
-        spatialmos_point = pd.DataFrame({"lat": yy_samos.flatten().tolist(), "lon": xx_samos.flatten().tolist(), "samos_mean": samos_mean.flatten().tolist(), "samos_spread": samos_spread.flatten().tolist()})
+        spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
         spatialmos_point = spatialmos_point.dropna()
         spatialmos_point_dict = spatialmos_point.to_dict('records')
         
@@ -198,14 +198,14 @@ def spatial_predictions(parser_dict):
                                      "path_filename_nwp_spread": path_filename_nwp_spread,
                                      "filename_nwp_spread_sm": filename_nwp_spread_sm,
                                      "path_filename_nwp_spread_sm": path_filename_nwp_spread_sm,
-                                     "filename_samos_mean": filename_samos_mean,
-                                     "path_filename_samos_mean": path_filename_samos_mean,
-                                     "filename_samos_mean_sm": filename_samos_mean_sm,
-                                     "path_filename_samos_mean_sm": path_filename_samos_mean_sm,                                     
-                                     "filename_samos_spread": filename_samos_spread,
-                                     "path_filename_samos_spread": path_filename_samos_spread,
-                                     "filename_samos_spread_sm": filename_samos_spread_sm,
-                                     "path_filename_samos_spread_sm": path_filename_samos_spread_sm                                     
+                                     "filename_spatialmos_mean": filename_spatialmos_mean,
+                                     "path_filename_spatialmos_mean": path_filename_spatialmos_mean,
+                                     "filename_spatialmos_mean_sm": filename_spatialmos_mean_sm,
+                                     "path_filename_spatialmos_mean_sm": path_filename_spatialmos_mean_sm,                                     
+                                     "filename_spatialmos_spread": filename_spatialmos_spread,
+                                     "path_filename_spatialmos_spread": path_filename_spatialmos_spread,
+                                     "filename_spatialmos_spread_sm": filename_spatialmos_spread_sm,
+                                     "path_filename_spatialmos_spread_sm": path_filename_spatialmos_spread_sm                                     
                                     },
                                 "SpatialMosPoint": spatialmos_point_dict
                                 }

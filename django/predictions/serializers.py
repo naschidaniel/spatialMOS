@@ -18,8 +18,8 @@ class SpatialMosStepSerializer(serializers.ModelSerializer):
         fields = ['step', 'parameter', 'anal_date', 'valid_date', 'valid_time', \
             'filename_nwp_mean', 'filename_nwp_mean_sm', \
             'filename_nwp_spread', 'filename_nwp_spread_sm', \
-            'filename_samos_mean', 'filename_samos_mean_sm', \
-            'filename_samos_spread', 'filename_samos_spread_sm' \
+            'filename_spatialmos_mean', 'filename_spatialmos_mean_sm', \
+            'filename_spatialmos_spread', 'filename_spatialmos_spread_sm' \
             ]
 
 
@@ -50,4 +50,4 @@ class SpatialMosPointSerializer(serializers.ModelSerializer):
     class Meta:
         """Return values"""
         model = SpatialMosPoint
-        fields = ['parameter', 'anal_date', 'valid_date', 'valid_time', 'step', 'lat', 'lon', 'samos_mean', 'samos_spread']
+        fields = ['parameter', 'anal_date', 'valid_date', 'valid_time', 'step', 'lat', 'lon', 'spatialmos_mean', 'spatialmos_spread']

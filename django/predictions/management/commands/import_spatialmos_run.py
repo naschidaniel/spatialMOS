@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Main Function"""
         global available_fields
-        available_fields = ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'samos_mean', 'samos_mean_sm', 'samos_spread', 'samos_spread_sm']
+        available_fields = ['nwp_mean', 'nwp_mean_sm', 'nwp_spread', 'nwp_spread_sm', 'spatialmos_mean', 'spatialmos_mean_sm', 'spatialmos_spread', 'spatialmos_spread_sm']
 
         def create_SpatialMosRun(anal_date_aware, parameter):
             """A function to create an entry in the table of the model SpatialMosRun"""
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         date = date_timestamp.strftime("%Y%m%d")
 
         # Read status file of the spatialMOS model run
-        filename_spatialmos_run_status = os.path.join("/www", f"./data/spool/{parameter}/samos/{date}_run.json")
+        filename_spatialmos_run_status = os.path.join("/www", f"./data/spool/{parameter}/spatialmos/{date}_run.json")
         if os.path.isfile(filename_spatialmos_run_status):
             with open(filename_spatialmos_run_status, 'r') as f:
                 spatialmos_run_status = json.load(f)
