@@ -32,14 +32,18 @@ class SpatialMosStep(models.Model):
     spatialmos_run = models.ForeignKey(SpatialMosRun, related_name="steps", on_delete=models.CASCADE)
     valid_date = models.DateTimeField()
     step = models.IntegerField(default=-999)
-    filename_nwp_mean = models.ImageField(upload_to='', default='')
     filename_nwp_mean_sm = models.ImageField(upload_to='', default='')
-    filename_nwp_spread = models.ImageField(upload_to='', default='')
+    filename_nwp_mean_md = models.ImageField(upload_to='', default='')
+    filename_nwp_mean_lg = models.ImageField(upload_to='', default='')
     filename_nwp_spread_sm = models.ImageField(upload_to='', default='')
-    filename_spatialmos_mean = models.ImageField(upload_to='', default='')
+    filename_nwp_spread_md = models.ImageField(upload_to='', default='')
+    filename_nwp_spread_lg = models.ImageField(upload_to='', default='')
     filename_spatialmos_mean_sm = models.ImageField(upload_to='', default='')
-    filename_spatialmos_spread = models.ImageField(upload_to='', default='')
+    filename_spatialmos_mean_md = models.ImageField(upload_to='', default='')
+    filename_spatialmos_mean_lg = models.ImageField(upload_to='', default='')
     filename_spatialmos_spread_sm = models.ImageField(upload_to='', default='')
+    filename_spatialmos_spread_md = models.ImageField(upload_to='', default='')
+    filename_spatialmos_spread_lg = models.ImageField(upload_to='', default='')
 
     def __str__(self):
         """Return Value in the Admin Panel"""
