@@ -53,13 +53,30 @@ def py_spatialmos__archive_available_data(c, folder):
 
 
 @task
-def py_spatialmos__get_gefs(c, date, resolution, parameter, modeltype):
+def py_spatialmos__get_gefs(c, date, resolution, modeltype, parameter):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_wgrib2", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--resolution", resolution, "--parameter", parameter, "--modeltype", modeltype]
+    cmd = ["py_wgrib2", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__get_gefs.__name__)
+
+@task
+def py_spatialmos__get_gefs_forecasts(c, date, parameter):
+    """Download and pre process the forecasts"""
+    inv_logging.task(py_spatialmos__get_gefs_forecasts.__name__)
+
+    if parameter == "wind_10m":
+        get_gefs_parameter = ["ugrd_10m", "vgrd_10m"]        
+    else:
+        get_gefs_parameter = parameter
+
+    for p in get_gefs_parameter:
+        py_spatialmos__get_gefs(c, date=date, resolution=1, modeltype="avg", parameter=p)
+        py_spatialmos__get_gefs(c, date=date, resolution=1, modeltype="spr", parameter=p)
+
+    py_spatialmos__pre_processing_gribfiles(c, date=date, parameter=parameter)
+    inv_logging.success(py_spatialmos__get_gefs_forecasts.__name__)
 
 @task
 def py_spatialmos__get_suedtirol(c, begindate, enddate):
@@ -132,28 +149,28 @@ def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
 
 
 @task
-def r_spatialmos__gamlss_crch_model(c, parameter, validation):
+def r_spatialmos__gamlss_crch_model(c, validation, parameter):
     """Create the required spatial climatologies."""
     inv_logging.task(r_spatialmos__gamlss_crch_model.__name__)
-    cmd = ["r_base", "Rscript", "./r_spatialmos/gamlss_crch_model.R", "--parameter", parameter, "--validation", validation]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/gamlss_crch_model.R", "--validation", validation, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__gamlss_crch_model.__name__)
 
 @task
-def r_spatialmos__spatial_climatologies_nwp(c, parameter, begin, end):
+def r_spatialmos__spatial_climatologies_nwp(c,  begin, end, parameter):
     """Create daily climatologies for the NWP."""
     inv_logging.task(r_spatialmos__spatial_climatologies_nwp.__name__)
-    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_nwp.R", "--parameter", parameter, "--begin", begin, "--end", end]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_nwp.R",  "--begin", begin, "--end", end, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_nwp.__name__)
 
 @task
-def r_spatialmos__spatial_climatologies_obs(c, parameter, begin, end):
+def r_spatialmos__spatial_climatologies_obs(c, begin, end, parameter):
     """Create daily climatologies for the observations."""
     inv_logging.task(r_spatialmos__spatial_climatologies_obs.__name__)
-    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--parameter", parameter, "--begin", begin, "--end", end]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--parameter", "--begin", begin, "--end", end, parameter, "--begin"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
@@ -199,6 +216,7 @@ SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
 SPATIALMOS_DEVELOPMENT_NS.add_task(spatialmos__init_topography)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_available_data)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs_forecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_uibk)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_wetter_at)

@@ -1,32 +1,19 @@
 # spatialMOS
 
-spatialMOS is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed.
+spatialMOS is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed. The website is available online again and can be reached at [https://moses.tirol](https://moses.tirol).
 
 
 ## Introduction
-With spatialMOS weather forecasts of the global weather model GEFS (1 x 1° Grid) can be improved for the regions North- and South Tyrol. Based on past station observations and past predictions, future predictions are corrected with statistical methods. 
-The spatial resolution of the statistically corrected predictions corresponds to the SRTM Data (Further information can be obtained from [https://gadm.org](https://gadm.org)), with leads to a of 90 x 90 m. With spatialMOS temperature, relative humidity and wind forecasts can be made at ground level.
+With spatialMOS weather forecasts of the global weather model GEFS (1 x 1° Grid) can be improved for the regions North- and South Tyrol. Based on past station observations and past predictions, future predictions are post-processed with statistical methods. 
+The spatial resolution of the statistically post-processed predictions corresponds to the grid of the SRTM Data (Further information can be obtained from [https://gadm.org](https://gadm.org)). The resolution of the spatial post-processed forecasts is 90 x 90 m. With spatialMOS temperature, relative humidity and wind forecasts can be made at ground level.
 
-A detailed description of the method can be found in the master thesis [Flächenhafte Vorhersagen von Temperatur und relativer Luftfeuchte im Flachland](http://diglib.uibk.ac.at/urn:nbn:at:at-ubi:1-16130).
+A detailed description of the statistical method to correct spatial predictions at ground level can be found in the master these [Flächenhafte Vorhersagen von Temperatur und relativer Luftfeuchte im Flachland](http://diglib.uibk.ac.at/urn:nbn:at:at-ubi:1-16130).
 
 ## Dependencies
 You will need [python](https://www.python.org/) **version 3.7+**, [invoke](http://www.pyinvoke.org/installing.html) **version 1.4+**, [docker](https://www.docker.com/), [docker-compose](https://docs.docker.com/compose/), [rsync](https://rsync.samba.org/) and [tar](https://www.gnu.org/software/tar/).
 
 
-## Configuration and Installation
-Copy the `fabric/settings.example.json` to `./settings.json` and adapt the file to your individual needs. Two environments are provided in the file: `development` and `production`. For local operation, only the dictionary `development` must be edited. The `production` dictionary entries are optional and only relevant for the server.
-
-spatialMOS can be installed locally using the command:
-
-```
-./task.py local.install.quickinstallation
-```
-
-The required folder structure and environment variables are set.
-
-
 ## Usage
-
 A list for spatialMOS implemented invoke commands: 
 
 ```
@@ -34,9 +21,18 @@ A list for spatialMOS implemented invoke commands:
 ```
 
 
+## Configuration and Installation
+Copy the `fabric/settings.example.json` to `./settings.json` and adapt the file to your individual needs. Two environments are provided in the file: `development` and `production`. For local development, only the dictionary `development` must be edited. The `production` dictionary entries are optional and only relevant for the server.
+
+To install spatialMOS, the necessary folder structures and to set the environment variables the following command can be used:
+
+```
+./task.py local.install.quickinstallation
+```
+
 ### Data basis
 
-***For statistical postprocessing of weather forecasts, past values of at least two years are required.***
+***For statistical post-processing of weather forecasts, past values of at least two years are required.***
 
 
 #### Digital Ground Model and Shapefiles for North- and South Tyrol
@@ -65,38 +61,21 @@ Current values from the ZAMG web page or from the UIBK API interface can be done
 
 #### GEFS Weather Reforecasts (Forecast Archive)
 
-Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from the FTP in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
+Previous mean and spread ensemble forecasts of the GEFS weather model can be downloaded free of charge from a FTP of the [NOAA](https://weather.gov) in a resolution of 1° x 1°. To load the data the program [retostauffer/PyGFSV2](https://github.com/retostauffer/PyGFSV2) is required.
 A forked version can be downloaded under [naschidaniel/PyGFSV2](https://github.com/naschidaniel/PyGFSV2). With `sh GFSV2_bulk.sh` the archive GEFS Reforecasts can be downloaded. The program creates folders based on the year numbers. These folders can be stored directly in `./data/get_available_data/gefs_reforecast/nwp` for further statistical processing. 
 
 
 #### GEFS Weather Forecasts
 
-Current Ensemble weather forecasts can be obtained from the FTP server. Please use today's date
+Current Ensemble weather forecasts can be obtained from the a FTP of the [NOAA](https://weather.gov) server. Please use today's date. The downloaded files are automatically pre-processed for the prediction task.
 
 ```
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter tmp_2m --modeltype avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter tmp_2m --modeltype spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter rh_2m --modeltype avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter rh_2m --modeltype spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter vgrd_10m --modeltype avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter vgrd_10m --modeltype spr
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter ugrd_10m --modeltype avg
-./task.py local.spatialmos.py-spatialmos--get-gefs --date 2020-07-03 --resolution 1 --parameter ugrd_10m --modeltype spr
+./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter tmp_2m 
+./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter rh_2m 
+./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter wind_10m 
 ```
-
-#### GEFS Weather Forecasts Pre Processing
-
-Due to problems with dependencies it was decided to create custom containers for pygrib, basemap and gdal. The downloaded data must therefore be pre-processed for the forecasts.
-
-```
-./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter tmp_2m 
-./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter rh_2m
-./task.py local.spatialmos.py-spatialmos--pre-processing-gribfiles --date 2020-07-22 --parameter wind_10m
-```
-
 
 ### Raw data pre processing for further statistical processing
-
 
 #### Bilinear interpolation of GEFS Weather Reforecasts to station locations
 
@@ -114,18 +93,23 @@ The Global Weather Model data from the GEFS Model is bilinear interpolated to th
 The data for relative humidity and wind are calculated from other parameters. These parameters must be interpolated in advance.
 
 ```
-./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter rh_2m #Required pre calculated parameters: tmp_2m, spfh_2m, pres_sfc
-./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter wind_10m #Required pre calculated parameters: ugrd_10m, vgrd_10m
+# Required pre calculated parameters: tmp_2m, spfh_2m, pres_sfc
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter rh_2m 
+
+# Required pre calculated parameters: ugrd_10m, vgrd_10m
+./task.py local.spatialmos.py-spatialmos--pre-processing-reforecasts --parameter wind_10m 
 ```
 
 
 #### Combination of GEFS Reforecasts and Station Observations
 
-For further statistical processing a data set with all station observations for all parameters and forecasts of at least two past years are required. 
+For further statistical processing a data set with past station observations and past forecasts for at least two years are required. All values are stored in one h5 data set file.
 
 ```
 ./task.py local.spatialmos.py-spatialmos--pre-processing-observations-and-reforecasts-to-stations
 ```
+
+#### 
 
 The observations and the GEFS Reforecasts still need to be pre-processed. The observations and the GEFS Reforecasts will be combined. From these files the area-wide valid climatologies are generated.
 
@@ -144,9 +128,9 @@ The observations and the GEFS Reforecasts still need to be pre-processed. The ob
 Based on the pre processed data and the modelling software [gamlss](http://www.gamlss.com/), climatologies for the forecast area are created. 
 
 ```
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --parameter tmp_2m --validation False
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --parameter rh_2m --validation False
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --parameter wind_10m --validation False
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter tmp_2m
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter rh_2m
+./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter wind_10m
 ```
 
 #### Create daily climatologies for post processing of GEFS forecasts
@@ -155,16 +139,16 @@ For the statistical processing of the Direct Model Output, climatologies for the
 
 ##### GEFS Forecast climatologies for the day of the year and model step 
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --parameter tmp_2m --begin 192 --end 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --parameter rh_2m --begin 192 --end 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --parameter wind_10m --begin 192 --end 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter tmp_2m 
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter rh_2m
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter wind_10m
 ```
 
 ##### Observation climatologies for the day
 ```
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --parameter tmp_2m --begin 192 --end 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --parameter rh_2m --begin 192 --end 195
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --parameter wind_10m --begin 192 --end 195
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter tmp_2m
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter rh_2m
+./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter wind_10m
 ```
 
 
@@ -176,9 +160,9 @@ For this step, current forecasts ([GEFS Weather Forecasts](#GEFS-Weather-Forecas
 
 
 ```
-./task.py local.spatialmos.py-spatialmos--prediction --parameter tmp_2m --date 2020-07-22
-./task.py local.spatialmos.py-spatialmos--prediction --parameter rh_2m --date 2020-07-22
-./task.py local.spatialmos.py-spatialmos--prediction --parameter wind_10m --date 2020-07-22
+./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter tmp_2m 
+./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter rh_2m
+./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter wind_10m
 ```
 
 The calculated predictions are available in the exchange folder `./data/spool`. The presentation of the data is made with the help of django. 
@@ -198,35 +182,18 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder zamg
 ```
 
-### Source files and spatial climatologies exchange with the server
-
-With the help of `rsync` and `scp` data can be exchanged between server and local computer. In the file `settings.json` the necessary settings are made.
-
-The source files are synchronized using the fabric command:
-```
-./task.py production.rsync.push --what sourcefiles
-```
-
-The source files are synchronized using the fabric command:
-```
-./task.py production.rsync.push --what staticfiles
-```
-
-The climatologies needed for the daily calculation can be uploaded using the command:
-```
-./task.py production.rsync.push --what climatologies
-```
-
 ### Website
 
-The online presence was implemented with the web framework django written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made. The API of openstreetmap is used for the address query. *TODO*
+The online presence was implemented with the web framework [https://www.djangoproject.com/](django) written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made. The API of openstreetmap is used for the address query. *TODO*
 
+#### Start and Stop a local development Webserver
 
-#### TODO
+A web server can be started or stopped in dedatched modus for the local test environment.
 
 ```
-./task.py *TODO* setenvironment
-./task.py serve ... start ... quickinstall
+./task.py local.docker-compose.start
+
+./task.py local.docker-compose.stop
 ```
 
 #### Urls for local development
@@ -270,9 +237,22 @@ With this managing command model runs older than 5 days are removed from the dat
 
 #### Live Demo
 
-Visit the Live Demo Page for current forecasts for North and South Tyrol.
+Visit the Live Demo Page [https://moses.tirol](https://moses.tirol) for current forecasts for North and South Tyrol. 
 
-[https://moses.tirol](https://moses.tirol)
+
+
+
+### Deployment
+
+### Source files and spatial climatologies exchange with the server
+
+With the help of `rsync` and `scp` data can be exchanged between server and local computer. In the file `settings.json` the necessary settings are made.
+
+The files are synchronized using the fabric command:
+
+```
+./task.py production.deploy
+```
 
 
 ## Contribution
@@ -283,6 +263,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-21 Update README.md
+- 2020-08-13 small, medium and large image sizes of the predictions 
 - 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
 - 2020-08-10 Prettier Django docstrings and remarks.
 - 2020-08-09 The Django website was put online on [moses.tirol](https://moses.tirol).
