@@ -184,7 +184,7 @@ The downloaded files in the folders can be archived with `tar`. The archived fil
 
 ### Website
 
-The online presence was implemented with the web framework [https://www.djangoproject.com/](django) written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made. The API of openstreetmap is used for the address query. *TODO*
+The online presence was implemented with the web framework [https://www.djangoproject.com/](django) written in python. The calculated predictions are stored in a PostgreSQL database. For each address in North- and South Tyrol, predictions can thus be made.
 
 #### Start and Stop a local development Webserver
 
@@ -234,6 +234,12 @@ With this managing command model runs older than 5 days are removed from the dat
 ./task.py local.spatialmos.py-spatialmos--django-delete-spatialmos-runs --parameter tmp_2m --days 5
 ```
 
+#### Predictions for addresses and coordinates
+
+For the prediction of addresses and coordinates in North- and South Tyrol the API interface of [photon.komoot.de](photon.komoot.de) is used. The [open source project](
+https://github.com/komoot/photon) is licensed under [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0).
+
+
 
 #### Live Demo
 
@@ -263,6 +269,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-21 [photon.komoot.de](photon.komoot.de) is used. The [open source project](
+https://github.com/komoot/photon) API Request for Point and Address Predictions added to the project
 - 2020-08-21 Update README.md
 - 2020-08-13 small, medium and large image sizes of the predictions 
 - 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
