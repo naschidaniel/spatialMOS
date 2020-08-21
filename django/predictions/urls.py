@@ -6,5 +6,6 @@ from predictions import views
 # predictions urls
 urlpatterns = [
     path('', views.predictions, name='predictions'),
-    path('punktvorhersagen/', views.pointpredictions, name='pointpredictions'),
+    path('adresse/', views.addressprediction, name='addressprediction'),
+    path('punktvorhersagen/', views.pointprediction, name='pointprediction'),
 ]
