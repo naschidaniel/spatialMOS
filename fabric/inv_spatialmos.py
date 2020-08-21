@@ -170,7 +170,7 @@ def r_spatialmos__spatial_climatologies_nwp(c,  begin, end, parameter):
 def r_spatialmos__spatial_climatologies_obs(c, begin, end, parameter):
     """Create daily climatologies for the observations."""
     inv_logging.task(r_spatialmos__spatial_climatologies_obs.__name__)
-    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--parameter", "--begin", begin, "--end", end, parameter, "--begin"]
+    cmd = ["r_base", "Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--begin", begin, "--end", end, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
