@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+  
+  <div class="content mt-4">
+
+    <h1>Adressvorhersagen</h1>
+
+    <form action="/adresse/" method="get" class="align-items-center mt-4">
+          
+      <div class="form-row">
+        <div class="form-group col-md-7">
+          <input id="street" class="form-control" type="text" name="street" value="{{ street }}" placeholder="Straße">
+        </div>
+
+        <div class="form-group col-md-5">
+          <input id="number" class="form-control" type="text" name="number" value="{{ number }}" placeholder="Hausnummer">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-7">
+          <input id="city" class="form-control" type="text" name="city" value="{{ city }}" placeholder="Ort">
+        </div>
+
+        <div class="form-group col-md-2">
+          <input id="zipcode" class="form-control" type="text" name="zipcode" value="{{ zipcode }}" placeholder="PLZ">
+        </div>
+
+        <div class="form-group col-md-3">
+          <select class="form-control" id="country">
+            <option>Österreich</option>
+            <option>Italien</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+    <div clas="mt-4">
+      Temperaturvorhersage für Peter-Mayr-Straße 29, A-6020 Innsbruck: <a href="/api/spatialmospoint/last/tmp_2m/47.26266/11.394/" target="_blank">/api/spatialmospoint/last/tmp_2m/47.26266/11.394/</a>
+    </div>
+
+  </div>
+{% endblock content %}
