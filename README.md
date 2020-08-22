@@ -269,7 +269,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-08-21 The open source project [https://github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](photon.komoot.de) for there live demo.
+- 2020-08-22 The open source project [https://github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](photon.komoot.de) for there live demo.
 - 2020-08-21 Update README.md
 - 2020-08-13 small, medium and large image sizes of the predictions 
 - 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
