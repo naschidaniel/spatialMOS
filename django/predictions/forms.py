@@ -16,5 +16,5 @@ class addressForm(forms.Form):
 
 class latlonForm(forms.Form):
     """The form for coordinates inputs"""
-    latitude = forms.FloatField(label='Latitude', required=True)
-    longitude = forms.FloatField(label='Longitude', required=True)
+    latitude = forms.FloatField(label='Latitude', required=True, min_value=46, max_value=48)
+    longitude = forms.FloatField(label='Longitude', required=True, min_value=9, max_value=12)
