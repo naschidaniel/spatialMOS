@@ -40,7 +40,7 @@
   {% include "navbar.html" %}
 
   <div class="container mt-4">
-    {% if error != "" %}
+    {% if error %}
       <div class="alert alert-danger" role="alert">
         {% block error %}
         {% endblock %}
