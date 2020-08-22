@@ -4,9 +4,21 @@ from django.shortcuts import render
 from predictions.forms import addressForm, latlonForm
 import requests
 
+
+# Helper functions
+def request_url(request_url):
+    """A function which handles requests to an API interface."""
+    data_req = requests.get(request_url)
+    if data_req.status_code == 200:
+        data = data_req.json()
+    else:
+        data = None
+    return data
+
+
+# Views
 def addressprediction(request):
     """The function to display the spatialMOS predictions for a address."""
-    
     context = {
         'address': addressForm(),
     }
@@ -14,12 +26,7 @@ def addressprediction(request):
 
 def predictions(request):
     """The function to display the spatialMOS plots."""
-
-    spatialmosrun_req = requests.get('https://moses.tirol/api/spatialmosrun/last/tmp_2m/')
-    if spatialmosrun_req.status_code == 200:
-        spatialmosrun = spatialmosrun_req.json()
-    else:
-        spatialmosrun = None
+    spatialmosrun = request_url('https://moses.tirol/api/spatialmosrun/last/tmp_2m/')
 
     context = {
         'spatialmosrun': spatialmosrun,
@@ -29,7 +36,9 @@ def predictions(request):
 def pointprediction(request):
     """The function to display the spatialMOS predictions for coordinates."""
 
-    query_url = ""
+    photon_url = ""
+    photon_properties = dict()
+    spatialmos_api_url = ""
 
     if request.method == 'GET':
         latlon = latlonForm(request.GET)
@@ -42,13 +51,21 @@ def pointprediction(request):
 
             # Photon software is open source and licensed under Apache License, Version 2.0
             # https://github.com/komoot/photon
-            query_url = f"https://photon.komoot.de/reverse?{query_string}&limit=1"
+            photon_url = f"https://photon.komoot.de/reverse?{query_string}&limit=1"
+            photon_json = request_url(photon_url)
+            
+            photon_properties = photon_json['features'][0]['properties']
+            photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
+            spatialmos_api_url = f"http://localhost/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+
     else:
         latlon = latlonForm()
 
     context = {
         'content': 'modelrun',
         'latlon': latlon,
-        'query_url': query_url,
+        'photon_properties': photon_properties,
+        'query_url': photon_url,
+        'spatialmos_api_url': spatialmos_api_url
     }
     return render(request, 'predictions/pointprediction.html', context)
