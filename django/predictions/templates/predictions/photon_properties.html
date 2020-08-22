@@ -1,0 +1,25 @@
+{% if photon_properties %}
+<h3 class="mt-4">API query</h3>
+<table class="table mt-4">
+  <tbody>
+    {% for key, value in photon_properties.items %}
+    <tr>
+      <th scope="row">{{ key }}</th>
+      <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <th scope="row">photon.komoot.de API: </th>
+      <td>
+        <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ query_url }}</a>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">moses.tirol API: </th>
+      <td>
+        <a href="{{ spatialmos_api_url }}" target="_blank" rel="noreferrer">{{ spatialmos_api_url }}</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
