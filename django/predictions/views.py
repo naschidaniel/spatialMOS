@@ -43,6 +43,8 @@ def pointprediction(request):
             # Photon software is open source and licensed under Apache License, Version 2.0
             # https://github.com/komoot/photon
             query_url = f"https://photon.komoot.de/reverse?{query_string}&limit=1"
+    else:
+        latlon = latlonForm()
 
     context = {
         'content': 'modelrun',
