@@ -12,19 +12,20 @@ def page(request, url):
             return Pages.objects.values_list('slug', flat=True)
         except Pages.DoesNotExist:
             raise Http404
-
+    
     if url in get_object():
         query = Pages.objects.get(slug=url)
         context = {
             'content': query,
             'title': query.title,
-
+            'error': ''
         }
     else:
         query = get_object_or_404(Pages, slug='404')
         context = {
             'content': query,
-            'title': query.title
+            'title': query.title,
+            'error': 'Ihre Anfrage konnte nicht bearbeitet werden.'
         }
 
     return render(request, 'pages/page.html', context)

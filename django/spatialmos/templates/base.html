@@ -40,12 +40,14 @@
   {% include "navbar.html" %}
 
   <div class="container mt-4">
-    {% block page %}
-      {% block content %}
-      <p>
-          {{ message }}
-      </p>
-      {% endblock %}
+    {% if error != "" %}
+      <div class="alert alert-danger" role="alert">
+        {% block error %}
+        {% endblock %}
+      </div>
+    {% endif %}
+
+    {% block content %}
     {% endblock %}
   </div>
 
