@@ -9,15 +9,18 @@
     <form action="/punktvorhersagen" method="get" class="align-items-center mt-4">
           
       <div class="form-row">
-        {% for field in latlon %}
+        {% for field in latlon_form %}
         <div class="form-group col-md-6">
-          {{ field.label_tag }}
           {{ field | addclass:"form-control" }}
         </div>
         {% endfor %}
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div class="form-row">
+        <div class="form-group col">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
 
     </form>
 
@@ -45,7 +48,7 @@
         </tr>
       </tbody>
     </table>
-    {% endif %} 
+    {% endif %}
   </div>
 
 {% endblock content %}
