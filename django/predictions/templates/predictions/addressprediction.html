@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block error %}
+  {{ error }}
+{% endblock error %}
+
 {% block content %}
 {% load form_tags %}
 
@@ -37,9 +42,9 @@
       </div>
     </form>
 
-    <div clas="mt-4">
-      Temperaturvorhersage für Peter-Mayr-Straße 29, A-6020 Innsbruck: <a href="/api/spatialmospoint/last/tmp_2m/47.26266/11.394/" target="_blank" rel="noopener">/api/spatialmospoint/last/tmp_2m/47.26266/11.394/</a>
-    </div>
+    {% if photon_properties %}
+      {% include './photon_properties.html' with photon_properties=photon_properties %}
+    {% endif %}
     
   </div>
 {% endblock content %}
