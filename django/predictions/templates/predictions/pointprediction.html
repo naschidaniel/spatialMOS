@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
+{% load form_tags %}
 
   <div class="content mt-4">
 
     <h1>Punktvorhersagen</h1>
 
-    <form action="/punktvorhersagen/" method="get" class="align-items-center mt-4">
+    <form action="/punktvorhersagen/" method="get" class="align-items-center mt-4" id="latlon">
           
       <div class="form-row">
+        {% for field in latlon %}
         <div class="form-group col-md-6">
-          <label for="latitude">Latitude</label>
-          <input id="latitude" class="form-control" type="text" name="latitude" value="{{ latitude }}" placeholder="47.26266">
+          {{ field.label_tag }}
+          {{ field | addclass:"form-control" }}
         </div>
-
-        <div class="form-group col-md-6">
-          <label for="longitude">Longitude</label>
-          <input id="longitude" class="form-control" type="text" name="longitude" value="{{ longitude }}" placeholder="11.394">
-        </div>
+        {% endfor %}
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>
@@ -27,11 +25,8 @@
     <div class="mt-4">
       API Schnittstellenabrage bei photon.komoot.de: <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ query_url }}</a>
     </div>
-    {% endif %}
-    
-    <div class="mt-4">
-      Temperaturvorhersage für die Koordinaten: <a href="/api/spatialmospoint/last/tmp_2m/47.26266/11.394/" target="_blank" rel="noopener">47.26266 N, 11.394 E</a>
-    </div>
+    {% endif %} 
+
   </div>
 
 {% endblock content %}
