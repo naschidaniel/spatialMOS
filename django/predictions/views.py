@@ -28,7 +28,7 @@ def photon_data(photon_url, query_string):
 
     if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
         photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
-        spatialmos_api_url = f"http://localhost/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+        spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
     else:
         error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
 
