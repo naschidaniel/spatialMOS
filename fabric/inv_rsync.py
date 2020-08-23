@@ -103,7 +103,6 @@ def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude,
     subprocess.run(rsync_cmd, check=True)
 
 
-#@task(inv_install.check_upstream)
 @task
 def push(c, what):
     """This task synchronizes the local folders to the server"""
