@@ -105,19 +105,18 @@
           "static"
         ],
         "exclude": [
-          "get_available_data/gadm",
-          "spatialmos_climatology/gam/",
-          "get_available_data/*",
           "*.h5",
           "*.RData",
           "*_station_observations.csv",
+          ".well-known",
           "archive",
           "media",
           "postgresdata",
           "bostgresdata_backup",
           "postgresdata_backup_server",
-          "static",
-          "spool"
+          "spool",
+          "spatialmos_climatology",
+          "get_available_data"
         ]
       },
       "climatologies": {
@@ -133,6 +132,7 @@
           "*.h5",
           "*.RData",
           "*_station_observations.csv",
+          ".well-known",
           "archive",
           "media",
           "postgresdata",
