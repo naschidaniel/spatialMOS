@@ -52,14 +52,14 @@ def ssh(c, remote_user, remote_host, cmd):
     subprocess.run(ssh_cmd, check=True)
 
 def scp_push(c, remote_user, remote_host, source_file, destination_file):
-    """This function copies server files to the localhost"""
+    """This function copies localhost files to the server"""
     scp_cmd = ["scp", f"{source_file}", f"{remote_user}@{remote_host}:{destination_file}"]
     logging.info("The following command was executed with scp: %s", scp_cmd)
     subprocess.run(scp_cmd, check=True)
 
 
 def scp_get(c, remote_user, remote_host, source_file, destination_file):
-    """This function copies local files to the server"""
+    """This function pulls server files to the localhost"""
     scp_cmd = ["scp", f"{remote_user}@{remote_host}:{source_file}", f"{destination_file}"]
     logging.info("The following command was executed with scp: %s", scp_cmd)
     subprocess.run(scp_cmd, check=True)
