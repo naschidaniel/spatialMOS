@@ -8,30 +8,36 @@ import requests
 # Helper functions
 def request_url(request_url):
     """A function which handles requests to an API interface."""
-    data_req = requests.get(request_url)
-    if data_req.status_code == 200:
-        data = data_req.json()
-    else:
-        data = None
-    return data
+    error = ""
+    data = None
+    try:
+        data_req = requests.get(request_url)
+        if data_req.status_code == 200:
+            data = data_req.json()
+        else:
+            error = f"Die API Schnittstelle '{request_url}' gab den Status {data_req.status_code} zurück."
+        return data, error
+    except:
+        error = f"Die API Schnittstelle '{request_url}' konnte nicht abgefragt werden."
+        return data, error
 
 def photon_data(photon_url, query_string):
     """A Function to precess the API Call to photon.komoto.de"""
 
     # Photon software is open source and licensed under Apache License, Version 2.0
     # https://github.com/komoot/photon
-    photon_json = request_url(photon_url)
-    photon_properties = photon_json['features'][0]['properties']
+    photon_json, error = request_url(photon_url)
 
-    error = ""
     spatialmos_api_url = ""
+    photon_properties = ""
 
-    if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
-        photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
-        spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
-    else:
-        error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
-
+    if error == "":
+        photon_properties = photon_json['features'][0]['properties']
+        if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
+            photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
+            spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+        else:
+            error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
     return photon_properties, spatialmos_api_url, error
 
 # Views
@@ -61,7 +67,7 @@ def addressprediction(request):
             
             query_string = ','.join(query_list_filtered)
             
-            photon_url = f"https://photon.komoot.de/api/?q=?{query_string}&limit=1"
+            photon_url = f"http://photon.komoot.de/api/?q=?{query_string}&limit=1"
             photon_properties, spatialmos_api_url, error = photon_data(photon_url, query_string)
     else:
         address_form = addressForm()
@@ -94,7 +100,7 @@ def pointprediction(request):
 
             query_string = f"lon={longitude}&lat={latitude}"
 
-            photon_url = f"https://photon.komoot.de/reverse?{query_string}&limit=1"
+            photon_url = f"http://photon.komoot.de/reverse?{query_string}&limit=1"
             photon_properties, spatialmos_api_url, error = photon_data(photon_url, query_string)
     else:
         latlon_form = latlonForm()
