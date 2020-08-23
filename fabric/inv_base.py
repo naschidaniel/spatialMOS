@@ -1,13 +1,27 @@
+#!/usr/bin/env python
+#  -*- coding: utf-8 -*-
+"""This base functions of the spatialMOS to project."""
+
 import json
 import sys
 import os
 import logging
 import getpass
 
+
+
 def manage_py(c, cmd, **kwargs):
     """The function executes the django manage.py command."""
     user, group = uid_gid(c)
     docker_compose(c, f"run -u {user}:{group} django python3 /www/site/manage.py {cmd}", pty=True)
+
+
+def generate_lastcommit(c, settings):
+    """A function to create the last commit ID"""
+    lastcommit = c.run("git rev-parse --short HEAD")
+    lastcommit = lastcommit.stdout.strip()
+    logging.info("Last commit number is %s", lastcommit)
+    return lastcommit
 
 
 def read_settings(what):

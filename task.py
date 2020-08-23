@@ -2,6 +2,7 @@
 #  -*- coding: utf-8 -*-
 """The fabricfile of the project."""
 
+from fabric import inv_deploy
 from invoke import Collection, Program
 from fabric import inv_base
 from fabric import inv_docker
@@ -39,7 +40,7 @@ PRODUCTION_NS.add_collection(inv_install.INSTALL_PRODUCTION_NS)
 PRODUCTION_NS.add_collection(inv_docker.DOCKER_COMPOSE_PRODUCTION_NS)
 PRODUCTION_NS.add_collection(inv_django.DJANGO_PRODUCTION_NS)
 PRODUCTION_NS.add_task(inv_docker.docker)
-PRODUCTION_NS.add_task(inv_install.deploy)
+PRODUCTION_NS.add_task(inv_deploy.deploy)
 PRODUCTION_NS.add_collection(inv_spatialmos.SPATIALMOS_PRODUCTION_NS)
 PRODUCTION_NS.add_collection(inv_postgres.POSTGRESQL_PRODUCTION_NS)
 MAIN_NS.add_collection(PRODUCTION_NS)

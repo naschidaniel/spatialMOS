@@ -10,40 +10,8 @@ from invoke import task, Collection
 import inv_base
 import inv_logging
 import inv_docker
-import inv_node
-import inv_django
 import inv_docker
 import inv_rsync
-
-
-def generate_lastcommit(c, settings):
-    """A function to create the last commit ID"""
-    lastcommit = c.run("git rev-parse --short HEAD")
-    lastcommit = lastcommit.stdout.strip()
-    logging.info("Last commit number is %s", lastcommit)
-    return lastcommit
-
-@task
-def check_upstream(c):
-    """Check master """
-    print("Do you really want to run on production? [y/N]")
-    answer = input()
-
-    if answer.upper() not in ("Y", "YES", "JA", "J"):
-        sys.exit(1)
-
-    if c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip() != "master":
-        logging.error("You are not in the master branch. Only the master branch can be uploaded onto the server.")
-        sys.exit(1)
-
-    c.run("git fetch origin master", hide=True)
-    if c.run("git diff origin/master", hide=True).stdout.strip() != "":
-        logging.error("Your local branch differs from upstream master (run git diff)")
-        sys.exit(1)
-
-    if c.run("git status --short", hide=True).stdout.strip() != "":
-        logging.error("You have a dirty working directory (run git status)")
-        sys.exit(1)
 
 
 @task
@@ -54,12 +22,12 @@ def quickinstallation(c):
     setenvironment(c, "development")
     inv_docker.rebuild(c)
     #inv_node.npm(c, "install")
-    #inv_django.migrate(c)
-    #inv_django.createsuperuser(c)
+    inv_django.migrate(c)
+    inv_django.createsuperuser(c)
     #inv_django.loadexampledata(c)
     #inv_node.build(c)
-    #inv_django.collectstatic(c)
-    #inv_docker.serve(c)
+    inv_django.collectstatic(c)
+    inv_docker.serve(c)
     inv_logging.success(quickinstallation.__name__)
 
 
@@ -170,23 +138,6 @@ def setproductionenvironment(c):
 
     inv_logging.success(setproductionenvironment.__name__)
 
-#@task(pre=[check_upstream])
-@task
-def deploy(c):
-    """Everything you need to deploy"""
-    inv_logging.task(deploy.__name__)
-    #c.run("./task.py local.node.build")
-    c.run("./task.py local.django.collectstatic")
-    c.run("cp -r ./django/static/* ./data/static")
-    inv_docker.stop(c)
-    inv_rsync.push(c, "sourcefiles")
-    inv_rsync.push(c, "staticfiles")
-    inv_rsync.push(c, "climatologies")
-    setproductionenvironment(c)
-    inv_docker.rebuild(c)
-    inv_django.migrate(c)
-    inv_docker.start(c)
-    inv_logging.success(deploy.__name__)
 
 
 INSTALL_DEVELOPMENT_NS = Collection("install")
