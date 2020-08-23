@@ -2,6 +2,8 @@
 #  -*- coding: utf-8 -*-
 """This collection is used to deploy spatialMOS to a server."""
 
+import logging
+import sys
 from invoke import task
 import inv_logging
 import inv_docker
@@ -14,6 +16,7 @@ import inv_rsync
 @task
 def check_upstream(c):
     """Check master """
+    inv_logging.task(check_upstream.__name__)
     print("Do you really want to run on production? [y/N]")
     answer = input()
 
@@ -32,9 +35,10 @@ def check_upstream(c):
     if c.run("git status --short", hide=True).stdout.strip() != "":
         logging.error("You have a dirty working directory (run git status)")
         sys.exit(1)
+    inv_logging.success(check_upstream.__name__)
 
 
-@task(pre=[inv_base.check_upstream])
+@task(pre=[check_upstream])
 @task
 def deploy(c):
     """Everything you need to deploy"""
