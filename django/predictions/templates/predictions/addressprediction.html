@@ -1,50 +1,50 @@
 {% extends "base.html" %}
 
 {% block error %}
-  {{ error }}
+{{ error }}
 {% endblock error %}
 
 {% block content %}
 {% load form_tags %}
 
-  <div class="content mt-4">
+<div class="content mt-4">
 
-    <h1>Adressvorhersagen</h1>
+  <h1>Adressvorhersagen</h1>
 
-    <form action="/adresse/" method="get" class="align-items-center mt-4">
-          
-      <div class="form-row">
-        <div class="form-group col-md-7">
-          {{ address_form.street | addclass:"form-control" }}
-        </div>
-        <div class="form-group col-md-5">
-          {{ address_form.housenumber | addclass:"form-control" }}
-        </div>
+  <form action="/adresse/" method="get" class="align-items-center mt-4">
+
+    <div class="form-row">
+      <div class="form-group col-md-7">
+        {{ address_form.street | addclass:"form-control" }}
       </div>
-      <div class="form-row">
-        <div class="form-group col-md-7">
-          {{ address_form.city | addclass:"form-control" }}
-        </div>
-
-        <div class="form-group col-md-2">
-          {{ address_form.postcode | addclass:"form-control" }}
-        </div>
-
-        <div class="form-group col-md-3">
-          {{ address_form.country | addclass:"form-control" }}
-        </div>
+      <div class="form-group col-md-5">
+        {{ address_form.housenumber | addclass:"form-control" }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-7">
+        {{ address_form.city | addclass:"form-control" }}
       </div>
 
-      <div class="form-row">
-        <div class="form-group col">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+      <div class="form-group col-md-2">
+        {{ address_form.postcode | addclass:"form-control" }}
       </div>
-    </form>
 
-    {% if photon_properties %}
-      {% include './photon_properties.html' with photon_properties=photon_properties %}
-    {% endif %}
-    
-  </div>
+      <div class="form-group col-md-3">
+        {{ address_form.country | addclass:"form-control" }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </form>
+
+  {% if photon_properties %}
+  {% include './photon_properties.html' with photon_properties=photon_properties %}
+  {% endif %}
+
+</div>
 {% endblock content %}

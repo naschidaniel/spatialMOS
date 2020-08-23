@@ -1,37 +1,37 @@
 {% extends "base.html" %}
 
 {% block error %}
-  <span>{{ error }}</span>
+<span>{{ error }}</span>
 {% endblock error %}
 
 {% block content %}
 {% load form_tags %}
 
-  <div class="content mt-4">
+<div class="content mt-4">
 
-    <h1>Punktvorhersagen</h1>
+  <h1>Punktvorhersagen</h1>
 
-    <form action="/punktvorhersagen" method="get" class="align-items-center mt-4">
-          
-      <div class="form-row">
-        {% for field in latlon_form %}
-        <div class="form-group col-md-6">
-          {{ field | addclass:"form-control" }}
-        </div>
-        {% endfor %}
+  <form action="/punktvorhersagen" method="get" class="align-items-center mt-4">
+
+    <div class="form-row">
+      {% for field in latlon_form %}
+      <div class="form-group col-md-6">
+        {{ field | addclass:"form-control" }}
       </div>
+      {% endfor %}
+    </div>
 
-      <div class="form-row">
-        <div class="form-group col">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+    <div class="form-row">
+      <div class="form-group col">
+        <button type="submit" class="btn btn-primary">Submit</button>
       </div>
+    </div>
 
-    </form>
+  </form>
 
-    {% if photon_properties %}
-      {% include './photon_properties.html' with photon_properties=photon_properties %}
-    {% endif %}
-  </div>
+  {% if photon_properties %}
+  {% include './photon_properties.html' with photon_properties=photon_properties %}
+  {% endif %}
+</div>
 
 {% endblock content %}

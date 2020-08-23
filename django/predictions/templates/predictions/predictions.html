@@ -1,52 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="content mt-4">
+<div class="content mt-4">
 
-    <h1>Punktvorhersagen</h1>
+  <h1>Punktvorhersagen</h1>
 
-    <table class="table mt-4">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Last</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Parameter</th>
-          <td>{{ spatialmosrun.parameter_longname }}</td>
+  <table class="table mt-4">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Last</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Parameter</th>
+        <td>{{ spatialmosrun.parameter_longname }}</td>
 
-        </tr>
-        <tr>
-          <th scope="row">Analysedatum</th>
-          <td>{{ spatialmosrun.anal_date }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Alle Steps sind vorhanden:</th>
-          <td>{{ spatialmosrun.complete }}</td>
-        </tr>
-        <tr>
-          <th scope="row">API URL</th>
-          <td>
-            <a href="/api/spatialmosrun/last/tmp_2m/" target="_blank" rel="noopener">/api/spatialmosrun/last/tmp_2m/</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      </tr>
+      <tr>
+        <th scope="row">Analysedatum</th>
+        <td>{{ spatialmosrun.anal_date }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Alle Steps sind vorhanden:</th>
+        <td>{{ spatialmosrun.complete }}</td>
+      </tr>
+      <tr>
+        <th scope="row">API URL</th>
+        <td>
+          <a href="/api/spatialmosrun/last/tmp_2m/" target="_blank" rel="noopener">/api/spatialmosrun/last/tmp_2m/</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-    {% for step in spatialmosrun.steps %}
-    <p>
-      <img 
-        src="{{ step.filename_spatialmos_mean_md }}" 
-        srcset="
+  {% for step in spatialmosrun.steps %}
+  <p>
+    <img src="{{ step.filename_spatialmos_mean_md }}" srcset="
           {{ step.filename_spatialmos_mean_sm }} 640w, 
           {{ step.filename_spatialmos_mean_md }} 900w, 
           {{ step.filename_spatialmos_mean_lg }} 1024w
-          "
-        alt="{{ spatialmosrun.parameter_longname }} Vorhersage für {{ step.valid_date }} {{ step.valid_time }}"
-        class="img-fluid"
-      >
-    </p>
-    {% endfor %}
-  </div>
+          " alt="{{ spatialmosrun.parameter_longname }} Vorhersage für {{ step.valid_date }} {{ step.valid_time }}"
+      class="img-fluid">
+  </p>
+  {% endfor %}
+</div>
 {% endblock content %}
