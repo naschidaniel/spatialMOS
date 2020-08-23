@@ -1,0 +1,44 @@
+/* spatialMOS global CSS Styles */
+
+h1 { 
+    font-size: x-large;
+    margin-top: 1.5rem;
+    margin-bottom: 1.3rem;
+  }
+
+h2 {
+    font-size: x-large;
+    margin-top: 1.4rem;
+  }
+  
+h3 {
+    font-size: large;
+    margin-top: 1.25rem;
+  }
+
+h4 {
+    font-size: large;
+    margin-top: 1.25rem;
+  }
+
+h5 {
+    font-size: large;
+    margin-top: 1.0rem;
+  }
+
+h6 {
+    font-size: large;
+    margin-top: 1.0rem;
+  }
+
+.container {
+  color:#333333;
+}
+
+.content {
+  margin-top: 1rem;
+}
+
+.table {
+  margin-top: 1rem;
+}
