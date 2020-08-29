@@ -29,8 +29,8 @@
 
   </form>
 
-  {% if api_data %}
-  {% include './api_data.html' with api_data=api_data %}
+  {% if search_result.api_data %}
+  {% include './api_data.html' with search_result=search_result %}
   {% endif %}
 </div>
 

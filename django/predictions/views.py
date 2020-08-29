@@ -6,18 +6,19 @@ import requests
 
 
 # Helper functions
-def init_api_search_result():
+def init_search_result():
     """A function to initialize the result Dictonary."""
-    api_search_result = dict()
-    api_search_result['api_data'] = ""
-    api_search_result['query_url'] = ""
-    api_search_result['spatialmos_api_url'] = ""
-    api_search_result['error'] = ""
-    api_search_result['licence'] = ""
-    api_search_result['osm_data'] = dict()
-    api_search_result['osm_data']['lat'] = ""
-    api_search_result['osm_data']['lon'] = ""
-    return api_search_result
+    search_result = dict()
+    search_result['api_data'] = ""
+    search_result['query_url'] = ""
+    search_result['spatialmos_api_url'] = ""
+    search_result['error'] = ""
+    search_result['licence'] = ""
+    search_result['osm_data'] = dict()
+    search_result['osm_data']['lat'] = ""
+    search_result['osm_data']['lon'] = ""
+    search_result['osm_data']['display_name'] = ""
+    return search_result
 
 def request_url(request_url):
     """A function which handles requests to an API interface."""
@@ -56,31 +57,31 @@ def nominatim_data(query_dict, reverse=False):
 
     nominatim_json, error = request_url(nominatim_url)
 
-    api_search_result = init_api_search_result()
+    search_result = init_search_result()
     if error == "":
         try:
             if reverse:
-                api_search_result['api_data'] = nominatim_json
+                search_result['api_data'] = nominatim_json
             else:
-                api_search_result['api_data'] = nominatim_json[0]
-            display_name = api_search_result['api_data']['display_name']
+                search_result['api_data'] = nominatim_json[0]
+            display_name = search_result['api_data']['display_name']
             display_name = display_name.split(', ')
             state_matches = ['Tirol', 'Tyrol', 'Trentino-Alto Adige/Südtirol', 'South Tyrol', 'Südtirol']
 
             if any(state in display_name for state in state_matches):
-                api_search_result['spatialmos_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{api_search_result['api_data']['lat']}/{api_search_result['api_data']['lon']}/"
-                api_search_result['osm_data']['lon'] = api_search_result['api_data']['lon']
-                print(api_search_result['osm_data']['lon'])
-                api_search_result['osm_data']['lat'] = api_search_result['api_data']['lat']
+                search_result['spatialmos_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{search_result['api_data']['lat']}/{search_result['api_data']['lon']}/"
+                search_result['osm_data']['lon'] = search_result['api_data']['lon']
+                search_result['osm_data']['lat'] = search_result['api_data']['lat']
+                search_result['osm_data']['display_name'] = search_result['api_data']['display_name']
             else:
                 error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
         except:
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     
-    api_search_result['query_url'] = nominatim_url
-    api_search_result['error'] = error
-    api_search_result['licence'] = "Data Query from the © nominatim.openstreetmap.org API"
-    return api_search_result
+    search_result['query_url'] = nominatim_url
+    search_result['error'] = error
+    search_result['licence'] = "Data Query from the © nominatim.openstreetmap.org API"
+    return search_result
 
 
 def photon_data(query_dict):
@@ -112,18 +113,18 @@ def photon_data(query_dict):
         except:
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     
-    api_search_result = init_api_search_result()
-    api_search_result['api_data'] = photon_properties
-    api_search_result['query_url'] = photon_url
-    api_search_result['spatialmos_api_url'] = spatialmos_api_url
-    api_search_result['error'] = error
-    api_search_result['licence'] = "Data Query from the © photon.komoot.de API"
-    return api_search_result
+    search_result = init_search_result()
+    search_result['api_data'] = photon_properties
+    search_result['query_url'] = photon_url
+    search_result['spatialmos_api_url'] = spatialmos_api_url
+    search_result['error'] = error
+    search_result['licence'] = "Data Query from the © photon.komoot.de API"
+    return search_result
 
 # Views
 def addressprediction(request):
     """The function to display the spatialMOS predictions for a address."""
-    api_search_result = init_api_search_result()
+    search_result = init_search_result()
 
     if request.method == 'GET':
         address_form = addressForm(request.GET)
@@ -139,26 +140,21 @@ def addressprediction(request):
             else:
                 query_dict['state'] = "Tirol"
 
-            api_search_result = nominatim_data(query_dict)
+            search_result = nominatim_data(query_dict)
     else:
         address_form = addressForm()
 
     context = {
         'address_form': address_form,
-        'api_data': api_search_result['api_data'],
-        'licence': api_search_result['licence'],
-        'query_url': api_search_result['query_url'],
-        'spatialmos_api_url': api_search_result['spatialmos_api_url'],
-        'osm_data': api_search_result['osm_data'],
-        'error': api_search_result['error']
+        'search_result': search_result,
+        'error': search_result['error']
     }
-    
     return render(request, 'predictions/addressprediction.html', context)
 
 
 def pointprediction(request):
     """The function to display the spatialMOS predictions for coordinates."""
-    api_search_result = init_api_search_result()
+    search_result = init_search_result()
 
     if request.method == 'GET':
         latlon_form = latlonForm(request.GET)
@@ -168,19 +164,14 @@ def pointprediction(request):
             query_dict['lat'] = latlon_form.cleaned_data['lat']
             query_dict['lon'] = latlon_form.cleaned_data['lon']
 
-            api_search_result = nominatim_data(query_dict, reverse=True)
-            print(api_search_result)
+            search_result = nominatim_data(query_dict, reverse=True)
     else:
         latlon_form = latlonForm()
 
     context = {
         'latlon_form': latlon_form,
-        'api_data': api_search_result['api_data'],
-        'licence': api_search_result['licence'],
-        'query_url': api_search_result['query_url'],
-        'spatialmos_api_url': api_search_result['spatialmos_api_url'],
-        'osm_data': api_search_result['osm_data'],
-        'error': api_search_result['error']
+        'search_result': search_result,
+        'error': search_result['error']
     }
 
     return render(request, 'predictions/pointprediction.html', context)

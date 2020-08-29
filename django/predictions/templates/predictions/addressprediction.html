@@ -39,8 +39,8 @@
     </div>
   </form>
 
-  {% if api_data %}
-  {% include './api_data.html' with api_data=api_data osm_data=osm_data %}
+  {% if search_result.api_data %}
+  {% include './api_data.html' with search_data=search_data %}
   {% endif %}
 
 </div>
