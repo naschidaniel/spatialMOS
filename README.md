@@ -269,7 +269,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-08-29 An overview map of API search results is displayed using [leafletjs.com/](https://leafletjs.com).
+- 2020-08-29 An overview map of API search results is displayed using [leafletjs.com](https://leafletjs.com).
 - 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org). The open source project [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.
 - 2020-08-22 The open source project [github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](https://photon.komoot.de) for there live demo.
 - 2020-08-21 Update README.md
@@ -297,7 +297,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 - 2020-06-14 Implementing processing and cronjobs for servers
 - 2020-06-14 Download GEFS predictions from NCEP NOAA FTP Server
 - 2020-06-11 Parse HTML file from ZAMG
-- 2020-06-11 Fetch data from API of [at-wetter.tk/](http://at-wetter.tk/)
+- 2020-06-11 Fetch data from API of [at-wetter.tk](http://at-wetter.tk/)
 - 2020-06-09 Fetch data from the [University of Innsbruck API](https://www.uibk.ac.at/acinn/)
 - 2020-06-09 Fetch data from the [South Tyrolean weather service](http://wetter.provinz.bz.it/)  
 - 2020-06-07 Init Repository 
