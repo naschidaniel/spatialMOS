@@ -8,13 +8,11 @@ class addressForm(forms.Form):
     COUNTRY_CHOICES = (('Austria', 'Österreich'), ('Italy', 'Italien'))
 
     street = forms.CharField(label='Straße', required=False)
-    housenumber = forms.IntegerField(label='Hausnummer', required=False)
     postcode = forms.IntegerField(label='PLZ', required=False)
     city = forms.CharField(label='Ort', required=True)
     country = forms.ChoiceField(choices=COUNTRY_CHOICES, required=False)
 
-    street.widget.attrs.update({'placeholder': 'Straße'})
-    housenumber.widget.attrs.update({'placeholder': 'Hausnummer'})
+    street.widget.attrs.update({'placeholder': 'Straße und Hausnummer'})
     city.widget.attrs.update({'placeholder': 'Ort'})
     postcode.widget.attrs.update({'placeholder': 'PLZ'})
 

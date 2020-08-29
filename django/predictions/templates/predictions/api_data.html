@@ -1,15 +1,13 @@
-{% if photon_properties %}
 <h3 class="mt-4">API query</h3>
 <table class="table table-sm">
   <tbody>
     <tr>
-      <th scope="row">Data Query from the © <a href="https://photon.komoot.de" target="_blank">photon.komoot.de</a> API
-      </th>
+      <th scope="row">{{ licence }}</th>
       <td>
         <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ query_url }}</a>
       </td>
     </tr>
-    {% for key, value in photon_properties.items %}
+    {% for key, value in api_data.items %}
     <tr>
       <th scope="row">{{ key }}</th>
       <td>{{ value }}</td>
@@ -25,4 +23,3 @@
     {% endif %}
   </tbody>
 </table>
-{% endif %}
