@@ -62,9 +62,9 @@ def addressprediction(request):
             housenumber = str(address_form.cleaned_data['housenumber'])
 
             if country == "Italy":
-                state = "Trentino-Alto Adige/Südtirol"
+                state = "Südtirol"
             else:
-                state = "Tyrol"
+                state = "Tirol"
 
             query_list = [city, street, housenumber, postcode, state, country]
             
@@ -73,9 +73,9 @@ def addressprediction(request):
                 if value not in ['', 'None']:
                     query_list_filtered.append(value)
             
-            query_string = ','.join(query_list_filtered)
+            query_string = ' '.join(query_list_filtered)
             
-            photon_url = f"http://photon.komoot.de/api/?q=?{query_string}&limit=1"
+            photon_url = f"http://photon.komoot.de/api/?q={query_string}&box=10,46.6,12.9,47.8&limit=1"
             photon_properties, spatialmos_api_url, error = photon_data(photon_url, query_string)
     else:
         address_form = addressForm()
