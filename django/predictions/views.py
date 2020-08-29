@@ -61,7 +61,7 @@ def nominatim_data(query_dict, reverse=False):
                 nominatim_json = nominatim_json[0]
             display_name = nominatim_json['display_name']
             display_name = display_name.split(', ')
-            state_matches = ['Tirol', 'Tyrol']
+            state_matches = ['Tirol', 'Tyrol', 'Trentino-Alto Adige/Südtirol', 'South Tyrol', 'Südtirol']
             for state in state_matches:
                 if state in display_name:
                     print("found")
