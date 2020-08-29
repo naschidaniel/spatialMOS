@@ -19,8 +19,8 @@ class addressForm(forms.Form):
 
 class latlonForm(forms.Form):
     """The form for coordinates inputs"""
-    latitude = forms.FloatField(label='Latitude', required=True, min_value=46, max_value=48)
-    longitude = forms.FloatField(label='Longitude', required=True, min_value=9, max_value=12)
+    lat = forms.FloatField(label='Latitude', required=True, min_value=46, max_value=48)
+    lon = forms.FloatField(label='Longitude', required=True, min_value=9, max_value=12)
 
-    latitude.widget.attrs.update({'placeholder': 'Latitude'})
-    longitude.widget.attrs.update({'placeholder': 'Longitude'})
+    lat.widget.attrs.update({'placeholder': 'Latitude'})
+    lon.widget.attrs.update({'placeholder': 'Longitude'})
