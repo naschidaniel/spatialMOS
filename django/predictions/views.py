@@ -6,6 +6,16 @@ import requests
 
 
 # Helper functions
+def init_api_search_result():
+    """A function to initialize the result Dictonary."""
+    api_search_result = dict()
+    api_search_result['api_data'] = ""
+    api_search_result['query_url'] = ""
+    api_search_result['spatialmos_api_url'] = ""
+    api_search_result['error'] = ""
+    api_search_result['licence'] = ""
+    return api_search_result
+
 def request_url(request_url):
     """A function which handles requests to an API interface."""
     error = ""
@@ -21,27 +31,58 @@ def request_url(request_url):
         error = f"Die API Schnittstelle '{request_url}' konnte nicht abgefragt werden."
         return data, error
 
-def photon_data(photon_url, query_string):
-    """A Function to precess the API Call to photon.komoto.de"""
 
-    # Photon software is open source and licensed under Apache License, Version 2.0
-    # https://github.com/komoot/photon
-    photon_json, error = request_url(photon_url)
+def nominatim_data(query_dict, reverse=False):
+    """A Function to precess the API Call to nominatim.openstreetmap.org"""
+
+    # Nominatim software is open source and licensed under GPLv2 license.
+    # https://github.com/osm-search/Nominatim
+
+    query_string = ""
+    for key, value in query_dict.items():
+        if value not in ['', 'None']:
+            if query_string == "":
+                query_string = f"{key}={value}"
+            else:
+                query_string = query_string + f"&{key}={value}"
+
+    if reverse:
+        nominatim_url = f"https://nominatim.openstreetmap.org/reverse.php?{query_string}&lang=de&polygon_geojson=0&format=jsonv2"
+    else:
+        nominatim_url = f"https://nominatim.openstreetmap.org/search.php?{query_string}&polygon_geojson=0&format=jsonv2"
+
+    nominatim_json, error = request_url(nominatim_url)
+
+    if reverse == False:
+        nominatim_json = nominatim_json[0]
+
 
     spatialmos_api_url = ""
-    photon_properties = ""
 
     if error == "":
         try:
-            photon_properties = photon_json['features'][0]['properties']
-            if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
-                photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
-                spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+            display_name = nominatim_json['display_name']
+            display_name = display_name.split(', ')
+            state_matches = ['Tirol', 'Tyrol']
+            for state in state_matches:
+                if state in display_name:
+                    print("found")
+
+            if any(state in display_name for state in state_matches):
+                spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{nominatim_json['lat']}/{nominatim_json['lon']}/"
             else:
                 error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
         except:
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
-    return photon_properties, spatialmos_api_url, error
+    
+    api_search_result = init_api_search_result()
+    api_search_result['api_data'] = nominatim_json
+    api_search_result['query_url'] = nominatim_url
+    api_search_result['spatialmos_api_url'] = spatialmos_api_url
+    api_search_result['error'] = error
+    api_search_result['licence'] = "Data Query from the © nominatim.openstreetmap.org API"
+    return api_search_result
+
 
 def photon_data(query_dict):
     """A Function to precess the API Call to photon.komoto.de"""
@@ -72,7 +113,7 @@ def photon_data(query_dict):
         except:
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     
-    api_search_result = dict()
+    api_search_result = init_api_search_result()
     api_search_result['api_data'] = photon_properties
     api_search_result['query_url'] = photon_url
     api_search_result['spatialmos_api_url'] = spatialmos_api_url
@@ -83,12 +124,7 @@ def photon_data(query_dict):
 # Views
 def addressprediction(request):
     """The function to display the spatialMOS predictions for a address."""
-    api_search_result = dict()
-    api_search_result['api_data'] = ""
-    api_search_result['query_url'] = ""
-    api_search_result['spatialmos_api_url'] = ""
-    api_search_result['error'] = ""
-    api_search_result['licence'] = ""
+    api_search_result = init_api_search_result()
 
     if request.method == 'GET':
         address_form = addressForm(request.GET)
@@ -104,7 +140,7 @@ def addressprediction(request):
             else:
                 query_dict['state'] = "Tirol"
 
-            api_search_result = photon_data(query_dict)
+            api_search_result = nominatim_data(query_dict)
     else:
         address_form = addressForm()
 
@@ -122,33 +158,29 @@ def addressprediction(request):
 
 def pointprediction(request):
     """The function to display the spatialMOS predictions for coordinates."""
-
-    photon_url = ""
-    photon_properties = dict()
-    spatialmos_api_url = ""
-    error = ''
+    api_search_result = init_api_search_result()
 
     if request.method == 'GET':
         latlon_form = latlonForm(request.GET)
 
         if latlon_form.is_valid():
-            latitude = latlon_form.cleaned_data['latitude']
-            longitude = latlon_form.cleaned_data['longitude']
+            query_dict = dict()
+            query_dict['lat'] = latlon_form.cleaned_data['lat']
+            query_dict['lon'] = latlon_form.cleaned_data['lon']
 
-            query_string = f"lon={longitude}&lat={latitude}"
+            api_search_result = nominatim_data(query_dict, reverse=True)
 
-            photon_url = f"http://photon.komoot.de/reverse?{query_string}&limit=1"
-            photon_properties, spatialmos_api_url, error = photon_data(photon_url, query_string)
     else:
         latlon_form = latlonForm()
 
     context = {
         'latlon_form': latlon_form,
-        'photon_properties': photon_properties,
-        'query_url': photon_url,
-        'spatialmos_api_url': spatialmos_api_url,
-        'error': error
-        }
+        'api_data': api_search_result['api_data'],
+        'licence': api_search_result['licence'],
+        'query_url': api_search_result['query_url'],
+        'spatialmos_api_url': api_search_result['spatialmos_api_url'],
+        'error': api_search_result['error']
+    }
 
     return render(request, 'predictions/pointprediction.html', context)
 
