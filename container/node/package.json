@@ -1,0 +1,16 @@
+{
+  "name": "spatialMOS",
+  "version": "1.0.0",
+  "description": "The components for spatialMOS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["spatialMOS", "prediction", "Nordtirol", "Südtirol", "Tyrol"],
+  "author": "Daniel Naschberger (naschidaniel)",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2"
+  }
+}

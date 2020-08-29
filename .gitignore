@@ -30,3 +30,7 @@ settings.json
 
 # Nginx
 .well-known
+
+# Vue
+node_modules/
+npm-debug.log
