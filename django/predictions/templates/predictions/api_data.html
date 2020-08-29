@@ -2,22 +2,22 @@
 <table class="table table-sm">
   <tbody>
     <tr>
-      <th scope="row">{{ licence }}</th>
+      <th scope="row">{{ search_result.licence }}</th>
       <td>
-        <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ query_url }}</a>
+        <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ search_result.query_url }}</a>
       </td>
     </tr>
-    {% for key, value in api_data.items %}
+    {% for key, value in search_result.api_data.items %}
     <tr>
       <th scope="row">{{ key }}</th>
       <td>{{ value }}</td>
     </tr>
     {% endfor %}
-    {% if spatialmos_api_url %}
+    {% if search_result.spatialmos_api_url %}
     <tr>
       <th scope="row">moses.tirol Prediction: </th>
       <td>
-        <a href="{{ spatialmos_api_url }}" target="_blank" rel="noreferrer">{{ spatialmos_api_url }}</a>
+        <a href="{{ spatialmos_api_url }}" target="_blank" rel="noreferrer">{{ search_result.spatialmos_api_url }}</a>
       </td>
     </tr>
     {% endif %}
@@ -28,8 +28,8 @@
 
 <script type="text/javascript">
   // Creating map options
-  var lat = "{{ osm_data.lat }}"
-  var lon = "{{ osm_data.lon }}"
+  var lat = "{{ search_result.osm_data.lat }}"
+  var lon = "{{ search_result.osm_data.lon }}"
 
   // Creating map options
   var map = L.map('map', {
@@ -42,6 +42,6 @@
   
   // add a marker object
   var marker = L.marker([lat, lon]).addTo(map);
-  marker.bindPopup("{{ api_data.display_name }}").openPopup();
+  marker.bindPopup("{{ search_result.osm_data.display_name }}").openPopup();
 
 </script>
