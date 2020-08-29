@@ -43,49 +43,78 @@ def photon_data(photon_url, query_string):
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     return photon_properties, spatialmos_api_url, error
 
+def photon_data(query_dict):
+    """A Function to precess the API Call to photon.komoto.de"""
+
+    # Photon software is open source and licensed under Apache License, Version 2.0.
+    # https://github.com/komoot/photon
+
+    query_list_filtered = []
+    for key, value in query_dict.items():
+        if value not in ['', 'None']:
+            query_list_filtered.append(value)
+    
+    query_string = ' '.join(query_list_filtered)
+    
+    photon_url = f"http://photon.komoot.de/api/?q={query_string}&bbox=10,46.6,12.9,47.8&limit=1"
+    photon_json, error = request_url(photon_url)
+
+    spatialmos_api_url = ""
+    photon_properties = ""
+    if error == "":
+        try:
+            photon_properties = photon_json['features'][0]['properties']
+            if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
+                photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
+                spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+            else:
+                error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
+        except:
+            error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
+    
+    api_search_result = dict()
+    api_search_result['api_data'] = photon_properties
+    api_search_result['query_url'] = photon_url
+    api_search_result['spatialmos_api_url'] = spatialmos_api_url
+    api_search_result['error'] = error
+    api_search_result['licence'] = "Data Query from the © photon.komoot.de API"
+    return api_search_result
+
 # Views
 def addressprediction(request):
     """The function to display the spatialMOS predictions for a address."""
-    photon_url = ""
-    photon_properties = dict()
-    spatialmos_api_url = ""
-    error = ''
-    
+    api_search_result = dict()
+    api_search_result['api_data'] = ""
+    api_search_result['query_url'] = ""
+    api_search_result['spatialmos_api_url'] = ""
+    api_search_result['error'] = ""
+    api_search_result['licence'] = ""
+
     if request.method == 'GET':
         address_form = addressForm(request.GET)
-
         if address_form.is_valid():
-            country = address_form.cleaned_data['country']
-            postcode = str(address_form.cleaned_data['postcode'])
-            city = address_form.cleaned_data['city']
-            street = address_form.cleaned_data['street']
-            housenumber = str(address_form.cleaned_data['housenumber'])
+            query_dict = dict()
+            query_dict['country'] = address_form.cleaned_data['country']
+            query_dict['postcode'] = str(address_form.cleaned_data['postcode'])
+            query_dict['city'] = address_form.cleaned_data['city']
+            query_dict['street'] = address_form.cleaned_data['street']
 
-            if country == "Italy":
-                state = "Südtirol"
+            if query_dict['country'] == "Italy":
+                query_dict['state'] = "Südtirol"
             else:
-                state = "Tirol"
+                query_dict['state'] = "Tirol"
 
-            query_list = [city, street, housenumber, postcode, state, country]
-            
-            query_list_filtered = []
-            for value in query_list:
-                if value not in ['', 'None']:
-                    query_list_filtered.append(value)
-            
-            query_string = ' '.join(query_list_filtered)
-            
-            photon_url = f"http://photon.komoot.de/api/?q={query_string}&box=10,46.6,12.9,47.8&limit=1"
-            photon_properties, spatialmos_api_url, error = photon_data(photon_url, query_string)
+            api_search_result = photon_data(query_dict)
     else:
         address_form = addressForm()
 
     context = {
         'address_form': address_form,
-        'photon_properties': photon_properties,
-        'query_url': photon_url,
-        'spatialmos_api_url': spatialmos_api_url,
-        'error': error
+        'api_data': api_search_result['api_data'],
+        'licence': api_search_result['licence'],
+        'query_url': api_search_result['query_url'],
+        'spatialmos_api_url': api_search_result['spatialmos_api_url'],
+        'error': api_search_result['error']
     }
     
     return render(request, 'predictions/addressprediction.html', context)
