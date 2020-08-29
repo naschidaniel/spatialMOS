@@ -14,6 +14,9 @@ def init_api_search_result():
     api_search_result['spatialmos_api_url'] = ""
     api_search_result['error'] = ""
     api_search_result['licence'] = ""
+    api_search_result['osm_data'] = dict()
+    api_search_result['osm_data']['lat'] = ""
+    api_search_result['osm_data']['lon'] = ""
     return api_search_result
 
 def request_url(request_url):
@@ -53,30 +56,28 @@ def nominatim_data(query_dict, reverse=False):
 
     nominatim_json, error = request_url(nominatim_url)
 
-    spatialmos_api_url = ""
-
+    api_search_result = init_api_search_result()
     if error == "":
         try:
-            if reverse == False:
-                nominatim_json = nominatim_json[0]
-            display_name = nominatim_json['display_name']
+            if reverse:
+                api_search_result['api_data'] = nominatim_json
+            else:
+                api_search_result['api_data'] = nominatim_json[0]
+            display_name = api_search_result['api_data']['display_name']
             display_name = display_name.split(', ')
             state_matches = ['Tirol', 'Tyrol', 'Trentino-Alto Adige/Südtirol', 'South Tyrol', 'Südtirol']
-            for state in state_matches:
-                if state in display_name:
-                    print("found")
 
             if any(state in display_name for state in state_matches):
-                spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{nominatim_json['lat']}/{nominatim_json['lon']}/"
+                api_search_result['spatialmos_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{api_search_result['api_data']['lat']}/{api_search_result['api_data']['lon']}/"
+                api_search_result['osm_data']['lon'] = api_search_result['api_data']['lon']
+                print(api_search_result['osm_data']['lon'])
+                api_search_result['osm_data']['lat'] = api_search_result['api_data']['lat']
             else:
                 error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
         except:
             error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     
-    api_search_result = init_api_search_result()
-    api_search_result['api_data'] = nominatim_json
     api_search_result['query_url'] = nominatim_url
-    api_search_result['spatialmos_api_url'] = spatialmos_api_url
     api_search_result['error'] = error
     api_search_result['licence'] = "Data Query from the © nominatim.openstreetmap.org API"
     return api_search_result
@@ -148,6 +149,7 @@ def addressprediction(request):
         'licence': api_search_result['licence'],
         'query_url': api_search_result['query_url'],
         'spatialmos_api_url': api_search_result['spatialmos_api_url'],
+        'osm_data': api_search_result['osm_data'],
         'error': api_search_result['error']
     }
     
@@ -167,7 +169,7 @@ def pointprediction(request):
             query_dict['lon'] = latlon_form.cleaned_data['lon']
 
             api_search_result = nominatim_data(query_dict, reverse=True)
-
+            print(api_search_result)
     else:
         latlon_form = latlonForm()
 
@@ -177,6 +179,7 @@ def pointprediction(request):
         'licence': api_search_result['licence'],
         'query_url': api_search_result['query_url'],
         'spatialmos_api_url': api_search_result['spatialmos_api_url'],
+        'osm_data': api_search_result['osm_data'],
         'error': api_search_result['error']
     }
 
