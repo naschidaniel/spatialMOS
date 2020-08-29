@@ -53,14 +53,12 @@ def nominatim_data(query_dict, reverse=False):
 
     nominatim_json, error = request_url(nominatim_url)
 
-    if reverse == False:
-        nominatim_json = nominatim_json[0]
-
-
     spatialmos_api_url = ""
 
     if error == "":
         try:
+            if reverse == False:
+                nominatim_json = nominatim_json[0]
             display_name = nominatim_json['display_name']
             display_name = display_name.split(', ')
             state_matches = ['Tirol', 'Tyrol']
