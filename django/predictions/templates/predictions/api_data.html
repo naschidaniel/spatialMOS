@@ -23,3 +23,25 @@
     {% endif %}
   </tbody>
 </table>
+
+<div id="map" style="height:400px;"></div>
+
+<script type="text/javascript">
+  // Creating map options
+  var lat = "{{ osm_data.lat }}"
+  var lon = "{{ osm_data.lon }}"
+
+  // Creating map options
+  var map = L.map('map', {
+    center: [lat, lon],
+    zoom: 14
+  });
+
+  // Creating a Layer object
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', { foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>' }).addTo(map);
+  
+  // add a marker object
+  var marker = L.marker([lat, lon]).addTo(map);
+  marker.bindPopup("{{ api_data.display_name }}").openPopup();
+
+</script>

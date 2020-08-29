@@ -40,7 +40,7 @@
   </form>
 
   {% if api_data %}
-  {% include './api_data.html' with api_data=api_data %}
+  {% include './api_data.html' with api_data=api_data osm_data=osm_data %}
   {% endif %}
 
 </div>
