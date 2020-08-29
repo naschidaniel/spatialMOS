@@ -269,6 +269,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](nominatim.openstreetmap.org). The open source project [https://github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.
 - 2020-08-22 The open source project [https://github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](photon.komoot.de) for there live demo.
 - 2020-08-21 Update README.md
 - 2020-08-13 small, medium and large image sizes of the predictions 
