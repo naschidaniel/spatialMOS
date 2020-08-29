@@ -236,8 +236,7 @@ With this managing command model runs older than 5 days are removed from the dat
 
 #### Predictions for addresses and coordinates
 
-For the prediction of addresses and coordinates in North- and South Tyrol the API interface of [photon.komoot.de](photon.komoot.de) is used. The [open source project](
-https://github.com/komoot/photon) is licensed under [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0).
+For the prediction of addresses and coordinates in North- and South Tyrol the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org) is used. The [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) is licensed under [GPLv2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
 
 
