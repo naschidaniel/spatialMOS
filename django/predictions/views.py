@@ -32,12 +32,15 @@ def photon_data(photon_url, query_string):
     photon_properties = ""
 
     if error == "":
-        photon_properties = photon_json['features'][0]['properties']
-        if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
-            photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
-            spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
-        else:
-            error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
+        try:
+            photon_properties = photon_json['features'][0]['properties']
+            if photon_properties['state'] in ['Tyrol', 'Trentino-Alto Adige/Südtirol']:
+                photon_coordinates = photon_json['features'][0]['geometry']['coordinates']
+                spatialmos_api_url = f"/api/spatialmospoint/last/tmp_2m/{photon_coordinates[1]}/{photon_coordinates[0]}/"
+            else:
+                error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."
+        except:
+            error = f"Ihre Suchanfrage '{query_string}' führte zu keinem brauchbaren Ergebnis."
     return photon_properties, spatialmos_api_url, error
 
 # Views
@@ -58,7 +61,12 @@ def addressprediction(request):
             street = address_form.cleaned_data['street']
             housenumber = str(address_form.cleaned_data['housenumber'])
 
-            query_list = [country, postcode, city, street, housenumber]
+            if country == "Italy":
+                state = "Trentino-Alto Adige/Südtirol"
+            else:
+                state = "Tyrol"
+
+            query_list = [city, street, housenumber, postcode, state, country]
             
             query_list_filtered = []
             for value in query_list:
