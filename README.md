@@ -269,9 +269,9 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-08-29 An overview map of API search results is displayed using [https://leafletjs.com/](leafletjs.com).
-- 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](nominatim.openstreetmap.org). The open source project [https://github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.
-- 2020-08-22 The open source project [https://github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](photon.komoot.de) for there live demo.
+- 2020-08-29 An overview map of API search results is displayed using [leafletjs.com/](https://leafletjs.com).
+- 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org). The open source project [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.
+- 2020-08-22 The open source project [github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](https://photon.komoot.de) for there live demo.
 - 2020-08-21 Update README.md
 - 2020-08-13 small, medium and large image sizes of the predictions 
 - 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
@@ -290,16 +290,16 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 - 2020-07-07 Adding R Container to project 
 - 2020-07-03 Restructuring of the Docker containers, volumes and python script folder
 - 2020-06-23 Added https certificates via Let´s Encrypt to nginx configuration
-- 2020-06-18 Nginx configuration for moses.tirol
-- 2020-06-16 Landing page set up for moses.tirol
+- 2020-06-18 Nginx configuration for [moses.tirol](https://moses.tirol)
+- 2020-06-16 Landing page set up for [moses.tirol](https://moses.tirol)
 - 2020-06-16 Productive use of fabric commands with crontab
 - 2020-06-16 Domain Moses.tirol was redirected to the new server
 - 2020-06-14 Implementing processing and cronjobs for servers
 - 2020-06-14 Download GEFS predictions from NCEP NOAA FTP Server
 - 2020-06-11 Parse HTML file from ZAMG
-- 2020-06-11 Fetch data from API of http://at-wetter.tk/
-- 2020-06-09 Fetch data from the University of Innsbruck API
-- 2020-06-09 Fetch data from the South Tyrolean weather service  
+- 2020-06-11 Fetch data from API of [at-wetter.tk/](http://at-wetter.tk/)
+- 2020-06-09 Fetch data from the [University of Innsbruck API](https://www.uibk.ac.at/acinn/)
+- 2020-06-09 Fetch data from the [South Tyrolean weather service](http://wetter.provinz.bz.it/)  
 - 2020-06-07 Init Repository 
 
 
