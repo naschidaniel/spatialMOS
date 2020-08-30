@@ -2,9 +2,9 @@ const path = require("path");
 const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-  entry: {
-    main: '/www/site/static/js/index.js'
-  },
+  entry: [
+    '/www/site/static/js/index.js'
+  ],
   output: {
     filename: '[name].js',
     chunkFilename: "[name].js",
@@ -38,7 +38,7 @@ module.exports = {
       }
     },
     host: "0.0.0.0",
-    port: 8080,
+    port: 3000,
     hot: true,
     https: false,
     headers: { "Access-Control-Allow-Origin": ["*"] }

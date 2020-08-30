@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-
+// import { api } from "../api/api.jsx"
+import axios from "axios"
 
 export default class AddressForm extends React.Component {
   constructor() {
@@ -11,6 +12,12 @@ export default class AddressForm extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidMount() {
+    let data = axios.get("/api/spatialmosstep/last/tmp_2m/").then((res) => {
+      console.log(res)
+    })
   }
 
   handleChange(event) {
@@ -31,6 +38,7 @@ export default class AddressForm extends React.Component {
           value={this.state.value}
           onChange={this.handleChange}
         />
+        <button type="submit" className="btn btn-primary">Submit</button>
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     );

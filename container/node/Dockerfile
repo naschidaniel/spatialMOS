@@ -4,4 +4,4 @@ ADD ./package.*json /www/
 
 WORKDIR /www
 
-EXPOSE 8080
+EXPOSE 3000
