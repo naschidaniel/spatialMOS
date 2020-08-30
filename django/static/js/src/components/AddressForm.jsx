@@ -26,12 +26,12 @@ export default class AddressForm extends React.Component {
     return (
       <form>
         <input
-          class="form-control"
+          className="form-control"
           type="text"
           value={this.state.value}
           onChange={this.handleChange}
         />
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     );
   }
