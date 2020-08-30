@@ -30,7 +30,7 @@ module.exports = {
     ]
   },
   devServer: {
-    public: "http://0.0.0.0:8080",
+    public: "http://localhost",
     proxy: {
       '**': {
         target: 'http://nginx:80',
