@@ -84,7 +84,6 @@ services:
     build: ./container/node/
     container_name: spatialMOS_node
     user: "${USERID}:${GROUPID}"
-    command: "npx babel --watch /www/site/static/js/ --out-dir /www/static/js/ --presets react-app/prod"
     volumes:
       - node:/www/
       - django:/www/site:z
