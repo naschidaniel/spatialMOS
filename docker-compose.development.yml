@@ -84,6 +84,8 @@ services:
     build: ./container/node/
     container_name: spatialMOS_node
     user: "${USERID}:${GROUPID}"
+    ports:
+      - 80:8080
     volumes:
       - node:/www/
       - django:/www/site:z
@@ -111,8 +113,6 @@ services:
   nginx:
     restart: always
     container_name: spatialMOS_nginx
-    ports: 
-      - "80:80"
     build:
       context: "./container/nginx"
       args: 

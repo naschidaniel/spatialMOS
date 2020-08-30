@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 
-class Form extends Component {
+export default class AddressForm extends React.Component {
   constructor() {
     super();
 
@@ -26,16 +26,16 @@ class Form extends Component {
     return (
       <form>
         <input
+          class="form-control"
           type="text"
           value={this.state.value}
           onChange={this.handleChange}
         />
+        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     );
   }
 }
 
-export default Form;
-
-const wrapper = document.getElementById("container");
-wrapper ? ReactDOM.render(<Form />, wrapper) : false;
+const wrapper = document.getElementById("address_form_container");
+wrapper ? ReactDOM.render(<AddressForm />, wrapper) : false;
