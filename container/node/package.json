@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
-    "start": "webpack-dev-server --open --mode development"
+    "start": "webpack-dev-server --mode development"
   },
   "keywords": [
     "spatialMOS",
@@ -15,7 +15,7 @@
     "Südtirol",
     "Tyrol"
   ],
-  "author": "Daniel Naschberger (naschidaniel)",
+  "author": "Daniel Naschberger",
   "license": "GPL-3.0",
   "dependencies": {
     "babel-cli": "^6.26.0",
