@@ -12,11 +12,11 @@ RUN conda update conda
 
 RUN conda config --set channel_priority strict
 
-RUN conda create -n spatialmos python
+RUN conda create -n spatialmos -c conda-forge python
 
 ADD requirements.txt /usr/src/app/requirements.txt
 
-RUN conda install -n spatialmos -c anaconda --file /usr/src/app/requirements.txt
+RUN conda install -n spatialmos -c conda-forge --file /usr/src/app/requirements.txt
 
 RUN conda init bash
 
