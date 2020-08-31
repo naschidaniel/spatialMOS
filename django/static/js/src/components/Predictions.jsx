@@ -2,17 +2,21 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 export default class Predictions extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
+      availableSteps: [],
       error: null,
       isLoaded: false,
       parameter: {},
-      steps: {}
+      steps: {},
+      showStep: null
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleStepChange = this.handleStepChange.bind(this);
+    this.increaseShowStep = this.increaseShowStep.bind(this);
+
   }
 
   componentDidMount() {
@@ -24,7 +28,9 @@ export default class Predictions extends React.Component {
         this.setState({
           isLoaded: true,
           modelrun: result,
-          steps: result.steps
+          availableSteps: result.steps.map(step => step.step),
+          steps: result.steps,
+          showStep: result.steps[0].step
         });
       },
       (error) => {
@@ -36,17 +42,19 @@ export default class Predictions extends React.Component {
     )
   }
 
-  handleChange(event) {
-    const { value } = event.target;
-    this.setState(() => {
-      return {
-        value
-      };
+  increaseShowStep() {
+    let next = (this.state.showStep !== this.state.availableSteps.length - 1) ? this.state.showStep + 1 : 0
+    this.handleStepChange(next)
+  }
+
+  handleStepChange(index) {
+    this.setState({
+      showStep: index
     });
   }
 
   render() {
-    const { error, isLoaded, steps, modelrun } = this.state;
+    const { availableSteps, error, isLoaded, modelrun, steps, showStep } = this.state;
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -54,20 +62,30 @@ export default class Predictions extends React.Component {
     } else {
       return (
         <span>
-        {steps.map(step =>
-          <img key={step.step}
-            src={ step.filename_spatialmos_mean_md }
+          <img key={steps[showStep].step}
+            src={ steps[showStep].filename_spatialmos_mean_md }
             srcSet=
               {`
-                ${step.filename_spatialmos_mean_sm} 640w, 
-                ${step.filename_spatialmos_mean_md } 900w, 
-                ${step.filename_spatialmos_mean_lg } 1024w
+                ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
+                ${steps[showStep].filename_spatialmos_mean_md } 900w, 
+                ${steps[showStep].filename_spatialmos_mean_lg } 1024w
               `}
-            alt={ modelrun.parameter_longname + " Vorhersage für " + step.valid_date + " " + step.valid_time }
-            title={ modelrun.parameter_longname + " Vorhersage für " + step.valid_date + " " + step.valid_time }
+            alt={ modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time }
+            title={ modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time }
+            onClick={this.increaseShowStep}
           className="img-fluid" />
-        )}
-      </span>
+          <div className="d-flex flex-row bd-highlight mb-3">
+            <div className="p-2 bd-highlight">Flex item 1</div>
+            <div className="p-2 bd-highlight">Flex item 2</div>
+            <div className="p-2 bd-highlight">Flex item 3</div>
+          </div>
+          <div className="list-inline">
+            {availableSteps.map((value, index) => {
+              let activeClassName = (index === showStep) ? 'list-inline-item active' : 'list-inline-item';
+              return <span className={activeClassName} key={index} title={value} onClick={() => this.handleStepChange(index)}>{value}</span>
+            })}
+            </div>
+        </span>
       );
     }
   }
