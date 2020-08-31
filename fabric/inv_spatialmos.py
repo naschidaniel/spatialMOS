@@ -69,11 +69,11 @@ def py_spatialmos__get_gefs_forecasts(c, date, parameter):
     if parameter == "wind_10m":
         get_gefs_parameter = ["ugrd_10m", "vgrd_10m"]        
     else:
-        get_gefs_parameter = parameter
+        get_gefs_parameter = [parameter]
 
     for p in get_gefs_parameter:
-        py_spatialmos__get_gefs(c, date=date, resolution=1, modeltype="avg", parameter=p)
-        py_spatialmos__get_gefs(c, date=date, resolution=1, modeltype="spr", parameter=p)
+        py_spatialmos__get_gefs(c, date=date, resolution="1", modeltype="avg", parameter=p)
+        py_spatialmos__get_gefs(c, date=date, resolution="1", modeltype="spr", parameter=p)
 
     py_spatialmos__pre_processing_gribfiles(c, date=date, parameter=parameter)
     inv_logging.success(py_spatialmos__get_gefs_forecasts.__name__)

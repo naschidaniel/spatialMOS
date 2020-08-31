@@ -67,11 +67,31 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/django
+  node:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/container/node
 
 services:
   django:
     build:
       target: development
+
+  node:
+    restart: always
+    build: ./container/node/
+    container_name: spatialMOS_node
+    user: "${USERID}:${GROUPID}"
+    command: "npm run-script start"
+    ports:
+      - 80:3000
+    volumes:
+      - node:/www/
+      - django:/www/site:z
+      - static:/www/static:z
+      - log:/log:z
 
   r_base:
     build: ./container/r_base/
@@ -94,8 +114,6 @@ services:
   nginx:
     restart: always
     container_name: spatialMOS_nginx
-    ports: 
-      - "80:80"
     build:
       context: "./container/nginx"
       args: 

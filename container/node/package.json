@@ -1,0 +1,35 @@
+{
+  "name": "spatialMOS",
+  "version": "1.0.0",
+  "description": "The components for spatialMOS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "start": "webpack-dev-server --mode development"
+  },
+  "keywords": [
+    "spatialMOS",
+    "prediction",
+    "Nordtirol",
+    "Südtirol",
+    "Tyrol"
+  ],
+  "author": "Daniel Naschberger",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

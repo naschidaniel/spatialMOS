@@ -37,8 +37,17 @@ def npm(c, cmd):
     inv_base.docker_compose(c, f"run -u {user}:{group} node npm {cmd}", pty=True)
     inv_logging.success(npm.__name__)
 
+@task
+def npx(c, cmd):
+    """This task is used to respond to the packet manager npx, for example: npx install date-fns"""
+    inv_logging.task(npx.__name__)
+    user, group = inv_base.uid_gid(c)
+    inv_logging.cmd(cmd)
+    inv_base.docker_compose(c, f"run -u {user}:{group} node npx {cmd}", pty=True)
+    inv_logging.success(npx.__name__)
 
 NODE_NS = Collection("node")
 NODE_NS.add_task(build)
 NODE_NS.add_task(lint)
 NODE_NS.add_task(npm)
+NODE_NS.add_task(npx)

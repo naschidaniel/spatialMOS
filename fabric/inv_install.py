@@ -11,6 +11,8 @@ import inv_base
 import inv_logging
 import inv_docker
 import inv_docker
+import inv_django
+import inv_node
 import inv_rsync
 
 
@@ -21,11 +23,11 @@ def quickinstallation(c):
     folders(c)
     setenvironment(c, "development")
     inv_docker.rebuild(c)
-    #inv_node.npm(c, "install")
+    inv_node.npm(c, "install")
     inv_django.migrate(c)
-    inv_django.createsuperuser(c)
+    #inv_django.createsuperuser(c)
     #inv_django.loadexampledata(c)
-    #inv_node.build(c)
+    inv_node.build(c)
     inv_django.collectstatic(c)
     inv_docker.serve(c)
     inv_logging.success(quickinstallation.__name__)
@@ -108,7 +110,6 @@ def setenvironment(c, cmd):
     return dict_env
 
 
-#@task(pre=[check_upstream])
 @task
 def setproductionenvironment(c):
     """The task writes the environment variables on the server for django and docker. The created files are uploaded to the server and the required folders for spatialMOS are created."""
@@ -143,6 +144,7 @@ def setproductionenvironment(c):
 INSTALL_DEVELOPMENT_NS = Collection("install")
 INSTALL_DEVELOPMENT_NS.add_task(folders)
 INSTALL_DEVELOPMENT_NS.add_task(getdockercert)
+INSTALL_DEVELOPMENT_NS.add_task(quickinstallation)
 INSTALL_DEVELOPMENT_NS.add_task(setenvironment)
 
 INSTALL_PRODUCTION_NS = Collection("install")
