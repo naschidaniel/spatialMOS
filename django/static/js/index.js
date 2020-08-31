@@ -1,1 +1,1 @@
-import AddressForm from "./src/components/AddressForm.jsx";
+import Predictions from "./src/components/Predictions.jsx";

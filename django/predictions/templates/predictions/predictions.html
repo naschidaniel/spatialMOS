@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
 <div class="content">
 
   <h1>Vorhersagekarten</h1>
@@ -28,15 +29,10 @@
     </tbody>
   </table>
 
-  {% for step in spatialmosrun.steps %}
-  <p>
-    <img src="{{ step.filename_spatialmos_mean_md }}" srcset="
-          {{ step.filename_spatialmos_mean_sm }} 640w, 
-          {{ step.filename_spatialmos_mean_md }} 900w, 
-          {{ step.filename_spatialmos_mean_lg }} 1024w
-          " alt="{{ spatialmosrun.parameter_longname }} Vorhersage für {{ step.valid_date }} {{ step.valid_time }}"
-      class="img-fluid">
-  </p>
-  {% endfor %}
+
+  <div id="predictions_container"></div>
+
+  <!-- Load React component. -->
+  <script src="{% static '/main.js' %}"></script>
 </div>
 {% endblock content %}
