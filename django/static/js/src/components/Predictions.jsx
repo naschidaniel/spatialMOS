@@ -74,11 +74,6 @@ export default class Predictions extends React.Component {
             title={ modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time }
             onClick={this.increaseShowStep}
           className="img-fluid" />
-          <div className="d-flex flex-row bd-highlight mb-3">
-            <div className="p-2 bd-highlight">Flex item 1</div>
-            <div className="p-2 bd-highlight">Flex item 2</div>
-            <div className="p-2 bd-highlight">Flex item 3</div>
-          </div>
           <div className="list-inline">
             {availableSteps.map((value, index) => {
               let activeClassName = (index === showStep) ? 'list-inline-item active' : 'list-inline-item';
