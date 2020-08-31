@@ -43,7 +43,7 @@ def check_upstream(c):
 def deploy(c):
     """Everything you need to deploy"""
     inv_logging.task(deploy.__name__)
-    #c.run("./task.py local.node.build")
+    c.run("./task.py local.node.build")
     c.run("./task.py local.django.collectstatic")
     inv_docker.stop(c)
     inv_install.setproductionenvironment(c)
