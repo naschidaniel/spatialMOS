@@ -7,39 +7,42 @@ export default class Predictions extends React.Component {
 
     this.state = {
       availableSteps: [],
+      dimensions: {
+        height: "555",
+        width: "100%"
+      },
       error: null,
       isLoaded: false,
       parameter: {},
       steps: {},
-      showStep: null
+      showStep: null,
     };
 
     this.handleStepChange = this.handleStepChange.bind(this);
     this.increaseShowStep = this.increaseShowStep.bind(this);
-
+    this.onImgLoad = this.onImgLoad.bind(this);
   }
 
   componentDidMount() {
-    fetch("/api/spatialmosrun/last/tmp_2m/")
-    .then(res => res.json())
-    .then(
-      (result) => {
-        console.log(result)
-        this.setState({
-          isLoaded: true,
-          modelrun: result,
-          availableSteps: result.steps.map(step => step.step),
-          steps: result.steps,
-          showStep: result.steps[0].step
-        });
-      },
-      (error) => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
-    )
+    fetch("https://cors-anywhere.herokuapp.com/https://moses.tirol/api/spatialmosrun/last/tmp_2m/")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            modelrun: result,
+            availableSteps: result.steps.map(step => step.step),
+            steps: result.steps,
+            showStep: 0
+          });
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
   }
 
   increaseShowStep() {
@@ -53,34 +56,50 @@ export default class Predictions extends React.Component {
     });
   }
 
+  onImgLoad({ target: img }) {
+    this.setState({
+      dimensions: {
+        height: img.offsetHeight,
+        width: img.offsetWidth
+      }
+    });
+  }
+
   render() {
-    const { availableSteps, error, isLoaded, modelrun, steps, showStep } = this.state;
+    const { availableSteps, error, isLoaded, modelrun, steps, showStep, dimensions } = this.state;
+    const { width, height } = dimensions;
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
-      return <div>Loading...</div>;
+      return <div className="text-center border" width={width}>
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>;
     } else {
       return (
-        <span>
+        <div height={height} width={width}>
           <img key={steps[showStep].step}
-            src={ steps[showStep].filename_spatialmos_mean_md }
+            src={steps[showStep].filename_spatialmos_mean_md}
+            onLoad={this.onImgLoad}
             srcSet=
-              {`
+            {`
                 ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
-                ${steps[showStep].filename_spatialmos_mean_md } 900w, 
-                ${steps[showStep].filename_spatialmos_mean_lg } 1024w
+                ${steps[showStep].filename_spatialmos_mean_md} 900w, 
+                ${steps[showStep].filename_spatialmos_mean_lg} 1024w
               `}
-            alt={ modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time }
-            title={ modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time }
+            alt={modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time}
+            title={modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time}
             onClick={this.increaseShowStep}
-          className="img-fluid" />
-          <div className="list-inline">
+            height={height} width={width}
+            className="img-fluid" />
+          <div className="list-inline text-center">
             {availableSteps.map((value, index) => {
               let activeClassName = (index === showStep) ? 'list-inline-item active' : 'list-inline-item';
               return <span className={activeClassName} key={index} title={value} onClick={() => this.handleStepChange(index)}>{value}</span>
             })}
-            </div>
-        </span>
+          </div>
+        </div>
       );
     }
   }
