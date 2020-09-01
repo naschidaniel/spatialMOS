@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 
 export default class Predictions extends React.Component {
@@ -9,7 +9,7 @@ export default class Predictions extends React.Component {
       availableSteps: [],
       dimensions: {
         height: "555",
-        width: "100%"
+        width: "100%",
       },
       error: null,
       isLoaded: false,
@@ -24,35 +24,40 @@ export default class Predictions extends React.Component {
   }
 
   componentDidMount() {
-    fetch("https://cors-anywhere.herokuapp.com/https://moses.tirol/api/spatialmosrun/last/tmp_2m/")
-      .then(res => res.json())
+    fetch(
+      "https://cors-anywhere.herokuapp.com/https://moses.tirol/api/spatialmosrun/last/tmp_2m/"
+    )
+      .then((res) => res.json())
       .then(
         (result) => {
           this.setState({
             isLoaded: true,
             modelrun: result,
-            availableSteps: result.steps.map(step => step.step),
+            availableSteps: result.steps.map((step) => step.step),
             steps: result.steps,
-            showStep: 0
+            showStep: 0,
           });
         },
         (error) => {
           this.setState({
             isLoaded: true,
-            error
+            error,
           });
         }
-      )
+      );
   }
 
   increaseShowStep() {
-    let next = (this.state.showStep !== this.state.availableSteps.length - 1) ? this.state.showStep + 1 : 0
-    this.handleStepChange(next)
+    let next =
+      this.state.showStep !== this.state.availableSteps.length - 1
+        ? this.state.showStep + 1
+        : 0;
+    this.handleStepChange(next);
   }
 
   handleStepChange(index) {
     this.setState({
-      showStep: index
+      showStep: index,
     });
   }
 
@@ -60,43 +65,79 @@ export default class Predictions extends React.Component {
     this.setState({
       dimensions: {
         height: img.offsetHeight,
-        width: img.offsetWidth
-      }
+        width: img.offsetWidth,
+      },
     });
   }
 
   render() {
-    const { availableSteps, error, isLoaded, modelrun, steps, showStep, dimensions } = this.state;
+    const {
+      availableSteps,
+      error,
+      isLoaded,
+      modelrun,
+      steps,
+      showStep,
+      dimensions,
+    } = this.state;
     const { width, height } = dimensions;
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
-      return <div className="text-center border" width={width}>
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
+      return (
+        <div className="text-center border" width={width}>
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
         </div>
-      </div>;
+      );
     } else {
       return (
         <div height={height} width={width}>
-          <img key={steps[showStep].step}
+          <img
+            key={steps[showStep].step}
             src={steps[showStep].filename_spatialmos_mean_md}
             onLoad={this.onImgLoad}
-            srcSet=
-            {`
+            srcSet={`
                 ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
                 ${steps[showStep].filename_spatialmos_mean_md} 900w, 
                 ${steps[showStep].filename_spatialmos_mean_lg} 1024w
               `}
-            alt={modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time}
-            title={modelrun.parameter_longname + " Vorhersage für " + steps[1].valid_date + " " + steps[1].valid_time}
+            alt={
+              modelrun.parameter_longname +
+              " Vorhersage für " +
+              steps[1].valid_date +
+              " " +
+              steps[1].valid_time
+            }
+            title={
+              modelrun.parameter_longname +
+              " Vorhersage für " +
+              steps[1].valid_date +
+              " " +
+              steps[1].valid_time
+            }
             onClick={this.increaseShowStep}
-            height={height} width={width}
-            className="img-fluid" />
+            height={height}
+            width={width}
+            className="img-fluid"
+          />
           <div className="list-inline text-center">
             {availableSteps.map((value, index) => {
-              let activeClassName = (index === showStep) ? 'list-inline-item active' : 'list-inline-item';
-              return <span className={activeClassName} key={index} title={value} onClick={() => this.handleStepChange(index)}>{value}</span>
+              let activeClassName =
+                index === showStep
+                  ? "list-inline-item active"
+                  : "list-inline-item";
+              return (
+                <span
+                  className={activeClassName}
+                  key={index}
+                  title={value}
+                  onClick={() => this.handleStepChange(index)}
+                >
+                  {value}
+                </span>
+              );
             })}
           </div>
         </div>
