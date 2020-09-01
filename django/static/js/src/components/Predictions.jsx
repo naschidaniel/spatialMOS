@@ -25,7 +25,7 @@ export default class Predictions extends React.Component {
 
   componentDidMount() {
     fetch(
-      "https://cors-anywhere.herokuapp.com/https://moses.tirol/api/spatialmosrun/last/tmp_2m/"
+      "//api/spatialmosrun/last/tmp_2m/"
     )
       .then((res) => res.json())
       .then(
