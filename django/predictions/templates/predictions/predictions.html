@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-{% load static %}
 <div class="content">
 
   <h1>Vorhersagekarten</h1>
@@ -33,6 +32,6 @@
   <div id="predictions_container"></div>
 
   <!-- Load React component. -->
-  <script src="{% static '/main.js' %}"></script>
+  <script src="/static/main.js?v={{LASTCOMMIT}}"></script>
 </div>
 {% endblock content %}
