@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import "./Predictions.css";
 
 export default class Predictions extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ export default class Predictions extends React.Component {
       parameter: {},
       steps: {},
       showStep: null,
+      showNextStep: null,
     };
 
     this.handleStepChange = this.handleStepChange.bind(this);
@@ -24,9 +26,7 @@ export default class Predictions extends React.Component {
   }
 
   componentDidMount() {
-    fetch(
-      "/api/spatialmosrun/last/tmp_2m/"
-    )
+    fetch("/api/spatialmosrun/last/tmp_2m/")
       .then((res) => res.json())
       .then(
         (result) => {
@@ -36,6 +36,7 @@ export default class Predictions extends React.Component {
             availableSteps: result.steps.map((step) => step.step),
             steps: result.steps,
             showStep: 0,
+            showNextStep: 1,
           });
         },
         (error) => {
@@ -48,16 +49,21 @@ export default class Predictions extends React.Component {
   }
 
   increaseShowStep() {
-    let next =
+    let index =
       this.state.showStep !== this.state.availableSteps.length - 1
         ? this.state.showStep + 1
         : 0;
-    this.handleStepChange(next);
+    this.handleStepChange(index);
   }
 
   handleStepChange(index) {
+    let nextIndex =
+      this.state.showNextStep !== this.state.availableSteps.length - 1
+        ? this.state.showNextStep + 1
+        : 0;
     this.setState({
       showStep: index,
+      showNextStep: nextIndex,
     });
   }
 
@@ -78,6 +84,7 @@ export default class Predictions extends React.Component {
       modelrun,
       steps,
       showStep,
+      showNextStep,
       dimensions,
     } = this.state;
     const { width, height } = dimensions;
@@ -93,16 +100,16 @@ export default class Predictions extends React.Component {
       );
     } else {
       return (
-        <div height={height} width={width}>
+        <div height={height} width={width} className="img-slider">
           <img
             key={steps[showStep].step}
             src={steps[showStep].filename_spatialmos_mean_md}
             onLoad={this.onImgLoad}
             srcSet={`
-                ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
-                ${steps[showStep].filename_spatialmos_mean_md} 900w, 
-                ${steps[showStep].filename_spatialmos_mean_lg} 1024w
-              `}
+            ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
+            ${steps[showStep].filename_spatialmos_mean_md} 900w, 
+            ${steps[showStep].filename_spatialmos_mean_lg} 1024w
+            `}
             alt={
               modelrun.parameter_longname +
               " Vorhersage für " +
@@ -119,14 +126,14 @@ export default class Predictions extends React.Component {
             }
             onClick={this.increaseShowStep}
             height={height}
+            className="active"
             width={width}
-            className="img-fluid"
           />
           <div className="list-inline text-center">
             {availableSteps.map((value, index) => {
               let activeClassName =
                 index === showStep
-                  ? "list-inline-item active"
+                  ? "list-inline-item text-danger"
                   : "list-inline-item";
               return (
                 <span
@@ -140,6 +147,16 @@ export default class Predictions extends React.Component {
               );
             })}
           </div>
+          <img
+            src={steps[showNextStep].filename_spatialmos_mean_md}
+            width="1"
+            height="1"
+            srcSet={`
+            ${steps[showNextStep].filename_spatialmos_mean_sm} 640w, 
+            ${steps[showNextStep].filename_spatialmos_mean_md} 900w, 
+            ${steps[showNextStep].filename_spatialmos_mean_lg} 1024w
+          `}
+          />
         </div>
       );
     }
