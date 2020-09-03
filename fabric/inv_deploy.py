@@ -53,4 +53,5 @@ def deploy(c):
     inv_docker.rebuild(c)
     inv_django.migrate(c)
     inv_docker.start(c)
+    c.run("./task.py local.docker-compose.start")
     inv_logging.success(deploy.__name__)
