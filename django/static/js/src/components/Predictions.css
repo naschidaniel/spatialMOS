@@ -1,24 +1,7 @@
-.img-slider img {
-  width: 100%;
-  height: auto;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s;
-}
-.img-slider img.active {
-  opacity: 1;
-  transition: opacity 0.3s;
-  visibility: visible;
-}
-
 .img-navi a {
-  text-decoration: none;
-  display: inline-block;
   padding: 8px 16px;
 }
 
 .img-navi span {
-  text-decoration: none;
-  display: inline-block;
   padding: 8px 16px;
 }

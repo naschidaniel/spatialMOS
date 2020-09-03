@@ -17,7 +17,6 @@ export default class Predictions extends React.Component {
       parameter: {},
       steps: {},
       showStep: null,
-      showNextStep: null,
     };
 
     this.handleStepChange = this.handleStepChange.bind(this);
@@ -66,13 +65,8 @@ export default class Predictions extends React.Component {
   }
 
   handleStepChange(index) {
-    let nextIndex =
-      this.state.showNextStep !== this.state.availableSteps.length - 1
-        ? this.state.showNextStep + 1
-        : 0;
     this.setState({
       showStep: index,
-      showNextStep: nextIndex,
     });
   }
 
@@ -93,7 +87,6 @@ export default class Predictions extends React.Component {
       modelrun,
       steps,
       showStep,
-      showNextStep,
       dimensions,
     } = this.state;
     const { width, height } = dimensions;
@@ -110,32 +103,38 @@ export default class Predictions extends React.Component {
     } else {
       return (
         <div height={height} width={width} className="img-slider">
-          <img
-            key={steps[showStep].step}
-            src={steps[showStep].filename_spatialmos_mean_md}
-            onLoad={this.onImgLoad}
-            srcSet={`
-            ${steps[showStep].filename_spatialmos_mean_sm} 640w, 
-            ${steps[showStep].filename_spatialmos_mean_md} 900w, 
-            ${steps[showStep].filename_spatialmos_mean_lg} 1024w
+          {steps.map((step, index) => {
+            let activeClassName =
+              index === showStep ? "img-fluid active" : "d-none img-fluid";
+            return (
+              <img
+                key={step.step}
+                className={activeClassName}
+                src={step.filename_spatialmos_mean_md}
+                onLoad={this.onImgLoad}
+                srcSet={`
+            ${step.filename_spatialmos_mean_sm} 640w, 
+            ${step.filename_spatialmos_mean_md} 900w, 
+            ${step.filename_spatialmos_mean_lg} 1024w
             `}
-            alt={
-              modelrun.parameter_longname +
-              " Vorhersage für " +
-              steps[1].valid_date +
-              " " +
-              steps[1].valid_time
-            }
-            title={
-              modelrun.parameter_longname +
-              " Vorhersage für " +
-              steps[1].valid_date +
-              " " +
-              steps[1].valid_time
-            }
-            onClick={this.increaseShowStep}
-            className="img-fluid active"
-          />
+                alt={
+                  modelrun.parameter_longname +
+                  " Vorhersage für " +
+                  step.valid_date +
+                  " " +
+                  step.valid_time
+                }
+                title={
+                  modelrun.parameter_longname +
+                  " Vorhersage für " +
+                  step.valid_date +
+                  " " +
+                  step.valid_time
+                }
+                onClick={this.increaseShowStep}
+              />
+            );
+          })}
           <div className="mt-3 d-none d-sm-none d-md-block">
             <div className="list-inline text-center">
               {availableSteps.map((value, index) => {
@@ -158,26 +157,17 @@ export default class Predictions extends React.Component {
           </div>
           <div className="d-sm-block d-md-none">
             <div className="mt-3 img-navi d-flex justify-content-between">
-              <a class="bg-dark text-white" onClick={this.decreaseShowStep}>
+              <a className="bg-dark text-white" onClick={this.decreaseShowStep}>
                 &#8249;
               </a>
-              <span class="bg-dark text-white">Step: {steps[showStep].step}</span>
-              <a class="bg-dark text-white" onClick={this.increaseShowStep}>
+              <span className="text-danger">
+                Step: {steps[showStep].step}
+              </span>
+              <a className="bg-dark text-white" onClick={this.increaseShowStep}>
                 &#8250;
               </a>
             </div>
           </div>
-          <img
-            src={steps[showNextStep].filename_spatialmos_mean_md}
-            width="1"
-            height="1"
-            className="d-none"
-            srcSet={`
-            ${steps[showNextStep].filename_spatialmos_mean_sm} 640w, 
-            ${steps[showNextStep].filename_spatialmos_mean_md} 900w, 
-            ${steps[showNextStep].filename_spatialmos_mean_lg} 1024w
-          `}
-          />
         </div>
       );
     }
