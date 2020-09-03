@@ -4,6 +4,8 @@
 
   <h1>Vorhersagekarten</h1>
 
+  <div id="predictions_container"></div>
+
   <table class="table table-sm">
     <tbody>
       <tr>
@@ -15,21 +17,8 @@
         <th scope="row">Analysedatum</th>
         <td>{{ spatialmosrun.anal_date }}</td>
       </tr>
-      <tr>
-        <th scope="row">Alle Steps sind vorhanden:</th>
-        <td>{{ spatialmosrun.complete }}</td>
-      </tr>
-      <tr>
-        <th scope="row">API URL</th>
-        <td>
-          <a href="/api/spatialmosrun/last/tmp_2m/" target="_blank" rel="noopener">/api/spatialmosrun/last/tmp_2m/</a>
-        </td>
-      </tr>
     </tbody>
   </table>
-
-
-  <div id="predictions_container"></div>
 
   <!-- Load React component. -->
   <script src="/static/main.js?v={{LASTCOMMIT}}"></script>

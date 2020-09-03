@@ -104,6 +104,7 @@ export default class Predictions extends React.Component {
       return (
         <div height={height} width={width} className="img-slider">
           {steps.map((step, index) => {
+            let description = `${modelrun.parameter_longname} Vorhersage ${step.valid_date}  ${step.valid_time}`;
             let activeClassName =
               index === showStep ? "img-fluid active" : "d-none img-fluid";
             return (
@@ -117,20 +118,8 @@ export default class Predictions extends React.Component {
             ${step.filename_spatialmos_mean_md} 900w, 
             ${step.filename_spatialmos_mean_lg} 1024w
             `}
-                alt={
-                  modelrun.parameter_longname +
-                  " Vorhersage für " +
-                  step.valid_date +
-                  " " +
-                  step.valid_time
-                }
-                title={
-                  modelrun.parameter_longname +
-                  " Vorhersage für " +
-                  step.valid_date +
-                  " " +
-                  step.valid_time
-                }
+                alt={description}
+                title={description}
                 onClick={this.increaseShowStep}
               />
             );
@@ -157,13 +146,13 @@ export default class Predictions extends React.Component {
           </div>
           <div className="d-sm-block d-md-block d-lg-none">
             <div className="mt-3 img-navi d-flex justify-content-between">
-              <a className="bg-dark text-white" onClick={this.decreaseShowStep}>
+              <a className="bg-light text-dark" onClick={this.decreaseShowStep}>
                 &#8249;
               </a>
               <span className="text-danger">
                 Step: {steps[showStep].step}
               </span>
-              <a className="bg-dark text-white" onClick={this.increaseShowStep}>
+              <a className="bg-light text-dark" onClick={this.increaseShowStep}>
                 &#8250;
               </a>
             </div>
