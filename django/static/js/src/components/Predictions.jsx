@@ -22,6 +22,7 @@ export default class Predictions extends React.Component {
 
     this.handleStepChange = this.handleStepChange.bind(this);
     this.increaseShowStep = this.increaseShowStep.bind(this);
+    this.decreaseShowStep = this.decreaseShowStep.bind(this);
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
@@ -46,6 +47,14 @@ export default class Predictions extends React.Component {
           });
         }
       );
+  }
+
+  decreaseShowStep() {
+    let index =
+      this.state.showStep !== 0
+        ? this.state.showStep - 1
+        : this.state.availableSteps.length - 1;
+    this.handleStepChange(index);
   }
 
   increaseShowStep() {
@@ -125,32 +134,44 @@ export default class Predictions extends React.Component {
               steps[1].valid_time
             }
             onClick={this.increaseShowStep}
-            height={height}
-            className="active"
-            width={width}
+            className="img-fluid active"
           />
-          <div className="list-inline text-center">
-            {availableSteps.map((value, index) => {
-              let activeClassName =
-                index === showStep
-                  ? "list-inline-item text-danger"
-                  : "list-inline-item";
-              return (
-                <span
-                  className={activeClassName}
-                  key={index}
-                  title={value}
-                  onClick={() => this.handleStepChange(index)}
-                >
-                  {value}
-                </span>
-              );
-            })}
+          <div className="mt-3 d-none d-sm-none d-md-block">
+            <div className="list-inline text-center">
+              {availableSteps.map((value, index) => {
+                let activeClassName =
+                  index === showStep
+                    ? "list-inline-item text-danger"
+                    : "list-inline-item";
+                return (
+                  <span
+                    className={activeClassName}
+                    key={index}
+                    title={value}
+                    onClick={() => this.handleStepChange(index)}
+                  >
+                    {value}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+          <div className="d-sm-block d-md-none">
+            <div className="mt-3 img-navi d-flex justify-content-between">
+              <a class="bg-dark text-white" onClick={this.decreaseShowStep}>
+                &#8249;
+              </a>
+              <span class="bg-dark text-white">Step: {steps[showStep].step}</span>
+              <a class="bg-dark text-white" onClick={this.increaseShowStep}>
+                &#8250;
+              </a>
+            </div>
           </div>
           <img
             src={steps[showNextStep].filename_spatialmos_mean_md}
             width="1"
             height="1"
+            className="d-none"
             srcSet={`
             ${steps[showNextStep].filename_spatialmos_mean_sm} 640w, 
             ${steps[showNextStep].filename_spatialmos_mean_md} 900w, 
