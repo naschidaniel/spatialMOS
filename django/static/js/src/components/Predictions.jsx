@@ -35,8 +35,7 @@ export default class Predictions extends React.Component {
             modelrun: result,
             availableSteps: result.steps.map((step) => step.step),
             steps: result.steps,
-            showStep: 0,
-            showNextStep: 1,
+            showStep: 0
           });
         },
         (error) => {
