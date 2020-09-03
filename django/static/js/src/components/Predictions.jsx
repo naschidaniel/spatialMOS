@@ -135,7 +135,7 @@ export default class Predictions extends React.Component {
               />
             );
           })}
-          <div className="mt-3 d-none d-sm-none d-md-block">
+          <div className="mt-3 d-none d-sm-none d-md-none d-lg-block">
             <div className="list-inline text-center">
               {availableSteps.map((value, index) => {
                 let activeClassName =
@@ -155,7 +155,7 @@ export default class Predictions extends React.Component {
               })}
             </div>
           </div>
-          <div className="d-sm-block d-md-none">
+          <div className="d-sm-block d-md-block d-lg-none">
             <div className="mt-3 img-navi d-flex justify-content-between">
               <a className="bg-dark text-white" onClick={this.decreaseShowStep}>
                 &#8249;
