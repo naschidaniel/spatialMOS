@@ -1,22 +1,26 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Map, TileLayer } from "react-leaflet";
-import 'leaflet/dist/leaflet.css';
+import { Map, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 export default class Leafletmap extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
-    lat: 37.7749,
-    lng: -122.4194,
-    zoom: 13,
-  };
+      lat: 37.7749,
+      lng: -122.4194,
+      zoom: 13,
+    };
   }
   render() {
+    const data = {
+      "position": [47, 12],
+      "displayName": "haha"
+    }
     return (
       <Map
-        center={[47, 12]}
+        center={data.position}
         zoom={14}
         style={{ width: "50%", height: "900px" }}
       >
@@ -24,6 +28,9 @@ export default class Leafletmap extends Component {
           attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <Marker position={data.position}>
+          <Popup>{data.displayName}</Popup>
+        </Marker>
       </Map>
     );
   }
