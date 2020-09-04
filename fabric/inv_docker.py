@@ -56,7 +56,7 @@ def rebuild(c):
     """Rebuild all docker containers"""
     inv_logging.task(rebuild.__name__)
     inv_base.docker_compose(c, "build")
-    restart(c)
+    fullrestart(c)
     inv_logging.success(rebuild.__name__)
 
 
