@@ -13,28 +13,21 @@ export default class Leafletmap extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      lat: 37.7749,
-      lng: -122.4194,
-      zoom: 13,
-    };
   }
   render() {
-    const data = {
-      "position": [47, 12],
-      "displayName": "haha"
-    }
+    const data = JSON.parse(this.props.data);
+    console.log(data)
     return (
       <Map
-        center={data.position}
+        center={[data.lat, data.lon]}
         zoom={14}
-        style={{ width: "50%", height: "900px" }}
+        style={{ width: "100%", height: "400px" }}
       >
         <TileLayer
           attribution='&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={data.position}>
+        <Marker position={[data.lat, data.lon]}>
           <Popup>{data.displayName}</Popup>
         </Marker>
       </Map>
@@ -44,7 +37,7 @@ export default class Leafletmap extends Component {
 const wrapper = document.getElementById("leaflet_map");
 wrapper
   ? ReactDOM.render(
-      <Leafletmap data='{"displayName": "haha", "lat": 11, "lon": 10}' />,
+      <Leafletmap data='{"displayName": "haha", "lat": 47, "lon": 10}' />,
       wrapper
     )
   : false;
