@@ -4,19 +4,18 @@ import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 // require style and marker pngs
 import "leaflet/dist/leaflet.css";
-require('leaflet/dist/images/marker-icon-2x.png')
-require('leaflet/dist/images/marker-icon.png')
-require('leaflet/dist/images/marker-shadow.png')
-
+require("leaflet/dist/images/marker-icon-2x.png");
+require("leaflet/dist/images/marker-icon.png");
+require("leaflet/dist/images/marker-shadow.png");
 
 export default class Leafletmap extends Component {
   constructor(props) {
     super(props);
-
   }
   render() {
-    const data = JSON.parse(this.props.data);
-    console.log(data)
+    // # TODO fix replacement in django 
+    let data = this.props.data.value.replaceAll("'", '"');
+    data = JSON.parse(data);
     return (
       <Map
         center={[data.lat, data.lon]}
@@ -36,8 +35,5 @@ export default class Leafletmap extends Component {
 }
 const wrapper = document.getElementById("leaflet_map");
 wrapper
-  ? ReactDOM.render(
-      <Leafletmap data='{"displayName": "haha", "lat": 47, "lon": 10}' />,
-      wrapper
-    )
+  ? ReactDOM.render(<Leafletmap data={wrapper.attributes["data"]} />, wrapper)
   : false;

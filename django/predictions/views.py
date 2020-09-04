@@ -70,8 +70,8 @@ def nominatim_data(query_dict, reverse=False):
 
             if any(state in display_name for state in state_matches):
                 search_result['spatialmos_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{search_result['api_data']['lat']}/{search_result['api_data']['lon']}/"
-                search_result['osm_data']['lon'] = search_result['api_data']['lon']
-                search_result['osm_data']['lat'] = search_result['api_data']['lat']
+                search_result['osm_data']['lon'] = float(search_result['api_data']['lon'])
+                search_result['osm_data']['lat'] = float(search_result['api_data']['lat'])
                 search_result['osm_data']['display_name'] = search_result['api_data']['display_name']
             else:
                 error = f"Ihre Eingabe '{query_string}' führte zu einem Ergebnis außerhalb von Nord- und Südtirols."

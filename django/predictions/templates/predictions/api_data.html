@@ -26,7 +26,7 @@
 
 {{ search_result.osm_data }}
 
-<div id="leaflet_map" data="123"></div>
+<div id="leaflet_map" data="{{ search_result.osm_data }}"></div>
 
 <!-- Load React component. -->
 <script src="/static/main.js?v={{LASTCOMMIT}}"></script>
