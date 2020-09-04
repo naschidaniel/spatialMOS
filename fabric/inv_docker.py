@@ -9,17 +9,19 @@ import inv_logging
 @task
 def docker(c, cmd):
     """The Task can execute a Docker command including cmd: docker ps"""
-    inv_logging.task(restart.__name__)
+    inv_logging.task(docker.__name__)
     inv_logging.cmd(cmd)
     inv_base.dockerdaemon(c, cmd)
-    inv_logging.success(restart.__name__)
+    inv_logging.success(docker.__name__)
 
 
 @task
-def restart(c):
-    """Restart all docker containers"""
+def restart(c, cmd):
+    """Restart a single docker container"""
     inv_logging.task(restart.__name__)
-    inv_base.docker_compose(c, "up -d --remove-orphans")
+    user, group = inv_base.uid_gid(c)
+    inv_logging.cmd(cmd)
+    inv_base.docker_compose(c, f"restart -t 10 {cmd}", pty=True)
     inv_logging.success(restart.__name__)
 
 

@@ -24,4 +24,9 @@
   </tbody>
 </table>
 
-{% include './map.html' with search_result=search_result %}
+{{ search_result.osm_data }}
+
+<div id="leaflet_map" data="{{ search_result.osm_data }}"></div>
+
+<!-- Load React component. -->
+<script src="/static/main.js?v={{LASTCOMMIT}}"></script>
