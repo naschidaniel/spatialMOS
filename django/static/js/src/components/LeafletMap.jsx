@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
+
+// require style and marker pngs
 import "leaflet/dist/leaflet.css";
+require('leaflet/dist/images/marker-icon-2x.png')
+require('leaflet/dist/images/marker-icon.png')
+require('leaflet/dist/images/marker-shadow.png')
+
 
 export default class Leafletmap extends Component {
   constructor(props) {
