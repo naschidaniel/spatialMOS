@@ -1,7 +1,4 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
 import PropTypes from 'prop-types';
-
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
