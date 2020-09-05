@@ -1,3 +1,7 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+import PropTypes from 'prop-types';
+
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
@@ -12,6 +16,12 @@ export default class Leafletmap extends Component {
   constructor(props) {
     super(props);
   }
+  static get propTypes() { 
+    return { 
+        data: PropTypes.string 
+    }; 
+  }
+
   render() {
     // # TODO fix replacement in django 
     let data = this.props.data.value.replaceAll("'", '"');
