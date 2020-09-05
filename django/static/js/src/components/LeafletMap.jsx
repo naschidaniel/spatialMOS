@@ -27,7 +27,7 @@ export default class Leafletmap extends Component {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker position={[data.lat, data.lon]}>
-          <Popup>{data.displayName}</Popup>
+          <Popup>{data.display_name}</Popup>
         </Marker>
       </Map>
     );

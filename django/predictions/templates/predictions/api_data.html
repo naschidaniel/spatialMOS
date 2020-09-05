@@ -1,30 +1,30 @@
-<h3 class="mt-4">API query</h3>
+<h3 class="mt-4">API Query</h3>
 <table class="table table-sm">
   <tbody>
     <tr>
-      <th scope="row">{{ search_result.licence }}</th>
+      <th scope="row">Punktvorhersage für</th>
+      <td>{{ search_result.api_data.display_name }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Koordinaten</th>
+      <td>{{ search_result.api_data.lat }}, {{ search_result.api_data.lon }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Adressdaten</th>
       <td>
-        <a href="{{ query_url }}" target="_blank" rel="noreferrer">{{ search_result.query_url }}</a>
+        <a href="//nominatim.openstreetmap.org" target="_blank" rel="noreferrer">© nominatim.openstreetmap.org</a>
       </td>
     </tr>
-    {% for key, value in search_result.api_data.items %}
-    <tr>
-      <th scope="row">{{ key }}</th>
-      <td>{{ value }}</td>
-    </tr>
-    {% endfor %}
     {% if search_result.spatialmos_api_url %}
     <tr>
-      <th scope="row">moses.tirol Prediction: </th>
+      <th scope="row">moses.tirol API Endpoint</th>
       <td>
-        <a href="{{ spatialmos_api_url }}" target="_blank" rel="noreferrer">{{ search_result.spatialmos_api_url }}</a>
+        <a href="{{ search_result.spatialmos_api_url }}" target="_blank" rel="noreferrer">API query</a>
       </td>
     </tr>
     {% endif %}
   </tbody>
 </table>
-
-{{ search_result.osm_data }}
 
 <div id="leaflet_map" data="{{ search_result.osm_data }}"></div>
 
