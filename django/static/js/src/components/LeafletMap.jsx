@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 import { DataExchangeObject} from "../middleware/DataExchange.jsx"
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
