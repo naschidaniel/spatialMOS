@@ -268,6 +268,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-09-06 The charts library [Recharts](https://recharts.org) was used to draw the required charts for the predictions.
 - 2020-08-29 With the UI Framwork [React](https://reactjs.org) the required components are realized.
 - 2020-08-29 An overview map of API search results is displayed using [leafletjs.com](https://leafletjs.com).
 - 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org). The open source project [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.

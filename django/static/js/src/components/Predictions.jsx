@@ -93,7 +93,7 @@ export default class Predictions extends React.Component {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
       return (
-        <div className="text-center" width={width}>
+        <div className="text-center" width="100%" height="400px">
           <div className="spinner-border" role="status">
             <span className="sr-only">Loading...</span>
           </div>

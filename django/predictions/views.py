@@ -130,15 +130,15 @@ def addressprediction(request):
         address_form = addressForm(request.GET)
         if address_form.is_valid():
             query_dict = dict()
-            query_dict['country'] = address_form.cleaned_data['country']
+            query_dict['state'] = address_form.cleaned_data['state']
             query_dict['postcode'] = str(address_form.cleaned_data['postcode'])
             query_dict['city'] = address_form.cleaned_data['city']
             query_dict['street'] = address_form.cleaned_data['street']
 
-            if query_dict['country'] == "Italy":
-                query_dict['state'] = "Südtirol"
+            if query_dict['state'] == "Südtirol":
+                query_dict['country'] = "Italy"
             else:
-                query_dict['state'] = "Tirol"
+                query_dict['country'] = "Austria"
 
             search_result = nominatim_data(query_dict)
     else:
