@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
@@ -15,7 +15,7 @@ export default class Leafletmap extends Component {
   }
   static get propTypes() { 
     return { 
-        data: PropTypes.string 
+        data: PropTypes.object 
     }; 
   }
 
