@@ -1,3 +1,9 @@
+
+{% if search_result.spatialmos_api_url %}
+  <h3 class="mt-4">Vorhersage</h3>
+  <div id="simple_line_chart" data="{{ search_result.spatialmos_api_url }}" class="mt-4"></div>
+{% endif %}
+
 <h3 class="mt-4">API Query</h3>
 <table class="table table-sm">
   <tbody>
@@ -27,9 +33,6 @@
 </table>
 
 <div id="leaflet_map" data="{{ search_result.osm_data }}" class="mt-4"></div>
-{% if search_result.spatialmos_api_url %}
-  <div id="simple_line_chart" data="{{ search_result.spatialmos_api_url }}" class="mt-4"></div>
-{% endif %}
 
 <!-- Load React component. -->
 <script src="/static/main.js?v={{LASTCOMMIT}}"></script>
