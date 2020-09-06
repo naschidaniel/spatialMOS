@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import { DataExchangeObject} from "../middleware/DataExchange.jsx"
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 // require style and marker pngs
@@ -20,9 +21,7 @@ export default class Leafletmap extends Component {
   }
 
   render() {
-    // # TODO fix replacement in django 
-    let data = this.props.data.value.replaceAll("'", '"');
-    data = JSON.parse(data);
+    let data = this.props.data
     return (
       <Map
         center={[data.lat, data.lon]}
@@ -41,6 +40,7 @@ export default class Leafletmap extends Component {
   }
 }
 const wrapper = document.getElementById("leaflet_map");
+const data = DataExchangeObject(wrapper?.attributes?.data);
 wrapper
-  ? ReactDOM.render(<Leafletmap data={wrapper.attributes["data"]} />, wrapper)
+  ? ReactDOM.render(<Leafletmap data={data} />, wrapper)
   : false;
