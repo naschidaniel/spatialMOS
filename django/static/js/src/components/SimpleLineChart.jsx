@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { DataExchangeString } from "../middleware/DataExchange.jsx"
+import { DataExchangeString } from "../middleware/DataExchange.jsx";
 import {
   Area,
   ComposedChart,
@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import CustomTooltip from "./CustomTooltip.jsx";
 
 export default class SimpleLineChart extends Component {
   constructor(props) {
@@ -37,11 +38,14 @@ export default class SimpleLineChart extends Component {
       .then(
         (result) => {
           for (const i in result) {
+            result[i].label = result[i].valid_date + " " + result[i].valid_time 
             result[i].spatialmos_min =
-              result[i].spatialmos_mean - result[i].spatialmos_spread;
+              Number(result[i].spatialmos_mean) -
+              Number(result[i].spatialmos_spread);
             result[i].spatialmos_max =
               Number(result[i].spatialmos_mean) +
               Number(result[i].spatialmos_spread);
+            result[i].spatialmos_range = [Number(result[i].spatialmos_max), Number(result[i].spatialmos_min)];
           }
           this.setState({
             isLoaded: true,
@@ -77,21 +81,14 @@ export default class SimpleLineChart extends Component {
           <Line
             type="monotone"
             dataKey="spatialmos_mean"
-            stroke="#8884d8"
+            stroke="#888888"
             activeDot={{ r: 8 }}
           />
           <Area
             type="monotone"
-            dataKey="spatialmos_min"
-            stackId="1"
-            stroke="#8884d8"
-          />
-          <Area
-            type="monotone"
-            dataKey="spatialmos_max"
+            dataKey="spatialmos_range"
             fill="#8884d8"
-            stroke="#8884d8"
-            stackId="1"
+            opacity="0.3"
           />
         </ComposedChart>
       </ResponsiveContainer>
@@ -99,10 +96,5 @@ export default class SimpleLineChart extends Component {
   }
 }
 const wrapper = document.getElementById("simple_line_chart");
-const data = DataExchangeString(wrapper?.attributes?.data)
-wrapper
-  ? ReactDOM.render(
-      <SimpleLineChart data={data} />,
-      wrapper
-    )
-  : false;
+const data = DataExchangeString(wrapper?.attributes?.data);
+wrapper ? ReactDOM.render(<SimpleLineChart data={data} />, wrapper) : false;
