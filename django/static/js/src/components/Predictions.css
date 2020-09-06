@@ -1,7 +1,13 @@
 .img-navi a {
   padding: 8px 16px;
+  cursor: pointer;
 }
 
 .img-navi span {
   padding: 8px 16px;
+  cursor: pointer;
+}
+
+.img-slider img, span {
+  cursor: pointer;
 }
