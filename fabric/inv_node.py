@@ -14,7 +14,7 @@ def build(c):
     inv_logging.task(build.__name__)
     user, group = inv_base.uid_gid(c)
     inv_base.docker_compose(c, f"run -u {user}:{group} node npm run build", pty=True)
-    inv_install.setenvironment(c)
+    inv_install.setenvironment(c, "development")
     logging.info("The Javascript components were built, minified and zipped.")
     inv_logging.success(build.__name__)
 
