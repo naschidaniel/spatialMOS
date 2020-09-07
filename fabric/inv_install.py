@@ -91,7 +91,7 @@ def setenvironment(c, cmd):
     }
     
     # set the last commit msg
-    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c, settings)
+    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c)
 
     for dict_env_key, dict_env_file in dict_env.items():
         try:
@@ -123,7 +123,7 @@ def setproductionenvironment(c):
     }
 
     # set the last commit msg
-    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c, settings)
+    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c)
 
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["docker"], remote_env["docker"])
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["django"], remote_env["django"])

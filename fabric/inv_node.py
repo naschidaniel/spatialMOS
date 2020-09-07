@@ -6,7 +6,7 @@ import logging
 from invoke import task, Collection
 import inv_base
 import inv_logging
-import inv_docker
+import inv_install
 
 @task
 def build(c):
@@ -14,6 +14,7 @@ def build(c):
     inv_logging.task(build.__name__)
     user, group = inv_base.uid_gid(c)
     inv_base.docker_compose(c, f"run -u {user}:{group} node npm run build", pty=True)
+    inv_install.setenvironment(c)
     logging.info("The Javascript components were built, minified and zipped.")
     inv_logging.success(build.__name__)
 

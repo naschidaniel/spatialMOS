@@ -16,7 +16,7 @@ def manage_py(c, cmd, **kwargs):
     docker_compose(c, f"run -u {user}:{group} django python3 /www/site/manage.py {cmd}", pty=True)
 
 
-def generate_lastcommit(c, settings):
+def generate_lastcommit(c):
     """A function to create the last commit ID"""
     lastcommit = c.run("git rev-parse --short HEAD")
     lastcommit = lastcommit.stdout.strip()
