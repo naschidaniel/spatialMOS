@@ -78,8 +78,12 @@ def spatial_predictions(parser_dict):
         valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["valid_date_avg"], "%Y-%m-%d %H:%M"))
 
         # Create required grids for NWP
-        lons = [x - 0.5 for x in gribfile_info["lons"]]
-        lats = [x - 0.5 for x in gribfile_info["lats"]]
+        if parser_dict["resolution"] == 0.5:
+            latlon_correction = 0.25
+        else:
+            latlon_correction = 0.5
+        lons = [x - latlon_correction for x in gribfile_info["lons"]]
+        lats = [x - latlon_correction for x in gribfile_info["lats"]]
         xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons, lats))
 
         # Create required meshgrid for spatialMOS
@@ -233,6 +237,6 @@ def spatial_predictions(parser_dict):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], date=True)
+    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], resolution=True, name_resolution=[0.5, 1], date=True)
     spatial_predictions(PARSER_DICT)
     logger_module.end_logging(STARTTIME)

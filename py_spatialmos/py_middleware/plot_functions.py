@@ -100,15 +100,12 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
 
     m.readshapefile("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0", "aut")
 
-    parallels = np.arange(44.5, 52.5, 1.)
-    m.drawparallels(parallels, labels=[False, False, False, False], fontsize=10, color="lightgrey")
+    m.drawparallels(gribfile_info["lats"], labels=[False, False, False, False], fontsize=10, color="lightgrey")
     meridians = np.arange(8.5, 19.5, 1.)
-    m.drawmeridians(meridians, labels=[False, False, False, False], fontsize=10, color="lightgrey")
+    m.drawmeridians(gribfile_info["lons"], labels=[False, False, False, False], fontsize=10, color="lightgrey")
 
-    parallels = np.arange(45., 53., 1.)
-    m.drawparallels(parallels, labels=[True, False, False, False], fontsize=10, linewidth=0.0)
-    meridians = np.arange(8., 20., 1.)
-    m.drawmeridians(meridians, labels=[False, False, False, True], fontsize=10, linewidth=0.0)
+    m.drawparallels(gribfile_info["lats"], labels=[True, False, False, False], fontsize=10, color="lightgrey")
+    m.drawmeridians(gribfile_info["lons"], labels=[False, False, False, True], fontsize=10, linewidth=0.0)
 
     filepath = f"./data/spool/{parameter}/images/"
     if not os.path.exists(filepath):
