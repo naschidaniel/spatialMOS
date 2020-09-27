@@ -3,7 +3,7 @@
 spatialMOS is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed. The website is available online again and can be reached at [https://moses.tirol](https://moses.tirol).
 
 ## Warning
-Since 2020-09-23, the GEFS 1 x 1 ° predictions are no longer provided on the Files Server of [noaa ncep](https://www.ftp.ncep.noaa.gov/).
+Since 2020-09-23, the GEFS 1 x 1 ° predictions are no longer provided on the Files Server of [noaa ncep](https://www.ftp.ncep.noaa.gov/). Since then it is no longer possible to post-process the 1 x 1 ° predictions. The 0.5 x 0.5 ° GEFS forecasts are now used for the predictions. The underlying climatology still corresponds to the 1 x 1 ° grid.
 
 
 ## Introduction
@@ -271,6 +271,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-09-27 The predictions are now made using the 0.5 x 0.5 grid model instead of the 1 x 1 degree.
 - 2020-09-27 Update the downloadlinks to the urls of [noaa ncep](https://www.ftp.ncep.noaa.gov/) server 
 - 2020-09-06 The charts library [Recharts](https://recharts.org) was used to draw the required charts for the predictions.
 - 2020-08-29 With the UI Framwork [React](https://reactjs.org) the required components are realized.
