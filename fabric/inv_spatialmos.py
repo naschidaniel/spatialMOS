@@ -72,10 +72,10 @@ def py_spatialmos__get_gefs_forecasts(c, date, parameter):
         get_gefs_parameter = [parameter]
 
     for p in get_gefs_parameter:
-        py_spatialmos__get_gefs(c, date=date, resolution="1", modeltype="avg", parameter=p)
-        py_spatialmos__get_gefs(c, date=date, resolution="1", modeltype="spr", parameter=p)
+        py_spatialmos__get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter=p)
+        py_spatialmos__get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter=p)
 
-    py_spatialmos__pre_processing_gribfiles(c, date=date, parameter=parameter)
+    py_spatialmos__pre_processing_gribfiles(c, date=date, resolution="0.5", parameter=parameter)
     inv_logging.success(py_spatialmos__get_gefs_forecasts.__name__)
 
 @task
@@ -176,10 +176,10 @@ def r_spatialmos__spatial_climatologies_obs(c, begin, end, parameter):
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
 
 @task
-def py_spatialmos__pre_processing_gribfiles(c, date, parameter):
+def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
     """Create the csv file and the jsonfile from the available gribfiles."""
     inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
-    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediction.py", "--date", date, "--parameter", parameter]
+    cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediction.py", "--date", date, "--resolution", resolution, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_logging.success(py_spatialmos__pre_processing_gribfiles.__name__)
