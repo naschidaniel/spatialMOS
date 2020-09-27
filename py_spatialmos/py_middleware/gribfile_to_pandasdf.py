@@ -33,9 +33,9 @@ def available_files(path_nwp_forecasts, avg_spr, available_steps, parameter):
     return sorted(nwp_gribfiles_available_steps)
 
 
-def nwp_gribfiles_avalibel_steps(parameter, date, available_steps):
+def nwp_gribfiles_avalibel_steps(parameter, date, resolution, available_steps):
     """A function which returns the available files as array"""
-    path_nwp_forecasts = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}/{date}0000/"
+    path_nwp_forecasts = f"./data/get_available_data/gefs_avgspr_forecast_{resolution}/{parameter}/{date}0000/"
     return available_files(path_nwp_forecasts, "mean", available_steps, parameter), available_files(path_nwp_forecasts, "spread", available_steps, parameter)
 
 

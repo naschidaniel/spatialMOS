@@ -19,15 +19,22 @@ def gribfiles_to_pandasdataframe(parser_dict):
     
     # Create an array with for the available steps
     available_steps = np.arange(6, 193, 6, int)
+
+    # Select Path of modelresolution
+    if parser_dict["resolution"] == 0.5:
+        resolution = "p05"
+    else:
+        resolution = "p1"
+
     # Read in files for U and V Component of wind at 10 m hight
     if parser_dict["parameter"] == "wind_10m":
-        nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], available_steps)
-        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["date"], available_steps)
+        nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps("ugrd_10m", parser_dict["date"], resolution, available_steps)
+        nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps("vgrd_10m", parser_dict["date"], resolution, available_steps)
 
         nwp_files = zip(nwp_gribfiles_available_u_mean_steps, nwp_gribfiles_avalibel_u_spread_steps, nwp_gribfiles_avalibel_v_mean_steps, nwp_gribfiles_avalibel_v_spread_steps)
         for u_mean_file, u_spread_file, v_mean_file, v_spread_file in nwp_files:
             # Create folder structure
-            path_nwp_forecasts = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parser_dict['parameter']}/{parser_dict['date']}0000/"
+            path_nwp_forecasts = f"./data/get_available_data/gefs_avgspr_forecast_{resolution}/{parser_dict['parameter']}/{parser_dict['date']}0000/"
             if not os.path.exists(path_nwp_forecasts):
                 os.makedirs(path_nwp_forecasts)
 
@@ -61,7 +68,7 @@ def gribfiles_to_pandasdataframe(parser_dict):
 
 
     # Provide available NWP forecasts
-    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], available_steps)
+    nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], resolution, available_steps)
 
     for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
         grb_avg, anal_date_avg, valid_date_avg = gribfile_to_pandasdf.open_gribfile(nwp_gribfiles_mean_step)
@@ -132,6 +139,6 @@ def gribfiles_to_pandasdataframe(parser_dict):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], date=True)
+    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], date=True, resolution=True, name_resolution=[0.5, 1])
     gribfiles_to_pandasdataframe(PARSER_DICT)
     logger_module.end_logging(STARTTIME)
