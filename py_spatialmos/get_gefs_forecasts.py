@@ -112,10 +112,11 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
 
     if modeltype in ["avg", "spr"]:
         if resolution == 0.5:
-            #Create URL geavg.t00z.pgrb2a.0p50.f000.idx
+            # Create URL for geavg.t00z.pgrb2a.0p50.f000.idx
             filename = "ge{:s}.t{:s}z.pgrb2a.0p50.f{:03d}".format(modeltype, date.strftime("%H"), step)
         elif resolution == 1:
-            # Create URL geavg.t00z.pgrb2af00.idx
+            # since UPDATE of noa server depraced 2020-09-27
+            # Create URL for geavg.t00z.pgrb2af00.idx
             filename = "ge{:s}.t{:s}z.pgrb2af{:s}".format(modeltype, date.strftime("%H"), "{:02d}".format(step) if step < 100 else "{:03d}".format(step))
         else:
             logging.error("The resolution %d ist not supported", resolution)
@@ -125,10 +126,13 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
         local = date.strftime("GFEE_%Y%m%d_%H00") + "_{:s}_f{:03d}.grb2".format(modeltype, step)
         subset = date.strftime("GFSE_%Y%m%d_%H00") + "_{:s}_f{:03d}_subset.grb2".format(modeltype, step)
     else:
+        # UPDATE NAMES 2020-09-27
+        # Create URL for gec00.t00z.pgrb2a.0p50.f000.idx
+        # Create URL for gep01.t00z.pgrb2a.0p50.f000.idx
         gribfile = os.path.join(date.strftime(baseurl),
-                            "ge{:s}{:02d}.t{:s}z.pgrb2f{:s}".format(
+                            "ge{:s}{:02d}.t{:s}z.pgrb2a.0p50.f{:s}".format(
                             "c" if mem == 0 else "p", mem, date.strftime("%H"),
-                            "{:02d}".format(step) if step < 100 else "{:03d}".format(step)))
+                            "{:03d}".format(step)))
         local    = date.strftime("GEFS_%Y%m%d_%H00") + "_{:02d}_f{:03d}.grb2".format(mem, step)
         subset   = date.strftime("GEFS_%Y%m%d_%H00") + "_{:02d}_f{:03d}_subset.grb2".format(mem, step)
     return {"grib"   : gribfile,
@@ -215,18 +219,22 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
         logging.info("Downloading members: {:s}:  ".format(modeltype))
         if resolution == 1:
             data_path = f"./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}"
+            # url exchanged on 2020-09-23 response with a 404 error
             baseurl = "https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/"
         elif resolution == 0.5:
             data_path = f"./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}"
-            baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/"
+            # baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/" # url exchanged on 2020-09-23 response with a 404 error
+            baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/atmos/pgrb2ap5/"
         else:
             logging.error("The resolution is not supported")
             sys.exit(1)
     elif modeltype in ["ens"]:
-        data_path = f"./data/get_available_data/gefs_ens_forecast_p1/{parameter}"
-        members = np.arange(0, 20+1, 1, dtype=int)
+        data_path = f"./data/get_available_data/gefs_ens_forecast_p05/{parameter}"
+        members = np.arange(0, 30+1, 1, dtype=int)
         logging.info("Downloading members: {:s}".format(", ".join(["{:d}".format(x) for x in members])))
-        baseurl = "http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
+        # url exchanged on 2020-09-23 response with a 404 error
+        #baseurl = " http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/"
+        baseurl = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/00/atmos/pgrb2ap5/"
     else:
         logging.info("The modeltype is not supported: %s", modeltype)
         sys.exit(1)
