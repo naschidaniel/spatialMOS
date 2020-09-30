@@ -271,8 +271,8 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
-- 2020-10-05 The system status of the taks on the server can now be monitored via django [https://moses.tirol/systemstatus](https://moses.tirol/systemstatus).
-- 2020-10-01 All React components are formatted according to the [Airbnb JavaScript Style Guide()](https://github.com/airbnb/javascript).
+- 2020-10-11 Hourly download of LWD Tirol weather from [Land Tirol - data.tirol.gv.at](https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f) data . 
+- 2020-10-05 The system status of the taks on the server can now be monitored via django [https://moses.tirol/systemstatus](https://moses.tirol/syst
 - 2020-09-27 The predictions are now made using the 0.5 x 0.5 grid model instead of the 1 x 1 degree.
 - 2020-09-27 Update the downloadlinks to the urls of [noaa ncep](https://www.ftp.ncep.noaa.gov/) server 
 - 2020-09-06 The charts library [Recharts](https://recharts.org) was used to draw the required charts for the predictions.

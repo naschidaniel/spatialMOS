@@ -69,7 +69,7 @@ def fetch_uibk_data():
     df_sensor.to_csv(f"{data_path}/Parameter_Info_UIBK.csv",
                      index=False, quoting=csv.QUOTE_NONNUMERIC)
 
-    # Info über die Stationen in stations.csv
+    # Save station information in stations_*.csv
     stations_info = [("11320", "Innsbruck Univ.", 578, 11.3841666666, 47.26),
                      # Winkelminuten lon=112303 lat=471536
                      ("11127", "Obergrugl", 1942, 11.02444, 46.8666666),
