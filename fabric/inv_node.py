@@ -27,6 +27,13 @@ def lint(c):
     inv_base.docker_compose(c, f"run -u {user}:{group} node npm run lint", pty=True)
     inv_logging.success(lint.__name__)
 
+@task
+def lint_fix(c):
+    """This task is used to embellish the code and fix the problems"""
+    inv_logging.task(lint.__name__)
+    user, group = inv_base.uid_gid(c)
+    inv_base.docker_compose(c, f"run -u {user}:{group} node npm run lint:fix", pty=True)
+    inv_logging.success(lint.__name__)
 
 @task
 def npm(c, cmd):
@@ -49,5 +56,6 @@ def npx(c, cmd):
 NODE_NS = Collection("node")
 NODE_NS.add_task(build)
 NODE_NS.add_task(lint)
+NODE_NS.add_task(lint_fix)
 NODE_NS.add_task(npm)
 NODE_NS.add_task(npx)
