@@ -48,7 +48,7 @@ export default class Predictions extends React.Component {
   }
 
   decreaseShowStep() {
-    let index =
+    const index =
       this.state.showStep !== 0
         ? this.state.showStep - 1
         : this.state.availableSteps.length - 1;
@@ -56,7 +56,7 @@ export default class Predictions extends React.Component {
   }
 
   increaseShowStep() {
-    let index =
+    const index =
       this.state.showStep !== this.state.availableSteps.length - 1
         ? this.state.showStep + 1
         : 0;
@@ -90,8 +90,13 @@ export default class Predictions extends React.Component {
     } = this.state;
     const { width, height } = dimensions;
     if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
+      return (
+        <div>
+          Error:
+          {error.message}
+        </div>
+);
+    } if (!isLoaded) {
       return (
         <div className="text-center" width="100%" height="400px">
           <div className="spinner-border" role="status">
@@ -99,12 +104,12 @@ export default class Predictions extends React.Component {
           </div>
         </div>
       );
-    } else {
+    } 
       return (
         <div height={height} width={width} className="img-slider">
           {steps.map((step, index) => {
-            let description = `${modelrun.parameter_longname} Vorhersage ${step.valid_date}  ${step.valid_time}`;
-            let activeClassName =
+            const description = `${modelrun.parameter_longname} Vorhersage ${step.valid_date}  ${step.valid_time}`;
+            const activeClassName =
               index === showStep ? "img-fluid active" : "d-none img-fluid";
             return (
               <img
@@ -126,7 +131,7 @@ export default class Predictions extends React.Component {
           <div className="mt-3 d-none d-sm-none d-md-none d-lg-block">
             <div className="list-inline text-center">
               {availableSteps.map((value, index) => {
-                let activeClassName =
+                const activeClassName =
                   index === showStep
                     ? "list-inline-item text-danger"
                     : "list-inline-item";
@@ -148,7 +153,10 @@ export default class Predictions extends React.Component {
               <a className="bg-light text-dark" onClick={this.decreaseShowStep}>
                 &#8249;
               </a>
-              <span className="text-danger">Step: {steps[showStep].step}</span>
+              <span className="text-danger">
+                Step:
+                {steps[showStep].step}
+              </span>
               <a className="bg-light text-dark" onClick={this.increaseShowStep}>
                 &#8250;
               </a>
@@ -156,7 +164,7 @@ export default class Predictions extends React.Component {
           </div>
         </div>
       );
-    }
+    
   }
 }
 
