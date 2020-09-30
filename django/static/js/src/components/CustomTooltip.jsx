@@ -5,6 +5,7 @@ export default class CustomTooltip extends React.Component {
   constructor(props) {
     super(props);
   }
+
   static get propTypes() {
     return {
       active: PropTypes.bool,
@@ -16,8 +17,8 @@ export default class CustomTooltip extends React.Component {
     const { active, payload } = this.props;
     if (active) {
       if (payload.length === 0) return <div>No CustomTooltip available</div>;
-      else {
-        let apiData = payload[0].payload;
+      
+        const apiData = payload[0].payload;
         return (
           <div className="custom-tooltip">
             <p className="label">{apiData.tooltip_label}</p>
@@ -25,7 +26,7 @@ export default class CustomTooltip extends React.Component {
             <p>{`Spread: ${apiData.spatialmos_spread} ${apiData.unit}`}</p>
           </div>
         );
-      }
-    } else return <div>No CustomTooltip available</div>;
+      
+    } return <div>No CustomTooltip available</div>;
   }
 }

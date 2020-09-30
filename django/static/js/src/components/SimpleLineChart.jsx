@@ -2,7 +2,6 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { DataExchangeString } from "../middleware/DataExchange.jsx";
 import {
   Area,
   ComposedChart,
@@ -14,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { DataExchangeString } from "../middleware/DataExchange.jsx";
 import CustomTooltip from "./CustomTooltip.jsx";
 
 export default class SimpleLineChart extends Component {
@@ -25,6 +25,7 @@ export default class SimpleLineChart extends Component {
       steps: [],
     };
   }
+
   static get propTypes() {
     return {
       data: PropTypes.string,
@@ -32,14 +33,14 @@ export default class SimpleLineChart extends Component {
   }
 
   componentDidMount() {
-    let apiUrl = this.props.data;
+    const apiUrl = this.props.data;
     fetch(apiUrl)
       .then((res) => res.json())
       .then(
         (result) => {
           for (const i in result) {
             result[i].tooltip_label =
-              result[i].valid_date + " " + result[i].valid_time;
+              `${result[i].valid_date  } ${  result[i].valid_time}`;
             result[i].spatialmos_min =
               Number(result[i].spatialmos_mean) -
               Number(result[i].spatialmos_spread);
@@ -65,11 +66,17 @@ export default class SimpleLineChart extends Component {
         }
       );
   }
+
   render() {
     const { error, isLoaded, steps } = this.state;
     if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
+      return (
+        <div>
+          Error:
+          {error.message}
+        </div>
+);
+    } if (!isLoaded) {
       return (
         <div className="text-center" width="100%" height="400px">
           <div className="spinner-border" role="status">
@@ -77,7 +84,7 @@ export default class SimpleLineChart extends Component {
           </div>
         </div>
       );
-    } else {
+    } 
       return (
         <ResponsiveContainer width="100%" height={400}>
           <ComposedChart
@@ -111,7 +118,7 @@ export default class SimpleLineChart extends Component {
           </ComposedChart>
         </ResponsiveContainer>
       );
-    }
+    
   }
 }
 const wrapper = document.getElementById("simple_line_chart");
