@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
-import { DataExchangeObject} from "../middleware/DataExchange.jsx"
+import { DataExchangeObject } from "../middleware/DataExchange.jsx";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 // require style and marker pngs
@@ -14,14 +14,14 @@ export default class Leafletmap extends Component {
   constructor(props) {
     super(props);
   }
-  static get propTypes() { 
-    return { 
-        data: PropTypes.object 
-    }; 
+  static get propTypes() {
+    return {
+      data: PropTypes.object,
+    };
   }
 
   render() {
-    let data = this.props.data
+    let data = this.props.data;
     return (
       <Map
         center={[data.lat, data.lon]}
@@ -41,6 +41,4 @@ export default class Leafletmap extends Component {
 }
 const wrapper = document.getElementById("leaflet_map");
 const data = DataExchangeObject(wrapper?.attributes?.data);
-wrapper
-  ? ReactDOM.render(<Leafletmap data={data} />, wrapper)
-  : false;
+wrapper ? ReactDOM.render(<Leafletmap data={data} />, wrapper) : false;
