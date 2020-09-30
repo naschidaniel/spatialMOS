@@ -17,7 +17,7 @@ module.exports = {
         path.resolve(__dirname, "site/static/js"),
         'node_modules'
     ],
-    extensions: ['*', '.js', '.json']
+    extensions: ['*', '.js', '.jsx', '.json']
   },
   plugins: [
     new CompressionPlugin(),
@@ -30,9 +30,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
+        use: ["babel-loader"]
       },
       {
         test: /\.css$/i,
