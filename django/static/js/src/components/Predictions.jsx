@@ -35,7 +35,7 @@ export default class Predictions extends React.Component {
             modelrun: result,
             availableSteps: result.steps.map((step) => step.step),
             steps: result.steps,
-            showStep: 0
+            showStep: 0,
           });
         },
         (error) => {
@@ -148,9 +148,7 @@ export default class Predictions extends React.Component {
               <a className="bg-light text-dark" onClick={this.decreaseShowStep}>
                 &#8249;
               </a>
-              <span className="text-danger">
-                Step: {steps[showStep].step}
-              </span>
+              <span className="text-danger">Step: {steps[showStep].step}</span>
               <a className="bg-light text-dark" onClick={this.increaseShowStep}>
                 &#8250;
               </a>
