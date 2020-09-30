@@ -13,10 +13,18 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { DataExchangeString } from "../middleware/DataExchange.jsx";
-import CustomTooltip from "./CustomTooltip.jsx";
+import { DataExchangeString } from "../middleware/DataExchange";
+import CustomTooltip from "./CustomTooltip";
+
+const propTypes = {
+    data: PropTypes.string.isRequired,
+};
 
 export default class SimpleLineChart extends Component {
+  static methodsAreOk() {
+    return true;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -26,33 +34,30 @@ export default class SimpleLineChart extends Component {
     };
   }
 
-  static get propTypes() {
-    return {
-      data: PropTypes.string,
-    };
-  }
 
   componentDidMount() {
-    const apiUrl = this.props.data;
-    fetch(apiUrl)
+    const { data } = this.props; // data === apiURL
+    fetch(data)
       .then((res) => res.json())
       .then(
         (result) => {
-          for (const i in result) {
-            result[i].tooltip_label =
-              `${result[i].valid_date  } ${  result[i].valid_time}`;
-            result[i].spatialmos_min =
-              Number(result[i].spatialmos_mean) -
-              Number(result[i].spatialmos_spread);
-            result[i].spatialmos_max =
-              Number(result[i].spatialmos_mean) +
-              Number(result[i].spatialmos_spread);
-            result[i].spatialmos_range = [
-              Number(result[i].spatialmos_max),
-              Number(result[i].spatialmos_min),
+          Object.values(result).forEach((v) => {
+            // manipulation api request
+            const addInformation = v
+            addInformation.tooltip_label =
+              `${v.valid_date  } + ${  v.valid_time}`;
+            addInformation.spatialmos_min =
+              Number(v.spatialmos_mean) -
+              Number(v.spatialmos_spread);
+            addInformation.spatialmos_max =
+              Number(v.spatialmos_mean) +
+              Number(v.spatialmos_spread);
+            addInformation.spatialmos_range = [
+              Number(v.spatialmos_max),
+              Number(v.spatialmos_min),
             ];
-            result[i].unit = "°C";
-          }
+            addInformation.unit = "°C";
+          });
           this.setState({
             isLoaded: true,
             steps: result,
@@ -121,6 +126,13 @@ export default class SimpleLineChart extends Component {
     
   }
 }
+
+SimpleLineChart.propTypes = propTypes;
+
 const wrapper = document.getElementById("simple_line_chart");
-const data = DataExchangeString(wrapper?.attributes?.data);
-wrapper ? ReactDOM.render(<SimpleLineChart data={data} />, wrapper) : false;
+
+if (wrapper !== null) {
+  const data = DataExchangeString(wrapper?.attributes?.data);
+  ReactDOM.render(<SimpleLineChart data={data} />, wrapper);
+}
+
