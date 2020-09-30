@@ -1,9 +1,10 @@
 {
+  "parser": "babel-eslint",
   "env": {
     "browser": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "extends": ["airbnb", "airbnb/hooks", "prettier", "plugin:react/recommended"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -12,7 +13,10 @@
     "sourceType": "module"
   },
   "plugins": ["react"],
-  "rules": {},
+  "rules": {
+    "react/jsx-filename-extension": [1, {
+    "extensions": [".js", ".jsx"]}
+    ]},
   "settings": {
     "react": {
       "version": "detect"
