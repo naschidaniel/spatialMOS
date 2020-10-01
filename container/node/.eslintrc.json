@@ -14,9 +14,9 @@
   },
   "plugins": ["react"],
   "rules": {
-    "react/jsx-filename-extension": [1, {
-    "extensions": [".js", ".jsx"]}
-    ]},
+    "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"]}],
+    "jsx-a11y/click-events-have-key-events": 0
+    },
   "settings": {
     "react": {
       "version": "detect"
