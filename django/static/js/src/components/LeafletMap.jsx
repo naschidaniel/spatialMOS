@@ -33,11 +33,7 @@ function LeafletMap(props) {
 }
 
 LeafletMap.propTypes = {
-  data: PropTypes.shape({ lat: PropTypes.number.isRequired, lon: PropTypes.number.isRequired, display_name: PropTypes.string.isRequired}),
-};
-
-LeafletMap.defaultProps = {
-  'data': undefined,
+  data: PropTypes.shape({ lat: PropTypes.number.isRequired, lon: PropTypes.number.isRequired, display_name: PropTypes.string.isRequired}).isRequired,
 };
 
 const wrapper = document.getElementById("leaflet_map");
