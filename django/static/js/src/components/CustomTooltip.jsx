@@ -21,5 +21,5 @@ export default function CustomTooltip(props) {
 
 CustomTooltip.propTypes = {
     active: PropTypes.bool.isRequired,
-    payload: PropTypes.arrayOf(PropTypes.array()).isRequired,
+    payload: PropTypes.arrayOf(PropTypes.number).isRequired,
   };

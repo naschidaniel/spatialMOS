@@ -116,7 +116,6 @@ export default class Predictions extends React.Component {
               <span 
                 onClick={this.increaseShowStep}
                 role="button"
-                tabIndex="0"
                 key={step.step}
               >
                 <img
@@ -147,7 +146,6 @@ export default class Predictions extends React.Component {
                     key={value}
                     title={value}
                     role="button"
-                    tabIndex="0"
                     onClick={() => this.handleStepChange(index)}
                   >
                     {value}
