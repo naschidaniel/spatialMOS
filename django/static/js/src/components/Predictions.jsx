@@ -14,7 +14,6 @@ export default class Predictions extends React.Component {
       },
       error: null,
       isLoaded: false,
-      parameter: {},
       steps: {},
       showStep: null,
     };
@@ -47,18 +46,29 @@ export default class Predictions extends React.Component {
       );
   }
 
+  onImgLoad({ target: img }) {
+    this.setState({
+      dimensions: {
+        height: img.offsetHeight,
+        width: img.offsetWidth,
+      },
+    });
+  }
+  
   decreaseShowStep() {
+    const { availableSteps, showStep } = this.state
     const index =
-      this.state.showStep !== 0
-        ? this.state.showStep - 1
-        : this.state.availableSteps.length - 1;
+      showStep !== 0
+        ? showStep - 1
+        : availableSteps.length - 1;
     this.handleStepChange(index);
   }
 
   increaseShowStep() {
+    const { availableSteps, showStep } = this.state
     const index =
-      this.state.showStep !== this.state.availableSteps.length - 1
-        ? this.state.showStep + 1
+      showStep !== availableSteps.length - 1
+        ? showStep + 1
         : 0;
     this.handleStepChange(index);
   }
@@ -66,15 +76,6 @@ export default class Predictions extends React.Component {
   handleStepChange(index) {
     this.setState({
       showStep: index,
-    });
-  }
-
-  onImgLoad({ target: img }) {
-    this.setState({
-      dimensions: {
-        height: img.offsetHeight,
-        width: img.offsetWidth,
-      },
     });
   }
 
@@ -112,20 +113,25 @@ export default class Predictions extends React.Component {
             const activeClassName =
               index === showStep ? "img-fluid active" : "d-none img-fluid";
             return (
-              <img
+              <span 
+                onClick={this.increaseShowStep}
+                role="button"
+                tabIndex="0"
                 key={step.step}
-                className={activeClassName}
-                src={step.filename_spatialmos_mean_md}
-                onLoad={this.onImgLoad}
-                srcSet={`
+              >
+                <img
+                  className={activeClassName}
+                  src={step.filename_spatialmos_mean_md}
+                  onLoad={this.onImgLoad}
+                  srcSet={`
             ${step.filename_spatialmos_mean_sm} 640w, 
             ${step.filename_spatialmos_mean_md} 900w, 
             ${step.filename_spatialmos_mean_lg} 1024w
             `}
-                alt={description}
-                title={description}
-                onClick={this.increaseShowStep}
-              />
+                  alt={description}
+                  title={description}
+                />
+              </span>
             );
           })}
           <div className="mt-3 d-none d-sm-none d-md-none d-lg-block">
@@ -138,8 +144,10 @@ export default class Predictions extends React.Component {
                 return (
                   <span
                     className={activeClassName}
-                    key={index}
+                    key={value}
                     title={value}
+                    role="button"
+                    tabIndex="0"
                     onClick={() => this.handleStepChange(index)}
                   >
                     {value}
@@ -150,16 +158,20 @@ export default class Predictions extends React.Component {
           </div>
           <div className="d-sm-block d-md-block d-lg-none">
             <div className="mt-3 img-navi d-flex justify-content-between">
-              <a className="bg-light text-dark" onClick={this.decreaseShowStep}>
+              <button className="bg-light text-dark" type="button" onClick={this.decreaseShowStep}>
                 &#8249;
-              </a>
+              </button>
               <span className="text-danger">
                 Step:
                 {steps[showStep].step}
               </span>
-              <a className="bg-light text-dark" onClick={this.increaseShowStep}>
+              <button
+                className="bg-light text-dark"
+                type="button"
+                onClick={this.increaseShowStep}
+              >
                 &#8250;
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -169,4 +181,6 @@ export default class Predictions extends React.Component {
 }
 
 const wrapper = document.getElementById("predictions_container");
-wrapper ? ReactDOM.render(<Predictions />, wrapper) : false;
+if (wrapper !== null) {
+  ReactDOM.render(<Predictions />, wrapper);
+}
