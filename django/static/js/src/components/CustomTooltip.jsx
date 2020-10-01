@@ -8,12 +8,12 @@ export default function CustomTooltip(props) {
   const apiData = payload[0].payload;
 
   if (payload.length === 0) return <div>No CustomTooltip available</div>;
-  
   return (
     <div className="custom-tooltip">
       <p className="label">{apiData.tooltip_label}</p>
+      <p>{`Max: ${apiData.spatialmos_max} ${apiData.unit}`}</p>
       <p>{`Mean: ${apiData.spatialmos_mean} ${apiData.unit}`}</p>
-      <p>{`Spread: ${apiData.spatialmos_spread} ${apiData.unit}`}</p>
+      <p>{`Min: ${apiData.spatialmos_min} ${apiData.unit}`}</p>
     </div>
         );
 
