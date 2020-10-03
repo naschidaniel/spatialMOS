@@ -1,7 +1,6 @@
 /* App.js */
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import {
   Area,
   ComposedChart,
@@ -13,7 +12,6 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { DataExchangeString } from "../middleware/DataExchange";
 import CustomTooltip from "./CustomTooltip";
 
 const propTypes = {
@@ -128,11 +126,3 @@ export default class SimpleLineChart extends Component {
 }
 
 SimpleLineChart.propTypes = propTypes;
-
-const wrapper = document.getElementById("simple_line_chart");
-
-if (wrapper !== null) {
-  const data = DataExchangeString(wrapper?.attributes?.data);
-  ReactDOM.render(<SimpleLineChart data={data} />, wrapper);
-}
-
