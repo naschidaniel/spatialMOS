@@ -7,6 +7,7 @@ import sys
 import logging
 import requests
 from invoke import task, Collection
+import inv_base
 import inv_logging
 import inv_django
 import inv_docker
@@ -46,10 +47,10 @@ def spatialmos__init_topography(c):
 def py_spatialmos__archive_available_data(c, folder):
     """The csv-files are created with the 7zip. The folder must be specified e.g. uibk."""
     inv_logging.task(py_spatialmos__archive_available_data.__name__)
-    command = ["python", "./py_spatialmos/archive_available_data.py", "--folder", folder]
-    command = ' '.join(command)
-    c.run(command)
-    inv_logging.success(py_spatialmos__archive_available_data.__name__)
+    cmd = ["python", "./py_spatialmos/archive_available_data.py", "--folder", folder]
+    cmd = ' '.join(cmd)
+    c.run(cmd)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__archive_available_data.__name__, cmd)
 
 
 @task
@@ -59,7 +60,7 @@ def py_spatialmos__get_gefs(c, date, resolution, modeltype, parameter):
     cmd = ["py_wgrib2", "python", "./py_spatialmos/get_gefs_forecasts.py", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__get_gefs.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_gefs.__name__, cmd)
 
 @task
 def py_spatialmos__get_gefs_forecasts(c, date, parameter):
@@ -86,7 +87,7 @@ def py_spatialmos__get_suedtirol(c, begindate, enddate):
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__get_suedtirol.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_suedtirol.__name__, cmd)
 
 
 @task
@@ -96,7 +97,7 @@ def py_spatialmos__get_uibk(c):
     cmd = ["py_requests", "python", "./py_spatialmos/get_uibk_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__get_uibk.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_uibk.__name_, cmd)
 
 
 @task
@@ -107,7 +108,7 @@ def py_spatialmos__get_wetter_at(c, begindate, enddate):
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__get_wetter_at.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_wetter_at.__name__, cmd)
 
 
 @task
@@ -117,7 +118,8 @@ def py_spatialmos__get_zamg(c):
     cmd = ["py_requests", "python", "./py_spatialmos/get_zamg_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__get_zamg.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_zamg.__name__, cmd)
+
 
 @task
 def py_spatialmos__pre_processing_reforecasts(c, parameter):
@@ -126,7 +128,7 @@ def py_spatialmos__pre_processing_reforecasts(c, parameter):
     cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_processing_reforecasts.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_reforecasts.__name__, cmd)
 
 
 @task
@@ -136,7 +138,8 @@ def py_spatialmos__pre_processing_observations_and_reforecasts_to_stations(c):
     cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__, cmd)
+
 
 @task
 def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
@@ -145,7 +148,7 @@ def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
     cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__, cmd)
 
 
 @task
@@ -182,7 +185,7 @@ def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
     cmd = ["py_pygrib", "python", "./py_spatialmos/pre_processing_prediction.py", "--date", date, "--resolution", resolution, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__pre_processing_gribfiles.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gribfiles.__name__, cmd)
 
 @task
 def py_spatialmos__prediction(c, date, parameter):
@@ -191,7 +194,7 @@ def py_spatialmos__prediction(c, date, parameter):
     cmd = ["py_basemap", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/prediction.py", "--date", date, "--resolution", "0.5", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_logging.success(py_spatialmos__prediction.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__prediction.__name__, cmd)
 
 @task
 def py_spatialmos__django_import_spatialmos_run(c, date, parameter):
@@ -200,7 +203,7 @@ def py_spatialmos__django_import_spatialmos_run(c, date, parameter):
     cmd = ["import_spatialmos_run", date, parameter]
     cmd = ' '.join(cmd)
     inv_django.managepy(c, cmd)
-    inv_logging.success(py_spatialmos__django_import_spatialmos_run.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__django_import_spatialmos_run.__name__, cmd)
 
 @task
 def py_spatialmos__django_delete_spatialmos_runs(c, parameter, days):
@@ -209,7 +212,7 @@ def py_spatialmos__django_delete_spatialmos_runs(c, parameter, days):
     cmd = ["delete_spatialmos_run", parameter, days]
     cmd = ' '.join(cmd)
     inv_django.managepy(c, cmd)
-    inv_logging.success(py_spatialmos__django_delete_spatialmos_runs.__name__)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__django_delete_spatialmos_runs.__name__, cmd)
 
 
 SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
