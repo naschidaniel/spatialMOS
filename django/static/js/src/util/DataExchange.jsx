@@ -1,9 +1,8 @@
 export function DataExchangeObject(attributes) {
   if (attributes === undefined) return {}
   
-    const data = attributes.value.split("'").join('"');
-    return JSON.parse(data);
-  
+  const data = attributes.value.split("'").join('"');
+  return JSON.parse(data);
 }
 
 export function DataExchangeString(attributes) {
