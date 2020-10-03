@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import formatNumber from "../util/formatNumber";
 
 export default function CustomTooltip(props) {
   const {active, payload} = props
@@ -9,9 +10,9 @@ export default function CustomTooltip(props) {
   return (
     <div className="custom-tooltip">
       <p className="label">{apiData.tooltip_label}</p>
-      <p>{`Max: ${apiData.spatialmos_max} ${apiData.unit}`}</p>
-      <p>{`Mean: ${apiData.spatialmos_mean} ${apiData.unit}`}</p>
-      <p>{`Min: ${apiData.spatialmos_min} ${apiData.unit}`}</p>
+      <p>{`Max: ${formatNumber(apiData.spatialmos_max, 2)} ${apiData.unit}`}</p>
+      <p>{`Mean: ${formatNumber(apiData.spatialmos_mean, 2)} ${apiData.unit}`}</p>
+      <p>{`Min: ${formatNumber(apiData.spatialmos_min, 2)} ${apiData.unit}`}</p>
     </div>
         );
 
