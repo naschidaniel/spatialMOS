@@ -156,7 +156,11 @@ export default class Predictions extends React.Component {
           </div>
           <div className="d-sm-block d-md-block d-lg-none">
             <div className="mt-3 img-navi d-flex justify-content-between">
-              <button className="bg-light text-dark" type="button" onClick={this.decreaseShowStep}>
+              <button 
+                className="btn btn-light"
+                type="button"
+                onClick={this.decreaseShowStep}
+              >
                 &#8249;
               </button>
               <span className="text-danger">
@@ -164,7 +168,7 @@ export default class Predictions extends React.Component {
                 {steps[showStep].step}
               </span>
               <button
-                className="bg-light text-dark"
+                className="btn btn-light"
                 type="button"
                 onClick={this.increaseShowStep}
               >
