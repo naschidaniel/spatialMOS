@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { DataExchangeObject, DataExchangeString } from "./src/util";
+import { DataExchangeObject, DataExchangeString } from "./src/util/DataExchange";
 import LeafletMap from "./src/components/LeafletMap";
 import SimpleLineChart from "./src/components/SimpleLineChart";
 import Predictions from "./src/components/Predictions";
