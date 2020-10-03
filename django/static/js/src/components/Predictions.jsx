@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./Predictions.css";
 
 export default class Predictions extends React.Component {
@@ -180,9 +179,4 @@ export default class Predictions extends React.Component {
       );
     
   }
-}
-
-const wrapper = document.getElementById("predictions_container");
-if (wrapper !== null) {
-  ReactDOM.render(<Predictions />, wrapper);
 }

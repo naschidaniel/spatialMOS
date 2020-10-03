@@ -1,8 +1,6 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
-import { DataExchangeObject } from "../middleware/DataExchange";
 
 // require style and marker pngs
 import "leaflet/dist/leaflet.css";
@@ -36,8 +34,4 @@ LeafletMap.propTypes = {
   data: PropTypes.shape({ lat: PropTypes.number.isRequired, lon: PropTypes.number.isRequired, display_name: PropTypes.string.isRequired}).isRequired,
 };
 
-const wrapper = document.getElementById("leaflet_map");
-if (wrapper !== null) {
-  const data = DataExchangeObject(wrapper?.attributes?.data);
-  ReactDOM.render(<LeafletMap data={data} />, wrapper)
-}
+export default LeafletMap;
