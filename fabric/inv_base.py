@@ -6,9 +6,8 @@ import json
 import sys
 import os
 import logging
-import getpass
-
-
+from datetime import datetime
+import inv_logging
 
 def manage_py(c, cmd, **kwargs):
     """The function executes the django manage.py command."""
@@ -82,3 +81,35 @@ def docker_compose(c, cmd, **kwargs):
         command.append(config_file)
     command.append(cmd)
     return c.run(" ".join(command), env=docker_environment(c), **kwargs)
+
+
+def write_statusfile(taskname, cmd):
+    """Write a statusfile for a successful run which can be imported into django"""
+    timestr = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    status = {
+        "taskname": taskname,
+        "task_finished_time": timestr,
+        "cmd": cmd
+        }
+
+    # Provide folder structure.
+    data_path = "./data/spool/statusfiles"
+    if not os.path.exists(f"{data_path}"):
+        os.mkdir(f"{data_path}")
+    
+    statusfile = f"{data_path}/statusfile_{timestr}.json"
+
+    try:
+        with open(statusfile, "w") as f:
+            json.dump(status, f)
+            f.close()
+        logging.info("The status file %s was written.", statusfile)
+    except:
+        logging.error("The infofile could not be written.")
+        sys.exit(1)
+
+
+def write_statusfile_and_success_logging(taskname, cmd):
+    """Write statusfile and write out the final logging msg for the task"""
+    write_statusfile (taskname, cmd)
+    inv_logging.success(taskname)
