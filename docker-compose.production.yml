@@ -31,12 +31,12 @@ volumes:
       type: none
       o: bind
       device: ${INSTALLFOLDER}/data/postgresdata
-  postgres_backup_server:
+  postgres_backup:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${INSTALLFOLDER}/data/postgresdata_backup_server
+      device: ${INSTALLFOLDER}/data/postgresdata_backup
   py_spatialmos:
     driver: local
     driver_opts:

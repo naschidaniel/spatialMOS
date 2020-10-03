@@ -14,133 +14,116 @@ import inv_django
 
 def delete_db_dump(c, host, postgres_backup_folder, file):
     """A function to delete the las db dump."""
-    command = f"rm {postgres_backup_folder}/{file}.out"
-    if host == "development":
-        c.run(command)
-    elif host == "production":
-        settings = inv_base.read_settings(host)
-        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)
+    cmd = f"rm {postgres_backup_folder}/{file}.out"
+    if host == "moses":
+        inv_rsync.ssh(c, c.config["REMOTE_USER"], c.config["REMOTE_HOST"], cmd)
+    else:
+        c.run(cmd)
+    logging.info("The uncompressed database dump was deleted: '%s/%s.out'", postgres_backup_folder, file)
 
-def dump_backup(c, host):
+
+def create_backup(c, host="local"):
     """A function for the database dump."""
     inv_docker.stop(c)
     inv_docker.start(c)
-    settings = inv_base.read_settings(host)
+    settings = c.config
 
-    if host == "production":
-        postgres_backup_folder = f"{settings['docker']['INSTALLFOLDER']}{settings['postgres_backup_server_folder']}"
+    if settings["collection"] == "production":
+        postgres_backup_folder = f"{settings['docker']['INSTALLFOLDER']}{settings['postgres_backup_folder']}"
     else:
         postgres_backup_folder = f"{settings['postgres_backup_folder']}"
+
     user, group = inv_base.uid_gid(c)
-    file = f"postgres_{host}_backup_{datetime.datetime.now().strftime('%Y%m%d%H%M')}"
+    file = f"postgres_{settings['collection']}_backup_{datetime.datetime.now().strftime('%Y%m%d%H%M')}"
     inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'pg_dumpall -c -U postgres -h postgres > /var/backup/{file}.out'", pty=True)
     logging.info("A database dump was saved in the file: '%s/%s.out", postgres_backup_folder, file)
 
-    command = f"tar -czf {postgres_backup_folder}/{file}.tar.gz -C {postgres_backup_folder} {file}.out"
-    if host == "development":
-        c.run(command)
-    elif host == "production":
-        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)
+    cmd = f"tar -czf {postgres_backup_folder}/{file}.tar.gz -C {postgres_backup_folder} {file}.out"
+    if settings["collection"] == "production":
+        inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], cmd)
+    else:
+        c.run(cmd)
+
     logging.info("A database dump was saved in the file: '%s/%s.tar.gz'", postgres_backup_folder, file)
 
     delete_db_dump(c, host, postgres_backup_folder, file)
-
-    logging.info("The uncompressed database dump was deleted: '%s/%s.out'", postgres_backup_folder, file)
 
     inv_docker.stop(c)
     inv_docker.start(c)
     return postgres_backup_folder, file, settings
 
-def read_backup(c, folder, docker_volume, host):
+
+def read_backup(c, host="local"):
     """A function to read the database dump into the database."""
     inv_docker.stop(c)
     inv_docker.start(c)
-    settings = inv_base.read_settings("development")
-    postgres_backup_folder = settings[folder]
+    settings = c.config
+    postgres_backup_folder = settings["postgres_backup_folder"]
     user, group = inv_base.uid_gid(c)
-    postgresdata_backup_server_files = os.popen(f"ls {postgres_backup_folder}").read().strip().split("\n")
-    file = postgresdata_backup_server_files[-1]
+    postgresdata_backup_files = os.popen(f"ls {postgres_backup_folder}").read().strip().split("\n")
+    file = postgresdata_backup_files[-1]
     file = file[:file.rfind(".tar.gz")]
-    logging.info("The database dump archive is unpacked.: '%s/%s.tar.gz'", postgres_backup_folder, file)
+    logging.info("The last database dump archive will be unpacked.: '%s/%s.tar.gz'", postgres_backup_folder, file)
 
     command = f"tar -xzf {postgres_backup_folder}/{file}.tar.gz -C {postgres_backup_folder}"
-    if host == "development":
-        c.run(command)
-    elif host == "production":
+    if host == "moses":
         inv_rsync.ssh(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], command)
+    else:
+        c.run(command)
 
-    logging.info("The database dump was unpacked.: '%s/%s.out'", postgres_backup_folder, file)
-    inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'psql -h postgres -U postgres -f {docker_volume}/{file}.out --quiet'")
+    logging.info("The database dump is unpacked.: '%s/%s.out'", postgres_backup_folder, file)
+    inv_base.docker_compose(c, f"run -u {user}:{group} --rm postgres bash -c 'psql -h postgres -U postgres -f /var/backup/{file}.out --quiet'")
     delete_db_dump(c, host, postgres_backup_folder, file)
     inv_docker.stop(c)
     inv_docker.start(c)
 
-@task
-def dump_development_backup(c):
-    """With this task the development database can be dumped into a tar.gz file."""
-    inv_logging.task(dump_development_backup.__name__)
-    dump_backup(c, host="development")
-    inv_logging.success(dump_development_backup.__name__)
 
 @task
-def dump_production_backup(c):
-    """With this task the production database can be dumped into a tar.gz file."""
-    inv_logging.task(dump_production_backup.__name__)
-    dump_backup(c, host="production")
-    inv_logging.success(dump_production_backup.__name__)
+def dump_backup(c):
+    """Create a *.tar.gz local database dump """
+    inv_logging.task(dump_backup.__name__)
+    create_backup(c, "local")
+    inv_logging.success(dump_backup.__name__)
 
 @task
-def import_last_development_backup(c):
-    """With this task the last development database dump can be imported from a tar.gz file."""
-    inv_logging.task(import_last_development_backup.__name__)
-    read_backup(c, "postgres_backup_folder", "/var/backup", "development")
-    inv_logging.success(import_last_development_backup.__name__)
+def dump_moses_backup(c):
+    """Create a *.tar.gz moses database dump from localhost"""
+    inv_logging.task(dump_backup.__name__)
+    create_backup(c, "moses")
+    inv_logging.success(dump_backup.__name__)
 
 @task
-def import_last_production_backup_into_local_db(c):
-    """With this task the last production database dump can be imported from a tar.gz file into the local database."""
-    inv_logging.task(import_last_production_backup_into_local_db.__name__)
-    read_backup(c, "postgres_backup_server_folder", "/var/backup_server", "development")
-    inv_logging.success(import_last_production_backup_into_local_db.__name__)
+def import_last_backup(c):
+    """Import a *.tar.gz database dump into the postgres database"""
+    inv_logging.task(import_last_backup.__name__)
+    read_backup(c)
+    inv_logging.success(import_last_backup.__name__)
 
 @task
-def import_last_production_backup(c):
-    """With this task the last production database dump can be imported from a tar.gz file."""
-    inv_logging.task(import_last_production_backup.__name__)
-    read_backup(c, "postgres_backup_server_folder", "/var/backup", "production")
-    inv_logging.success(import_last_production_backup.__name__)
-
-@task
-def get_last_production_backup(c):
-    """With this task the last database dump can be downloaded from the server."""
-    inv_logging.task(get_last_production_backup.__name__)
-    settings_development = inv_base.read_settings("development")
-    settings_production = inv_base.read_settings("production")
-    postgres_backup_server_folder = f"{settings_production['docker']['INSTALLFOLDER']}{settings_production['postgres_backup_server_folder']}"
-    remote_postgresdata_backup_server_files = os.popen(f"ssh {settings_production['REMOTE_USER']}@{settings_production['REMOTE_HOST']} ls {postgres_backup_server_folder}").read().strip().split("\n")
-    backup_file = f"{remote_postgresdata_backup_server_files[-1]}"
-    inv_rsync.scp_get(c, settings_production["REMOTE_USER"], settings_production["REMOTE_HOST"],\
-        f"{postgres_backup_server_folder}/{backup_file}", f"{settings_development['postgres_backup_server_folder']}/{backup_file}")
-    inv_logging.success(get_last_production_backup.__name__)
+def import_last_moses_backup(c):
+    """Import a *.tar.gz database dump into the moses postgres database from localhost"""
+    inv_logging.task(import_last_moses_backup.__name__)
+    read_backup(c, "moses")
+    inv_logging.success(import_last_moses_backup.__name__)
 
 @task
 def reset_db(c):
     """Resets postgres database and migrate django migrations."""
     inv_logging.task(reset_db.__name__)
     inv_docker.stop(c)
-    inv_base.manage_py(c, "reset_db")
+    inv_base.manage_py(c, "flush")
     inv_docker.start(c)
     inv_django.makemigrations(c)
     inv_django.migrate(c)
     inv_logging.success(reset_db.__name__)
 
 POSTGRESQL_DEVELOPMENT_NS = Collection("postgres")
-POSTGRESQL_DEVELOPMENT_NS.add_task(dump_development_backup)
-POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_development_backup)
-POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_production_backup_into_local_db)
-POSTGRESQL_DEVELOPMENT_NS.add_task(get_last_production_backup)
+POSTGRESQL_DEVELOPMENT_NS.add_task(dump_backup)
+POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_backup)
 POSTGRESQL_DEVELOPMENT_NS.add_task(reset_db)
 
 POSTGRESQL_PRODUCTION_NS = Collection("postgres")
-POSTGRESQL_PRODUCTION_NS.add_task(dump_production_backup)
-POSTGRESQL_PRODUCTION_NS.add_task(import_last_production_backup)
+POSTGRESQL_PRODUCTION_NS.add_task(dump_backup)
+#POSTGRESQL_DEVELOPMENT_NS.add_task(dump_moses_backup)
+POSTGRESQL_PRODUCTION_NS.add_task(import_last_backup)
+#POSTGRESQL_DEVELOPMENT_NS.add_task(import_last_moses_backup)
