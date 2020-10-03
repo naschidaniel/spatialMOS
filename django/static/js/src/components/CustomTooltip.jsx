@@ -6,8 +6,6 @@ export default function CustomTooltip(props) {
   if (!active) return <div>No CustomTooltip available</div>;
   
   const apiData = payload[0].payload;
-
-  if (payload.length === 0) return <div>No CustomTooltip available</div>;
   return (
     <div className="custom-tooltip">
       <p className="label">{apiData.tooltip_label}</p>
@@ -20,6 +18,11 @@ export default function CustomTooltip(props) {
 }
 
 CustomTooltip.propTypes = {
-    active: PropTypes.bool.isRequired,
-    payload: PropTypes.arrayOf(PropTypes.number).isRequired,
+    active: PropTypes.bool,
+    payload: PropTypes.arrayOf(PropTypes.object),
   };
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+};
