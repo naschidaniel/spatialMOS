@@ -3,7 +3,6 @@
 
 """A management command for deleting the spatialMos predictions from the database."""
 
-import sys
 from django.db import connection, transaction
 from django.core.management.base import BaseCommand
 from predictions.models import SpatialMosRun, SpatialMosStep, SpatialMosPoint
