@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'predictions.apps.PredictionsConfig',
     'pages.apps.PagesConfig',
     'api.apps.ApiConfig',
+    'statusfiles.apps.StatusfilesConfig',
 ]
 
 # Django Middleware
