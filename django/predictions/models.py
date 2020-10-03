@@ -1,4 +1,4 @@
-"""The models for Pages are listed here."""
+"""The models for Predictions are listed here."""
 
 from django.db import models
 
