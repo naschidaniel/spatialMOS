@@ -13,12 +13,16 @@ env = environ.Env(
     POSTGRES_USER=(str, 'postgres'),
     POSTGRES_PASSWORD=(str, 'postgres'),
     SECRET_KEY=(str, 'jd3jqb@r1jaaj^(2e&$qam8#fbp)6qqu+9cz8u^u+4)%scl^f#'),
-    LASTCOMMIT=(str, 'LASTCOMMIT')
+    LASTCOMMIT=(str, 'LASTCOMMIT'),
+    UPDATETIME=(str, 'UPDATETIME')
 )
 environ.Env.read_env()
 
-# The commit in all templates is displayed in the footer.
+# The last commit ist displayed in the /systemstatus
 LASTCOMMIT = env('LASTCOMMIT')
+
+# Display the updatetime in the /systemstatus
+UPDATETIME = env('UPDATETIME')
 
 # Basic settings
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
