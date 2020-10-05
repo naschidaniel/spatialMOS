@@ -15,7 +15,7 @@ class StatusChecks(models.Model):
     
     def __str__(self):
         """Return Value in the Admin Panel"""
-        return f"{self.taskname} - {self.name}"
+        return f"{self.max_age} min | {self.verified_by_admin} | {self.name}"
 
     class Meta:
         """Settings"""
