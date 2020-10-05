@@ -8,7 +8,7 @@ from .models import StatusFiles, StatusChecks
 def status_of_check(is_verified_by_admin, max_age, task_finished_time):
     max_age_time = timezone.localtime(timezone.now()) - timezone.timedelta(minutes=max_age)
     print(max_age_time)
-    if (task_finished_time >= max_age_time):
+    if is_verified_by_admin and (task_finished_time >= max_age_time):
         return {'badge_status': 'badge-success', 'status': 'passed'}
     elif not is_verified_by_admin and (task_finished_time >= max_age_time):
         return {'badge_status': 'badge-info', 'status': 'info'}
