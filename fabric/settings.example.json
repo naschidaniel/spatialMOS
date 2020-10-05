@@ -14,7 +14,6 @@
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
-      "./data/postgresdata_backup_server",
       "./data/spool",
       "./data/static",
       "./log/fabric",
@@ -33,7 +32,8 @@
       "POSTGRES_USER": "postgres",
       "POSTGRES_PASSWORD": "postgres",
       "NGINX_CONF": "development.conf"
-    }
+    },
+    "postgres_backup_folder": "./data/postgresdata_backup"
   },
   "production": {
     "collection": "production",
@@ -45,7 +45,6 @@
       "./data/media",
       "./data/postgresdata",
       "./data/postgresdata_backup",
-      "./data/postgresdata_backup_server",
       "./data/spool",
       "./data/static",
       "./log/fabric",
@@ -66,12 +65,12 @@
       "INSTALLFOLDER": "/www/spatialMOS",
       "HOST": "production",
       "DOCKER_TLS_VERIFY": "1",
-      "DOCKER_HOST": "tcp://example@example.com:2376",
+      "DOCKER_HOST": "tcp://webserver@naschi.info:2376",
       "DOCKER_CERT_PATH": "./fabric/cert/",
       "POSTGRES_USER": "postgres",
-      "POSTGRES_PASSWORD": "postgres"
+      "POSTGRES_PASSWORD": "Ip31HCKX"
     },
-    "postgres_backup_server_folder": "./postgresdata_backup_server",
+    "postgres_backup_folder": "./postgresdata_backup",
     "docker_compose_files": [
       "./docker-compose.yml",
       "./docker-compose.production.yml"
@@ -105,6 +104,7 @@
           "static"
         ],
         "exclude": [
+          "static/js",
           "*.h5",
           "*.RData",
           "*_station_observations.csv",
@@ -112,8 +112,7 @@
           "archive",
           "media",
           "postgresdata",
-          "bostgresdata_backup",
-          "postgresdata_backup_server",
+          "postgresdata_backup",
           "spool",
           "spatialmos_climatology",
           "get_available_data"
@@ -136,8 +135,7 @@
           "archive",
           "media",
           "postgresdata",
-          "bostgresdata_backup",
-          "postgresdata_backup_server",
+          "postgresdata_backup",
           "static",
           "spool"
         ]
