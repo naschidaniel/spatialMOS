@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         def create_StatusFileEntry(statuscheck_entry, statusfile):
             """A function to create an entry in the table of the model StatusFiles"""
-            timezone = pytz.timezone('UTC')
+            timezone = pytz.timezone('Europe/Vienna')
             task_finished_time = dt.datetime.strptime(statusfile['task_finished_time'], '%Y-%m-%dT%H:%M:%S')
             task_finished_time_aware = timezone.localize(task_finished_time)
             statusfile_entry = StatusFiles.objects.filter(task_finished_time=task_finished_time_aware, cmd=statusfile["cmd"])
