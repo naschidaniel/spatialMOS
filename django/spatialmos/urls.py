@@ -13,6 +13,7 @@ urlpatterns = [
 # App urls
 urlpatterns += [
     path('', include('predictions.urls')),
+    path('systemstatus', include('statusfiles.urls')),
     path('api/', include('api.urls')),
     url(r'^(?P<url>.*)/$', page)
     ]
