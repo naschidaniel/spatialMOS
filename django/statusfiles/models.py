@@ -15,11 +15,11 @@ class StatusChecks(models.Model):
     
     def __str__(self):
         """Return Value in the Admin Panel"""
-        return f"Maxage in Minutes: {self.max_age} | {self.taskname} | {self.cmd_regex}"
+        return f"{self.taskname} - {self.name}"
 
     class Meta:
         """Settings"""
-        ordering = ['max_age', 'taskname', 'cmd_regex']
+        ordering = ['name', 'taskname', 'cmd_regex']
 
 
 class StatusFiles(models.Model):
@@ -36,3 +36,4 @@ class StatusFiles(models.Model):
     class Meta:
         """Settings"""
         ordering = ['task_finished_time', 'check_name', 'cmd']
+        get_latest_by = "task_finished_time"
