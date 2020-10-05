@@ -6,6 +6,7 @@ import os
 import sys
 import logging
 import shutil
+import datetime as dt
 from invoke import task, Collection
 import inv_base
 import inv_logging
@@ -92,6 +93,9 @@ def setenvironment(c, cmd):
     
     # set the last commit msg
     settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c)
+
+    # set the updatetimestamp
+    settings["django"]["UPDATETIME"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     for dict_env_key, dict_env_file in dict_env.items():
         try:
