@@ -50,6 +50,9 @@ class Command(BaseCommand):
         data_path_done = "/www/data/spool/statusfiles/done"
 
         # Provide Folder Structure
+        if not os.path.exists(data_path):
+            os.mkdir(f"{data_path}")
+
         if not os.path.exists(data_path_done):
             os.mkdir(f"{data_path_done}")
 
