@@ -97,7 +97,7 @@ def py_spatialmos__get_uibk(c):
     cmd = ["py_requests", "python", "./py_spatialmos/get_uibk_data.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_uibk.__name_, cmd)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_uibk.__name__, cmd)
 
 
 @task
