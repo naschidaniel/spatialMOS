@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Systemstatus</h1>
+
+
+<h2 class="mt-3">Version</h2>
+<p>Systeminfo: <a href="https://github.com/naschidaniel/spatialMOS" target="_blank" rel="noreferrer">{{ LASTCOMMIT }}</a></p>
+<p>Updatetime: {{ UPDATETIME }}</p>
+
+<h2 class="mt-3">Tasks</h2>
+<ul class="list-group">
+  {% for status in systemstatus %}
+    <li class="list-group-item">
+      <span class="badge {{ status.badge.badge_status }} mr-3" style="width:100px;" title="{{ status.task_finished_time|date:'Y-m-d' }} {{status.task_finished_time|time:'H:i'}}">{{ status.badge.status }}</span>
+      {{ status.name }}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}
