@@ -3,6 +3,7 @@ Disallow: /admin
 Disallow: /static
 Disallow: /api
 Disallow: /impressum
+Disallow: /systemstatus
 
 Allow: /
 Allow: /punktvorhersage
