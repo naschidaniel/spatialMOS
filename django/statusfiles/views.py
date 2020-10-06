@@ -31,7 +31,6 @@ def systemhealth(request):
     available_max_age = StatusChecks._meta.get_field('max_age').choices
     choices = dict((k, v) for k, v in available_max_age)
     systemstatus_grouped = dict((v, []) for k, v in available_max_age)
-    print(systemstatus_grouped)
     for systemcheck in systemchecks:
         statusfile_last = StatusFiles.objects.filter(check_name=systemcheck).latest()
         choice = choices[systemcheck.max_age]
