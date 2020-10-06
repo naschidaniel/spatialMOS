@@ -7,7 +7,6 @@ from .models import StatusFiles, StatusChecks
 # Helper functions
 def status_of_check(is_verified_by_admin, max_age, task_finished_time):
     max_age_time = timezone.localtime(timezone.now()) - timezone.timedelta(minutes=max_age)
-    print(max_age_time)
     if is_verified_by_admin and (task_finished_time >= max_age_time):
         return {'badge_status': 'badge-success', 'status': 'passed'}
     elif not is_verified_by_admin and (task_finished_time >= max_age_time):
@@ -16,7 +15,7 @@ def status_of_check(is_verified_by_admin, max_age, task_finished_time):
         return {'badge_status': 'badge-warning', 'status': 'warning'}
     else:
         return {'badge_status': 'badge-danger', 'status': 'failed'}
-    
+
 # Views
 def systemhealth(request):
     """A view for the latests systemhealth check."""
@@ -30,17 +29,23 @@ def systemhealth(request):
     
     systemchecks = get_all_systemcheck()
     systemstatus = []
+    available_max_age = StatusChecks._meta.get_field('max_age').choices
+    choices = dict((k, v) for k, v in available_max_age)
+    systemstatus_grouped = dict((v, []) for k, v in available_max_age)
+    print(systemstatus_grouped)
     for systemcheck in systemchecks:
         statusfile_last = StatusFiles.objects.filter(check_name=systemcheck).latest()
+        choice = choices[systemcheck.max_age]
         badge = status_of_check(systemcheck.verified_by_admin, systemcheck.max_age, statusfile_last.task_finished_time)
-        systemstatus.append({
+        systemstatus_grouped[choice].append(
+                            {
                             'name': systemcheck.name, 
                             'task_finished_time': statusfile_last.task_finished_time,
                             'badge': badge,
                             })
-
+   
     context = {
-            'systemstatus': systemstatus,
+            'systemstatus_grouped': systemstatus_grouped,
             'title': 'Systemstatus'
         }
 

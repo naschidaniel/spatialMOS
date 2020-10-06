@@ -6,16 +6,21 @@ from django.utils import timezone
 
 class StatusChecks(models.Model):
     """The model for sorting statusfiles into statuschecks"""
+    available_max_age = (
+        (70, "Stündlich"),
+        (1460, "Täglich"),
+        (10100, "Wöchentlich"),
+    )
     taskname = models.CharField(max_length=500)
     cmd_regex = models.CharField(max_length=500)
     name = models.CharField(max_length=100)
     date_created = models.DateTimeField(default=timezone.now)
-    max_age = models.IntegerField(default=60)
+    max_age = models.IntegerField(default=70, choices=available_max_age)
     verified_by_admin = models.BooleanField(default=False)
     
     def __str__(self):
         """Return Value in the Admin Panel"""
-        return f"{self.max_age} min | {self.verified_by_admin} | {self.name}"
+        return f"{self.max_age} | {self.verified_by_admin} | {self.name}"
 
     class Meta:
         """Settings"""
