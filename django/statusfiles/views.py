@@ -28,7 +28,6 @@ def systemhealth(request):
             raise Http404
     
     systemchecks = get_all_systemcheck()
-    systemstatus = []
     available_max_age = StatusChecks._meta.get_field('max_age').choices
     choices = dict((k, v) for k, v in available_max_age)
     systemstatus_grouped = dict((v, []) for k, v in available_max_age)
