@@ -17,9 +17,15 @@
   {% endif %}
   {% for status in vv %}
     <li class="list-group-item">
-      <span class="ml-2 badge {{ status.badge.badge_status }} mr-3" style="width:60px;" title="{{ status.task_finished_time|date:'Y-m-d' }} {{status.task_finished_time|time:'H:i'}}">{{ status.badge.status }}</span>
-      {{ status.name }}
+      <span class="d-inline d-sm-inline d-md-none ml-1">
+        <small>
+          <span class="mr-1 badge badge-pill {{ status.badge.badge_status }} mr-2" title="{{ status.task_finished_time|date:'Y-m-d' }} {{status.task_finished_time|time:'H:i'}}">&nbsp;</span>
+          {{ status.name }}
+        </small>
+      </span>
       <span class="d-none d-md-inline ml-2">
+        <span class="d-none d-md-inline ml-2 badge {{ status.badge.badge_status }} mr-3" style="width:60px;" title="{{ status.task_finished_time|date:'Y-m-d' }} {{status.task_finished_time|time:'H:i'}}">{{ status.badge.status }}</span>
+        {{ status.name }}
         &ndash; <small class="ml-2">{{ status.task_finished_time|date:'Y-m-d' }} {{status.task_finished_time|time:'H:i'}}</small>
       </span>
     </li>
