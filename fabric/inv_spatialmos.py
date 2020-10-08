@@ -101,6 +101,16 @@ def py_spatialmos__get_uibk(c):
 
 
 @task
+def py_spatialmos__get_lwd(c):
+    """Download data from lwd tirol"""
+    inv_logging.task(py_spatialmos__get_lwd.__name__)
+    cmd = ["py_requests", "python", "./py_spatialmos/get_lwd_data.py"]
+    cmd = ' '.join(cmd)
+    inv_docker.run(c, cmd)
+    inv_logging.success(py_spatialmos__get_lwd.__name__)
+
+
+@task
 def py_spatialmos__get_wetter_at(c, begindate, enddate):
     """Download data from wetter_at."""
     inv_logging.task(py_spatialmos__get_wetter_at.__name__)
@@ -230,6 +240,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_available_data)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs_forecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_uibk)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_wetter_at)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
@@ -249,6 +260,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
 SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_available_data)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_gefs)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_uibk)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__pre_processing_gribfiles)
