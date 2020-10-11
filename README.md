@@ -54,9 +54,10 @@ Past measured values are obtained via the API interfaces of [http://wetter.provi
 ./task.py local.spatialmos.py-spatialmos--get-wetter-at --begindate 2018-01-01 --enddate 2019-12-31
 ```
 
-Current values from the ZAMG web page or from the UIBK API interface can be done with the two fabric commands.
+Current values from the ZAMG web page, from lwd, or from the UIBK API interface can be done with the two fabric commands.
 
 ```
+./task.py local.spatialmos.py-spatialmos--get-lwd
 ./task.py local.spatialmos.py-spatialmos--get-uibk
 ./task.py local.spatialmos.py-spatialmos--get-zamg
 ```
@@ -268,6 +269,13 @@ The files are synchronized using the fabric command:
 Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before making a pull request.
 
 
+## Station- and forecast data
+* [at-wetter.tk](http://at-wetter.tk/)
+* [Land Tirol - data.tirol.gv.at](https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f)
+* [noaa ncep](https://www.ftp.ncep.noaa.gov/)
+* [South Tyrolean weather service](http://wetter.provinz.bz.it/)
+* [University of Innsbruck API](https://www.uibk.ac.at/acinn/)
+* [ZAMG](https://www.zamg.ac.at/)
 
 ## Changelog
 
