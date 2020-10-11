@@ -8,6 +8,7 @@ import os
 import sys
 from datetime import datetime
 import requests
+import json
 import pandas as pd
 from py_middleware import logger_module
 
@@ -57,7 +58,7 @@ def fetch_lwd_data():
 
     url_data = "https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson"
     req_data = requests.get(url_data)
-
+   
     if req_data.status_code != 200:
         logging.error("The response of the API 'https://wiski.tirol.gv.at' does not match 200")
         sys.exit(1)
@@ -77,6 +78,7 @@ def fetch_lwd_data():
     # Convert downloaded files to JSON
     lwd_data = req_data.json()
 
+
     # Loop over stations
     df_data = pd.DataFrame()
     for station in lwd_data["features"]:
@@ -88,13 +90,27 @@ def fetch_lwd_data():
                             })
         df_data = df_data.append(append_data, ignore_index=True)
 
+    # Datamanipulation
     keep = set(df_data.columns) - (set(df_data.columns) - set(parameter_dict.keys()))
     new_order = ["date", "name", "lat", "lon", "alt"]
     new_order.extend(list(keep))
     df_data["date"] = pd.to_datetime(df_data["date"], utc=True)
     df_data = df_data[new_order]
     df_data = df_data.rename(columns = parameter_dict)
+    df_data["date"] = pd.to_datetime(df_data["date"]).dt.tz_localize(None)
 
+    df_data["timedelta"] = df_data["date"] - datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    df_data["timedelta"] = df_data["timedelta"].dt.total_seconds()/60
+    get_len_dataset = df_data.shape[0]
+    df_data = df_data.loc[(df_data["timedelta"] >= -15) & (df_data["timedelta"] <= 15)]
+    df_data["date"] = df_data["date"].dt.floor("H")
+    df_data = df_data.drop(["timedelta"], axis=1)
+
+    if (df_data.shape[0] <= 50):
+        logging.error("Only %s from %s stations are transmitted correctly", df_data.shape[0], get_len_dataset)
+        sys.exit(1)
+
+    utcnow_str = datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S_+0000")
     csv_filename = f"{data_path}/data/data_lwd_{utcnow_str}.csv"
     try:
         df_data.to_csv(csv_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
@@ -102,6 +118,7 @@ def fetch_lwd_data():
     except:
         logging.error("The datafile file '%s' could not be written.", csv_filename)
         sys.exit(1)
+
 
 
 # Main
