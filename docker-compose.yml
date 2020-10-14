@@ -27,9 +27,9 @@ services:
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
       - spool:/usr/src/app/data/spool:z
   
-  py_pygrib:
-    build: ./container/py_pygrib/
-    container_name: spatialMOS_py_pygrib
+  py_cfgrib:
+    build: ./container/py_cfgrib/
+    container_name: py_cfgrib
     volumes:
       - log:/log:z
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
