@@ -7,17 +7,17 @@ import logging
 import json
 import numpy as np
 import pandas as pd
+import xarray as xr
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import gribfile_to_pandasdf
-from py_middleware import log_spread_calc
 
 
 # Functions
 def gribfiles_to_pandasdataframe(parser_dict):
     """This function converts the gribfiles into a CSV-File and an a Json-Filefile."""
     
-    # Create an array with for the available steps
+    # Create an array with the available steps
     available_steps = np.arange(6, 193, 6, int)
 
     # Select Path of modelresolution
@@ -38,10 +38,10 @@ def gribfiles_to_pandasdataframe(parser_dict):
             if not os.path.exists(path_nwp_forecasts):
                 os.makedirs(path_nwp_forecasts)
 
-            u_mean, anal_date_u_mean, valid_date_u_mean = gribfile_to_pandasdf.open_gribfile(u_mean_file)
-            u_spread, anal_date_u_spread, valid_date_u_spread = gribfile_to_pandasdf.open_gribfile(u_spread_file)
-            v_mean, anal_date_v_mean, valid_date_v_mean = gribfile_to_pandasdf.open_gribfile(v_mean_file)
-            v_spread, anal_date_v_spread, valid_date_v_spread = gribfile_to_pandasdf.open_gribfile(v_spread_file)
+            u_mean, anal_date_u_mean, valid_date_u_mean = gribfile_to_pandasdf.open_gribfile(u_mean_file, "ugrd_10m")
+            u_spread, anal_date_u_spread, valid_date_u_spread = gribfile_to_pandasdf.open_gribfile(u_spread_file, "ugrd_10m")
+            v_mean, anal_date_v_mean, valid_date_v_mean = gribfile_to_pandasdf.open_gribfile(v_mean_file, "vgrd_10m")
+            v_spread, anal_date_v_spread, valid_date_v_spread = gribfile_to_pandasdf.open_gribfile(v_spread_file, "vgrd_10m")
 
             wind_10m = pd.DataFrame()
             wind_10m_spread = pd.DataFrame()
@@ -70,63 +70,42 @@ def gribfiles_to_pandasdataframe(parser_dict):
     # Provide available NWP forecasts
     nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], resolution, available_steps)
 
-    for nwp_gribfiles_mean_step, nwp_gribfiles_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
-        grb_avg, anal_date_avg, valid_date_avg = gribfile_to_pandasdf.open_gribfile(nwp_gribfiles_mean_step)
-        grb_spr, anal_date_spr, valid_date_spr = gribfile_to_pandasdf.open_gribfile(nwp_gribfiles_spread_step)
-        yday = grb_avg.validDate.timetuple().tm_yday
-        dayminute = grb_avg.validDate.timetuple().tm_hour * 60
-        step = grb_avg.startStep
+    for nwp_gribfile_mean_step, nwp_gribfile_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
+        df_grb_avg, grb_avg, info = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_mean_step, parser_dict["parameter"], "avg", info=True)
+        df_grb_spr, grb_spr = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_spread_step, parser_dict["parameter"], "spr")
 
-        # Create required grids for NWP
-        lons = np.linspace(float(grb_avg["longitudeOfFirstGridPointInDegrees"]), float(grb_avg["longitudeOfLastGridPointInDegrees"]), int(grb_avg["Ni"]))
-        lats = np.linspace(float(grb_avg["latitudeOfFirstGridPointInDegrees"]), float(grb_avg["latitudeOfLastGridPointInDegrees"]), int(grb_avg["Nj"]))
-
-        # Corrections of the values
-        if parser_dict["parameter"] == "tmp_2m":
-            constant_offset = 273.15
-        else:
-            constant_offset = 0
-
-        df = []
-        for lon in lons:
-            for lat in lats:
-                mean = grb_avg.data(lat1=lat, lon1=lon)
-                mean = round(mean[0][0][0] - constant_offset, 2)
-                spread = grb_spr.data(lat1=lat, lon1=lon)
-                log_spread = log_spread_calc.log_spread(spread[0][0][0])
-                df.append([mean, log_spread, lon, lat])
-
-        prediction_df = pd.DataFrame(df, columns=["mean", "log_spread", "lon", "lat"])
-
+        # Create required pandas df for predictions
+        prediction_df = pd.concat([df_grb_spr, df_grb_avg], axis=1, join='inner')
         data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
         if not os.path.exists(data_path):
             os.makedirs(data_path)
             logging.info("The folder '%s' was created", data_path)
-        json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_info.json")
-        gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_data.csv")
-        grb_avg_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_avg")
-        grb_spr_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{step:03d}_gribfile_spz")
+        json_info_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{info['step']:03d}_gribfile_info.json")
+        gribfile_data_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{info['step']:03d}_gribfile_data.csv")
+        grb_avg_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{info['step']:03d}_gribfile_avg")
+        grb_spr_filename = os.path.join(data_path, f"GFSE_{parser_dict['date']}_0000_f{info['step']:03d}_gribfile_spz")
 
-        prediction_df.to_csv(gribfile_data_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
+
+        prediction_df.to_csv(gribfile_data_filename, index=True, quoting=csv.QUOTE_NONNUMERIC, float_format='%g')
         logging.info("The infofile '%s' was written.", gribfile_data_filename)
         
-        np.save(grb_avg_filename, grb_avg.values - constant_offset)
+        np.save(grb_avg_filename, grb_avg)
         logging.info("The grb_avg file '%s' was written.", f"{grb_avg_filename}.npy")
-        np.save(grb_spr_filename, grb_spr.values)
-        logging.info("The grb_avg file '%s' was written.", f"{grb_spr_filename}.npy")
+        np.save(grb_spr_filename, grb_spr)
+        logging.info("The grb_spr file '%s' was written.", f"{grb_spr_filename}.npy")
         
         gribfile_info = {
             "parameter": parser_dict["parameter"],
-            "anal_date_avg": anal_date_avg,
-            "valid_date_avg": valid_date_avg,
+            "anal_date_avg": info["anal_date"],
+            "valid_date_avg": info["valid_date"],
+            "yday": info["yday"],
+            "dayminute": info["dayminute"],
+            "step": info["step"],
+            "lons": info["longitude"],
+            "lats": info["latitude"],
+            "gribfile_data_filename": gribfile_data_filename,
             "grb_avg_filename": f"{grb_avg_filename}.npy",
             "grb_spr_filename": f"{grb_spr_filename}.npy",
-            "yday": yday,
-            "dayminute": dayminute,
-            "step": step,
-            "lons": lons.tolist(),
-            "lats": lats.tolist(),
-            "gribfile_data_filename": gribfile_data_filename
         }
 
         with open(json_info_filename, "w") as f:
