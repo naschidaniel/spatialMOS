@@ -4,5 +4,7 @@ scipy
 pillow
 pyproj
 cython 
+pyshp
+matplotlib
 geos
-cartopy
+shapely --no-binary shapely
