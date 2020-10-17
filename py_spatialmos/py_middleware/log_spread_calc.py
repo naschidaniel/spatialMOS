@@ -6,9 +6,6 @@
 import numpy as np
 
 def log_spread(spread):
-    if spread == float(0):
-        log_spread_val = np.log(0.001)
-    else:
-        log_spread_val = np.log(spread)
-    
-    return round(log_spread_val, 3)
+    """A function which is used to calculate the log value of the spread."""
+    log_spread = np.where(spread == 0., np.log(0.001), np.log(spread))
+    return log_spread.round(3)
