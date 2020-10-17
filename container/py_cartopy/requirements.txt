@@ -1,5 +1,8 @@
 numpy
 pandas
 scipy
-cartopy
 pillow
+pyproj
+cython 
+geos
+cartopy

@@ -33,7 +33,7 @@ def resize_plot(path_filename, filepath, newwidth, ending):
     plot_filenames[f"filename_{ending}"] = filename_resize
     return plot_filenames
 
-def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
+def plot_forecast(parameter, erc, xx, yy, plotparameter, gribfile_info, what):
     """A function to create the GEFS and spatialMOS forecast plots."""
 
     anal_date = gribfile_info["anal_date_avg"]
@@ -45,51 +45,51 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
 
     plot_title = ""
     if parameter == "tmp_2m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="RdBu_r")
         plot_title="2m Temperatur spatialmos MEAN [°C]"
         plt.clim(-40, 40)
     elif parameter == "tmp_2m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="2m Temperatur spatialmos SPREAD [°C]"
         plt.clim(0, 5)
     elif parameter == "tmp_2m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="RdBu_r")
         plot_title="2m Temperatur GEFS MEAN [°C]"
         plt.clim(-40, 40)
     elif parameter == "tmp_2m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="2m Temperatur GEFS SPREAD [°C]"
         plt.clim(0, 5)
     elif parameter == "rh_2m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="YlGn")
         plot_title="2m Relative Luftfeuchte spatialmos MEAN [%]"
         plt.clim(0, 100)
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="2m Relative Luftfeuchte spatialmos SPREAD [%]"
         plt.clim(0, 5)
     elif parameter == "rh_2m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="YlGn")
         plot_title="2m Relative Luftfeuchte GEFS MEAN [%]"
         plt.clim(0, 100)
     elif parameter == "rh_2m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="2m Relative Luftfeuchte GEFS SPREAD [%]"
         plt.clim(0, 5)
     elif parameter == "wind_10m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Purples")
         plot_title="10m Windgeschwindigkeit spatialmos MEAN [km/h]"
         plt.clim(0, 10)
     elif parameter == "wind_10m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="10m Windgeschwindigkeit spatialmos SPREAD [km/h]"
         plt.clim(0, 10)
     elif parameter == "wind_10m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Purples")
         plot_title="10m Windgeschwindigkeit GEFS MEAN [km/h]"
         plt.clim(0, 10)
     elif parameter == "wind_10m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        fig.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, transform=erc, cmap="Reds")
         plot_title="10m Windgeschwindigkeit GEFS SPREAD [km/h]"
         plt.clim(0, 10)
 
