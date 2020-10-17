@@ -12,8 +12,6 @@ import numpy as np
 import pandas as pd
 import pytz
 from scipy.interpolate import griddata
-os.environ["PROJ_LIB"] = "/usr/share/proj" # Environment Variable for basemap
-from mpl_toolkits.basemap import Basemap
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import plot_functions
@@ -51,13 +49,7 @@ def spatial_predictions(parser_dict):
     min_lat = alt_area["min_lat"]
     max_lon = alt_area["max_lon"]
     max_lat = alt_area["max_lat"]
-    center_lon = alt_area["center_lon"]
-    center_lat = alt_area["center_lat"]
     alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
-
-    # BASEMAPS for GEFS predictions and spatialMOS
-    m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
-    m_spatialmos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
     # Read preprocessed Info Files
     data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
@@ -82,14 +74,22 @@ def spatial_predictions(parser_dict):
             latlon_correction = 0.25
         else:
             latlon_correction = 0.5
+        
+        # Create meshgrid and add M + 1, N + 1
+        # https://matplotlib.org/3.3.0/gallery/images_contours_and_fields/pcolormesh_grids.html
+        # shading='auto'
+        lons_plus_one = gribfile_info["lons"][-1] + parser_dict["resolution"]
+        lats_plus_one = gribfile_info["lats"][-1] + parser_dict["resolution"]
+        gribfile_info["lons"].append(lons_plus_one)
+        gribfile_info["lats"].append(lats_plus_one)
         lons = [x - latlon_correction for x in gribfile_info["lons"]]
         lats = [x - latlon_correction for x in gribfile_info["lats"]]
-        xx_nwp, yy_nwp = m_nwp(*np.meshgrid(lons, lats))
+        xx_nwp, yy_nwp = np.meshgrid(lons, lats)
 
         # Create required meshgrid for spatialMOS
         lons_spatialmos = np.linspace(min_lon, max_lon, alt.shape[1])
         lats_spatialmos = np.linspace(max_lat, min_lat, alt.shape[0])
-        xx_spatialmos, yy_spatialmos = m_spatialmos(*np.meshgrid(lons_spatialmos, lats_spatialmos))
+        xx_spatialmos, yy_spatialmos = np.meshgrid(lons_spatialmos, lats_spatialmos)
 
         # Read in preprocessed NWP CSV file with the predictions
         nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
@@ -170,13 +170,13 @@ def spatial_predictions(parser_dict):
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
         plot_filenames_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
+            xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
         plot_filenames_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_nwp, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
+            xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
         plot_filenames_spatialmos_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
+            xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
         plot_filenames_spatialmos_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            m_spatialmos, xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
+            xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
         spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
@@ -228,7 +228,7 @@ def spatial_predictions(parser_dict):
         # Write info file to spool directory
         spatialmos_run_status[f"{gribfile_info['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfile_info['step']:03d}"}
         write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
-        
+
         logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
             prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
             prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)

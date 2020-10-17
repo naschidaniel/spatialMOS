@@ -201,7 +201,7 @@ def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
 def py_spatialmos__prediction(c, date, parameter):
     """Create the predictions and the spatialMOS plots."""
     inv_logging.task(py_spatialmos__prediction.__name__)
-    cmd = ["py_basemap", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/prediction.py", "--date", date, "--resolution", "0.5", "--parameter", parameter]
+    cmd = ["py_cartopy", "python", "./py_spatialmos/prediction.py", "--date", date, "--resolution", "0.5", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__prediction.__name__, cmd)

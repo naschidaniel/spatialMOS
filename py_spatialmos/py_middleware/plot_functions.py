@@ -6,9 +6,13 @@ import os
 import sys
 import logging
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import datetime as dt
 from PIL import Image
+import cartopy.crs as ccrs
+import cartopy.io.shapereader as shpreader
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 # Functions
 def resize_plot(path_filename, filepath, newwidth, ending):
@@ -33,7 +37,7 @@ def resize_plot(path_filename, filepath, newwidth, ending):
     plot_filenames[f"filename_{ending}"] = filename_resize
     return plot_filenames
 
-def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
+def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     """A function to create the GEFS and spatialMOS forecast plots."""
 
     anal_date = gribfile_info["anal_date_avg"]
@@ -41,71 +45,70 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
     step = gribfile_info["step"]
 
     fig_dpi=72
-    fig = plt.figure(figsize=(1400/fig_dpi, 1400/fig_dpi), dpi=fig_dpi)
-
+    fig = plt.figure(figsize=(1600/fig_dpi, 1600/fig_dpi), dpi=fig_dpi)
+    ax = plt.axes(projection=ccrs.PlateCarree(globe=ccrs.Globe(datum='WGS84', ellipse='WGS84')))
     plot_title = ""
     if parameter == "tmp_2m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
-        plot_title="2m Temperatur spatialmos MEAN [°C]"
-        plt.clim(-40, 40)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="2m Temperatur spatialMOS MEAN [°C]"
     elif parameter == "tmp_2m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="2m Temperatur spatialmos SPREAD [°C]"
-        plt.clim(0, 5)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="2m Temperatur spatialMOS SPREAD [°C]"
     elif parameter == "tmp_2m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="RdBu_r")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur GEFS MEAN [°C]"
-        plt.clim(-40, 40)
     elif parameter == "tmp_2m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur GEFS SPREAD [°C]"
-        plt.clim(0, 5)
     elif parameter == "rh_2m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
-        plot_title="2m Relative Luftfeuchte spatialmos MEAN [%]"
-        plt.clim(0, 100)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="2m Relative Luftfeuchte spatialMOS MEAN [%]"
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="2m Relative Luftfeuchte spatialmos SPREAD [%]"
-        plt.clim(0, 5)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="2m Relative Luftfeuchte spatialMOS SPREAD [%]"
     elif parameter == "rh_2m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="YlGn")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS MEAN [%]"
-        plt.clim(0, 100)
     elif parameter == "rh_2m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS SPREAD [%]"
-        plt.clim(0, 5)
     elif parameter == "wind_10m" and what == "spatialmos_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
-        plot_title="10m Windgeschwindigkeit spatialmos MEAN [km/h]"
-        plt.clim(0, 10)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="10m Windgeschwindigkeit spatialMOS MEAN [km/h]"
     elif parameter == "wind_10m" and what == "spatialmos_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
-        plot_title="10m Windgeschwindigkeit spatialmos SPREAD [km/h]"
-        plt.clim(0, 10)
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
+        plot_title="10m Windgeschwindigkeit spatialMOS SPREAD [km/h]"
     elif parameter == "wind_10m" and what == "nwp_mean":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Purples")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit GEFS MEAN [km/h]"
-        plt.clim(0, 10)
     elif parameter == "wind_10m" and what == "nwp_spread":
-        m.pcolormesh(xx, yy, plotparameter, shading="flat", latlon=True, cmap="Reds")
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit GEFS SPREAD [km/h]"
-        plt.clim(0, 10)
 
     plt.title(plot_title, loc="center", fontsize=20)
     plt.title(f"Gültig für {valid_date} | Step +{step}", loc="left", fontsize=15)
     plt.title(f"GEFS Lauf {anal_date} UTC", loc="right", fontsize=15)
-    m.colorbar(location="right")
+    
+    # Set Colorbar and Extend
+    if what in ["nwp_mean", "nwp_spread"]:
+        ax.set_extent([9.5, 17.5, 46, 49.5], ccrs.PlateCarree())
+        fig.colorbar(im, ax=ax, shrink=0.32)
+    else:
+        ax.set_extent([10, 13, 46.2, 47.9], ccrs.PlateCarree())
+        fig.colorbar(im, ax=ax, shrink=0.45)
 
-    m.readshapefile("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0", "aut")
-
-    m.drawparallels(gribfile_info["lats"], labels=[False, False, False, False], fontsize=10, color="lightgrey")
-    meridians = np.arange(8.5, 19.5, 1.)
-    m.drawmeridians(gribfile_info["lons"], labels=[False, False, False, False], fontsize=10, color="lightgrey")
-
-    m.drawparallels(gribfile_info["lats"], labels=[True, False, False, False], fontsize=10, color="lightgrey")
-    m.drawmeridians(gribfile_info["lons"], labels=[False, False, False, True], fontsize=10, linewidth=0.0)
+    # Add Austrian Borders
+    gadm36_shape = list(shpreader.Reader("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0.shp").geometries())
+    ax.add_geometries(gadm36_shape, ccrs.PlateCarree(), edgecolor='black', facecolor="None", alpha=0.5)
+    
+    # Add Grid
+    gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=1, color='gray', alpha=0.4, linestyle='-')
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.xlocator = mticker.FixedLocator(gribfile_info["lons"])
+    gl.ylocator = mticker.FixedLocator(gribfile_info["lats"])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
 
     filepath = f"./data/spool/{parameter}/images/"
     if not os.path.exists(filepath):
@@ -115,7 +118,7 @@ def plot_forecast(parameter, m, xx, yy, plotparameter, gribfile_info, what):
     anal_date_str = anal_date_timestamp.strftime("%Y%m%d")
     filename = f"{what}_{anal_date_str}_step_{step:03d}.jpg"
     path_filename = os.path.join(filepath, filename)
-    fig.savefig(path_filename, bbox_inches="tight", quality=70, optimize=True, progressive=True)
+    fig.savefig(path_filename, bbox_inches="tight", pil_kwargs={"quality": 70, "optimize": True, "progressive": True})
     plt.close(fig=None)
     logging.info("The prediction plot '%s' was created.", path_filename)
     

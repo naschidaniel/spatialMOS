@@ -17,9 +17,9 @@ services:
       - py_spatialmos:/usr/src/app/py_spatialmos:z
       - get_available_data:/usr/src/app/data/get_available_data:z
   
-  py_basemap:
-    build: ./container/py_basemap/
-    container_name: spatialMOS_py_basemap
+  py_cartopy:
+    build: ./container/py_cartopy/
+    container_name: spatialMOS_py_cartopy
     volumes:
       - log:/log:z
       - py_spatialmos:/usr/src/app/py_spatialmos:z
