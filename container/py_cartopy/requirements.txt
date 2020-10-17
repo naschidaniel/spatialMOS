@@ -1,5 +1,5 @@
 numpy
 pandas
 scipy
-basemap
+cartopy
 pillow
