@@ -49,40 +49,40 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     ax = plt.axes(projection=ccrs.PlateCarree(globe=ccrs.Globe(datum='WGS84', ellipse='WGS84')))
     plot_title = ""
     if parameter == "tmp_2m" and what == "spatialmos_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur spatialMOS MEAN [°C]"
     elif parameter == "tmp_2m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur spatialMOS SPREAD [°C]"
     elif parameter == "tmp_2m" and what == "nwp_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur GEFS MEAN [°C]"
     elif parameter == "tmp_2m" and what == "nwp_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur GEFS SPREAD [°C]"
     elif parameter == "rh_2m" and what == "spatialmos_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte spatialMOS MEAN [%]"
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte spatialMOS SPREAD [%]"
     elif parameter == "rh_2m" and what == "nwp_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS MEAN [%]"
     elif parameter == "rh_2m" and what == "nwp_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS SPREAD [%]"
     elif parameter == "wind_10m" and what == "spatialmos_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit spatialMOS MEAN [km/h]"
     elif parameter == "wind_10m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit spatialMOS SPREAD [km/h]"
     elif parameter == "wind_10m" and what == "nwp_mean":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit GEFS MEAN [km/h]"
     elif parameter == "wind_10m" and what == "nwp_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="flat", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())
         plot_title="10m Windgeschwindigkeit GEFS SPREAD [km/h]"
 
     plt.title(plot_title, loc="center", fontsize=20)
@@ -103,8 +103,8 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     
     # Add Grid
     gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=1, color='gray', alpha=0.4, linestyle='-')
-    gl.xlabels_top = False
-    gl.ylabels_right = False
+    gl.top_labels = False
+    gl.right_labels = False
     gl.xlocator = mticker.FixedLocator(gribfile_info["lons"])
     gl.ylocator = mticker.FixedLocator(gribfile_info["lats"])
     gl.xformatter = LONGITUDE_FORMATTER
@@ -118,7 +118,7 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     anal_date_str = anal_date_timestamp.strftime("%Y%m%d")
     filename = f"{what}_{anal_date_str}_step_{step:03d}.jpg"
     path_filename = os.path.join(filepath, filename)
-    fig.savefig(path_filename, bbox_inches="tight", quality=70, optimize=True, progressive=True)
+    fig.savefig(path_filename, bbox_inches="tight", pil_kwargs={"quality": 70, "optimize": True, "progressive": True})
     plt.close(fig=None)
     logging.info("The prediction plot '%s' was created.", path_filename)
     

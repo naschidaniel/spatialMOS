@@ -74,6 +74,14 @@ def spatial_predictions(parser_dict):
             latlon_correction = 0.25
         else:
             latlon_correction = 0.5
+        
+        # Create meshgrid and add M + 1, N + 1
+        # https://matplotlib.org/3.3.0/gallery/images_contours_and_fields/pcolormesh_grids.html
+        # shading='auto'
+        lons_plus_one = gribfile_info["lons"][-1] + parser_dict["resolution"]
+        lats_plus_one = gribfile_info["lats"][-1] + parser_dict["resolution"]
+        gribfile_info["lons"].append(lons_plus_one)
+        gribfile_info["lats"].append(lats_plus_one)
         lons = [x - latlon_correction for x in gribfile_info["lons"]]
         lats = [x - latlon_correction for x in gribfile_info["lats"]]
         xx_nwp, yy_nwp = np.meshgrid(lons, lats)
@@ -220,7 +228,7 @@ def spatial_predictions(parser_dict):
         # Write info file to spool directory
         spatialmos_run_status[f"{gribfile_info['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfile_info['step']:03d}"}
         write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
-        
+
         logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
             prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
             prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)
