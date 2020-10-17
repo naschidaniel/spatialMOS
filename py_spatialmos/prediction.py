@@ -12,8 +12,6 @@ import numpy as np
 import pandas as pd
 import pytz
 from scipy.interpolate import griddata
-os.environ["PROJ_LIB"] = "/usr/share/proj" # Environment Variable for basemap
-import cartopy.crs as ccrs
 from py_middleware import logger_module
 from py_middleware import spatial_parser
 from py_middleware import plot_functions
@@ -51,16 +49,7 @@ def spatial_predictions(parser_dict):
     min_lat = alt_area["min_lat"]
     max_lon = alt_area["max_lon"]
     max_lat = alt_area["max_lat"]
-    center_lon = alt_area["center_lon"]
-    center_lat = alt_area["center_lat"]
     alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
-
-    # BASEMAPS for GEFS predictions and spatialMOS
-    erc = ccrs.Globe(ellipse="WGS84")
-    #lons = np.array([alt_area["min_lon"], alt_area["max_lon"]])
-    #lats = np.array([alt_area["min_lat"], alt_area["max_lat"]])
-    #m_nwp = Basemap(llcrnrlon=9, urcrnrlon=18, llcrnrlat=46, urcrnrlat=50, resolution="c", ellps="WGS84")
-    #m_spatialmos = Basemap(llcrnrlon=10, urcrnrlon=13, llcrnrlat=min_lat, urcrnrlat=48, ellps="WGS84", lat_0=center_lat, lon_0=center_lon)
 
     # Read preprocessed Info Files
     data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
@@ -87,8 +76,6 @@ def spatial_predictions(parser_dict):
             latlon_correction = 0.5
         lons = [x - latlon_correction for x in gribfile_info["lons"]]
         lats = [x - latlon_correction for x in gribfile_info["lats"]]
-        print(lons)
-        print(lats)
         xx_nwp, yy_nwp = np.meshgrid(lons, lats)
 
         # Create required meshgrid for spatialMOS
@@ -175,13 +162,13 @@ def spatial_predictions(parser_dict):
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
         plot_filenames_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            erc, xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
+            xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
         plot_filenames_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            erc, xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
+            xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
         plot_filenames_spatialmos_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            erc, xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
+            xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
         plot_filenames_spatialmos_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            erc, xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
+            xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
         spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
