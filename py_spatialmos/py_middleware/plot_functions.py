@@ -48,6 +48,7 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     fig = plt.figure(figsize=(1600/fig_dpi, 1600/fig_dpi), dpi=fig_dpi)
     ax = plt.axes(projection=ccrs.PlateCarree(globe=ccrs.Globe(datum='WGS84', ellipse='WGS84')))
     plot_title = ""
+    im = ""
     if parameter == "tmp_2m" and what == "spatialmos_mean":
         im = plt.pcolormesh(xx, yy, plotparameter, cmap="RdBu_r", vmin=-40, vmax=40, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Temperatur spatialMOS MEAN [°C]"
@@ -105,8 +106,8 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=1, color='gray', alpha=0.4, linestyle='-')
     gl.top_labels = False
     gl.right_labels = False
-    gl.xlocator = mticker.FixedLocator(gribfile_info["lons"])
-    gl.ylocator = mticker.FixedLocator(gribfile_info["lats"])
+    gl.xlocator = mticker.FixedLocator(gribfile_info["longitude"])
+    gl.ylocator = mticker.FixedLocator(gribfile_info["latitude"])
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
 
