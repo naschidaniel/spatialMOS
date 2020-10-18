@@ -181,15 +181,21 @@ def download_grib(grib, local, required):
     headers = {"Range": "bytes={:s}".format(",".join(required))}
     req_grib = requests.get(grib, headers=headers)
 
-    with open(local, "wb") as f:
-        f.write(req_grib.content)
-        f.close()
-    return True
-
+    try:
+        with open(local, "wb") as f:
+            f.write(req_grib.content)
+            f.close()
+        return True
+    except:
+        logging.error("The Grbifile '%s' could not be loaded and saved in '%s'", grib, local)
+        return False
 
 def fetch_gefs_data(modeltype, date, parameter, resolution):
     """Function for downloading gribfiles from the GEFS NCEP server."""
     
+    # A failure variable if an error occurs
+    exit_with_error = False
+
     params = None
     if parameter == "tmp_2m":
         params = ["TMP:2 m above ground"]
@@ -283,10 +289,15 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
             required = parse_index_file(files["idx"], params)
 
             # If no messages found: continue
-            if required is None: continue
-            if len(required) == 0: continue
+            if required is None or len(required) == 0: 
+                exit_with_error = True
+                continue
 
-            download_grib(files["grib"], files["local"], required)
+            download_grib_success = download_grib(files["grib"], files["local"], required)
+
+            if not download_grib_success:
+                exit_with_error = True
+                continue
 
             # If wgrib2 ist installed: crate subset (small_grib)
             if not subset is None:
@@ -302,8 +313,14 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                     logging.info("Subset created, delete global file: %s", files["local"])
                 else:
                     logging.error("Problem with subset, do not delete global grib2 file.")
+                    exit_with_error = True
+            else:
+                logging.info("No subset was created")
 
             logging.info("{:s}".format("".join(["-"]*70)))
+    if exit_with_error:
+        logging.error("Not all gribfiles could be loaded.")
+        sys.exit(1)
 
 # Main
 if __name__ == "__main__":

@@ -35,6 +35,8 @@ def write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmo
 
 def spatial_predictions(parser_dict):
     """The main function to create surface forecasts based on GEFS forecasts and GAMLSS climatologies."""
+    # A failure variable if an error occurs
+    exit_with_error = False
 
     # Create folder structure
     data_path_spool = f"./data/spool/{parser_dict['parameter']}/"
@@ -45,10 +47,6 @@ def spatial_predictions(parser_dict):
         alt_area = json.load(f)
         f.close()
 
-    min_lon = alt_area["min_lon"]
-    min_lat = alt_area["min_lat"]
-    max_lon = alt_area["max_lon"]
-    max_lat = alt_area["max_lat"]
     alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
 
     # Read preprocessed Info Files
@@ -108,6 +106,7 @@ def spatial_predictions(parser_dict):
             logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_spatialmos_nwp_file, climate_spatialmos_file)
             # Write info file to spool directory
             write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS NWP or spatialMOS climatologies")
+            exit_with_error = True
             continue
 
         # Read in GAMLSS climatologies
@@ -155,6 +154,7 @@ def spatial_predictions(parser_dict):
             logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], spatialmos_coef_file)
             # Write info file to spool directory
             write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS coefficients")
+            exit_with_error = True
             continue
 
         # Generate spatialmos spatial predictions
@@ -233,6 +233,9 @@ def spatial_predictions(parser_dict):
             prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
             prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)
 
+    if exit_with_error:
+        logging.error("Not all plots could be created")
+        sys.exit(1)
 
 # Main
 if __name__ == "__main__":
