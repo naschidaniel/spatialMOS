@@ -94,14 +94,93 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
     if what in ["nwp_mean", "nwp_spread"]:
         ax.set_extent([9.5, 17.5, 46, 49.5], ccrs.PlateCarree())
         fig.colorbar(im, ax=ax, shrink=0.32)
+        cities_offset = 0.05
     else:
         ax.set_extent([10, 13, 46.2, 47.9], ccrs.PlateCarree())
         fig.colorbar(im, ax=ax, shrink=0.45)
+        cities_offset = 0.02
 
     # Add Austrian Borders
     gadm36_shape = list(shpreader.Reader("./data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0.shp").geometries())
     ax.add_geometries(gadm36_shape, ccrs.PlateCarree(), edgecolor='black', facecolor="None", alpha=0.5)
     
+    # District capital cities
+    cities = {
+            "Innsbruck": {
+                "pos": [47.26266, 11.39454], 
+                "label": "IBK",
+                "size": 7,
+                },
+            "Kufstein": {
+                "pos": [47.58333, 12.16667],
+                "label": "KU",
+                "size": 5,
+                },
+            "Kitzbuehel": {
+                "pos": [47.44637, 12.39215],
+                "label": "KB",
+                "size": 5,
+                },
+            "Lienz": {
+                "pos": [46.8289, 12.76903],
+                "label": "LZ",
+                "size": 5,
+                },
+            "Schwaz": {
+                "pos": [47.35169, 11.71014],
+                "label": "SZ",
+                "size": 5,
+                },
+            "Reutte": {
+                "pos": [47.48333, 10.71667],
+                "label": "RE",
+                "size": 5,
+                },
+            "Landeck": {
+                "pos": [47.13988, 10.56593],
+                "label": "LA",
+                "size": 5,
+                },
+            "Imst": {
+                "pos": [47.24504, 10.73974],
+                "label": "IM",
+                "size": 5,
+                },
+            "Bozen": {
+                "pos": [46.498295, 11.354758],
+                "label": "BOZ",
+                "size": 7,
+                },
+            "Schlanders": {
+                "pos": [46.627678, 10.773689],
+                "label": "SCHL",
+                "size": 5,
+                },
+            "Meran": {
+                "pos": [46.668930, 11.163990],
+                "label": "MER",
+                "size": 5,
+                },
+            "Sterzing": {
+                "pos": [46.892673, 11.433619],
+                "label": "STE",
+                "size": 5,
+                },
+            "Brixen": {
+                "pos": [46.715858, 11.657200],
+                "label": "BX",
+                "size": 5,
+                },
+            "Bruneck": {
+                "pos": [46.796574, 11.938042],
+                "label": "BRE",
+                "size": 5,
+                },
+            }
+    for c in cities.keys():
+        ax.plot(cities[c]["pos"][1], cities[c]["pos"][0],  markersize=cities[c]["size"], marker='o', color='gray', transform=ccrs.PlateCarree())
+        ax.text(cities[c]["pos"][1] + cities_offset, cities[c]["pos"][0] + cities_offset, cities[c]["label"], horizontalalignment='left', transform=ccrs.PlateCarree())
+
     # Add Grid
     gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True, linewidth=1, color='gray', alpha=0.4, linestyle='-')
     gl.top_labels = False
