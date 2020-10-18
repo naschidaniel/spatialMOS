@@ -56,24 +56,21 @@ def open_gribfile(file, parameter, avgspr, info=False):
             logging.error("The parameter '%s' cannot be unpacked from the xarray", parameter)
             sys.exit(1)
 
-        # TODO Drop this rename
         # Dataset to pandas dataframe
         df = ds.to_dataframe()
-        df.index.names = ["lat", "lon"]
                 
         if avgspr == "spr":
             df["log_spread"] = log_spread_calc.log_spread(df["spread"]) 
 
         # Drop unused columns
-        keep = set(df.columns) - (set(df.columns) - set(["mean", "log_spread", "lon", "lat"]))
+        keep = set(df.columns) - (set(df.columns) - set(["mean", "log_spread"]))
         df = df[keep]
 
-        # TODO Drop this np_array
-        # numpy array of the predictions
+        # numpy array of predictions
         np_array = []
-        if parameter == "tmp_2m" and avgspr == "avg":
+        if avgspr == "avg":
             np_array = ds["mean"].values
-        elif parameter == "tmp_2m" and avgspr == "spr":
+        elif avgspr == "spr":
             np_array = ds["spread"].values
 
         # Return values

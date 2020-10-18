@@ -76,25 +76,23 @@ def spatial_predictions(parser_dict):
         # Create meshgrid and add M + 1, N + 1
         # https://matplotlib.org/3.3.0/gallery/images_contours_and_fields/pcolormesh_grids.html
         # shading='auto'
-        lons_plus_one = gribfile_info["lons"][-1] + parser_dict["resolution"]
-        lats_plus_one = gribfile_info["lats"][-1] + parser_dict["resolution"]
-        gribfile_info["lons"].append(lons_plus_one)
-        gribfile_info["lats"].append(lats_plus_one)
-        lons = [x - latlon_correction for x in gribfile_info["lons"]]
-        lats = [x - latlon_correction for x in gribfile_info["lats"]]
+        gribfile_info["longitude"].append(gribfile_info["longitude"][-1] + parser_dict["resolution"])
+        gribfile_info["latitude"].append(gribfile_info["latitude"][-1] + parser_dict["resolution"])
+        lons = [x - latlon_correction for x in gribfile_info["longitude"]]
+        lats = [x - latlon_correction for x in gribfile_info["latitude"]]
         xx_nwp, yy_nwp = np.meshgrid(lons, lats)
 
         # Create required meshgrid for spatialMOS
-        lons_spatialmos = np.linspace(min_lon, max_lon, alt.shape[1])
-        lats_spatialmos = np.linspace(max_lat, min_lat, alt.shape[0])
+        lons_spatialmos = np.linspace(alt_area["min_lon"], alt_area["max_lon"], alt.shape[1])
+        lats_spatialmos = np.linspace(alt_area["max_lat"], alt_area["min_lat"], alt.shape[0])
         xx_spatialmos, yy_spatialmos = np.meshgrid(lons_spatialmos, lats_spatialmos)
 
         # Read in preprocessed NWP CSV file with the predictions
         nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
 
         # Interpolation of NWP forecasts
-        mean_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (xx_spatialmos, yy_spatialmos), method="linear")
-        log_spread_interpolation = griddata(nwp_df[["lon", "lat"]], nwp_df["log_spread"], (xx_spatialmos, yy_spatialmos), method="linear")
+        mean_interpolation = griddata(nwp_df[["longitude", "latitude"]], nwp_df["mean"], (xx_spatialmos, yy_spatialmos), method="linear")
+        log_spread_interpolation = griddata(nwp_df[["longitude", "latitude"]], nwp_df["log_spread"], (xx_spatialmos, yy_spatialmos), method="linear")
         mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
