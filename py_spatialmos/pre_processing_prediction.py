@@ -3,6 +3,7 @@
 
 import os
 import csv
+import sys
 import logging
 import json
 import numpy as np
@@ -16,7 +17,9 @@ from py_middleware import gribfile_to_pandasdf
 # Functions
 def gribfiles_to_pandasdataframe(parser_dict):
     """This function converts the gribfiles into a CSV-File and an a Json-Filefile."""
-    
+    # A failure variable if an error occurs
+    exit_with_error = False
+
     # Create an array with the available steps
     available_steps = np.arange(6, 193, 6, int)
 
@@ -69,7 +72,9 @@ def gribfiles_to_pandasdataframe(parser_dict):
 
     # Provide available NWP forecasts
     nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps = gribfile_to_pandasdf.nwp_gribfiles_avalibel_steps(parser_dict["parameter"], parser_dict["date"], resolution, available_steps)
-
+    if len(nwp_gribfiles_avalibel_mean_steps) != len(available_steps) or len(nwp_gribfiles_avalibel_spread_steps) != len(available_steps):
+        exit_with_error = True
+    
     for nwp_gribfile_mean_step, nwp_gribfile_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
         df_grb_avg, grb_avg, info = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_mean_step, parser_dict["parameter"], "avg", info=True)
         df_grb_spr, grb_spr = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_spread_step, parser_dict["parameter"], "spr")
@@ -114,6 +119,10 @@ def gribfiles_to_pandasdataframe(parser_dict):
         logging.info("The infofile '%s' was written.", json_info_filename)
 
         logging.info("The forecast for the parameter %s was saved in CSV format and the infofile was created.", parser_dict["parameter"], )
+
+    if exit_with_error:
+        logging.error("Not all gribfiles could be pre processed-")
+        sys.exit(1)
 
 # Main
 if __name__ == "__main__":
