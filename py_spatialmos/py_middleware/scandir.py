@@ -15,11 +15,12 @@ def scandir(data_path, parameter=None, ending=None):
 
     file_list = []
     for main_folder, sub_folder, files in os.walk(data_path):
-        for x in files:
-            if '.tmp' not in x[-4:]:
-                file_list.append(os.path.join(main_folder, x))
-            else:
+        for file in files:
+            if os.path.splitext(file)[1] in [".tmp", ".idx"]:
                 continue
+            else:
+                file_list.append(os.path.join(main_folder, file))
+
 
     if parameter is not None:
         file_list = [entry for entry in file_list if parameter in entry]

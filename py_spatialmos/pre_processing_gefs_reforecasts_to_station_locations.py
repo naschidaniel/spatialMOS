@@ -3,41 +3,41 @@
 """With this Python script the GEFS Ensemble predictions can be interpolated bilinear to the station locations."""
 
 import csv
+from logging import error
 import os
-from py_spatialmos.pre_processing_gamlss_crch_climatologies import PARSER_DICT, STARTTIME
 import sys
 import time
 import logging
 from multiprocessing import Pool
 import numpy as np
 import pandas as pd
-import pygrib
 from scipy.interpolate import griddata
 from py_middleware import logger_module
 from py_middleware import scandir
 from py_middleware import spatial_parser
 from py_middleware import meteorological_calc
+from py_middleware import gribfile_to_pandasdf
+
 
 # Functions
 def status_gribfiles(cores, parameter, gribfiles_mean_spread):
     """A function for the calculation status to be processed."""
     logging.info("          available cores : %s", cores)
     logging.info("                parameter : %s", parameter)
-    # TODO Why is 43 used?
-    logging.info("    gribfiles to processed: %s", (len(gribfiles_mean_spread) * 43))
+    logging.info("    gribfiles to processed: %s", len(gribfiles_mean_spread))
     logging.info("            first gribfile: %s", gribfiles_mean_spread[0])
     logging.info("             last gribfile: %s", gribfiles_mean_spread[-1])
 
 def filename_csv(parameter, df):
     """A function to generate the filename for the CSV-Files"""
-    analDate = pd.to_datetime(df["analDate"][0]).strftime("%Y%m%d%H")
+    anal_date = pd.to_datetime(df["analDate"][0]).strftime("%Y%m%d%H")
     step = int(df["step"][0])
     
     path_interpolated_station_reforecasts = f"./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/{parameter}"
     if not os.path.exists(path_interpolated_station_reforecasts):
         os.makedirs(path_interpolated_station_reforecasts)
         
-    return f"{path_interpolated_station_reforecasts}/GFSV2_{parameter}_{analDate}_{step:03d}.csv"
+    return f"{path_interpolated_station_reforecasts}/GFSV2_{parameter}_{anal_date}_{step:03d}.csv"
 
 
 def predictions_for_stations(gribfile, parameter):
@@ -63,17 +63,17 @@ def gefs_reforecasts_to_station_location(parameter, cores=8):
         gribfiles_spread = [s for s in gribfiles if "sprd" in s]
 
         # group gribfiles by date
-        gribfiles_mean_spread = []
-        for mean_f in gribfiles_mean:
-            spread_f = [s for s in gribfiles_spread if mean_f[-28:-18] in s]
-            spread_f = spread_f[0]
-            if spread_f is not None:
-                gribfiles_mean_spread.append([mean_f, spread_f, parameter])
+        gribfiles_mean_spread_parameter = []
+        for mean_file in gribfiles_mean:
+            spread_file = [s for s in gribfiles_spread if mean_file[-28:-18] in s]
+            spread_file = spread_file[0]
+            if spread_file is not None:
+                gribfiles_mean_spread_parameter.append([mean_file, spread_file, parameter])
 
-        status_gribfiles(cores, parameter, gribfiles_mean_spread)
+        status_gribfiles(cores, parameter, gribfiles_mean_spread_parameter)
 
         with Pool(cores) as p:
-            p.map(interpolate_grib_files, gribfiles_mean_spread)
+            p.map(interpolate_grib_files, gribfiles_mean_spread_parameter)
 
     elif parameter in ["rh_2m", "wind_10m"]:
         data_path_interpolated_gribfiles = "./data/get_available_data/gefs_reforecast/interpolated_station_reforecasts/"
@@ -103,13 +103,9 @@ def gefs_reforecasts_to_station_location(parameter, cores=8):
                 file2_f = [s for s in csvfiles_file2 if file0_date in s]
                 if file0_f != [] and file1_f != [] and file1_f != []:
                     gribfiles_combined.append([file0_f, file1_f[0], file2_f[0], parameter, parameter_calc])
-                else:
-                    pass
             else:
                 if file0_f != [] and file1_f != []:
                     gribfiles_combined.append([file0_f, file1_f[0], -999, parameter, parameter_calc])
-                else:
-                    pass
 
         status_gribfiles(cores, parameter, gribfiles_combined)
 
@@ -156,89 +152,51 @@ def calculate_parameter(gribfiles_combined):
 
 def interpolate_grib_files(gribfiles_mean_spread_parameter):
     """A function to interpolate the gribfiles to station locations. The data is saved as individual CSV files for each prediction and each timestep."""
-    # Read Gribfiles
-    grbs_avg = pygrib.open(gribfiles_mean_spread_parameter[0])
-    grbs_spr = pygrib.open(gribfiles_mean_spread_parameter[1])
-
     # select parameter
+    gribfiles_mean = gribfiles_mean_spread_parameter[0]
+    gribfiles_spread = gribfiles_mean_spread_parameter[1]
     parameter = gribfiles_mean_spread_parameter[2]
-    intercept = 0
-    grbs_select_name = None
 
-    if parameter == "tmp_2m":
-        grbs_select_name = "2 metre temperature"  # Kelvin
-        intercept = 273.15  # from Kelvin to Celsius
-    elif parameter == "pres_sfc":
-        grbs_select_name = "Surface pressure"  # Pa
-    elif parameter == "spfh_2m":
-        grbs_select_name = "Specific humidity"  # kg/kg
-    elif parameter == "apcp_sfc":
-        grbs_select_name = "Total Precipitation"
-    elif parameter == "ugrd_10m":
-        grbs_select_name = "10 metre U wind component" #m s**-1
-    elif parameter == "vgrd_10m":
-        grbs_select_name = "10 metre V wind component" #m s**-1
-
-    for grb_avg in grbs_avg.select(name=grbs_select_name):
-        analDate = grb_avg.analDate.strftime("%Y-%m-%d %H:%M")
-        validDate = grb_avg.validDate.strftime("%Y-%m-%d %H:%M")
-        step = grb_avg.startStep
-
-        try:
-            # Combining Mean and Spread of Predictions
-            grb_spr = grbs_spr.select(name=grbs_select_name, analDate=grb_avg.analDate, validDate=grb_avg.validDate, startStep=grb_avg.startStep)
-            grb_spr = grb_spr[0]
-        except ValueError as e:
-            logging.error("There has been a error %s | analDate: %s | validDate: %s | step: %s | error: %s", grbs_select_name, grb_avg.analDate, grb_avg.validDate, grb_avg.startStep, e)
-            continue
+    # Read Gribfiles
+    last_step = False
+    select_step = 0
+    while not last_step:
+        df_grb_avg, grb_avg, info, last_step = gribfile_to_pandasdf.open_gribfile(gribfiles_mean, parameter, "avg", select_step, info=True, last_step=False)
+        df_grb_spr, grb_spr = gribfile_to_pandasdf.open_gribfile(gribfiles_spread, parameter, "spr", select_step)
         
-        # Scale to the grid of spatialMOS
-        ## NWP
-        latitude = np.linspace(float(grb_avg["latitudeOfFirstGridPointInDegrees"]),
-                            float(grb_avg["latitudeOfLastGridPointInDegrees"]), int(grb_avg["Nj"]))
-        longitude = np.linspace(float(grb_avg["longitudeOfFirstGridPointInDegrees"]),
-                            float(grb_avg["longitudeOfLastGridPointInDegrees"]), int(grb_avg["Ni"]))
-
-        nwp_df = []
-        for lon in longitude:
-            for lat in latitude:
-                mean = grb_avg.data(lat1=lat, lon1=lon)
-                if parameter == "spfh_2m":
-                    mean = round(mean[0][0][0] - intercept, 12)
-                else:
-                    mean = round(mean[0][0][0] - intercept, 2)
-                spread = grb_spr.data(lat1=lat, lon1=lon)
-                spread = spread[0][0][0]
-                nwp_df.append([mean, spread, lon, lat])
-
-        nwp_df = pd.DataFrame(nwp_df, columns=["mean", "spread", "lon", "lat"])
-
-        # Station locations of South Tyrol and wetter_at
-        stations_at_wetter = pd.read_csv("./data/get_available_data/wetter_at/stations.csv")
-        stations_suedtirol = pd.read_csv("./data/get_available_data/suedtirol/stations.csv")
-        stations = stations_at_wetter.append(stations_suedtirol, sort=False)
-
-        df_entry = []
-        for index, row in stations.iterrows():
-            try:
-                df_entry.append([analDate, validDate, step, row["station"], row["alt"], row["lon"], row["lat"],
-                                    griddata(nwp_df[["lon", "lat"]], nwp_df["mean"], (row["lon"], row["lat"]), method="linear"),
-                                    griddata(nwp_df[["lon", "lat"]], nwp_df["spread"], (row["lon"], row["lat"]), method="linear")])
-            except Exception as e:
-                logging.error("The data points could not be interpolated. %s", e)
-
-        df = pd.DataFrame(df_entry, columns=["analDate", "validDate", "step", "station", "alt", "lon", "lat", "mean", "spread"])
-
-        # Store data as CSV files in the file system
-        if parameter == "spfh_2m":
-            df["mean"] = np.around(df["mean"].astype(np.double), 12)
-            df["spread"] = np.around(df["spread"].astype(np.double), 12)
+        if len(df_grb_avg) != len(df_grb_spr):
+            logging.error("There has been a error %s | anal_date: %s | valid_date: %s | step: %s", parameter, info["anal_date"], info["valid_date"], info["step"])
         else:
-            df["mean"] = np.around(df["mean"].astype(np.double), 2)
-            df["spread"] = np.around(df["spread"].astype(np.double), 2)
+            # Combining Mean and Spread of Predictions
+            prediction_df = pd.concat([df_grb_spr, df_grb_avg], axis=1, join='inner')        
+            prediction_df = prediction_df.reset_index()
 
-        df.to_csv(filename_csv(parameter, df), sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+            # Station locations of South Tyrol and wetter_at
+            stations_at_wetter = pd.read_csv("./data/get_available_data/wetter_at/stations.csv")
+            stations_suedtirol = pd.read_csv("./data/get_available_data/suedtirol/stations.csv")
+            stations = stations_at_wetter.append(stations_suedtirol, sort=False)
 
+            entry_list = []
+            for index, row in stations.iterrows():
+                try:
+                    entry_list.append([info["anal_date"], info["valid_date"], info["step"], row["station"], row["alt"], row["lon"], row["lat"],
+                                        griddata(prediction_df[["longitude", "latitude"]], prediction_df["mean"], (row["lon"], row["lat"]), method="linear"),
+                                        griddata(prediction_df[["longitude", "latitude"]], prediction_df["spread"], (row["lon"], row["lat"]), method="linear")])
+                except Exception as e:
+                    logging.error("The data points could not be interpolated. %s", e)
+
+            df = pd.DataFrame(entry_list, columns=["analDate", "validDate", "step", "station", "alt", "lon", "lat", "mean", "spread"])
+            # Store data as CSV files in the file system
+            if parameter == "spfh_2m":
+                df["mean"] = np.around(df["mean"].astype(np.double), 12)
+                df["spread"] = np.around(df["spread"].astype(np.double), 12)
+            else:
+                df["mean"] = np.around(df["mean"].astype(np.double), 2)
+                df["spread"] = np.around(df["spread"].astype(np.double), 2)
+
+            df.to_csv(filename_csv(parameter, df), sep=";", index=False, quoting=csv.QUOTE_NONNUMERIC)
+
+        select_step = select_step + 1
 
 
 # Main

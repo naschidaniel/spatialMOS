@@ -76,7 +76,7 @@ def gribfiles_to_pandasdataframe(parser_dict):
         exit_with_error = True
     
     for nwp_gribfile_mean_step, nwp_gribfile_spread_step in zip(nwp_gribfiles_avalibel_mean_steps, nwp_gribfiles_avalibel_spread_steps):
-        df_grb_avg, grb_avg, info = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_mean_step, parser_dict["parameter"], "avg", info=True)
+        df_grb_avg, grb_avg, info, last_step = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_mean_step, parser_dict["parameter"], "avg", info=True)
         df_grb_spr, grb_spr = gribfile_to_pandasdf.open_gribfile(nwp_gribfile_spread_step, parser_dict["parameter"], "spr")
 
         # Create required pandas df for predictions
