@@ -45,17 +45,32 @@ def nwp_gribfiles_avalibel_steps(parameter, date, resolution, available_steps):
     return available_files(path_nwp_forecasts, "mean", available_steps, parameter), available_files(path_nwp_forecasts, "spread", available_steps, parameter)
 
 
-def open_gribfile(file, parameter, avgspr, info=False):
+def open_gribfile(file, parameter, avgspr, select_step=0, info=False, last_step=False):
     """A function to open gribfiles"""
     with xr.open_dataset(file, engine='cfgrib') as ds:
+        try:
+            if select_step == len(ds.step) - 1:
+                last_step = True
+            ds = ds.isel(step=select_step)
+        except:
+            last_step = True
+            
         if parameter == "tmp_2m" and avgspr == "avg":
-            ds["mean"] = ds["t2m"] - 273.15 # Corrections of the values
+            ds["mean"] = ds["t2m"] - 273.15 # Corrections of Kelvin to Celsius
         elif parameter == "tmp_2m" and avgspr == "spr":
             ds["spread"] = ds["t2m"]
+        elif parameter == "pres_sfc" and avgspr == "avg": # Pa
+            ds["mean"] = ds["sp"]
+        elif parameter == "pres_sfc" and avgspr == "spr": # Pa
+            ds["spread"] = ds["sp"]
+        elif parameter == "spfh_2m" and avgspr == "avg": # kg/kg
+            ds["mean"] = ds["q"]
+        elif parameter == "spfh_2m" and avgspr == "spr": # kg/kg
+            ds["spread"] = ds["q"]
+        # TODO [apcp_sfc (mm/3h), ugrd_10m (m s**-1), vgrd_10m (m s**-1)] 
         else:
             logging.error("The parameter '%s' cannot be unpacked from the xarray", parameter)
             sys.exit(1)
-
         # Dataset to pandas dataframe
         df = ds.to_dataframe()
                 
@@ -63,7 +78,7 @@ def open_gribfile(file, parameter, avgspr, info=False):
             df["log_spread"] = log_spread_calc.log_spread(df["spread"]) 
 
         # Drop unused columns
-        keep = set(df.columns) - (set(df.columns) - set(["mean", "log_spread"]))
+        keep = set(df.columns) - (set(df.columns) - set(["mean", "spread", "log_spread"]))
         df = df[keep]
 
         # numpy array of predictions
@@ -86,4 +101,4 @@ def open_gribfile(file, parameter, avgspr, info=False):
                         "dayminute": int(ds.valid_time.dt.hour.values * 60),
                         "yday": ds.valid_time.dt.dayofyear.values.tolist(),
                         }
-            return df, np_array, info_dict
+            return df, np_array, info_dict, last_step
