@@ -24,7 +24,11 @@ export default class Predictions extends React.Component {
   }
 
   componentDidMount() {
-    fetch("/api/spatialmosrun/last/tmp_2m/")
+    this.fetchData("tmp_2m");
+  }
+
+  fetchData(parameter) {
+    fetch(`/api/spatialmosrun/last/${parameter}/`)
       .then((res) => res.json())
       .then(
         (result) => {
@@ -76,6 +80,10 @@ export default class Predictions extends React.Component {
     this.setState({
       showStep: index,
     });
+  }
+
+  handleParameterChange(parameter) {
+    this.fetchData(parameter);
   }
 
   render() {
@@ -174,6 +182,30 @@ export default class Predictions extends React.Component {
                 &#8250;
               </button>
             </div>
+          </div>
+          <div className="dropdown show mt-2 text-right">
+            <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Parameter auswählen
+            </button>
+
+            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <span className={`dropdown-item ${modelrun.parameter === "tmp_2m" ? "active" : ""}`} onClick={() => this.handleParameterChange('tmp_2m')} role="button">Temperatur</span>
+              <span className={`dropdown-item ${modelrun.parameter === "rh_2m" ? "active" : ""}`} onClick={() => this.handleParameterChange('rh_2m')} role="button">Relative Luftfeuchte</span>
+            </div>
+          </div>
+          <div className="mt-3">
+            <table className="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row">Parmeter</th>
+                  <td>{modelrun.parameter_longname}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Analysedatum</th>
+                  <td>{modelrun.anal_date}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       );
