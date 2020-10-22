@@ -65,13 +65,13 @@ def plot_forecast(parameter, xx, yy, plotparameter, gribfile_info, what):
         im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte spatialMOS MEAN [%]"
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=15, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte spatialMOS SPREAD [%]"
     elif parameter == "rh_2m" and what == "nwp_mean":
         im = plt.pcolormesh(xx, yy, plotparameter, cmap="YlGn", vmin=0, vmax=100, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS MEAN [%]"
     elif parameter == "rh_2m" and what == "nwp_spread":
-        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=5, shading="auto", transform=ccrs.PlateCarree())
+        im = plt.pcolormesh(xx, yy, plotparameter, cmap="Reds", vmin=0, vmax=15, shading="auto", transform=ccrs.PlateCarree())
         plot_title="2m Relative Luftfeuchte GEFS SPREAD [%]"
     elif parameter == "wind_10m" and what == "spatialmos_mean":
         im = plt.pcolormesh(xx, yy, plotparameter, cmap="Purples", vmin=0, vmax=10, shading="auto", transform=ccrs.PlateCarree())

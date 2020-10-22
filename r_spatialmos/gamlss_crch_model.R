@@ -14,6 +14,7 @@ source("./r_spatialmos/r_middleware/functions.R")
 
 # Parse Inputs
 required_gamlss_model_inputs <- TRUE
+required_climatologies_model_inputs <- FALSE
 source("./r_spatialmos/r_middleware/gamlss_crch_model_optparse.R")
 
 stations = read.csv('./data/spatialmos_climatology/stations.csv')

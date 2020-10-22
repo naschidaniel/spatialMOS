@@ -34,7 +34,7 @@ dayminutes <- c(0, 360, 720, 1080)
 
 for (yday in dayseq){
   daystring <- sprintf("%02d",yday)
-  datestring <- as.character(as.Date(yday, origin = "2018-12-31"))
+  datestring <- as.character(as.Date(yday, origin = "2019-12-31"))
   for (dayminute in dayminutes){
     
     data_path_climatologies <- paste0("./data/spatialmos_climatology/gam/", parameter, "/", folder)
