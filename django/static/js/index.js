@@ -5,6 +5,8 @@ import LeafletMap from "./src/components/LeafletMap";
 import SimpleLineChart from "./src/components/SimpleLineChart";
 import Predictions from "./src/components/Predictions";
 import "bootstrap/js/dist/collapse";
+import "bootstrap/js/dist/dropdown";
+
 import "./style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
