@@ -179,10 +179,5 @@ def pointprediction(request):
 
 def predictions(request):
     """The function to display the spatialMOS plots."""
-    spatialmosrun, error = request_url('https://moses.tirol/api/spatialmosrun/last/tmp_2m/')
 
-    context = {
-        'spatialmosrun': spatialmosrun,
-        'error': error
-    }
-    return render(request, 'predictions/predictions.html', context)
+    return render(request, 'predictions/predictions.html')
