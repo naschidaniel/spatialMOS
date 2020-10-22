@@ -54,7 +54,7 @@ def open_gribfile(file, parameter, avgspr, select_step=0, info=False, last_step=
             ds = ds.isel(step=select_step)
         except:
             last_step = True
-            
+        
         if parameter == "tmp_2m" and avgspr == "avg":
             ds["mean"] = ds["t2m"] - 273.15 # Corrections of Kelvin to Celsius
         elif parameter == "tmp_2m" and avgspr == "spr":
@@ -67,6 +67,10 @@ def open_gribfile(file, parameter, avgspr, select_step=0, info=False, last_step=
             ds["mean"] = ds["q"]
         elif parameter == "spfh_2m" and avgspr == "spr": # kg/kg
             ds["spread"] = ds["q"]
+        elif parameter == "rh_2m" and avgspr == "avg": # %
+            ds["mean"] = ds["r2"]
+        elif parameter == "rh_2m" and avgspr == "spr": # %
+            ds["spread"] = ds["r2"]
         # TODO [apcp_sfc (mm/3h), ugrd_10m (m s**-1), vgrd_10m (m s**-1)] 
         else:
             logging.error("The parameter '%s' cannot be unpacked from the xarray", parameter)

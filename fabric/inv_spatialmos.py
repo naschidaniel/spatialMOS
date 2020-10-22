@@ -145,7 +145,7 @@ def py_spatialmos__pre_processing_reforecasts(c, parameter):
 def py_spatialmos__pre_processing_observations_and_reforecasts_to_stations(c):
     """Station Observations and GEFS Reforecasts are combined."""
     inv_logging.task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__)
-    cmd = ["py_cfgrib", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
+    cmd = ["py_rdata", "python", "./py_spatialmos/pre_processing_station_observations_and_reforecasts.py"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations.__name__, cmd)
@@ -155,7 +155,7 @@ def py_spatialmos__pre_processing_observations_and_reforecasts_to_stations(c):
 def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
     """Create climatologies for further processing in R with gamlss."""
     inv_logging.task(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
-    cmd = ["py_cfgrib", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
+    cmd = ["py_rdata", "python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__, cmd)

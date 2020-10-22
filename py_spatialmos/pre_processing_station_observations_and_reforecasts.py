@@ -21,7 +21,7 @@ def plausibility_check(df, parameter, lowerlimit, upperlimit):
         df.loc[(df[parameter] >= upperlimit), parameter] = -999
 
     if any(df[parameter]) <= lowerlimit:
-        df.loc[(df[parameter] <= upperlimit), parameter] = -999
+        df.loc[(df[parameter] <= lowerlimit), parameter] = -999
 
     return df
 
