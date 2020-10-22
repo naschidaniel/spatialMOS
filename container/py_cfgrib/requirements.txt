@@ -3,6 +3,5 @@ pandas
 matplotlib
 pyproj
 scipy
-swifter
 cfgrib
 xarray

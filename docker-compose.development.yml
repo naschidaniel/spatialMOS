@@ -93,6 +93,15 @@ services:
       - static:/www/static:z
       - log:/log:z
 
+  py_rdata:
+    build: ./container/py_rdata/
+    container_name: py_rdata
+    volumes:
+      - log:/log:z
+      - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
+      - py_spatialmos:/usr/src/app/py_spatialmos:z
+      - get_available_data:/usr/src/app/data/get_available_data:z
+
   r_base:
     build: ./container/r_base/
     container_name: spatialMOS_r_base
