@@ -27,6 +27,15 @@ export default class Predictions extends React.Component {
     this.fetchData("tmp_2m");
   }
 
+  onImgLoad({ target: img }) {
+    this.setState({
+      dimensions: {
+        height: img.offsetHeight,
+        width: img.offsetWidth,
+      },
+    });
+  }
+
   fetchData(parameter) {
     fetch(`/api/spatialmosrun/last/${parameter}/`)
       .then((res) => res.json())
@@ -49,15 +58,6 @@ export default class Predictions extends React.Component {
       );
   }
 
-  onImgLoad({ target: img }) {
-    this.setState({
-      dimensions: {
-        height: img.offsetHeight,
-        width: img.offsetWidth,
-      },
-    });
-  }
-  
   decreaseShowStep() {
     const { availableSteps, showStep } = this.state
     const index =
