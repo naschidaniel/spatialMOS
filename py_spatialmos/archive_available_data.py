@@ -13,7 +13,7 @@ from py_middleware import logger_module
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("get_available_data", "archive", docker=False)
-    PARSER_DICT = spatial_parser.spatial_parser(folder=True, name_folder=["gefs_avgspr_forecast_p05", "gefs_avgspr_forecast_p1", "gefs_reforecast", "suedtirol", "uibk", "wetter_at", "zamg"])
+    PARSER_DICT = spatial_parser.spatial_parser(folder=True, name_folder=["gefs_avgspr_forecast_p05", "gefs_avgspr_forecast_p1", "gefs_reforecast", "suedtirol", "uibk", "lwd", "wetter_at", "zamg"])
 
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 
