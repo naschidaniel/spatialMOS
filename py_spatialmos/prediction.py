@@ -181,12 +181,23 @@ def spatial_predictions(parser_dict):
         spatialmos_point = spatialmos_point.dropna()
         spatialmos_point_dict = spatialmos_point.to_dict('records')
         
+        # Declare Unit
+        if parser_dict["parameter"] == "tmp_2m":
+            unit = "° C"
+        elif parser_dict["parameter"] == "rh_2m":
+            unit = "%"
+        elif parser_dict["parameter"] == "wind_10m":
+            unit = "m/s"
+        else:
+            unit = ""
+
         # Exchange file for spatialMOS Run in JSON format. This file is imported into the database.
         filename_spatialmos_step = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
         prediction_json_file = {"SpatialMosRun":
                                     {
                                      "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
-                                     "parameter": parser_dict["parameter"]
+                                     "parameter": parser_dict["parameter"],
+                                     "unit": unit,
                                     },
                                 "SpatialMosStep":
                                     {"path_filename_SpatialMosStep": filename_spatialmos_step,
