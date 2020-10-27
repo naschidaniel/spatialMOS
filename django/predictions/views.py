@@ -69,7 +69,8 @@ def nominatim_data(query_dict, reverse=False):
             state_matches = ['Tirol', 'Tyrol', 'Trentino-Alto Adige/Südtirol', 'South Tyrol', 'Südtirol']
 
             if any(state in display_name for state in state_matches):
-                search_result['spatialmos_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{search_result['api_data']['lat']}/{search_result['api_data']['lon']}/"
+                search_result['spatialmos_tmp_2m_api_url'] = f"/api/spatialmospoint/last/tmp_2m/{search_result['api_data']['lat']}/{search_result['api_data']['lon']}/"
+                search_result['spatialmos_rh_2m_api_url'] = f"/api/spatialmospoint/last/rh_2m/{search_result['api_data']['lat']}/{search_result['api_data']['lon']}/"
                 search_result['osm_data']['lon'] = float(search_result['api_data']['lon'])
                 search_result['osm_data']['lat'] = float(search_result['api_data']['lat'])
                 search_result['osm_data']['display_name'] = search_result['api_data']['display_name']

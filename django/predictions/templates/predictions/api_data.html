@@ -1,7 +1,15 @@
 
-{% if search_result.spatialmos_api_url %}
+{% if search_result.spatialmos_tmp_2m_api_url or search_result.spatialmos_rh_2m_api_url %}
   <h3 class="mt-4">Vorhersage</h3>
-  <div id="simple_line_chart" data="{{ search_result.spatialmos_api_url }}" class="mt-4"></div>
+{% endif %}
+
+{% if search_result.spatialmos_tmp_2m_api_url %}
+  <div id="simple_line_chart_tmp_2m" data="{{ search_result.spatialmos_tmp_2m_api_url }}" class="mt-4"></div>
+{% endif %}
+
+{{ search_result.spatialmos_rh_2m_api_url }}
+{% if search_result.spatialmos_rh_2m_api_url %}
+  <div id="simple_line_chart_rh_2m" data="{{ search_result.spatialmos_rh_2m_api_url }}" class="mt-4"></div>
 {% endif %}
 
 <h3 class="mt-4">API Query</h3>
@@ -21,11 +29,19 @@
         <a href="//nominatim.openstreetmap.org" target="_blank" rel="noreferrer">© nominatim.openstreetmap.org</a>
       </td>
     </tr>
-    {% if search_result.spatialmos_api_url %}
+    {% if search_result.spatialmos_tmp_2m_api_url %}
     <tr>
-      <th scope="row">moses.tirol API Endpoint</th>
+      <th scope="row">moses.tirol Temperaturvorhersage</th>
       <td>
-        <a href="{{ search_result.spatialmos_api_url }}" target="_blank" rel="noreferrer">API query</a>
+        <a href="{{ search_result.spatialmos_tmp_2m_api_url }}" target="_blank" rel="noreferrer">API query</a>
+      </td>
+    </tr>
+    {% endif %}
+    {% if search_result.spatialmos_rh_2m_api_url %}
+    <tr>
+      <th scope="row">moses.tirol Relative Luftfeuchte</th>
+      <td>
+        <a href="{{ search_result.spatialmos_rh_2m_api_url }}" target="_blank" rel="noreferrer">API query</a>
       </td>
     </tr>
     {% endif %}

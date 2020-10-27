@@ -21,19 +21,32 @@ if (leafletMapElement !== null) {
   );
 }
 
-// SimpleLineChart
-const SimpleLineChartElement = document.getElementById("simple_line_chart");
-if (SimpleLineChartElement !== null) {
-  const data = DataExchangeString(SimpleLineChartElement?.attributes?.data);
+// SimpleLineChart RH 2m
+const SimpleLineChartRH2m = document.getElementById("simple_line_chart_rh_2m");
+if (SimpleLineChartRH2m !== null) {
+  const data = DataExchangeString(SimpleLineChartRH2m?.attributes?.data);
   ReactDOM.render(
     <React.StrictMode>
       <SimpleLineChart data={data} />
     </React.StrictMode>,
-    SimpleLineChartElement
+    SimpleLineChartRH2m
   );
 }
 
-// SimpleLineChart
+
+// SimpleLineChart TEMP 2m
+const SimpleLineChartTMP2m = document.getElementById("simple_line_chart_tmp_2m");
+if (SimpleLineChartTMP2m !== null) {
+  const data = DataExchangeString(SimpleLineChartTMP2m?.attributes?.data);
+  ReactDOM.render(
+    <React.StrictMode>
+      <SimpleLineChart data={data} />
+    </React.StrictMode>,
+    SimpleLineChartTMP2m
+  );
+}
+
+// Predictions
 const PredictionsElement = document.getElementById("predictions_container");
 if (PredictionsElement !== null) {
   const data = DataExchangeObject(PredictionsElement?.attributes?.data);
