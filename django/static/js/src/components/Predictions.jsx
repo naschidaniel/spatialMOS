@@ -184,22 +184,20 @@ export default class Predictions extends React.Component {
             </div>
           </div>
           <div className="mt-2 text-right">
-          <button 
-                className={`ml-2 btn btn-light ${modelrun.parameter === "tmp_2m" ? "active" : ""}`}
-                type="button"
-                onClick={() => this.handleParameterChange('tmp_2m')} 
-                role="button"
-              >
-                Temperatur
-          </button>
-          <button 
-                className={`ml-2 btn btn-light ${modelrun.parameter === "rh_2m" ? "active" : ""}`}
-                type="button"
-                onClick={() => this.handleParameterChange('rh_2m')} 
-                role="button"
-              >
-                Relative Luftfeuchte
-          </button>
+            <button 
+              className={`ml-2 btn btn-light ${modelrun.parameter === "tmp_2m" ? "active" : ""}`}
+              type="button"
+              onClick={() => this.handleParameterChange('tmp_2m')} 
+            >
+              Temperatur
+            </button>
+            <button 
+              className={`ml-2 btn btn-light ${modelrun.parameter === "rh_2m" ? "active" : ""}`}
+              type="button"
+              onClick={() => this.handleParameterChange('rh_2m')} 
+            >
+              Relative Luftfeuchte
+            </button>
           </div>
           <div className="mt-3">
             <table className="table table-sm">
