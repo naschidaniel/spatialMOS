@@ -54,7 +54,6 @@ export default class SimpleLineChart extends Component {
               Number(v.spatialmos_max),
               Number(v.spatialmos_min),
             ];
-            addInformation.unit = "°C";
           });
           this.setState({
             isLoaded: true,
