@@ -82,8 +82,8 @@ class SpatialMosLastRunPointPrediction(APIView):
         try:
             lat = float(lat)
             lon = float(lon)
-            lat_gridsize = 0.0083582089 / 2
-            lon_gridsize = 0.0083421330 / 2
+            lat_gridsize = 0.008374384 / 2
+            lon_gridsize = 0.008356546 / 2
             min_lat = lat - lat_gridsize
             max_lat = lat + lat_gridsize
             min_lon = lon - lon_gridsize
