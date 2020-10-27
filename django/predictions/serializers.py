@@ -8,6 +8,7 @@ from predictions.models import SpatialMosPoint, SpatialMosRun, SpatialMosStep
 class SpatialMosStepSerializer(serializers.ModelSerializer):
     """Serializer for the spatialmos steps"""
     parameter = serializers.StringRelatedField(source='spatialmos_run.parameter')
+    unit = serializers.StringRelatedField(source='spatialmos_run.unit')
     anal_date = serializers.DateTimeField(source='spatialmos_run.anal_date', format='%Y-%m-%d')
     valid_date = serializers.DateTimeField(format='%Y-%m-%d')
     valid_time = serializers.DateTimeField(source='valid_date', format='%H:%M')
@@ -15,7 +16,7 @@ class SpatialMosStepSerializer(serializers.ModelSerializer):
     class Meta:
         """Return values"""
         model = SpatialMosStep
-        fields = ['step', 'parameter', 'anal_date', 'valid_date', 'valid_time', \
+        fields = ['step', 'parameter', 'unit', 'anal_date', 'valid_date', 'valid_time', \
             'filename_nwp_mean_sm', 'filename_nwp_mean_md', 'filename_nwp_mean_lg', \
             'filename_nwp_spread_sm', 'filename_nwp_spread_md', 'filename_nwp_spread_lg', \
             'filename_spatialmos_mean_sm', 'filename_spatialmos_mean_md', 'filename_spatialmos_mean_lg', \
@@ -41,7 +42,8 @@ class SpatialMosRunSerializer(serializers.ModelSerializer):
 
 class SpatialMosPointSerializer(serializers.ModelSerializer):
     """Serializer for the spatialmos points"""
-    parameter = serializers.StringRelatedField(source='spatialmos_step.spaspatialmos_run.parameter')
+    parameter = serializers.StringRelatedField(source='spatialmos_step.spatialmos_run.parameter')
+    unit = serializers.StringRelatedField(source='spatialmos_step.spatialmos_run.unit')
     step = serializers.IntegerField(source='spatialmos_step.step')
     anal_date = serializers.DateTimeField(source='spatialmos_step.spatialmos_run.anal_date', format='%Y-%m-%d')
     valid_date = serializers.DateTimeField(source='spatialmos_step.valid_date', format='%Y-%m-%d')
@@ -50,4 +52,4 @@ class SpatialMosPointSerializer(serializers.ModelSerializer):
     class Meta:
         """Return values"""
         model = SpatialMosPoint
-        fields = ['parameter', 'anal_date', 'valid_date', 'valid_time', 'step', 'lat', 'lon', 'spatialmos_mean', 'spatialmos_spread']
+        fields = ['parameter', 'anal_date', 'valid_date', 'valid_time', 'step', 'lat', 'lon', 'unit', 'spatialmos_mean', 'spatialmos_spread']

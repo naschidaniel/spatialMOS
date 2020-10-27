@@ -32,9 +32,9 @@ class Command(BaseCommand):
                             'spatialmos_spread_sm', 'spatialmos_spread_md', 'spatialmos_spread_lg' \
                             ]
 
-        def create_SpatialMosRun(anal_date_aware, parameter):
+        def create_SpatialMosRun(anal_date_aware, parameter, unit):
             """A function to create an entry in the table of the model SpatialMosRun"""
-            spatialmos_run = SpatialMosRun(anal_date=anal_date_aware, parameter=parameter)
+            spatialmos_run = SpatialMosRun(anal_date=anal_date_aware, parameter=parameter, unit=unit)
             spatialmos_run.save()
             return spatialmos_run
 
@@ -98,7 +98,7 @@ class Command(BaseCommand):
                 valid_date_aware = timezone.localize(valid_date)
 
                 if spatialmos_run is None:
-                    spatialmos_run = create_SpatialMosRun(anal_date_aware, prediction_json_file['SpatialMosRun']['parameter'])
+                    spatialmos_run = create_SpatialMosRun(anal_date_aware, prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['unit'])
                     logging.info('parameter: {:9} | anal_date: {} | Modelllauf erstellt'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
 
                 step = create_SpatialMosStep(prediction_json_file, spatialmos_run, valid_date_aware)
@@ -121,3 +121,6 @@ class Command(BaseCommand):
             spatialmos_run.save()
             os.remove(filename_spatialmos_run_status)
             logging.info('parameter: {:9} | anal_date: {} | Complete'.format(prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date']))
+        else:
+            logging.info('The import process could not be completed successfully.')
+            sys.exit(1)
