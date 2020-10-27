@@ -13,6 +13,7 @@ class SpatialMosRun(models.Model):
     )
     parameter = models.CharField(max_length=10, default="tmp_2m", choices=available_parameter)
     anal_date = models.DateTimeField()
+    unit = models.CharField(max_length=10, default="")
     complete = models.BooleanField(default=False)
 
     def __str__(self):
