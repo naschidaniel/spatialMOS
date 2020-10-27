@@ -183,15 +183,23 @@ export default class Predictions extends React.Component {
               </button>
             </div>
           </div>
-          <div className="dropdown show mt-2 text-right">
-            <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Parameter auswählen
-            </button>
-
-            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <span className={`dropdown-item ${modelrun.parameter === "tmp_2m" ? "active" : ""}`} onClick={() => this.handleParameterChange('tmp_2m')} role="button">Temperatur</span>
-              <span className={`dropdown-item ${modelrun.parameter === "rh_2m" ? "active" : ""}`} onClick={() => this.handleParameterChange('rh_2m')} role="button">Relative Luftfeuchte</span>
-            </div>
+          <div className="mt-2 text-right">
+          <button 
+                className={`ml-2 btn btn-light ${modelrun.parameter === "tmp_2m" ? "active" : ""}`}
+                type="button"
+                onClick={() => this.handleParameterChange('tmp_2m')} 
+                role="button"
+              >
+                Temperatur
+          </button>
+          <button 
+                className={`ml-2 btn btn-light ${modelrun.parameter === "rh_2m" ? "active" : ""}`}
+                type="button"
+                onClick={() => this.handleParameterChange('rh_2m')} 
+                role="button"
+              >
+                Relative Luftfeuchte
+          </button>
           </div>
           <div className="mt-3">
             <table className="table table-sm">
