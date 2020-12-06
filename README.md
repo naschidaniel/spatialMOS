@@ -280,6 +280,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2020-12-16 PostgreSQL was upgraded to version 13.
 - 2020-10-22 Relative humidity forecasts are available.
 - 2020-10-17 The Python module basemap was replaced by [cartopy](https://scitools.org.uk/cartopy/docs/latest/).
 - 2020-10-17 The python module pygrib was replaced by [cfgrib](https://github.com/ecmwf/cfgrib) and [xarray](http://xarray.pydata.org/en/stable/).
