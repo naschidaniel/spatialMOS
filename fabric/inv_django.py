@@ -30,7 +30,7 @@ def createsuperuser(c):
 def loadexampledata(c):
     """This task is used to load the sample data into the database"""
     inv_logging.task(loadexampledata.__name__)
-    inv_base.manage_py(c, "loaddata db.json")
+    inv_base.manage_py(c, "loaddata pages.json")
     inv_logging.success(loadexampledata.__name__)
 
 

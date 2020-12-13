@@ -31,6 +31,8 @@ To install spatialMOS, the necessary folder structures and to set the environmen
 
 ```
 ./task.py local.install.quickinstallation
+./task.py local.install.createsuperuser
+./task.py local.install.loadexampledata
 ```
 
 ### Data basis
