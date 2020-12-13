@@ -26,8 +26,6 @@ def quickinstallation(c):
     inv_docker.rebuild(c)
     inv_node.npm(c, "install")
     inv_django.migrate(c)
-    #inv_django.createsuperuser(c)
-    #inv_django.loadexampledata(c)
     inv_node.build(c)
     inv_django.collectstatic(c)
     inv_docker.serve(c)
