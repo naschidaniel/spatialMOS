@@ -60,16 +60,16 @@ def migrate(c):
 
 
 @task
-def generateSecretKey(c):
+def generate_secret_key(c):
     """This task creates a new Secret Key for the fabric/settings.json file."""
-    inv_logging.task(generateSecretKey.__name__)
+    inv_logging.task(generate_secret_key.__name__)
     inv_base.manage_py(c, "shell -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'")
-    inv_logging.success(generateSecretKey.__name__)
+    inv_logging.success(generate_secret_key.__name__)
 
 DJANGO_DEVELOPMENT_NS = Collection("django")
 DJANGO_DEVELOPMENT_NS.add_task(collectstatic)
 DJANGO_DEVELOPMENT_NS.add_task(createsuperuser)
-DJANGO_DEVELOPMENT_NS.add_task(generateSecretKey)
+DJANGO_DEVELOPMENT_NS.add_task(generate_secret_key)
 DJANGO_DEVELOPMENT_NS.add_task(loadexampledata)
 DJANGO_DEVELOPMENT_NS.add_task(makemigrations)
 DJANGO_DEVELOPMENT_NS.add_task(managepy)
