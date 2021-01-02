@@ -266,6 +266,12 @@ The files are synchronized using the fabric command:
 ./task.py production.deploy
 ```
 
+The precalculated climatologies can be uploaded using the following fabric command:
+
+```
+./task.py production.push-climatologies
+```
+
 
 ## Contribution
 
