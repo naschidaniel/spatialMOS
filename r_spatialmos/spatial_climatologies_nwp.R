@@ -37,7 +37,7 @@ for (i in 1:length(climate_nwp_files)){
   load(paste0("./data/spatialmos_climatology/gam/", parameter, "/gam_nwp/gam_nwp_log_sd_", parameter, "_", stepstr, ".RData"))
   
   for (yday in dayseq){
-    daystring <- sprintf("%02d",yday)
+    daystring <- sprintf("%03d", yday)
     datestring <- as.character(as.Date(yday, origin = "2019-12-31"))
     
     data_path_climatologies <- paste0("./data/spatialmos_climatology/gam/", parameter, "/", folder)

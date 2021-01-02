@@ -33,7 +33,7 @@ dayminutes <- sort(unique(climate$dayminute))
 dayminutes <- c(0, 360, 720, 1080)
 
 for (yday in dayseq){
-  daystring <- sprintf("%02d",yday)
+  daystring <- sprintf("%03d",yday)
   datestring <- as.character(as.Date(yday, origin = "2019-12-31"))
   for (dayminute in dayminutes){
     
