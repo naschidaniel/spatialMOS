@@ -4,50 +4,23 @@
 
 import csv
 import logging
+import logging.handlers
 import os
 import sys
-from datetime import datetime
-import requests
+import datetime
 import json
-import pandas as pd
-from py_middleware import logger_module
+from pathlib import Path
+from typing import TextIO
+import requests
+
+# Initialize logging
+logging.basicConfig(
+    format='%(asctime)s\t%(process)d\t%(levelname)s\t%(message)s',
+    level=logging.INFO,
+    handlers=[logging.handlers.TimedRotatingFileHandler(filename=Path('/log/get_lwd_data.log'), when='midnight'), logging.StreamHandler()])
 
 
-# Functions
-def fetch_lwd_data():
-    """With this function data from LWD Tirol can be loaded. The data is saved in a geojson file."""
-    data_path = "./data/get_available_data/lwd"
-    try:
-        if not os.path.exists(f"{data_path}"):
-            os.mkdir(f"{data_path}")
-
-        if not os.path.exists(f"{data_path}/data/"):
-            os.mkdir(f"{data_path}/data/")
-
-        if not os.path.exists(f"{data_path}/orig/"):
-            os.mkdir(f"{data_path}/orig/")
-    except:
-        logging.error("The folders could not be created.")
-
-    # String for Filenames
-    utcnow_str = datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S_+0000")
-    
-    # Information about parameters on a station
-    parameters = [("LD", "ldstat", "[hPa]"),
-                  ("LT", "t", "[°C]"),
-                  ("TD", "tp", "[°C]"),
-                  ("RH", "rf", "[%]"),
-                  ("WG_BOE", "boe", "[m/s]"),
-                  ("WG", "wg", "[m/s]"),
-                  ("WR", "wr", "[°]"),
-                  ("OFT", "oft", "[°C]"),
-                  ("GS_O",
-                   "globalstrahlung_oben", "[W/m^2]"),
-                  ("GS_U",
-                   "globalstrahlung_unten", "[W/m^2]"),
-                  ]
-    # Create a dict from parameters     
-    parameter_dict = dict((k, v) for k, v, u in parameters)
+class Lwd_Data:
 
     # Data from the Open Data Platform - Katalog Wetterstationsdaten Tirol
     # https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f
@@ -56,73 +29,148 @@ def fetch_lwd_data():
     # Information about the METADATA
     # https://www.data.gv.at/katalog/api/3/action/package_show?id=bb43170b-30fb-48aa-893f-51c60d27056f
 
-    url_data = "https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson"
-    req_data = requests.get(url_data)
-   
-    if req_data.status_code != 200:
-        logging.error("The response of the API 'https://wiski.tirol.gv.at' does not match 200")
-        sys.exit(1)
+    
+    def __init__(self) -> None:
+        pass
 
-    # Save original json files
-    ogd_filename = f"{data_path}/orig/ogd_{utcnow_str}.geojson"
+    @staticmethod
+    def parameters():
+        # Information about parameters on a station
+        parameters = [("date", "date", ""),
+                    ("name", "name", ""),
+                    ("lat", "lat", "Deg"),
+                    ("lon", "lon", "Deg"),
+                    ("alt", "alt", "m"),
+                    ("LD", "ldstat", "[hPa]"),
+                    ("LT", "t", "[°C]"),
+                    ("TD", "tp", "[°C]"),
+                    ("RH", "rf", "[%]"),
+                    ("WG_BOE", "boe", "[m/s]"),
+                    ("WG", "wg", "[m/s]"),
+                    ("WR", "wr", "[°]"),
+                    ("OFT", "oft", "[°C]"),
+                    ("GS_O", "globalstrahlung_oben", "[W/m^2]"),
+                    ("GS_U", "globalstrahlung_unten", "[W/m^2]")]
+        return dict((k, v) for k, v, u in parameters)
+
+    @staticmethod
+    def save_data(request_data, target):
+        # Save original json files
+        target.write(request_data.text)
+        logging.info("A original data file '%s' was written.", target)
+        
+    @classmethod
+    def get_data(cls, target):
+        url_data = "https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson"
+        req_data = requests.get(url_data)
+        if req_data.status_code != 200:
+            raise(RuntimeError(
+                "The response of the API 'https://wiski.tirol.gv.at' does not match 200"))
+        cls.save_data(req_data, target)
+        return req_data.json()
+
+
+class Writer:
+    def __init__(self, target: TextIO) -> None:
+        self.out = csv.writer(target)
+        self.out.writerow(["date", "name", "lat", "lon", "alt", "boe", "t", "wr", "ldstat",
+                           "globalstrahlung_unten", "rf", "oft", "tp", "globalstrahlung_oben", "wg"])
+
+    def append(self, row):
+        self.out.writerow(row)
+
+
+class Spatial_LWD_Writer:
+    def __init__(self, request_data, parameter_dict, target: TextIO) -> None:
+        utc_now = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+        count_stations = 0
+        count_stations_successfull = 0
+        writer = Writer(target)
+        for station in request_data["features"]:
+            count_stations += 1
+            append_data = station["properties"]
+            append_data.update({"station": station["id"],
+                                "alt": station["geometry"]["coordinates"][2],
+                                "lon": station["geometry"]["coordinates"][0],
+                                "lat": station["geometry"]["coordinates"][1],
+                                })
+
+            row = []
+            for key in parameter_dict:
+                if "date" not in append_data:
+                    break
+
+                if key == "date":
+                    date = datetime.datetime.strptime(
+                        append_data["date"], "%Y-%m-%dT%H:%M:%S%z").timetuple()
+                    print(date)
+                    date.timestamp()
+                    timedelta = (utc_now.timestamp() - 123)
+                    print(timedelta)
+                    if abs(timedelta) >= 4000:
+                        break
+                        
+                    else:
+                        row.append(date.replace(
+                            minute=0, second=0, microsecond=0))
+                        continue
+
+                if key in append_data:
+                    row.append(append_data[key])
+                else:
+                    row.append("")
+
+            if len(row) != 0:
+                writer.append(row)
+                count_stations_successfull += 1
+
+        if (count_stations <= 50):
+            raise(ValueError(
+                f"Only {count_stations_successfull} from {count_stations} stations are transmitted correctly"))
+
+    @classmethod
+    def convert(cls, request_data, parameter_dict: dict, target):
+        Spatial_LWD_Writer(request_data, parameter_dict, target)
+        
+
+
+# Functions
+def fetch_lwd_data():
+    """With this function data from LWD Tirol can be loaded. The data is saved in a geojson file."""
+
+    utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
+    data_path = Path("./data/get_available_data/lwd/data")
+    orig_path = Path("./data/get_available_data/lwd/orig")
 
     try:
-        with open(ogd_filename, mode="w") as f:
-            f.write(req_data.text)
-            f.close()
-            logging.info("A original data file '%s' was written.", ogd_filename)
+        os.makedirs(data_path, exist_ok=True)
+        os.makedirs(orig_path, exist_ok=True)
     except:
-        logging.error("The original data file '%s' could not be written.", ogd_filename)
-        sys.exit(1)
+        logging.error("The folders could not be created.")
 
-    # Convert downloaded files to JSON
-    lwd_data = req_data.json()
-
-
-    # Loop over stations
-    df_data = pd.DataFrame()
-    for station in lwd_data["features"]:
-        append_data = station["properties"]
-        append_data.update({"station": station["id"],
-                            "alt": station["geometry"]["coordinates"][2],
-                            "lon": station["geometry"]["coordinates"][0],
-                            "lat": station["geometry"]["coordinates"][1],
-                            })
-        df_data = df_data.append(append_data, ignore_index=True)
-
-    # Datamanipulation
-    keep = set(df_data.columns) - (set(df_data.columns) - set(parameter_dict.keys()))
-    new_order = ["date", "name", "lat", "lon", "alt"]
-    new_order.extend(list(keep))
-    df_data["date"] = pd.to_datetime(df_data["date"], utc=True)
-    df_data = df_data[new_order]
-    df_data = df_data.rename(columns = parameter_dict)
-    df_data["date"] = pd.to_datetime(df_data["date"]).dt.tz_localize(None)
-
-    df_data["timedelta"] = df_data["date"] - datetime.utcnow().replace(minute=0, second=0, microsecond=0)
-    df_data["timedelta"] = df_data["timedelta"].dt.total_seconds()/60
-    get_len_dataset = df_data.shape[0]
-    df_data = df_data.loc[(df_data["timedelta"] >= -15) & (df_data["timedelta"] <= 15)]
-    df_data["date"] = df_data["date"].dt.floor("H")
-    df_data = df_data.drop(["timedelta"], axis=1)
-
-    if (df_data.shape[0] <= 50):
-        logging.error("Only %s from %s stations are transmitted correctly", df_data.shape[0], get_len_dataset)
-        sys.exit(1)
-
-    utcnow_str = datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S_+0000")
-    csv_filename = f"{data_path}/data/data_lwd_{utcnow_str}.csv"
-    try:
-        df_data.to_csv(csv_filename, index=False, quoting=csv.QUOTE_NONNUMERIC)
-        logging.info("The datafile file '%s' was written.", csv_filename)
-    except:
-        logging.error("The datafile file '%s' could not be written.", csv_filename)
-        sys.exit(1)
-
+    ogd_filename = orig_path.joinpath(f"ogd_{utcnow_str}.geojson")
+    # try:
+    #     with open(ogd_filename, mode="w") as target:
+    #         request_data = Lwd_Data.get_data(target)
+    # except:
+    #     raise(OSError(f"The original data file '{ogd_filename}' could not be written."))
+    with open(orig_path.joinpath(f"ogd_2021-03-02T19_58_29.geojson")) as f:
+        request_data = json.loads(f.read())
+    
+    parameters = Lwd_Data.parameters()
+    with open(data_path.joinpath(f"data_lwd_{utcnow_str}.csv"), "w") as target:
+        Spatial_LWD_Writer.convert(request_data, parameters, target)
 
 
 # Main
 if __name__ == "__main__":
-    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    fetch_lwd_data()
-    logger_module.end_logging(STARTTIME)
+    try:
+        start = datetime.datetime.now()
+        logging.info("The data lwd download has started.")
+        fetch_lwd_data()
+        duration = datetime.datetime.now() - start
+        logging.info(duration)
+    except Exception as ex:
+        logging.exception(ex)
+        raise(ex)
+
