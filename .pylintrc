@@ -1,5 +1,5 @@
 [BASIC]
-good-names= c, cp, env, df, i, j, k, m, f, p, pk, x
+good-names= c, cp, env, ex, df, i, j, k, m, f, p, pk, x
 
 [FORMAT]
 max-line-length=200
