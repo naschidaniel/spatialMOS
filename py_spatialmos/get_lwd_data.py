@@ -8,16 +8,12 @@ import logging.handlers
 import os
 import datetime
 from pathlib import Path
-from typing import AnyStr, Dict, Iterable, TextIO
+from typing import Iterable, TextIO
 import requests
 
-# Initialize logging
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    level=logging.INFO,
-    handlers=[logging.handlers.TimedRotatingFileHandler(filename=Path('/log/get_lwd_data.log'), when='midnight'), logging.StreamHandler()])
+from spatial_logging import spatial_logging
 
+spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 
 class LwdData:
     '''Lwd_Data Class'''
