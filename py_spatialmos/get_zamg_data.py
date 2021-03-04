@@ -93,7 +93,7 @@ class ZamgSpatialConverter:
                     "The maximum number of retries was reached and not all data could be saved. %s/%s", retry, max_retrys)
 
 
-    def manipulate_html_text(raw_html_text):
+    def manipulate_html_text(self, raw_html_text):
 
         # Text manipulations of the HTML Raw file
         # Special character
@@ -150,25 +150,20 @@ class ZamgSpatialConverter:
 
         raw_text_timestamp = f"{raw_text_date}T{raw_text_time}"
 
-        # trim data
-        measured_values_begin = re.search(
-            '<tr class="dynPageTableLine1"><td class="wert">', raw_html_text).start()
-        measured_values_end = re.search(
-            'Die Messwerte in dieser Liste', raw_html_text).start()
-        measured_values = raw_html_text[measured_values_begin: measured_values_end]
+        # Extract measurements
+        raw_text_measurements_begin = re.search('<tr class="dynPageTableLine1"><td class="wert">', raw_html_text).start()
+        raw_text_measurements_end = re.search('Die Messwerte in dieser Liste', raw_html_text).start()
+        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split("\n")
 
-        print(measured_values)
-        lines = 10
         # Removing the HTML tag
-        text_list = []
-        for line in lines:
-            html_tag_regex = re.compile(".*?\>(.*?)\<")
-            result = re.findall(html_tag_regex, line)
-            text_list.append(result)
+        html_tag_regex = re.compile(r".*?\>(.*?)\<")
+        measurements = [re.findall(html_tag_regex, line) for line in raw_text_measurements]
+        measurements = [list(filter(None, stations)) for stations in measurements]
 
+        print(measurements)
         # remove superfluous columns
         text_filter = []
-        for to_filter in text_list:
+        for to_filter in measurements:
             text_filter.append(list(filter(None, to_filter)))
         text_filter = list(filter(None, text_filter))
 
@@ -180,7 +175,7 @@ class ZamgSpatialConverter:
         # Data manipulation
         # Timestamp of the download
         df.insert(1, "timestamp", raw_text_timestamp)
-        timestamp_download = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp_download = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         df.insert(2, "timestamp_download", timestamp_download)
 
         # Wind direction and wind speed in format: Süd, 19
@@ -193,10 +188,10 @@ class ZamgSpatialConverter:
         df[["wg", "alt", "t", "rf", "wsg", "regen", "sonne", "ldred"]] = df[[
             "wg", "alt", "t", "rf", "wsg", "regen", "sonne", "ldred"]].astype(float)
 
-        return (df, raw_text_time)
+        return df, raw_text_time
 
     @classmethod
-    def convert(cls, tareg: TextIO):
+    def convert(cls, target: TextIO):
         cls()
         pass
 
