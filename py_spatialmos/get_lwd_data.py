@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """With this Python script data can be obtained from the North Tirolian Avalanche Service."""
 
-import csv
 import logging
 import logging.handlers
 import os
 import datetime
 from pathlib import Path
-from typing import Iterable, TextIO
+from typing import TextIO
 import requests
 
 from spatial_logging import spatial_logging
+from spatial_writer import Writer
 
 spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 
@@ -61,18 +61,6 @@ class LwdData:
             raise(
                 OSError(f"The API interface data could not be stored into {str(target)}."))
         return data.json()
-
-
-class Writer:
-    '''Writer for spatialMOS data'''
-
-    def __init__(self, header: Iterable[str], target: TextIO) -> None:
-        self.out = csv.writer(target, delimiter=";")
-        self.out.writerow(header)
-
-    def append(self, row) -> None:
-        '''append a new dataset'''
-        self.out.writerow(row)
 
 
 class LwdSpatialConverter:
