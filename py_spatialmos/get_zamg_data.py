@@ -2,21 +2,18 @@
 # -*- coding: utf-8 -*-
 """This program is used to load data from the ZAMG website."""
 
-import csv
 import logging
-import sys
 import re
 import time
 import os
 import datetime
 from pathlib import Path
-from typing import Iterable, TextIO
-
-import pandas as pd
+from typing import KeysView, TextIO
 import requests
 import pytz
 
 from spatial_logging import spatial_logging
+from spatial_writer import Writer
 
 spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 
@@ -24,12 +21,23 @@ class ZamgData:
     """ZamgData Class"""
 
     @staticmethod
-    def federal_state() -> Iterable[str]:
+    def federal_state() -> list:
         return ["burgenland", "kaernten", "niederoesterreich", "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
 
     @staticmethod
-    def parameters() -> Iterable[str]:
-        return ["timestamp", "timestamp_download", "station", "alt", "t", "rf", "wg", "wr", "wsg", "regen", "sonne", "ldred"]
+    def parameters() -> KeysView:
+        parameters = {"date": "",
+                      "name": "",
+                      "alt": "m",
+                      "t": "[°C]",
+                      "rf": "[%]",
+                      "wg": "[km/h]",
+                      "wr": "[%]",
+                      "boe": "[km/h]",
+                      "regen": "[mm]",
+                      "sonne": "[%]",
+                      "ldred": "[hPa]"}
+        return parameters.keys()
 
     @classmethod
     def request_data(cls, state: str) -> str:
@@ -45,56 +53,45 @@ class ZamgData:
 
 
 class ZamgSpatialConverter:
-    def __init__(self):
+    def __init__(self, target: TextIO):
         federal_state = ZamgData.federal_state()
+        parameters = ZamgData.parameters()
+        writer = Writer(parameters, target)
         raw_text_time = None
         retry = 0
-        max_retrys = 3
+        max_retries = 3
         now_hour = int(datetime.datetime.now(pytz.timezone("Europe/Vienna")).strftime("%H"))
-        while now_hour != raw_text_time:
-            if retry <= max_retrys:
-                file_counter = 0
-                for state in federal_state:
-                    raw_html_text = ZamgData.request_data(state)
-                    df_red, raw_text_time = self.manipulate_html_text(raw_html_text)
-
-                    # Merging of the two dataframes and reorder
-                    df = df[["timestamp", "timestamp_download", "station", "alt", "t", "rf", "wg", "wr", "wsg", "regen", "sonne", "ldred", "ldstat"]]
-
-                    # Check the data status of the website
-                    if now_hour == raw_text_time:
-                        file_counter = file_counter + 1
-                        timestamp_save = datetime.now().strftime("%Y-%m-%d")
-                        csvfile = f"{data_path}/{timestamp_save}_{raw_text_time}_ZAMG_PAGE_{state}.csv"
-                        df.to_csv(csvfile, index=False,
-                                quoting=csv.QUOTE_NONNUMERIC)
-                        logging.info("{:18} | Uhrzeit Text {} | Zeit {}".format(
-                            state, raw_text_time, now_hour))
-                    else:
-                        logging.warning("{:18} | Uhrzeit Text {} | Zeit {}".format(
-                            state, raw_text_time, now_hour))
-
-                    time.sleep(10)
-
-                # Check whether all federal states have been successfully loaded
-                if file_counter != 9:
-                    logging.error(
-                        "Not all federal states could be downloaded successfully. The process is repeated. | Retry %s/%s ", retry, max_retrys)
-                    retry = retry + 1
-                    file_counter = 0
-                    logging.info("The process is repeated in 600 seconds.")
-                    time.sleep(600)
+        while retry <= max_retries:
+            for state in federal_state:
+                raw_html_text = ZamgData.request_data(state)
+                measurements_optimized, raw_text_time = self.manipulate_html_text(raw_html_text)
+                # Check the data status of the website
+                if now_hour == raw_text_time:
+                    for row in measurements_optimized:
+                        writer.append(row)
+                    logging.info("The weather data for %s has been saved.", state)
+                    federal_state = [i for i in federal_state if state not in i]
                 else:
-                    logging.info(
-                        "All data was downloaded from the Zamg website and saved as CSV files.")
+                    logging.warning("The weather data for %s is not yet up to date.", state)
+                time.sleep(10)
 
-            else:
+            # Check whether all federal states have been successfully loaded
+            if len(federal_state) != 0:
                 logging.error(
-                    "The maximum number of retries was reached and not all data could be saved. %s/%s", retry, max_retrys)
+                    "No current data could be loaded for the federal state %s and retry %s/%s ", federal_state, retry, max_retries)
+                logging.info("The process is repeated in 600 seconds.")
+                retry += 1
+                time.sleep(600)
+            else:
+                logging.info("All data for was downloaded from the Zamg website and saved as CSV files.")
+                break
+        else:
+            logging.error("The maximum number of retries was reached %s/%s and not all data could be saved.", retry, max_retries)
 
 
     def manipulate_html_text(self, raw_html_text):
 
+        now_utc_now = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
         # Text manipulations of the HTML Raw file
         # Special character
         raw_html_text = raw_html_text.replace('&uuml;', 'ü')
@@ -148,8 +145,6 @@ class ZamgSpatialConverter:
         raw_text_time = raw_html_text[raw_text_time_begin:raw_text_time_end]
         raw_text_time = int(raw_text_time.replace("\n", ""))
 
-        raw_text_timestamp = f"{raw_text_date}T{raw_text_time}"
-
         # Extract measurements
         raw_text_measurements_begin = re.search('<tr class="dynPageTableLine1"><td class="wert">', raw_html_text).start()
         raw_text_measurements_end = re.search('Die Messwerte in dieser Liste', raw_html_text).start()
@@ -159,41 +154,30 @@ class ZamgSpatialConverter:
         html_tag_regex = re.compile(r".*?\>(.*?)\<")
         measurements = [re.findall(html_tag_regex, line) for line in raw_text_measurements]
         measurements = [list(filter(None, stations)) for stations in measurements]
+        measurements = [list(map(lambda x: x.strip(" "), stations)) for stations in measurements]
 
-        print(measurements)
-        # remove superfluous columns
-        text_filter = []
-        for to_filter in measurements:
-            text_filter.append(list(filter(None, to_filter)))
-        text_filter = list(filter(None, text_filter))
+        # remove superfluous whitespaces and separate direction and wind speed
+        measurements_optimized = []
+        for stations in measurements:
+            flat_list = [now_utc_now]
+            for entry in stations:
+                entry = entry.strip(" ")
+                if ", " in entry:
+                    for i in entry.split(", "):
+                        # Fix Windstille and and Direction
+                        if i == "Windstille":
+                            i = 0.0
+                        flat_list.append(i)
+                else:
+                    flat_list.append(entry)
+            if len(flat_list) != 1:
+                measurements_optimized.append(flat_list)
 
-        # Creating the Pandas Dataframe
-        df = pd.DataFrame(text_filter, columns=[
-                        "station", "alt", "t", "rf", "wg", "wsg", "regen", "sonne", "ldred"])
-        df = df.dropna()
-
-        # Data manipulation
-        # Timestamp of the download
-        df.insert(1, "timestamp", raw_text_timestamp)
-        timestamp_download = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        df.insert(2, "timestamp_download", timestamp_download)
-
-        # Wind direction and wind speed in format: Süd, 19
-        df["wr"] = [re.sub(r"[0-9,]", "", string) for string in df["wg"]]
-        df["wr"] = [string.strip() for string in df["wr"]]
-        df["wg"] = [re.sub(r"[a-zA-Züäö,]", "", string) for string in df["wg"]]
-        df["wg"] = [string.strip() for string in df["wg"]]
-        df["wg"][df["wr"] == "Windstille"] = 0
-
-        df[["wg", "alt", "t", "rf", "wsg", "regen", "sonne", "ldred"]] = df[[
-            "wg", "alt", "t", "rf", "wsg", "regen", "sonne", "ldred"]].astype(float)
-
-        return df, raw_text_time
+        return measurements_optimized, raw_text_time
 
     @classmethod
     def convert(cls, target: TextIO):
-        cls()
-        pass
+        cls(target)
 
 
 # Functions
@@ -209,8 +193,6 @@ def fetch_zamg_data():
     
     with open(data_path.joinpath(f"data_zamg_{utcnow_str}.csv"), "w", newline='') as target:
         ZamgSpatialConverter.convert(target)
-    
-
 
 
 # Main
