@@ -15,6 +15,7 @@ from spatial_writer import Writer
 
 spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 
+
 class LwdData:
     '''Lwd_Data Class'''
 
@@ -107,15 +108,17 @@ class LwdSpatialConverter:
                     row.append("")
 
             if len(row) != 0:
-                logging.info("The received data for the date '%s' and the station '%s' are stored.",date, append_data["name"])
+                logging.info(
+                    "The received data for the date '%s' and the station '%s' are stored.", date, append_data["name"])
                 writer.append(row)
                 count_stations_successfull += 1
 
         if count_stations_successfull <= 50:
-            logging.error("Only %s from %s stations are transmitted correctly", count_stations_successfull, count_stations)
+            logging.error("Only %s from %s stations are transmitted correctly",
+                          count_stations_successfull, count_stations)
         else:
-            logging.info("%s from %s stations have been successfully saved.", count_stations_successfull, count_stations)
-
+            logging.info("%s from %s stations have been successfully saved.",
+                         count_stations_successfull, count_stations)
 
     @classmethod
     def convert(cls, request_data: dict, parameter: dict, target: TextIO):
@@ -143,7 +146,6 @@ def fetch_lwd_data():
     except:
         raise(
             OSError(f"The original data file '{ogd_filename}' could not be written."))
-
 
     parameters = LwdData.parameters()
     with open(data_path.joinpath(f"data_lwd_{utcnow_str}.csv"), "w", newline='') as target:
