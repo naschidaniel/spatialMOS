@@ -29,22 +29,21 @@ class LwdData:
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         # Information about parameters on a station
-        parameters = [("date", "date", ""),
-                      ("name", "name", ""),
-                      ("lat", "lat", "Deg"),
-                      ("lon", "lon", "Deg"),
-                      ("alt", "alt", "m"),
-                      ("LD", "ldstat", "[hPa]"),
-                      ("LT", "t", "[°C]"),
-                      ("TD", "tp", "[°C]"),
-                      ("RH", "rf", "[%]"),
-                      ("WG_BOE", "boe", "[m/s]"),
-                      ("WG", "wg", "[m/s]"),
-                      ("WR", "wr", "[°]"),
-                      ("OFT", "oft", "[°C]"),
-                      ("GS_O", "globalstrahlung_oben", "[W/m^2]"),
-                      ("GS_U", "globalstrahlung_unten", "[W/m^2]")]
-        return dict((k, v) for k, v, u in parameters)
+        return {"date": {"name": "date", "unit": "[UTC]"},
+                "name": {"name": "name", "unit": "name"},
+                "lat": {"name": "lat", "unit": "[°]"},
+                "lon": {"name": "lon", "unit": "[°]"},
+                "alt": {"name": "alt", "unit": "[m]"},
+                "LD": {"name": "ldstat", "unit": "[hPa]"},
+                "LT": {"name": "t", "unit": "[°C]"},
+                "TD": {"name": "tp", "unit": "[°C]"},
+                "RH": {"name": "rf", "unit": "[%]"},
+                "WG_BOE": {"name": "boe", "unit": "[m/s]"},
+                "WG": {"name": "wg", "unit": "[m/s]"},
+                "WR": {"name": "wr", "unit": "[°]"},
+                "OFT": {"name": "oft", "unit": "[°C]"},
+                "GS_O": {"name": "globalstrahlung_oben", "unit": "[W/m^2]"},
+                "GS_U": {"name": "globalstrahlung_unten", "unit": "[W/m^2]"}}
 
     @classmethod
     def request_data(cls, target: TextIO) -> dict:
@@ -71,7 +70,7 @@ class LwdSpatialConverter:
             minute=0, second=0, microsecond=0)
         count_stations = 0
         count_stations_successfull = 0
-        writer = Writer(parameter.keys(), target)
+        writer = Writer(parameter, target)
         for station in request_data["features"]:
             count_stations += 1
             append_data = station["properties"]
