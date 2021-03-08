@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""This program is used to load data from the ZAMG website."""
+"""With this Python script data can be obtained from the ZAMG website."""
 
 import logging
 import re
@@ -8,7 +8,7 @@ import time
 import os
 import datetime
 from pathlib import Path
-from typing import TextIO
+from typing import List, TextIO, Tuple
 import requests
 import pytz
 
@@ -21,41 +21,45 @@ spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 class ZamgData:
     """ZamgData Class"""
 
-    @staticmethod
-    def federal_state() -> list:
-        return ["burgenland", "kaernten", "niederoesterreich", "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
-
+    # The data is loaded from the website and saved as a csv file.
+    # https://www.zamg.ac.at/
+    # The units are determined from the table https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tirol
+    
     @staticmethod
     def parameters() -> dict:
-        return {"date": {"unit": ""},
-                "name": {"unit": ""},
-                "alt": {"unit": "m"},
-                "t": {"unit": "[°C]"},
-                "rf": {"unit": "[%]"},
-                "wg": {"unit": "[km/h]"},
-                "wr": {"unit": "[%]"},
-                "boe": {"unit": "[km/h]"},
-                "regen": {"unit": "[mm]"},
-                "sonne": {"unit": "[%]"},
-                "ldred": {"unit": "[hPa]"}}
+        '''parameters and a unit which is encapsulated in the spatialmos format.'''
+        return {"date": {"name": "date", "unit": "[UTC]"},
+                "name": {"name": "name", "unit": "[str]"},
+                "alt": {"name": "alt", "unit": "[m]"},
+                "t": {"name": "t", "unit": "[°C]"},
+                "rf": {"name": "rf", "unit": "[%]"},
+                "wg": {"name": "wg", "unit": "[km/h]"},
+                "wr": {"name": "wr", "unit": "[%]"},
+                "boe": {"name": "boe", "unit": "[km/h]"},
+                "regen": {"name": "regen", "unit": "[mm]"},
+                "sonne": {"name": "sonne", "unit": "[%]"},
+                "ldred": {"name": "ldred", "unit": "[hPa]"}}
 
     @ classmethod
     def request_data(cls, state: str) -> str:
+        '''request_data loads the data from the Website'''
         request_url = f"https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/{state}/temperatur/?mode=geo&druckang=red"
         logging.info("The web page will be loaded %s", request_url)
         try:
             request_data = requests.get(request_url)
             if request_data.status_code != 200:
-                raise(RuntimeError(
-                    "The response of the Webpage '%s' does not match 200", request_url))
+                raise(RuntimeError(f"The response of the Webpage '{request_url}' does not match 200"))
+            else:
+                logging.info("The URL %s was loaded successfully", request_url)
             return request_data.text
         except:
             logging.error("The request for '%s' failed", request_url)
+            return ""
 
 
 class ZamgSpatialConverter:
     def __init__(self, target: TextIO):
-        federal_state = ZamgData.federal_state()
+        federal_state = ["burgenland", "kaernten", "niederoesterreich", "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
         parameters = ZamgData.parameters()
         writer = Writer(parameters, target)
         raw_text_time = None
@@ -66,10 +70,13 @@ class ZamgSpatialConverter:
         while retry <= max_retries:
             for state in federal_state:
                 raw_html_text = ZamgData.request_data(state)
+                if raw_html_text == "":
+                    continue
+
                 measurements_optimized, raw_text_time = self.manipulate_html_text(
                     raw_html_text)
                 # Check the data status of the website
-                if now_hour == raw_text_time:
+                if now_hour == int(raw_text_time):
                     for row in measurements_optimized:
                         writer.append(row)
                     logging.info(
@@ -96,11 +103,9 @@ class ZamgSpatialConverter:
             logging.error(
                 "The maximum number of retries was reached %s/%s and not all data could be saved.", retry, max_retries)
 
-    def manipulate_html_text(self, raw_html_text):
-
-        now_utc_now = datetime.datetime.utcnow().replace(
-            minute=0, second=0, microsecond=0)
-        # Text manipulations of the HTML Raw file
+    def manipulate_html_text(self, raw_html_text:str) -> Tuple[List[List[str]], str]:
+        '''manipulate_html_text changes the html text and returns the extracted information'''
+        utc_now_hour = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
         # Special character
         raw_html_text = raw_html_text.replace('&uuml;', 'ü')
         raw_html_text = raw_html_text.replace('&ouml;', 'ö')
@@ -138,18 +143,17 @@ class ZamgSpatialConverter:
         raw_html_text = raw_html_text.replace('k.A.', '-999')
         raw_html_text = raw_html_text.replace('*', '')
 
-        raw_text_date_begin = re.search(
-            '<h1 id="dynPageHead">', raw_html_text).end()
-        raw_text_date_end = re.search("</h1>", raw_html_text).start()
+        raw_text_date_begin = raw_html_text.rfind('<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
+        raw_text_date_end = raw_html_text.rfind("</h1>")
         raw_text_date = raw_html_text[raw_text_date_begin:raw_text_date_end]
-        raw_text_date = raw_text_date[re.search("-", raw_text_date).end():]
+        raw_text_date = raw_text_date[raw_text_date.find("-")+1:]
         raw_text_date = raw_text_date.strip()
 
         raw_text_time_begin = re.search(
             "Aktuelle Messwerte der Wetterstationen von ", raw_html_text).end()
         raw_text_time_end = re.search("Uhr</h2>", raw_html_text).start()
         raw_text_time = raw_html_text[raw_text_time_begin:raw_text_time_end]
-        raw_text_time = int(raw_text_time.replace("\n", ""))
+        raw_text_time = raw_text_time.replace("\n", "")
 
         # Extract measurements
         raw_text_measurements_begin = re.search(
@@ -171,7 +175,7 @@ class ZamgSpatialConverter:
         # remove superfluous whitespaces and separate direction and wind speed
         measurements_optimized = []
         for stations in measurements:
-            flat_list = [now_utc_now]
+            flat_list = [datetime.datetime.strftime(utc_now_hour, "%Y-%m-%d %H:%M:%S")]
             if not any(", " in s for s in stations):
                 stations.insert(5, '-999')
             for entry in stations:
@@ -187,24 +191,23 @@ class ZamgSpatialConverter:
                     flat_list.append(entry)
             if len(flat_list) >= 4:  # drop district lines
                 measurements_optimized.append(flat_list)
-
-        return measurements_optimized, raw_text_time
+        return (measurements_optimized, raw_text_time)
 
     @ classmethod
     def convert(cls, target: TextIO):
+        '''convert the data and save it in spatialMOS CSV format'''
         cls(target)
 
 
 # Functions
 def fetch_zamg_data():
     """fetch_zamg_data is used to store zamg data in csv files."""
-
     utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
     data_path = Path("./data/get_available_data/zamg/data")
     try:
         os.makedirs(data_path, exist_ok=True)
     except:
-        raise OSError("The folder could not be created.")
+        logging.error("The folders could not be created.")
 
     with open(data_path.joinpath(f"data_zamg_{utcnow_str}.csv"), "w", newline='') as target:
         ZamgSpatialConverter.convert(target)
@@ -214,10 +217,10 @@ def fetch_zamg_data():
 if __name__ == "__main__":
     try:
         STARTTIME = datetime.datetime.now()
-        logging.info("The data lwd download has started.")
+        logging.info("The data zamg download has started.")
         fetch_zamg_data()
         DURATION = datetime.datetime.now() - STARTTIME
-        logging.info(DURATION)
+        logging.info("The script has run successfully in %s", DURATION)
     except Exception as ex:
         logging.exception(ex)
         raise ex
