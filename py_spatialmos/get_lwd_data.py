@@ -29,9 +29,8 @@ class LwdData:
     @staticmethod
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
-        # Information about parameters on a station
         return {"date": {"name": "date", "unit": "[UTC]"},
-                "name": {"name": "name", "unit": "name"},
+                "name": {"name": "name", "unit": "[str]"},
                 "lat": {"name": "lat", "unit": "[°]"},
                 "lon": {"name": "lon", "unit": "[°]"},
                 "alt": {"name": "alt", "unit": "[m]"},
@@ -66,7 +65,8 @@ class LwdData:
 class LwdSpatialConverter:
     '''LwdSpatialConverter for data conversion into spatialMOS format'''
 
-    def __init__(self, request_data: dict, parameter: dict, target: TextIO) -> None:
+    def __init__(self, request_data: dict, target: TextIO) -> None:
+        parameter = LwdData.parameters()
         now_current_hour = datetime.datetime.now().replace(
             minute=0, second=0, microsecond=0)
         count_stations = 0
@@ -121,9 +121,9 @@ class LwdSpatialConverter:
                          count_stations_successfull, count_stations)
 
     @classmethod
-    def convert(cls, request_data: dict, parameter: dict, target: TextIO):
+    def convert(cls, request_data: dict, target: TextIO):
         '''convert the data and save it in spatialMOS CSV format'''
-        cls(request_data, parameter, target)
+        cls(request_data, target)
 
 
 def fetch_lwd_data():
@@ -137,19 +137,17 @@ def fetch_lwd_data():
         os.makedirs(data_path, exist_ok=True)
         os.makedirs(ogd_path, exist_ok=True)
     except:
-        raise OSError("The folders could not be created.")
+        logging.error("The folders could not be created.")
 
     ogd_filename = ogd_path.joinpath(f"ogd_{utcnow_str}.geojson")
     try:
         with open(ogd_filename, mode="w") as target:
             request_data = LwdData.request_data(target)
     except:
-        raise(
-            OSError(f"The original data file '{ogd_filename}' could not be written."))
+        logging.error("The original data file '%s' could not be written.", ogd_filename)
 
-    parameters = LwdData.parameters()
     with open(data_path.joinpath(f"data_lwd_{utcnow_str}.csv"), "w", newline='') as target:
-        LwdSpatialConverter.convert(request_data, parameters, target)
+        LwdSpatialConverter.convert(request_data, target)
 
 
 # Main
@@ -159,7 +157,7 @@ if __name__ == "__main__":
         logging.info("The data lwd download has started.")
         fetch_lwd_data()
         DURATION = datetime.datetime.now() - STARTTIME
-        logging.info(DURATION)
+        logging.info("The script has run successfully in %s", DURATION)
     except Exception as ex:
         logging.exception(ex)
         raise ex
