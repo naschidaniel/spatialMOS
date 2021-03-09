@@ -127,7 +127,7 @@ class LwdSpatialConverter:
 
 
 def fetch_lwd_data():
-    """fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format."""
+    '''fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format.'''
 
     utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
     data_path = Path("./data/get_available_data/lwd/data")
