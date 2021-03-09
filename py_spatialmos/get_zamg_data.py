@@ -143,25 +143,21 @@ class ZamgSpatialConverter:
         raw_html_text = raw_html_text.replace('k.A.', '-999')
         raw_html_text = raw_html_text.replace('*', '')
 
-        raw_text_date_begin = raw_html_text.rfind('<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
-        raw_text_date_end = raw_html_text.rfind("</h1>")
+        raw_text_date_begin = raw_html_text.find('<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
+        raw_text_date_end = raw_html_text.find("</h1>")
         raw_text_date = raw_html_text[raw_text_date_begin:raw_text_date_end]
         raw_text_date = raw_text_date[raw_text_date.find("-")+1:]
         raw_text_date = raw_text_date.strip()
 
-        raw_text_time_begin = re.search(
-            "Aktuelle Messwerte der Wetterstationen von ", raw_html_text).end()
-        raw_text_time_end = re.search("Uhr</h2>", raw_html_text).start()
+        raw_text_time_begin = raw_html_text.find("Aktuelle Messwerte der Wetterstationen von ") + len("Aktuelle Messwerte der Wetterstationen von ")
+        raw_text_time_end = raw_html_text.find("Uhr</h2>")
         raw_text_time = raw_html_text[raw_text_time_begin:raw_text_time_end]
         raw_text_time = raw_text_time.replace("\n", "")
 
         # Extract measurements
-        raw_text_measurements_begin = re.search(
-            '<tr class="dynPageTableLine1"><td class="wert">', raw_html_text).start()
-        raw_text_measurements_end = re.search(
-            'Die Messwerte in dieser Liste', raw_html_text).start()
-        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split(
-            "\n")
+        raw_text_measurements_begin = raw_html_text.find('<tr class="dynPageTableLine1"><td class="wert">')
+        raw_text_measurements_end = raw_html_text.find("Die Messwerte in dieser Liste")
+        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split("\n")
 
         # Removing the HTML tag
         html_tag_regex = re.compile(r".*?\>(.*?)\<")
