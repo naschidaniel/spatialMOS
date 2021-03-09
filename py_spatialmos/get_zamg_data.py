@@ -34,7 +34,7 @@ class ZamgData:
                 "t": {"name": "t", "unit": "[°C]"},
                 "rf": {"name": "rf", "unit": "[%]"},
                 "wg": {"name": "wg", "unit": "[km/h]"},
-                "wr": {"name": "wr", "unit": "[%]"},
+                "wr": {"name": "wr", "unit": "[str]"},
                 "boe": {"name": "boe", "unit": "[km/h]"},
                 "regen": {"name": "regen", "unit": "[mm]"},
                 "sonne": {"name": "sonne", "unit": "[%]"},
