@@ -10,6 +10,7 @@ import datetime
 from pathlib import Path
 import dateutil
 import requests
+from typing import List, TextIO, Tuple
 import pandas as pd
 from tqdm import tqdm
 from py_middleware import spatial_parser
@@ -34,11 +35,11 @@ class SuedtirolData:
     @staticmethod
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
-        return {"date": {"name": "date", "unit": "[UTC]"},
-                "name": {"name": "name", "unit": "[str]"},
-                "lat": {"name": "lat", "unit": "[°]"},
-                "lon": {"name": "lon", "unit": "[°]"},
-                "alt": {"name": "alt", "unit": "[m]"},
+        return {"DATE": {"name": "date", "unit": "[UTC]"},
+                "NAME_D": {"name": "name", "unit": "[str]"},
+                "LAT": {"name": "lat", "unit": "[°]"},
+                "LONG": {"name": "lon", "unit": "[°]"},
+                "ALT": {"name": "alt", "unit": "[m]"},
                 "LT": {"name": "t", "unit": "[°C]"},
                 "LF": {"name": "rf", "unit": "[%]"},
                 "WG.BOE": {"name": "boe", "unit": "[m/s]"},
@@ -70,18 +71,18 @@ class SuedtirolData:
             raise(RuntimeError("The loaded Data from the '%s' could not be converted into a json.", url))
        
         if request_type == "stations":
-            return {station["properties"]["SCODE"]: station["properties"]
-                        for station in data_dict["features"]}
-        elif request_type == "sensors":
+            return {station["properties"]["SCODE"]: station["properties"] for station in data_dict["features"]}
+        else:
             return data_dict
-        elif request_type == "timeseries":
-            return data.json()
 
 
 class SuedtirolDataConverter:
 
-    def __init__(self) -> None:
-        uedtirolData.request_data(request_type="stations")
+    def __init__(self, measurements, target: TextIO) -> None:
+        
+        parameters = SuedtirolData.parameters()
+        writer = Writer(parameters, target)
+        
         # Convert data to spatialMOS CSV format
 
         station_features = []
@@ -190,6 +191,13 @@ class SuedtirolDataConverter:
                     row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
                 logging.info("The data of the station %s for the time range from %s to %s has been saved successfully.",
                              row["station"], start_date_df, end_date_df)
+    @ classmethod
+    def convert(cls, measurements, target: TextIO):
+        '''convert the data and save it in spatialMOS CSV format'''
+        for m in measurements:
+            measurements_list = 
+
+        cls(target)
 
 
 def fetch_suedtirol_data(begindate, enddate):
@@ -197,37 +205,54 @@ def fetch_suedtirol_data(begindate, enddate):
 
     utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
     data_path = Path("./data/get_available_data/suedtirol/data")
-    ogd_path = Path("./data/get_available_data/suedtirol/ogd")
 
     try:
         os.makedirs(data_path, exist_ok=True)
-        os.makedirs(ogd_path, exist_ok=True)
     except:
         logging.error("The folders could not be created.")
+
 
     stations = SuedtirolData.request_data("stations")
     sensors = SuedtirolData.request_data("sensors")
 
-    i = 0
     for sensor in sensors:
-        if not sensor['TYPE'] in SuedtirolData.parameters().keys():
+        if sensor["SCODE"] not in stations.keys():
             continue
-        url_values = f"http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={sensor['SCODE']}&output_format=JSON&sensor_code={sensor['TYPE']}&date_from={begindate}0000&date_to={enddate}0000"
-        timeseries = SuedtirolData.request_data("timeseries", url_values)
-        print(timeseries)
-        if i == 5:
+        if "SENSORS" in stations[sensor["SCODE"]].keys():
+            stations[sensor["SCODE"]]["SENSORS"].append(sensor['TYPE'])
+        else:
+            stations[sensor["SCODE"]]["SENSORS"] = [sensor['TYPE']]
+
+    i = 0
+    for station in stations.values():
+        measurements = {}
+        for sensor in station["SENSORS"]:
+            if not sensor in SuedtirolData.parameters().keys():
+                continue
+            url_values = f"http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={station['SCODE']}&output_format=JSON&sensor_code={sensor}&date_from={begindate}0000&date_to={enddate}0000"
+            timeseries = SuedtirolData.request_data("timeseries", url_values)
+            for ts in timeseries:
+                if not ":00:00" in ts["DATE"]:
+                    continue
+                measurements[ts["DATE"]] = {
+                    "date": ts["DATE"],
+                    "name": station["SCODE"],
+                    "lat": station["LAT"],
+                    "lon": station["LONG"],
+                    "alt": station["ALT"],
+                    sensor: ts['VALUE']
+                } 
+
+        filename = data_path.joinpath(f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.json")
+        try:
+            with open(filename, mode="w") as target:
+                SuedtirolDataConverter.convert(measurements, target)
+        except:
+            logging.error("The original data file '%s' could not be written.", filename)
+        
+        if i == 3:
             break
-        i += 1        
-
-
-
-    ogd_filename = ogd_path.joinpath(f"sensors_{utcnow_str}.json")
-    try:
-        with open(ogd_filename, mode="w") as target:
-            SuedtirolDataConverter
-    except:
-        logging.error(
-            "The original data file '%s' could not be written.", ogd_filename)
+        i += 1   
 
 
 # Main
