@@ -194,9 +194,8 @@ class SuedtirolDataConverter:
     @ classmethod
     def convert(cls, measurements, target: TextIO):
         '''convert the data and save it in spatialMOS CSV format'''
-        for m in measurements:
-            measurements_list = 
-
+        print(measurements)
+        pass
         cls(target)
 
 
