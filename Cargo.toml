@@ -1,0 +1,13 @@
+[package]
+name = "spatial-util"
+version = "0.1.0"
+authors = ["Daniel Naschberger <daniel@naschi.at>"]
+edition = "2018"
+
+[lib]
+name = "spatial_util"
+crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version = "0.13.2"
+features = ["extension-module"]
