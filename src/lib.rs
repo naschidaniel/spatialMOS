@@ -1,15 +1,12 @@
+mod utils;
+
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-
-// print out hello world
-pub fn rs_hello_world(name: &str) -> String {
-    format!("Hello {}! This message comes from Rust.", name)
-}
 
 /// print out a dict
 #[pyfunction]
 fn hello_world(msg: &str) -> PyResult<String> {
-    let greeting = rs_hello_world(msg);
+    let greeting = utils::rs_hello_world(msg);
     Ok(greeting)
 }
 
@@ -25,7 +22,12 @@ mod tests {
     use super::*;
 
     #[test]
+    fn rs_date_hashmap() {
+        assert_eq!("2021-01-01T23:00:00CET", utils::rs_convert_datetime());
+    }
+
+    #[test]
     fn greeting_contains_name() {
-        assert_eq!("Hello Daniel! This message comes from Rust.", rs_hello_world("Daniel"));
+        assert_eq!("Hello Daniel! This message comes from Rust.", utils::rs_hello_world("Daniel"));
     }
 }
