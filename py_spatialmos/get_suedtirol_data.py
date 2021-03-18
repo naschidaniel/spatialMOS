@@ -9,7 +9,7 @@ import os
 import datetime
 from pathlib import Path
 import requests
-from typing import List, TextIO, Tuple
+from typing import TextIO
 import spatial_util
 from py_middleware import spatial_parser
 from py_middleware import logger_module
@@ -34,7 +34,7 @@ class SuedtirolData:
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {"DATE": {"name": "date", "unit": "[UTC]"},
-                "NAME_D": {"name": "name", "unit": "[str]"},
+                "SCODE": {"name": "name", "unit": "[str]"},
                 "LAT": {"name": "lat", "unit": "[°]"},
                 "LONG": {"name": "lon", "unit": "[°]"},
                 "ALT": {"name": "alt", "unit": "[m]"},
@@ -231,11 +231,10 @@ def fetch_suedtirol_data(begindate, enddate):
                 if not ":00:00" in ts["DATE"]:
                     continue
                 measurements[ts["DATE"]] = {
-                    "date": ts["DATE"],
-                    "name": station["SCODE"],
-                    "lat": station["LAT"],
-                    "lon": station["LONG"],
-                    "alt": station["ALT"],
+                    "NAME": station["SCODE"],
+                    "LAT": station["LAT"],
+                    "LONG": station["LONG"],
+                    "ALT": station["ALT"],
                     sensor: ts['VALUE']
                 } 
 
