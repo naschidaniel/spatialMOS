@@ -11,10 +11,9 @@ from typing import TextIO
 import requests
 
 from spatial_logging import spatial_logging
-from spatial_writer import Writer
+from spatial_writer import SpatialWriter
 
-spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
-
+spatial_logging.logging_init(__file__)
 
 class LwdData:
     '''Lwd_Data Class'''
@@ -71,7 +70,7 @@ class LwdSpatialConverter:
             minute=0, second=0, microsecond=0)
         count_stations = 0
         count_stations_successfull = 0
-        writer = Writer(parameter, target)
+        writer = SpatialWriter(parameter, target)
         for station in request_data["features"]:
             count_stations += 1
             append_data = station["properties"]
