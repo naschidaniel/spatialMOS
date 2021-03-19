@@ -13,9 +13,9 @@ import requests
 import pytz
 
 from spatial_logging import spatial_logging
-from spatial_writer import Writer
+from spatial_writer import SpatialWriter
 
-spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
+spatial_logging.logging_init(__file__)
 
 
 class ZamgData:
@@ -61,12 +61,11 @@ class ZamgSpatialConverter:
     def __init__(self, target: TextIO):
         federal_state = ["burgenland", "kaernten", "niederoesterreich", "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
         parameters = ZamgData.parameters()
-        writer = Writer(parameters, target)
+        writer = SpatialWriter(parameters, target)
         raw_text_time = None
         retry = 0
         max_retries = 3
-        now_hour = int(datetime.datetime.now(
-            pytz.timezone("Europe/Vienna")).strftime("%H"))
+        now_hour = int(datetime.datetime.now(pytz.timezone("Europe/Vienna")).strftime("%H"))
         while retry <= max_retries:
             for state in federal_state:
                 raw_html_text = ZamgData.request_data(state)
