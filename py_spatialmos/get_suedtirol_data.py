@@ -8,11 +8,9 @@ import logging
 import os
 import datetime
 from pathlib import Path
-import dateutil
 import requests
-from typing import List, TextIO, Tuple
-import pandas as pd
-from tqdm import tqdm
+from typing import TextIO
+import spatial_util
 from py_middleware import spatial_parser
 from py_middleware import logger_module
 
@@ -36,7 +34,7 @@ class SuedtirolData:
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {"DATE": {"name": "date", "unit": "[UTC]"},
-                "NAME_D": {"name": "name", "unit": "[str]"},
+                "SCODE": {"name": "name", "unit": "[str]"},
                 "LAT": {"name": "lat", "unit": "[°]"},
                 "LONG": {"name": "lon", "unit": "[°]"},
                 "ALT": {"name": "alt", "unit": "[m]"},
@@ -175,17 +173,17 @@ class SuedtirolDataConverter:
                 tqdm.write(
                     f"No data for the date range {begindate} to {enddate} are available for station {str(row['station'])}.")
             else:
-                tzinfos = {"CET": dateutil.tz.gettz(
-                    "Europe/Vienna"), "CEST": dateutil.tz.gettz("Europe/Vienna")}
-                start_date_df = dateutil.parser.parse(
-                    df.index[-1], tzinfos=tzinfos)
-                start_date_df = datetime.strftime(
-                    start_date_df, "%Y-%m-%d")
+                # tzinfos = {"CET": dateutil.tz.gettz(
+                #     "Europe/Vienna"), "CEST": dateutil.tz.gettz("Europe/Vienna")}
+                # start_date_df = dateutil.parser.parse(
+                #     df.index[-1], tzinfos=tzinfos)
+                # start_date_df = datetime.strftime(
+                #     start_date_df, "%Y-%m-%d")
 
-                end_date_df = dateutil.parser.parse(
-                    df.index[0], tzinfos=tzinfos)
-                end_date_df = datetime.strftime(
-                    end_date_df, "%Y-%m-%d")
+                # end_date_df = dateutil.parser.parse(
+                #     df.index[0], tzinfos=tzinfos)
+                # end_date_df = datetime.strftime(
+                #     end_date_df, "%Y-%m-%d")
 
                 df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df, str(
                     row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
@@ -193,9 +191,8 @@ class SuedtirolDataConverter:
                              row["station"], start_date_df, end_date_df)
     @ classmethod
     def convert(cls, measurements, target: TextIO):
-        '''convert the data and save it in spatialMOS CSV format'''
-        print(measurements)
-        pass
+        '''convert the data and save it in spatialMOS CSV format'''    
+        print(spatial_util.hello_world("Daniel"))
         cls(target)
 
 
@@ -234,11 +231,10 @@ def fetch_suedtirol_data(begindate, enddate):
                 if not ":00:00" in ts["DATE"]:
                     continue
                 measurements[ts["DATE"]] = {
-                    "date": ts["DATE"],
-                    "name": station["SCODE"],
-                    "lat": station["LAT"],
-                    "lon": station["LONG"],
-                    "alt": station["ALT"],
+                    "NAME": station["SCODE"],
+                    "LAT": station["LAT"],
+                    "LONG": station["LONG"],
+                    "ALT": station["ALT"],
                     sensor: ts['VALUE']
                 } 
 
