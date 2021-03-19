@@ -4,13 +4,19 @@
 """Unittest for the rust module spatial_util"""
 
 import unittest
+import pathlib
+import sys
 
+# Rust Lib
 import spatial_util
 
+# spatialMOS python Scripts
+py_spatialmos_path = pathlib.Path(__file__).parents[1].joinpath("py_spatialmos")
+sys.path.insert(1, str(py_spatialmos_path))
 get_suedtirol_data = __import__("get_suedtirol_data")
 
 
-class TestExitCodes(unittest.TestCase):
+class TestRustModules(unittest.TestCase):
 
     def test_convert_measurements_ok(self):
         columns = list(get_suedtirol_data.SuedtirolData.parameters().keys())

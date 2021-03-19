@@ -7,16 +7,17 @@ import os
 import datetime
 from pathlib import Path
 import requests
-from typing import List, TextIO
+from typing import Dict, List, TextIO, Union, NewType
 import spatial_util
 from py_middleware import spatial_parser
-from py_middleware import logger_module
 
 from spatial_logging import spatial_logging
-from spatial_writer import Writer
+from spatial_writer import SpatialWriter
 
-spatial_logging.logging_init(Path(f"/log/{__file__}.log"))
 
+spatial_logging.logging_init(__file__)
+
+Measurements = NewType("Measurements", Dict[str, Dict[str, Union[str, float]]])
 
 class SuedtirolData:
     '''SuedtirolData Class'''
@@ -57,15 +58,17 @@ class SuedtirolData:
         elif request_type == "sensors":
             url = "http://dati.retecivica.bz.it/services/meteo/v1/sensors"
 
+        logging.info("Data is loaded from the api interface %s", url)
         data = requests.get(url)
         if data.status_code != 200:
-            raise(RuntimeError("The response of the API '%s' does not match 200", url))
+            logging.error("The response of the API '%s' does not match 200", url)
+            return {}
 
         try:
             data_dict = data.json()
         except:
             raise(RuntimeError("The loaded Data from the '%s' could not be converted into a json.", url))
-       
+
         if request_type == "stations":
             return {station["properties"]["SCODE"]: station["properties"] for station in data_dict["features"]}
         else:
@@ -73,27 +76,36 @@ class SuedtirolData:
 
 
 class SuedtirolDataConverter:
+    '''SuedtirolDataConverter Class'''
 
-    def __init__(self, measurements: List[List], target: TextIO) -> None:
-        
+    def __init__(self, measurements_write_lines: List[List], target: TextIO) -> None:
+        '''Initialises the class'''
         parameters = SuedtirolData.parameters()
-        writer = Writer(parameters, target)
+        writer = SpatialWriter(parameters, target)
 
         # Convert data to spatialMOS CSV format
-        for entry in measurements:
+        station = measurements_write_lines[0][1]
+        logging.info("%s data lines will be written for the station %s.", len(measurements_write_lines), station)
+        for entry in measurements_write_lines:
             writer.append(entry)
 
     @ classmethod
-    def convert(cls, measurements, target: TextIO):
-        '''convert the data and save it in spatialMOS CSV format'''    
-        columns = list(SuedtirolData.parameters().keys())
-        measurements = spatial_util.convert_measurements(measurements, columns)
-        cls(measurements, target)
+    def convert(cls, measurements: Measurements, filename: Path) -> None:
+        '''convert the data and save it in spatialMOS CSV format'''
+        try:
+            columns = list(SuedtirolData.parameters().keys())
+            measurements_write_lines: List[List] = spatial_util.convert_measurements(measurements, columns)
+            if len(measurements_write_lines) != 0:
+                with open(filename, mode="w", newline="") as target:
+                    logging.info("The suedtirol data will be written into the file '%s'", target)
+                    cls(measurements_write_lines, target)
+        except:
+            logging.error("The spatialmos CSV file '%s' could not be written.", filename)
 
 
-def fetch_suedtirol_data(begindate, enddate):
+
+def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
     '''fetch_suedtirol_data from dati.retecivica.bz.it and store the original data json file. Additionally the converted data is saved in spatialMOS CSV Format.'''
-
     utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
     data_path = Path("./data/get_available_data/suedtirol/data")
 
@@ -102,9 +114,12 @@ def fetch_suedtirol_data(begindate, enddate):
     except:
         logging.error("The folders could not be created.")
 
-
     stations = SuedtirolData.request_data("stations")
     sensors = SuedtirolData.request_data("sensors")
+
+    if not stations or not sensors:
+        logging.error("The station or sensor data from the API interface is not available.")
+        raise RuntimeError
 
     for sensor in sensors:
         if sensor["SCODE"] not in stations.keys():
@@ -114,9 +129,8 @@ def fetch_suedtirol_data(begindate, enddate):
         else:
             stations[sensor["SCODE"]]["SENSORS"] = [sensor['TYPE']]
 
-    i = 0
     for station in stations.values():
-        measurements = {}
+        measurements: Measurements = dict()
         for sensor in station["SENSORS"]:
             if not sensor in SuedtirolData.parameters().keys():
                 continue
@@ -125,27 +139,32 @@ def fetch_suedtirol_data(begindate, enddate):
             for ts in timeseries:
                 if not ":00:00" in ts["DATE"]:
                     continue
-                measurements[ts["DATE"]] = {
-                    "NAME": station["SCODE"],
-                    "LAT": station["LAT"],
-                    "LONG": station["LONG"],
-                    "ALT": station["ALT"],
-                    sensor: ts['VALUE']
-                } 
+                if ts["DATE"] not in list(measurements.keys()):
+                    measurements[ts["DATE"]] = {
+                        "SCODE": station["SCODE"],
+                        "LAT": station["LAT"],
+                        "LONG": station["LONG"],
+                        "ALT": station["ALT"],
+                        }
+                measurements[ts["DATE"]][sensor] = ts["VALUE"]
 
-        filename = data_path.joinpath(f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
-        try:
-            with open(filename, mode="w") as target:
-                SuedtirolDataConverter.convert(measurements, target)
-        except:
-            logging.error("The original data file '%s' could not be written.", filename)
+        if len(list(measurements.keys())) == 0:
+            logging.info("No data relevant for spatialMOS are available for the station %s.", station["SCODE"])
+            continue
 
+        csv_filename = data_path.joinpath(f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
+        SuedtirolDataConverter.convert(measurements, csv_filename)
 
 
 # Main
 if __name__ == "__main__":
-    STARTTIME = logger_module.start_logging(
-        "py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(begindate=True, enddate=True)
-    fetch_suedtirol_data(PARSER_DICT["begindate"], PARSER_DICT["enddate"])
-    logger_module.end_logging(STARTTIME)
+    try:
+        STARTTIME = datetime.datetime.now()
+        PARSER_DICT = spatial_parser.spatial_parser(begindate=True, enddate=True)
+        logging.info("The data suedtirol download from '%s' to '%s' has started.", PARSER_DICT["begindate"], PARSER_DICT["enddate"])
+        fetch_suedtirol_data(PARSER_DICT["begindate"], PARSER_DICT["enddate"])
+        DURATION = datetime.datetime.now() - STARTTIME
+        logging.info("The script has run successfully in %s", DURATION)
+    except Exception as ex:
+        logging.exception(ex)
+        raise ex
