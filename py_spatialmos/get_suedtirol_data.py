@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 """With this Python script data can be obtained from the South Tyrol Weather Service."""
 
-import csv
-import json
 import logging
 import os
 import datetime
 from pathlib import Path
 import requests
-from typing import TextIO
+from typing import List, TextIO
 import spatial_util
 from py_middleware import spatial_parser
 from py_middleware import logger_module
@@ -76,124 +74,21 @@ class SuedtirolData:
 
 class SuedtirolDataConverter:
 
-    def __init__(self, measurements, target: TextIO) -> None:
+    def __init__(self, measurements: List[List], target: TextIO) -> None:
         
         parameters = SuedtirolData.parameters()
         writer = Writer(parameters, target)
-        
+
         # Convert data to spatialMOS CSV format
+        for entry in measurements:
+            writer.append(entry)
 
-        station_features = []
-        station_properties = [d["properties"] for d in station_features]
-        station_data = pd.json_normalize(station_properties)
-        station_data = station_data.drop(
-            ["NAME_E", "NAME_I", "NAME_L"], axis=1)
-        station_data.columns = ["station", "name", "alt", "lon", "lat"]
-        station_data["lon"] = round(station_data["lon"], ndigits=2)
-        station_data["lat"] = round(station_data["lat"], ndigits=2)
-        station_data.to_csv("{}/stations.csv".format(data_path),
-                            index=False, quoting=csv.QUOTE_NONNUMERIC)
-
-        # Provide available sensors for the respective station
-        stations_sensor_json = "{}/stations_sensor.json.tmp".format(
-            data_path)
-        with open(stations_sensor_json, mode="w") as f:
-            f.write(req_sensor.text)
-            f.close()
-        with open(stations_sensor_json, "r") as f:
-            data_stations_sensor = json.load(f)
-        os.remove(stations_sensor_json)
-
-        sensor_data = pd.json_normalize(data_stations_sensor)
-        sensor_data_info = sensor_data[["DESC_D", "TYPE", "UNIT"]]
-        sensor_data_info = sensor_data_info.drop_duplicates(keep="first")
-        sensor_data_info.columns = ["Beschreibung", "Parameter", "Einheit"]
-        for index, row in sensor_data_info.iterrows():
-            row["Parameter"] = rename_sensor_name(row["Parameter"])
-        sensor_data_info.to_csv(
-            "{}/Parameter_Info.csv".format(data_path), index=False, quoting=csv.QUOTE_NONNUMERIC)
-
-        station_sensor_dict = {}
-        for index, row in sensor_data.iterrows():
-            if row["SCODE"] in station_sensor_dict:
-                station_sensor_dict[row["SCODE"]].append(row["TYPE"])
-            else:
-                station_sensor_dict[row["SCODE"]] = [row["TYPE"]]
-
-        # Discard duplicates from sensor list
-        result = {}
-        for key, value in station_sensor_dict.items():
-            value = list(dict.fromkeys(value))
-            result[key] = value
-        station_sensor_dict = result
-
-        for index, row in station_data.iterrows():
-            df = None
-            for sensor in station_sensor_dict[str(row["station"])]:
-                url_values = "http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={}&output_format=JSON&" \
-                    "sensor_code={}&date_from={begindate}0000&date_to={}0000".format(
-                        str(row["station"]), str(sensor), begindate, enddate)
-                req_values = requests.get(url_values)
-
-                if req_values.status_code == 200:
-                    tmp_data_file = f"{data_path}/data/value.json.tmp"
-                    with open(tmp_data_file, mode="w") as f:
-                        f.write(req_values.text)
-                        f.close()
-                    if os.path.exists(tmp_data_file):
-                        with open(tmp_data_file, "r") as f:
-                            data_stations_value = json.load(f)
-                        os.remove(tmp_data_file)
-
-                        new_df = pd.json_normalize(data_stations_value)
-
-                        # check if Data exists
-                        if new_df.empty:
-                            logging.warning(
-                                "The station contains no data and was skipped.")
-                            continue
-
-                        new_df.columns = ["obstime",
-                                          rename_sensor_name(sensor)]
-                        new_df = new_df.set_index("obstime")
-
-                        if df is None:
-                            df = new_df
-                            df.insert(0, "station", row["station"])
-                        else:
-                            df = df.join(new_df)
-                    else:
-                        logging.error(
-                            "The template file was not created correctly. URL: %s", url_values)
-                else:
-                    logging.info(
-                        "The values could not be downloaded. URL: %s", url_values)
-
-            if df is None:
-                tqdm.write(
-                    f"No data for the date range {begindate} to {enddate} are available for station {str(row['station'])}.")
-            else:
-                # tzinfos = {"CET": dateutil.tz.gettz(
-                #     "Europe/Vienna"), "CEST": dateutil.tz.gettz("Europe/Vienna")}
-                # start_date_df = dateutil.parser.parse(
-                #     df.index[-1], tzinfos=tzinfos)
-                # start_date_df = datetime.strftime(
-                #     start_date_df, "%Y-%m-%d")
-
-                # end_date_df = dateutil.parser.parse(
-                #     df.index[0], tzinfos=tzinfos)
-                # end_date_df = datetime.strftime(
-                #     end_date_df, "%Y-%m-%d")
-
-                df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df, str(
-                    row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
-                logging.info("The data of the station %s for the time range from %s to %s has been saved successfully.",
-                             row["station"], start_date_df, end_date_df)
     @ classmethod
     def convert(cls, measurements, target: TextIO):
         '''convert the data and save it in spatialMOS CSV format'''    
-        print(spatial_util.hello_world("Daniel"))
-        cls(target)
+        columns = list(SuedtirolData.parameters().keys())
+        measurements = spatial_util.convert_measurements(measurements, columns)
+        cls(measurements, target)
 
 
 def fetch_suedtirol_data(begindate, enddate):
@@ -238,16 +133,13 @@ def fetch_suedtirol_data(begindate, enddate):
                     sensor: ts['VALUE']
                 } 
 
-        filename = data_path.joinpath(f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.json")
+        filename = data_path.joinpath(f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
         try:
             with open(filename, mode="w") as target:
                 SuedtirolDataConverter.convert(measurements, target)
         except:
             logging.error("The original data file '%s' could not be written.", filename)
-        
-        if i == 3:
-            break
-        i += 1   
+
 
 
 # Main
