@@ -288,6 +288,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2021-03-20 Build the Rust libraries for python.
 - 2020-12-16 PostgreSQL was upgraded to version 13.
 - 2020-10-22 Relative humidity forecasts are available.
 - 2020-10-17 The Python module basemap was replaced by [cartopy](https://scitools.org.uk/cartopy/docs/latest/).

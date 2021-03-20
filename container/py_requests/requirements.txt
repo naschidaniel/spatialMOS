@@ -1,4 +1,3 @@
-pandas
-tqdm
-python-dateutil
+pytz
 requests
+spatial_util-0.1.0-cp39-cp39-manylinux2010_x86_64.whl

@@ -234,6 +234,14 @@ def py_spatialmos__django_import_statusfiles(c):
     inv_base.write_statusfile_and_success_logging(py_spatialmos__django_import_statusfiles.__name__, cmd)
 
 
+@task
+def py_spatialmos__maturin_build(c):
+    """Build the Rust libraries for Spatialmos"""
+    inv_logging.task(py_spatialmos__maturin_build.__name__)
+    c.run("maturin build")
+    c.run("mv ./target/wheels/*.whl ./container/py_requests/")
+    inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
+
 SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
 SPATIALMOS_DEVELOPMENT_NS.add_task(spatialmos__init_topography)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_available_data)
@@ -249,12 +257,14 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_an
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__prediction)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__maturin_build)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_import_spatialmos_run)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_delete_spatialmos_runs)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_import_statusfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__gamlss_crch_model)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_nwp)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
+
 
 
 SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
