@@ -1,219 +1,234 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""This program is used to load data from the ZAMG website."""
+'''With this Python script data can be obtained from the ZAMG website.'''
 
-import csv
 import logging
-import sys
 import re
 import time
 import os
-from datetime import datetime
-import pandas as pd
+import datetime
+from pathlib import Path
+from typing import Dict, List, TextIO, Tuple
 import requests
 import pytz
-from py_middleware import logger_module
+
+from spatial_logging import spatial_logging
+from spatial_writer import SpatialWriter
+
+spatial_logging.logging_init(__file__)
+
+
+class ZamgData:
+    '''ZamgData Class'''
+
+    # The data is loaded from the website and saved as a csv file.
+    # https://www.zamg.ac.at/
+    # The units are determined from the table https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tirol
+
+    @staticmethod
+    def parameters() -> Dict[str, Dict[str, str]]:
+        '''parameters and a unit which is encapsulated in the spatialmos format.'''
+        return {'date': {'name': 'date', 'unit': '[UTC]'},
+                'name': {'name': 'name', 'unit': '[String]'},
+                'alt': {'name': 'alt', 'unit': '[m]'},
+                't': {'name': 't', 'unit': '[Degree C]'},
+                'rf': {'name': 'rf', 'unit': '[Percent]'},
+                'wr': {'name': 'wg', 'unit': '[String]'},
+                'wg': {'name': 'wr', 'unit': '[km/h]'},
+                'boe': {'name': 'boe', 'unit': '[km/h]'},
+                'regen': {'name': 'regen', 'unit': '[mm]'},
+                'sonne': {'name': 'sonne', 'unit': '[Percent]'},
+                'ldred': {'name': 'ldred', 'unit': '[hPa]'}}
+
+    @ classmethod
+    def request_data(cls, state: str) -> str:
+        '''request_data loads the data from the Website'''
+        request_url = f'https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/{state}/temperatur/?mode=geo&druckang=red'
+        logging.info('The web page will be loaded %s', request_url)
+        try:
+            request_data = requests.get(request_url)
+            if request_data.status_code != 200:
+                raise(RuntimeError(
+                    f'The response of the Webpage \'{request_url}\' does not match 200'))
+            else:
+                logging.info('The URL %s was loaded successfully', request_url)
+            return request_data.text
+        except:
+            logging.error('The request for \'%s\' failed', request_url)
+            return ''
+
+
+class ZamgSpatialConverter:
+    '''ZamgSpatialConverter Class'''
+
+    def __init__(self, target: TextIO):
+        '''init ZamgSpatialConverter'''
+        federal_state = ['burgenland', 'kaernten', 'niederoesterreich',
+                         'oberoesterreich', 'salzburg', 'steiermark', 'tirol', 'vorarlberg', 'wien']
+        parameters = ZamgData.parameters()
+        writer = SpatialWriter(parameters, target)
+        raw_text_time = None
+        retry = 0
+        max_retries = 3
+        now_hour = int(datetime.datetime.now(
+            pytz.timezone('Europe/Vienna')).strftime('%H'))
+        while retry <= max_retries:
+            for state in federal_state:
+                raw_html_text = ZamgData.request_data(state)
+                if raw_html_text == '':
+                    continue
+
+                measurements_optimized, raw_text_time = self.manipulate_html_text(
+                    raw_html_text)
+                # Check the data status of the website
+                if now_hour == int(raw_text_time):
+                    for row in measurements_optimized:
+                        writer.append(row)
+                    logging.info(
+                        'The weather data for %s has been saved.', state)
+                    federal_state = [
+                        i for i in federal_state if state not in i]
+                else:
+                    logging.warning(
+                        'The weather data for %s is not yet up to date.', state)
+                time.sleep(10)
+
+            # Check whether all federal states have been successfully loaded
+            if len(federal_state) != 0:
+                logging.error(
+                    'No current data could be loaded for the federal state %s and retry %s/%s ', federal_state, retry, max_retries)
+                logging.info('The process is repeated in 600 seconds.')
+                retry += 1
+                time.sleep(600)
+            else:
+                logging.info(
+                    'All data for was downloaded from the Zamg website and saved as CSV files.')
+                break
+        else:
+            logging.error(
+                'The maximum number of retries was reached %s/%s and not all data could be saved.', retry, max_retries)
+
+    def manipulate_html_text(self, raw_html_text: str) -> Tuple[List[List[str]], str]:
+        '''manipulate_html_text changes the html text and returns the extracted information'''
+        utc_now_hour = datetime.datetime.utcnow().replace(
+            minute=0, second=0, microsecond=0)
+        # Special character
+        raw_html_text = raw_html_text.replace('&uuml;', 'ü')
+        raw_html_text = raw_html_text.replace('&ouml;', 'ö')
+        raw_html_text = raw_html_text.replace('&szlig;', 'ß')
+        raw_html_text = raw_html_text.replace('&auml;', 'ä')
+        # Units
+        raw_html_text = raw_html_text.replace('km/h', '')
+        raw_html_text = raw_html_text.replace('&deg;', '')
+        raw_html_text = raw_html_text.replace('%', '')
+        raw_html_text = raw_html_text.replace(
+            '<small style="font-size:0.85em;">m</small>', '')
+        raw_html_text = raw_html_text.replace(
+            '<small style="font-size:0.85em;">mm</small>', '')
+        raw_html_text = raw_html_text.replace(
+            '<small style="font-size:0.85em;">hPa</small>', '')
+        raw_html_text = raw_html_text.replace(
+            '<small style="font-size:0.85em;">Windstille</small>', 'Windstille')
+        # Pressure tendency
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a1.png" width="15" height="12" alt="Drucktendenz: steigend, dann stabil" title="steigend, dann stabil" /></td>', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a2.png" width="15" height="12" alt="Drucktendenz: steigend" title="steigend" />', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a3.png" width="15" height="12" alt="Drucktendenz: stabil, dann steigend" title="stabil, dann steigend" /></td>', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a5.png" width="15" height="12" alt="Drucktendenz: fallend, dann leicht steigend" title="fallend, dann leicht steigend" />', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a6.png" width="15" height="12" alt="Drucktendenz: fallend, dann stabil" title="fallend, dann stabil" />', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a7.png" width="15" height="12" alt="Drucktendenz: fallend" title="fallend" />', '')
+        raw_html_text = raw_html_text.replace(
+            '<img src="https://www.zamg.ac.at/pict/wetter/a8.png" width="15" height="12" alt="Drucktendenz: stabil, dann fallend" title="stabil, dann fallend" />', '')
+        # Incorrect values
+        raw_html_text = raw_html_text.replace('n.v.', '-999')
+        raw_html_text = raw_html_text.replace('k.A.', '-999')
+        raw_html_text = raw_html_text.replace('*', '')
+
+        raw_text_date_begin = raw_html_text.find(
+            '<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
+        raw_text_date_end = raw_html_text.find('</h1>')
+        raw_text_date = raw_html_text[raw_text_date_begin:raw_text_date_end]
+        raw_text_date = raw_text_date[raw_text_date.find('-')+1:]
+        raw_text_date = raw_text_date.strip()
+
+        raw_text_time_begin = raw_html_text.find(
+            'Aktuelle Messwerte der Wetterstationen von ') + len('Aktuelle Messwerte der Wetterstationen von ')
+        raw_text_time_end = raw_html_text.find('Uhr</h2>')
+        raw_text_time = raw_html_text[raw_text_time_begin:raw_text_time_end]
+        raw_text_time = raw_text_time.replace('\n', '')
+
+        # Extract measurements
+        raw_text_measurements_begin = raw_html_text.find(
+            '<tr class="dynPageTableLine1"><td class="wert">')
+        raw_text_measurements_end = raw_html_text.find(
+            "Die Messwerte in dieser Liste")
+        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split(
+            '\n')
+
+        # Removing the HTML tag
+        html_tag_regex = re.compile(r'.*?\>(.*?)\<')
+        measurements = [re.findall(html_tag_regex, line)
+                        for line in raw_text_measurements]
+        measurements = [list(filter(None, stations))
+                        for stations in measurements]
+        measurements = [list(map(lambda x: x.strip(' ').replace(
+            'Windstille', 'Windstille, 0'), stations)) for stations in measurements]
+
+        # remove superfluous whitespaces and separate direction and wind speed
+        measurements_optimized = []
+        for stations in measurements:
+            flat_list = [datetime.datetime.strftime(
+                utc_now_hour, '%Y-%m-%d %H:%M:%S')]
+            if not any(', ' in s for s in stations):
+                stations.insert(5, '-999')
+            for entry in stations:
+                entry = entry.strip(' ')
+                if ', ' in entry:
+                    for i in entry.split(', '):
+                        # Fix Windstille and and Direction
+                        if i == 'Windstille':
+                            flat_list.append('Windstille')
+                        else:
+                            flat_list.append(i)
+                else:
+                    flat_list.append(entry)
+            if len(flat_list) >= 4:  # drop district lines
+                measurements_optimized.append(flat_list)
+        return (measurements_optimized, raw_text_time)
+
+    @ classmethod
+    def convert(cls, target: TextIO):
+        '''convert the data and save it in spatialMOS CSV format'''
+        cls(target)
 
 
 # Functions
 def fetch_zamg_data():
-    """This function is used to store zamg data in csv files."""
-    # Provide folder structure.
-    data_path = "./data/get_available_data/zamg"
-    if not os.path.exists(f"{data_path}"):
-        os.mkdir(f"{data_path}")
+    '''fetch_zamg_data is used to store zamg data in csv files.'''
+    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
+    data_path = Path('./data/get_available_data/zamg/data')
+    try:
+        os.makedirs(data_path, exist_ok=True)
+    except:
+        logging.error('The folders could not be created.')
 
-    data_path = os.path.join(data_path, "data")
-    if not os.path.exists(f"{data_path}"):
-        os.mkdir(f"{data_path}")
-
-    timezone = pytz.timezone("Europe/Vienna")
-    federal_state = ["burgenland", "kaernten", "niederoesterreich",
-                     "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
-
-    raw_text_time = None
-    retry = 0
-    max_retrys = 3
-    now_hour = int(datetime.now(timezone).strftime("%H"))
-    while now_hour != raw_text_time:
-        if retry <= max_retrys:
-            file_counter = 0
-            for state in federal_state:
-                # Station values and current pressure at station level
-                df_stat, raw_text_time = download_zamg_page_data(
-                    data_path, state, "stat")
-                # Station values and current pressure at sea level
-                df_red, raw_text_time = download_zamg_page_data(
-                    data_path, state, "red")
-                df_red = df_red[["station", "ldred"]]
-
-                # Merging of the two dataframes and reorder
-                df = df_stat.merge(df_red, on=["station"])
-                df = df[["timestamp", "timestamp_download", "station", "alt", "t",
-                         "rf", "wg", "wr", "wsg", "regen", "sonne", "ldred", "ldstat"]]
-
-                # Check the data status of the website
-                if now_hour == raw_text_time:
-                    file_counter = file_counter + 1
-                    timestamp_save = datetime.now().strftime("%Y-%m-%d")
-                    csvfile = f"{data_path}/{timestamp_save}_{raw_text_time}_ZAMG_PAGE_{state}.csv"
-                    df.to_csv(csvfile, index=False,
-                              quoting=csv.QUOTE_NONNUMERIC)
-                    logging.info("{:18} | Uhrzeit Text {} | Zeit {}".format(
-                        state, raw_text_time, now_hour))
-                else:
-                    logging.warning("{:18} | Uhrzeit Text {} | Zeit {}".format(
-                        state, raw_text_time, now_hour))
-
-                time.sleep(10)
-
-            # Check whether all federal states have been successfully loaded
-            if file_counter != 9:
-                logging.error(
-                    "Not all federal states could be downloaded successfully. The process is repeated. | Retry %s/%s ", retry, max_retrys)
-                retry = retry + 1
-                file_counter = 0
-                logging.info("The process is repeated in 600 seconds.")
-                time.sleep(600)
-            else:
-                logging.info(
-                    "All data was downloaded from the Zamg website and saved as CSV files.")
-
-        else:
-            logging.error(
-                "The maximum number of retries was reached and not all data could be saved. %s/%s", retry, max_retrys)
-            sys.exit(1)
-
-
-def download_zamg_page_data(data_path, state, pressure):
-    """A function to download the current values from the website of ZAMG."""
-    url_page = f"https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/{state}/temperatur/?mode=geo&druckang={pressure}"
-    req_page = requests.get(url_page)
-
-    if req_page.status_code == 200:
-        # Text manipulations of the HTML Raw file
-        raw_text = req_page.text
-        # Special character
-        raw_text = raw_text.replace('&uuml;', 'ü')
-        raw_text = raw_text.replace('&ouml;', 'ö')
-        raw_text = raw_text.replace('&szlig;', 'ß')
-        raw_text = raw_text.replace('&auml;', 'ä')
-        # Units
-        raw_text = raw_text.replace('km/h', '')
-        raw_text = raw_text.replace('&deg;', '')
-        raw_text = raw_text.replace('%', '')
-        raw_text = raw_text.replace('Windstille', '')
-        raw_text = raw_text.replace(
-            '<small style="font-size:0.85em;">m</small>', '')
-        raw_text = raw_text.replace(
-            '<small style="font-size:0.85em;">mm</small>', '')
-        raw_text = raw_text.replace(
-            '<small style="font-size:0.85em;">hPa</small>', '')
-        raw_text = raw_text.replace(
-            '<small style="font-size:0.85em;">Windstille</small>', '')
-        # Pressure tendency
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a1.png" width="15" height="12" alt="Drucktendenz: steigend, dann stabil" title="steigend, dann stabil" /></td>', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a2.png" width="15" height="12" alt="Drucktendenz: steigend" title="steigend" />', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a3.png" width="15" height="12" alt="Drucktendenz: stabil, dann steigend" title="stabil, dann steigend" /></td>', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a5.png" width="15" height="12" alt="Drucktendenz: fallend, dann leicht steigend" title="fallend, dann leicht steigend" />', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a6.png" width="15" height="12" alt="Drucktendenz: fallend, dann stabil" title="fallend, dann stabil" />', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a7.png" width="15" height="12" alt="Drucktendenz: fallend" title="fallend" />', '')
-        raw_text = raw_text.replace(
-            '<img src="https://www.zamg.ac.at/pict/wetter/a8.png" width="15" height="12" alt="Drucktendenz: stabil, dann fallend" title="stabil, dann fallend" />', '')
-        # Incorrect values
-        raw_text = raw_text.replace('n.v.', '-999')
-        raw_text = raw_text.replace('k.A.', '-999')
-        raw_text = raw_text.replace('*', '')
-
-        timezone = pytz.timezone("Europe/Vienna")
-        now = int(datetime.now(timezone).strftime("%Y%m%d%H%M"))
-        tempfile = os.path.join(data_path, f"{state}_{now}.html.tmp")
-        with open(tempfile, "w") as f:
-            f.write(raw_text)
-            f.close()
-
-        raw_text_date_begin = re.search(
-            '<h1 id="dynPageHead">', raw_text).end()
-        raw_text_date_end = re.search("</h1>", raw_text).start()
-        raw_text_date = raw_text[raw_text_date_begin:raw_text_date_end]
-        raw_text_date = raw_text_date[re.search("-", raw_text_date).end():]
-        raw_text_date = raw_text_date.strip()
-
-        raw_text_time_begin = re.search(
-            "Aktuelle Messwerte der Wetterstationen von ", raw_text).end()
-        raw_text_time_end = re.search("Uhr</h2>", raw_text).start()
-        raw_text_time = raw_text[raw_text_time_begin:raw_text_time_end]
-        raw_text_time = int(raw_text_time.replace("\n", ""))
-
-        raw_text_timestamp = f"{raw_text_date}T{raw_text_time}"
-
-        # trim data
-        measured_values_begin = re.search(
-            '<tr class="dynPageTableLine1"><td class="wert">', raw_text).start()
-        measured_values_end = re.search(
-            'Die Messwerte in dieser Liste', raw_text).start()
-        measured_values = raw_text[measured_values_begin: measured_values_end]
-
-        with open(tempfile, "w") as f:
-            f.write(measured_values)
-            f.close()
-
-        # Data manipulation of the tempfile
-        lines = [line.rstrip("\n") for line in open(tempfile)]
-        os.remove(tempfile)
-
-        # Removing the HTML tag
-        text_list = []
-        for line in lines:
-            html_tag_regex = re.compile(".*?\>(.*?)\<")
-            result = re.findall(html_tag_regex, line)
-            text_list.append(result)
-
-        # remove superfluous columns
-        text_filter = []
-        for to_filter in text_list:
-            text_filter.append(list(filter(None, to_filter)))
-        text_filter = list(filter(None, text_filter))
-
-        # Creating the Pandas Dataframe
-        ld_name = "ld" + pressure
-        df = pd.DataFrame(text_filter, columns=[
-                          "station", "alt", "t", "rf", "wg", "wsg", "regen", "sonne", ld_name])
-        df = df.dropna()
-
-        # Data manipulation
-        # Timestamp of the download
-        df.insert(1, "timestamp", raw_text_timestamp)
-        timestamp_download = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        df.insert(2, "timestamp_download", timestamp_download)
-
-        # Wind direction and wind speed in format: Süd, 19
-        df["wr"] = [re.sub(r"[0-9,]", "", string) for string in df["wg"]]
-        df["wr"] = [string.strip() for string in df["wr"]]
-        df["wg"] = [re.sub(r"[a-zA-Züäö,]", "", string) for string in df["wg"]]
-        df["wg"] = [string.strip() for string in df["wg"]]
-        df["wg"][df["wr"] == "Windstille"] = 0
-
-        df[["wg", "alt", "t", "rf", "wsg", "regen", "sonne", ld_name]] = df[[
-            "wg", "alt", "t", "rf", "wsg", "regen", "sonne", ld_name]].astype(float)
-
-        return (df, raw_text_time)
-    else:
-        logging.error(
-            "The request for the URL '%s' returned the status code 404", url_page)
-        df = None
-        raw_text_time = None
-        return(df, raw_text_time)
+    with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='') as target:
+        ZamgSpatialConverter.convert(target)
 
 
 # Main
-if __name__ == "__main__":
-    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    fetch_zamg_data()
-    logger_module.end_logging(STARTTIME)
+if __name__ == '__main__':
+    try:
+        STARTTIME = datetime.datetime.now()
+        logging.info('The data zamg download has started.')
+        fetch_zamg_data()
+        DURATION = datetime.datetime.now() - STARTTIME
+        logging.info('The script has run successfully in %s', DURATION)
+    except Exception as ex:
+        logging.exception(ex)
+        raise ex

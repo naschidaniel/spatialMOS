@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Python builds
+*.whl
+
 # Docker Certs
 fabric/cert/ca.pem
 fabric/cert/cert.pem
@@ -35,3 +38,7 @@ settings.json
 node_modules/
 npm-debug.log
 container/node/dist
+
+
+# Rust
+/target

@@ -1,4 +1,4 @@
-FROM python:3.7-buster
+FROM python:3.9-buster
 
 ENV PYTHONUNBUFFERED 1
 
@@ -8,6 +8,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /usr/src/app
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY . /usr/src/app/
 
 RUN pip3 install --no-cache-dir -r /usr/src/app/requirements.txt

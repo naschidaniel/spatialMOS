@@ -1,168 +1,183 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""With this Python script data can be obtained from the South Tyrol Weather Service."""
+'''With this Python script data can be obtained from the South Tyrol Weather Service.'''
 
-import csv
-import json
 import logging
 import os
-from datetime import datetime
-import dateutil
+import datetime
+from pathlib import Path
+from typing import Dict, List, TextIO, Union, NewType
 import requests
-import pandas as pd
-from tqdm import tqdm
+import spatial_util
 from py_middleware import spatial_parser
-from py_middleware import logger_module
+
+from spatial_logging import spatial_logging
+from spatial_writer import SpatialWriter
 
 
-# Functions
-def rename_sensor_name(parameter):
-    """The function is used to set the parameters to a uniform format."""
-    sensor_dict = {"LT": "t", "LF": "rf", "WR": "wr", "WG": "wg", "WG.BOE": "wsg",
-                   "N": "regen", "LD.RED": "ldred", "GS": "globalstrahlung", "SD": "sonne"}
-    if parameter in sensor_dict:
-        name = sensor_dict[parameter]
-    else:
-        name = parameter
-    return name
+spatial_logging.logging_init(__file__)
+
+Measurements = NewType('Measurements', Dict[str, Dict[str, Union[str, float]]])
 
 
-def fetch_suedtirol_data(begindate, enddate):
-    """The function is used to load data from the South Tyrolean weather service. The data is stored as a csv file."""
-    # Provide folder structure.
-    data_path = "./data/get_available_data/suedtirol"
-    if not os.path.exists(f"{data_path}"):
-        os.mkdir(f"{data_path}")
+class SuedtirolData:
+    '''SuedtirolData Class'''
 
-    if not os.path.exists(f"{data_path}/data/"):
-        os.mkdir(f"{data_path}/data/")
+    # Data from the Open Data API Interface from - Wetter Provinz Bozen
+    # http://daten.buergernetz.bz.it/de/dataset/misure-meteo-e-idrografiche
+    # Licence: Creative Commons CC0 - http://opendefinition.org/okd/
+    # Land Suedtirol - https://wetter.provinz.bz.it/
+    # Information about the Metadata
+    # http://daten.buergernetz.bz.it/de/dataset/misure-meteo-e-idrografiche
 
-    # Station network of the South Tyrolean weather service
-    url_stations = "http://dati.retecivica.bz.it/services/meteo/v1/stations"
-    req_stations = requests.get(url_stations)
+    @staticmethod
+    def parameters() -> Dict[str, Dict[str, str]]:
+        '''parameters and a unit which is encapsulated in the spatialmos format.'''
+        return {'DATE': {'name': 'date', 'unit': '[UTC]'},
+                'SCODE': {'name': 'name', 'unit': '[String]'},
+                'LAT': {'name': 'lat', 'unit': '[Degree]'},
+                'LONG': {'name': 'lon', 'unit': '[Degree]'},
+                'ALT': {'name': 'alt', 'unit': '[m]'},
+                'LT': {'name': 't', 'unit': '[Degree C]'},
+                'LF': {'name': 'rf', 'unit': '[Percent]'},
+                'WG.BOE': {'name': 'boe', 'unit': '[m/s]'},
+                'WG': {'name': 'wg', 'unit': '[m/s]'},
+                'WR': {'name': 'wr', 'unit': '[Degree]'},
+                'N': {'name': 'regen', 'unit': '[mm/h]'},
+                'GS': {'name': 'globalstrahlung', 'unit': '[W/m^2]'},
+                'SD': {'name': 'sonne', 'unit': '[s]'}}
 
-    # Parameters of the current sensors installed on the measuring station
-    url_sensor = "http://dati.retecivica.bz.it/services/meteo/v1/sensors"
-    req_sensor = requests.get(url_sensor)
+    @classmethod
+    def request_data(cls, request_type: str, url='') -> dict:
+        '''request_data loads the data from the API interface'''
 
-    if req_stations.status_code == 200 and req_sensor.status_code == 200:
-        stations_json = "{}/stations.json.tmp".format(data_path)
-        with open(stations_json, mode="w") as f:
-            f.write(req_stations.text)
-            f.close()
-        with open(stations_json, "r") as f:
-            data_stations = json.load(f)
-        os.remove(stations_json)
+        if request_type not in ['sensors', 'stations', 'timeseries']:
+            raise RuntimeError(
+                'The request_type \'%s\' ist not defined.' % request_type)
+
+        if request_type == 'stations':
+            url = 'http://dati.retecivica.bz.it/services/meteo/v1/stations'
+        elif request_type == 'sensors':
+            url = 'http://dati.retecivica.bz.it/services/meteo/v1/sensors'
+
+        logging.info('Data is loaded from the api interface %s', url)
+        data = requests.get(url)
+        if data.status_code != 200:
+            logging.error(
+                'The response of the API \'%s\' does not match 200', url)
+            return {}
+
+        try:
+            data_dict = data.json()
+        except:
+            logging.error(
+                'The loaded Data from the \'%s\' could not be converted into a json.',  url)
+            return {}
+
+        if request_type == 'stations':
+            return {station['properties']['SCODE']: station['properties'] for station in data_dict['features']}
+        else:
+            return data_dict
+
+
+class SuedtirolDataConverter:
+    '''SuedtirolDataConverter Class'''
+
+    def __init__(self, measurements_write_lines: List[List], target: TextIO) -> None:
+        '''init the class'''
+        parameters = SuedtirolData.parameters()
+        writer = SpatialWriter(parameters, target)
 
         # Convert data to spatialMOS CSV format
-        station_features = data_stations["features"]
-        station_properties = [d["properties"] for d in station_features]
-        station_data = pd.json_normalize(station_properties)
-        station_data = station_data.drop(
-            ["NAME_E", "NAME_I", "NAME_L"], axis=1)
-        station_data.columns = ["station", "name", "alt", "lon", "lat"]
-        station_data["lon"] = round(station_data["lon"], ndigits=2)
-        station_data["lat"] = round(station_data["lat"], ndigits=2)
-        station_data.to_csv("{}/stations.csv".format(data_path),
-                            index=False, quoting=csv.QUOTE_NONNUMERIC)
+        station = measurements_write_lines[0][1]
+        logging.info('%s data lines will be written for the station %s.', len(
+            measurements_write_lines), station)
+        for entry in measurements_write_lines:
+            writer.append(entry)
 
-        # Provide available sensors for the respective station
-        stations_sensor_json = "{}/stations_sensor.json.tmp".format(data_path)
-        with open(stations_sensor_json, mode="w") as f:
-            f.write(req_sensor.text)
-            f.close()
-        with open(stations_sensor_json, "r") as f:
-            data_stations_sensor = json.load(f)
-        os.remove(stations_sensor_json)
+    @ classmethod
+    def convert(cls, measurements: Measurements, filename: Path) -> None:
+        '''convert the data and save it in spatialMOS CSV format'''
+        try:
+            columns = list(SuedtirolData.parameters().keys())
+            measurements_write_lines: List[List] = spatial_util.convert_measurements(
+                measurements, columns)
+            if len(measurements_write_lines) != 0:
+                with open(filename, mode='w', newline='') as target:
+                    logging.info(
+                        'The suedtirol data will be written into the file \'%s\'', target)
+                    cls(measurements_write_lines, target)
+        except:
+            logging.error(
+                'The spatialmos CSV file \'%s\' could not be written.', filename)
 
-        sensor_data = pd.json_normalize(data_stations_sensor)
-        sensor_data_info = sensor_data[["DESC_D", "TYPE", "UNIT"]]
-        sensor_data_info = sensor_data_info.drop_duplicates(keep="first")
-        sensor_data_info.columns = ["Beschreibung", "Parameter", "Einheit"]
-        for index, row in sensor_data_info.iterrows():
-            row["Parameter"] = rename_sensor_name(row["Parameter"])
-        sensor_data_info.to_csv(
-            "{}/Parameter_Info.csv".format(data_path), index=False, quoting=csv.QUOTE_NONNUMERIC)
 
-        station_sensor_dict = {}
-        for index, row in sensor_data.iterrows():
-            if row["SCODE"] in station_sensor_dict:
-                station_sensor_dict[row["SCODE"]].append(row["TYPE"])
-            else:
-                station_sensor_dict[row["SCODE"]] = [row["TYPE"]]
+def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
+    '''fetch_suedtirol_data from dati.retecivica.bz.it and store the original data json file. Additionally the converted data is saved in spatialMOS CSV Format.'''
+    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
+    data_path = Path('./data/get_available_data/suedtirol/data')
 
-        # Discard duplicates from sensor list
-        result = {}
-        for key, value in station_sensor_dict.items():
-            value = list(dict.fromkeys(value))
-            result[key] = value
-        station_sensor_dict = result
+    try:
+        os.makedirs(data_path, exist_ok=True)
+    except:
+        logging.error('The folders could not be created.')
 
-        with tqdm(total=station_data.shape[0], desc=f"Data download from API of the weather service Province of Bolzano. | {begindate} to {enddate} |", leave=False) as pbar:
-            for index, row in station_data.iterrows():
-                df = None
-                for sensor in station_sensor_dict[str(row["station"])]:
-                    url_values = "http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={}&output_format=JSON&" \
-                        "sensor_code={}&date_from={}0000&date_to={}0000".format(
-                            str(row["station"]), str(sensor), begindate, enddate)
-                    req_values = requests.get(url_values)
+    stations = SuedtirolData.request_data('stations')
+    sensors = SuedtirolData.request_data('sensors')
 
-                    if req_values.status_code == 200:
-                        tmp_data_file = f"{data_path}/data/value.json.tmp"
-                        with open(tmp_data_file, mode="w") as f:
-                            f.write(req_values.text)
-                            f.close()
-                        if os.path.exists(tmp_data_file):
-                            with open(tmp_data_file, "r") as f:
-                                data_stations_value = json.load(f)
-                            os.remove(tmp_data_file)
-
-                            new_df = pd.json_normalize(data_stations_value)
-
-                            # check if Data exists
-                            if new_df.empty:
-                                logging.warning("The station contains no data and was skipped.")
-                                continue
-
-                            new_df.columns = ["obstime", rename_sensor_name(sensor)]
-                            new_df = new_df.set_index("obstime")
-
-                            if df is None:
-                                df = new_df
-                                df.insert(0, "station", row["station"])
-                            else:
-                                df = df.join(new_df)
-                        else:
-                            logging.error("The template file was not created correctly. URL: %s", url_values)
-                    else:
-                        logging.info("The values could not be downloaded. URL: %s", url_values)
-
-                if df is None:
-                    tqdm.write(
-                        f"No data for the date range {begindate} to {enddate} are available for station {str(row['station'])}.")
-                else:
-                    tzinfos = {"CET": dateutil.tz.gettz(
-                        "Europe/Vienna"), "CEST": dateutil.tz.gettz("Europe/Vienna")}
-                    start_date_df = dateutil.parser.parse(
-                        df.index[-1], tzinfos=tzinfos)
-                    start_date_df = datetime.strftime(
-                        start_date_df, "%Y-%m-%d")
-
-                    end_date_df = dateutil.parser.parse(
-                        df.index[0], tzinfos=tzinfos)
-                    end_date_df = datetime.strftime(end_date_df, "%Y-%m-%d")
-
-                    df.to_csv("{}/data/{}_{}_{}.csv".format(data_path, start_date_df, end_date_df, str(row["station"])), sep=";", index=True, quoting=csv.QUOTE_MINIMAL)
-                    logging.info("The data of the station %s for the time range from %s to %s has been saved successfully.", row["station"], start_date_df, end_date_df)
-                pbar.update(1)
-    else:
+    if not stations or not sensors:
         logging.error(
-            "Error while Downloading Station File from http://dati.retecivica.bz.it")
+            'The station or sensor data from the API interface is not available.')
+        raise RuntimeError
+
+    for sensor in sensors:
+        if sensor['SCODE'] not in stations.keys():
+            continue
+        if 'SENSORS' in stations[sensor['SCODE']].keys():
+            stations[sensor['SCODE']]['SENSORS'].append(sensor['TYPE'])
+        else:
+            stations[sensor['SCODE']]['SENSORS'] = [sensor['TYPE']]
+
+    for station in stations.values():
+        measurements: Measurements = dict()
+        for sensor in station['SENSORS']:
+            if not sensor in SuedtirolData.parameters().keys():
+                continue
+            url_values = f"http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={station['SCODE']}&output_format=JSON&sensor_code={sensor}&date_from={begindate}0000&date_to={enddate}0000"
+            timeseries = SuedtirolData.request_data('timeseries', url_values)
+            for ts in timeseries:
+                if not ':00:00' in ts['DATE']:
+                    continue
+                if ts['DATE'] not in list(measurements.keys()):
+                    measurements[ts['DATE']] = {
+                        'SCODE': station['SCODE'],
+                        'LAT': station['LAT'],
+                        'LONG': station['LONG'],
+                        'ALT': station['ALT'],
+                    }
+                measurements[ts['DATE']][sensor] = ts['VALUE']
+
+        if len(list(measurements.keys())) == 0:
+            logging.info(
+                'No data relevant for spatialMOS are available for the station %s.', station['SCODE'])
+            continue
+
+        csv_filename = data_path.joinpath(
+            f"suedtirol_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
+        SuedtirolDataConverter.convert(measurements, csv_filename)
 
 
 # Main
-if __name__ == "__main__":
-    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(begindate=True, enddate=True)
-    fetch_suedtirol_data(PARSER_DICT["begindate"], PARSER_DICT["enddate"])
-    logger_module.end_logging(STARTTIME)
+if __name__ == '__main__':
+    try:
+        STARTTIME = datetime.datetime.now()
+        PARSER_DICT = spatial_parser.spatial_parser(
+            begindate=True, enddate=True)
+        logging.info('The data suedtirol download from \'%s\' to \'%s\' has started.',
+                     PARSER_DICT['begindate'], PARSER_DICT['enddate'])
+        fetch_suedtirol_data(PARSER_DICT['begindate'], PARSER_DICT['enddate'])
+        DURATION = datetime.datetime.now() - STARTTIME
+        logging.info('The script has run successfully in %s', DURATION)
+    except Exception as ex:
+        logging.exception(ex)
+        raise ex

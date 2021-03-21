@@ -49,18 +49,16 @@ The required shapefiles are prepared for further processing with the help of the
 ```
 
 #### Meteorological station values
-Past measured values are obtained via the API interfaces of [http://wetter.provinz.bz.it/](http://wetter.provinz.bz.it/) and [http://at-wetter.tk/](http://at-wetter.tk/). The required stations.csv file for [http://at-wetter.tk/](http://at-wetter.tk/) is downloaded from moses.tirol.
+Past measured values are obtained via the API interfaces of [http://wetter.provinz.bz.it/](http://wetter.provinz.bz.it/).
 
 ```
 ./task.py local.spatialmos.py-spatialmos--get-suedtirol --begindate 2018-01-01 --enddate 2019-12-31
-./task.py local.spatialmos.py-spatialmos--get-wetter-at --begindate 2018-01-01 --enddate 2019-12-31
 ```
 
 Current values from the ZAMG web page, from lwd, or from the UIBK API interface can be done with the two fabric commands.
 
 ```
 ./task.py local.spatialmos.py-spatialmos--get-lwd
-./task.py local.spatialmos.py-spatialmos--get-uibk
 ./task.py local.spatialmos.py-spatialmos--get-zamg
 ```
 
@@ -279,15 +277,16 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 
 ## Station- and forecast data
-* [at-wetter.tk](http://at-wetter.tk/)
 * [Land Tirol - data.tirol.gv.at](https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f)
 * [noaa ncep](https://www.ftp.ncep.noaa.gov/)
 * [South Tyrolean weather service](http://wetter.provinz.bz.it/)
-* [University of Innsbruck API](https://www.uibk.ac.at/acinn/)
 * [ZAMG](https://www.zamg.ac.at/)
 
 ## Changelog
 
+- 2021-03-21 Refactoring of lwd, suedtirol and zamg data download.
+- 2021-03-21 [http://at-wetter.tk/](http://at-wetter.tk/) and [https://www.uibk.ac.at/acinn/](https://www.uibk.ac.at/acinn/) data download was removed.
+- 2021-03-20 Build the Rust libraries for python.
 - 2020-12-16 PostgreSQL was upgraded to version 13.
 - 2020-10-22 Relative humidity forecasts are available.
 - 2020-10-17 The Python module basemap was replaced by [cartopy](https://scitools.org.uk/cartopy/docs/latest/).
