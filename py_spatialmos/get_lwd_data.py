@@ -16,6 +16,7 @@ from spatial_writer import SpatialWriter
 # Init logging
 spatial_logging.logging_init(__file__)
 
+
 class LwdData:
     '''Lwd_Data Class'''
 
@@ -144,7 +145,8 @@ def fetch_lwd_data():
         with open(ogd_filename, mode="w") as target:
             request_data = LwdData.request_data(target)
     except:
-        logging.error("The original data file '%s' could not be written.", ogd_filename)
+        logging.error(
+            "The original data file '%s' could not be written.", ogd_filename)
 
     with open(data_path.joinpath(f"data_lwd_{utcnow_str}.csv"), "w", newline='') as target:
         LwdSpatialConverter.convert(request_data, target)
