@@ -31,18 +31,18 @@ class LwdData:
     def parameters() -> Dict[str, Dict[str, str]]:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {"date": {"name": "date", "unit": "[UTC]"},
-                "name": {"name": "name", "unit": "[str]"},
-                "lat": {"name": "lat", "unit": "[°]"},
-                "lon": {"name": "lon", "unit": "[°]"},
+                "name": {"name": "name", "unit": "[String]"},
+                "lat": {"name": "lat", "unit": "[Degree]"},
+                "lon": {"name": "lon", "unit": "[Degree]"},
                 "alt": {"name": "alt", "unit": "[m]"},
                 "LD": {"name": "ldstat", "unit": "[hPa]"},
-                "LT": {"name": "t", "unit": "[°C]"},
-                "TD": {"name": "tp", "unit": "[°C]"},
-                "RH": {"name": "rf", "unit": "[%]"},
+                "LT": {"name": "t", "unit": "[Degree C]"},
+                "TD": {"name": "tp", "unit": "[Degree C]"},
+                "RH": {"name": "rf", "unit": "[Percent]"},
                 "WG_BOE": {"name": "boe", "unit": "[m/s]"},
                 "WG": {"name": "wg", "unit": "[m/s]"},
-                "WR": {"name": "wr", "unit": "[°]"},
-                "OFT": {"name": "oft", "unit": "[°C]"},
+                "WR": {"name": "wr", "unit": "[Degree]"},
+                "OFT": {"name": "oft", "unit": "[Degree C]"},
                 "GS_O": {"name": "globalstrahlung_oben", "unit": "[W/m^2]"},
                 "GS_U": {"name": "globalstrahlung_unten", "unit": "[W/m^2]"}}
 
@@ -148,7 +148,7 @@ def fetch_lwd_data():
         logging.error(
             "The original data file '%s' could not be written.", ogd_filename)
 
-    with open(data_path.joinpath(f"data_lwd_{utcnow_str}.csv"), "w", newline='') as target:
+    with open(data_path.joinpath(f"lwd_{utcnow_str}.csv"), "w", newline='') as target:
         LwdSpatialConverter.convert(request_data, target)
 
 

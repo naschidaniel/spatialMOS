@@ -8,7 +8,7 @@ import time
 import os
 import datetime
 from pathlib import Path
-from typing import List, TextIO, Tuple
+from typing import Dict, List, TextIO, Tuple
 import requests
 import pytz
 
@@ -26,18 +26,18 @@ class ZamgData:
     # The units are determined from the table https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tirol
 
     @staticmethod
-    def parameters() -> dict:
+    def parameters() -> Dict[str, Dict[str, str]]:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {'date': {'name': 'date', 'unit': '[UTC]'},
-                'name': {'name': 'name', 'unit': '[str]'},
+                'name': {'name': 'name', 'unit': '[String]'},
                 'alt': {'name': 'alt', 'unit': '[m]'},
-                't': {'name': 't', 'unit': '[°C]'},
-                'rf': {'name': 'rf', 'unit': '[%]'},
-                'wg': {'name': 'wg', 'unit': '[km/h]'},
-                'wr': {'name': 'wr', 'unit': '[str]'},
+                't': {'name': 't', 'unit': '[Degree C]'},
+                'rf': {'name': 'rf', 'unit': '[Percent]'},
+                'wr': {'name': 'wg', 'unit': '[String]'},
+                'wg': {'name': 'wr', 'unit': '[km/h]'},
                 'boe': {'name': 'boe', 'unit': '[km/h]'},
                 'regen': {'name': 'regen', 'unit': '[mm]'},
-                'sonne': {'name': 'sonne', 'unit': '[%]'},
+                'sonne': {'name': 'sonne', 'unit': '[Percent]'},
                 'ldred': {'name': 'ldred', 'unit': '[hPa]'}}
 
     @ classmethod
@@ -217,7 +217,7 @@ def fetch_zamg_data():
     except:
         logging.error('The folders could not be created.')
 
-    with open(data_path.joinpath(f'data_zamg_{utcnow_str}.csv'), 'w', newline='') as target:
+    with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='') as target:
         ZamgSpatialConverter.convert(target)
 
 

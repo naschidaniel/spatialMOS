@@ -31,18 +31,18 @@ class SuedtirolData:
     # http://daten.buergernetz.bz.it/de/dataset/misure-meteo-e-idrografiche
 
     @staticmethod
-    def parameters() -> dict:
+    def parameters() -> Dict[str, Dict[str, str]]:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {"DATE": {"name": "date", "unit": "[UTC]"},
-                "SCODE": {"name": "name", "unit": "[str]"},
-                "LAT": {"name": "lat", "unit": "[°]"},
-                "LONG": {"name": "lon", "unit": "[°]"},
+                "SCODE": {"name": "name", "unit": "[String]"},
+                "LAT": {"name": "lat", "unit": "[Degree]"},
+                "LONG": {"name": "lon", "unit": "[Degree]"},
                 "ALT": {"name": "alt", "unit": "[m]"},
-                "LT": {"name": "t", "unit": "[°C]"},
-                "LF": {"name": "rf", "unit": "[%]"},
+                "LT": {"name": "t", "unit": "[Degree C]"},
+                "LF": {"name": "rf", "unit": "[Percent]"},
                 "WG.BOE": {"name": "boe", "unit": "[m/s]"},
                 "WG": {"name": "wg", "unit": "[m/s]"},
-                "WR": {"name": "wr", "unit": "[°]"},
+                "WR": {"name": "wr", "unit": "[Degree]"},
                 "N": {"name": "regen", "unit": "[mm/h]"},
                 "GS": {"name": "globalstrahlung", "unit": "[W/m^2]"},
                 "SD": {"name": "sonne", "unit": "[s]"}}
@@ -163,7 +163,7 @@ def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
             continue
 
         csv_filename = data_path.joinpath(
-            f"station_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
+            f"suedtirol_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
         SuedtirolDataConverter.convert(measurements, csv_filename)
 
 
