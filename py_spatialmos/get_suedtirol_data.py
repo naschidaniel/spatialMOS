@@ -6,8 +6,8 @@ import logging
 import os
 import datetime
 from pathlib import Path
-import requests
 from typing import Dict, List, TextIO, Union, NewType
+import requests
 import spatial_util
 from py_middleware import spatial_parser
 
@@ -51,7 +51,7 @@ class SuedtirolData:
         '''request_data loads the data from the API interface'''
 
         if request_type not in ["sensors", "stations", "timeseries"]:
-            raise(RuntimeError("The request_type '%s' ist not defined.", request_type))
+            raise RuntimeError("The request_type '%s' ist not defined." % request_type)
 
         if request_type == "stations":
             url = "http://dati.retecivica.bz.it/services/meteo/v1/stations"
@@ -67,7 +67,8 @@ class SuedtirolData:
         try:
             data_dict = data.json()
         except:
-            raise(RuntimeError("The loaded Data from the '%s' could not be converted into a json.", url))
+            logging.error("The loaded Data from the '%s' could not be converted into a json.",  url)
+            return {}
 
         if request_type == "stations":
             return {station["properties"]["SCODE"]: station["properties"] for station in data_dict["features"]}
@@ -79,7 +80,7 @@ class SuedtirolDataConverter:
     '''SuedtirolDataConverter Class'''
 
     def __init__(self, measurements_write_lines: List[List], target: TextIO) -> None:
-        '''Initialises the class'''
+        '''init the class'''
         parameters = SuedtirolData.parameters()
         writer = SpatialWriter(parameters, target)
 
