@@ -24,7 +24,7 @@ class ZamgData:
     # The data is loaded from the website and saved as a csv file.
     # https://www.zamg.ac.at/
     # The units are determined from the table https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tirol
-    
+
     @staticmethod
     def parameters() -> dict:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
@@ -48,7 +48,8 @@ class ZamgData:
         try:
             request_data = requests.get(request_url)
             if request_data.status_code != 200:
-                raise(RuntimeError(f"The response of the Webpage '{request_url}' does not match 200"))
+                raise(RuntimeError(
+                    f"The response of the Webpage '{request_url}' does not match 200"))
             else:
                 logging.info("The URL %s was loaded successfully", request_url)
             return request_data.text
@@ -58,14 +59,19 @@ class ZamgData:
 
 
 class ZamgSpatialConverter:
+    """ZamgSpatialConverter Class"""
+
     def __init__(self, target: TextIO):
-        federal_state = ["burgenland", "kaernten", "niederoesterreich", "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
+        '''init ZamgSpatialConverter'''
+        federal_state = ["burgenland", "kaernten", "niederoesterreich",
+                         "oberoesterreich", "salzburg", "steiermark", "tirol", "vorarlberg", "wien"]
         parameters = ZamgData.parameters()
         writer = SpatialWriter(parameters, target)
         raw_text_time = None
         retry = 0
         max_retries = 3
-        now_hour = int(datetime.datetime.now(pytz.timezone("Europe/Vienna")).strftime("%H"))
+        now_hour = int(datetime.datetime.now(
+            pytz.timezone("Europe/Vienna")).strftime("%H"))
         while retry <= max_retries:
             for state in federal_state:
                 raw_html_text = ZamgData.request_data(state)
@@ -102,9 +108,10 @@ class ZamgSpatialConverter:
             logging.error(
                 "The maximum number of retries was reached %s/%s and not all data could be saved.", retry, max_retries)
 
-    def manipulate_html_text(self, raw_html_text:str) -> Tuple[List[List[str]], str]:
+    def manipulate_html_text(self, raw_html_text: str) -> Tuple[List[List[str]], str]:
         '''manipulate_html_text changes the html text and returns the extracted information'''
-        utc_now_hour = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+        utc_now_hour = datetime.datetime.utcnow().replace(
+            minute=0, second=0, microsecond=0)
         # Special character
         raw_html_text = raw_html_text.replace('&uuml;', 'ü')
         raw_html_text = raw_html_text.replace('&ouml;', 'ö')
@@ -142,21 +149,26 @@ class ZamgSpatialConverter:
         raw_html_text = raw_html_text.replace('k.A.', '-999')
         raw_html_text = raw_html_text.replace('*', '')
 
-        raw_text_date_begin = raw_html_text.find('<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
+        raw_text_date_begin = raw_html_text.find(
+            '<h1 id="dynPageHead">') + len('<h1 id="dynPageHead">')
         raw_text_date_end = raw_html_text.find("</h1>")
         raw_text_date = raw_html_text[raw_text_date_begin:raw_text_date_end]
         raw_text_date = raw_text_date[raw_text_date.find("-")+1:]
         raw_text_date = raw_text_date.strip()
 
-        raw_text_time_begin = raw_html_text.find("Aktuelle Messwerte der Wetterstationen von ") + len("Aktuelle Messwerte der Wetterstationen von ")
+        raw_text_time_begin = raw_html_text.find(
+            "Aktuelle Messwerte der Wetterstationen von ") + len("Aktuelle Messwerte der Wetterstationen von ")
         raw_text_time_end = raw_html_text.find("Uhr</h2>")
         raw_text_time = raw_html_text[raw_text_time_begin:raw_text_time_end]
         raw_text_time = raw_text_time.replace("\n", "")
 
         # Extract measurements
-        raw_text_measurements_begin = raw_html_text.find('<tr class="dynPageTableLine1"><td class="wert">')
-        raw_text_measurements_end = raw_html_text.find("Die Messwerte in dieser Liste")
-        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split("\n")
+        raw_text_measurements_begin = raw_html_text.find(
+            '<tr class="dynPageTableLine1"><td class="wert">')
+        raw_text_measurements_end = raw_html_text.find(
+            "Die Messwerte in dieser Liste")
+        raw_text_measurements = raw_html_text[raw_text_measurements_begin: raw_text_measurements_end].split(
+            "\n")
 
         # Removing the HTML tag
         html_tag_regex = re.compile(r".*?\>(.*?)\<")
@@ -170,7 +182,8 @@ class ZamgSpatialConverter:
         # remove superfluous whitespaces and separate direction and wind speed
         measurements_optimized = []
         for stations in measurements:
-            flat_list = [datetime.datetime.strftime(utc_now_hour, "%Y-%m-%d %H:%M:%S")]
+            flat_list = [datetime.datetime.strftime(
+                utc_now_hour, "%Y-%m-%d %H:%M:%S")]
             if not any(", " in s for s in stations):
                 stations.insert(5, '-999')
             for entry in stations:
