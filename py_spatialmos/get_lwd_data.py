@@ -7,12 +7,13 @@ import logging.handlers
 import os
 import datetime
 from pathlib import Path
-from typing import TextIO
+from typing import Dict, TextIO
 import requests
 
 from spatial_logging import spatial_logging
 from spatial_writer import SpatialWriter
 
+# Init logging
 spatial_logging.logging_init(__file__)
 
 class LwdData:
@@ -26,7 +27,7 @@ class LwdData:
     # https://www.data.gv.at/katalog/api/3/action/package_show?id=bb43170b-30fb-48aa-893f-51c60d27056f
 
     @staticmethod
-    def parameters() -> dict:
+    def parameters() -> Dict[str, Dict[str, str]]:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {"date": {"name": "date", "unit": "[UTC]"},
                 "name": {"name": "name", "unit": "[str]"},
