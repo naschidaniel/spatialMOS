@@ -45,7 +45,7 @@ def spatialmos__init_topography(c):
 
 @task
 def py_spatialmos__archive_available_data(c, folder):
-    """The csv-files are created with the 7zip. The folder must be specified e.g. uibk."""
+    """The csv-files are created with the 7zip. The folder must be specified e.g. zamg."""
     inv_logging.task(py_spatialmos__archive_available_data.__name__)
     cmd = ["python", "./py_spatialmos/archive_available_data.py", "--folder", folder]
     cmd = ' '.join(cmd)
@@ -91,16 +91,6 @@ def py_spatialmos__get_suedtirol(c, begindate, enddate):
 
 
 @task
-def py_spatialmos__get_uibk(c):
-    """Download data from uibk."""
-    inv_logging.task(py_spatialmos__get_uibk.__name__)
-    cmd = ["py_requests", "python", "./py_spatialmos/get_uibk_data.py"]
-    cmd = ' '.join(cmd)
-    inv_docker.run(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_uibk.__name__, cmd)
-
-
-@task
 def py_spatialmos__get_lwd(c):
     """Download data from lwd tirol"""
     inv_logging.task(py_spatialmos__get_lwd.__name__)
@@ -108,17 +98,6 @@ def py_spatialmos__get_lwd(c):
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_lwd.__name__, cmd)
-
-
-@task
-def py_spatialmos__get_wetter_at(c, begindate, enddate):
-    """Download data from wetter_at."""
-    inv_logging.task(py_spatialmos__get_wetter_at.__name__)
-    cmd = ["py_requests", "python", "./py_spatialmos/get_wetter_at_data.py",
-           "--begindate", begindate, "--enddate", enddate]
-    cmd = ' '.join(cmd)
-    inv_docker.run(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__get_wetter_at.__name__, cmd)
 
 
 @task
@@ -249,8 +228,6 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs_forecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_lwd)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_uibk)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_wetter_at)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_reforecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
@@ -271,7 +248,6 @@ SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_available_data)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_gefs)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_lwd)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_uibk)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__pre_processing_gribfiles)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__prediction)
