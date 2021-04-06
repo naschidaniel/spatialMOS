@@ -36,6 +36,8 @@ jobs:
         pip install invoke maturin requests
         cp ./fabric/settings.example.json settings.json
         maturin build
+        ls ./target/wheels/
+        cp ./target/wheels/* ./container/py_requests/
         pip install -r ./container/py_requests/requirements.txt
     # - name: Lint with pylint
     #   run: |
