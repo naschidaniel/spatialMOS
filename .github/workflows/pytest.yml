@@ -23,7 +23,7 @@ jobs:
         image: konstin2:maturin
         options: -v ${{ github.workspace }}:/io
         run: |
-          echo "Running Script"
+          echo "Running maturin build container"
           build
     - name: Install Dependencies
       run: |
