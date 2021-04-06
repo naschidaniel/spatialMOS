@@ -21,10 +21,10 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint pytest invoke requests
+        pip install invoke maturin requests
         cp ./fabric/settings.example.json settings.json
         ./task.py local.spatialmos.py-spatialmos--maturin-build
         pip install -r ./container/py_requests/requirements.txt
