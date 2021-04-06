@@ -18,13 +18,12 @@ jobs:
     - name: Install stable rust toolchain
       uses: actions-rs/toolchain@v1
       with:
-        profile: minimal
+        profile: default
         toolchain: stable
         override: true
     - uses: actions-rs/cargo@v1
       with:
         command: check
-        args: --target=x86_64-unknown-linux-musl
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
