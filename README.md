@@ -1,7 +1,7 @@
-![[pytest]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/pytest.yml/badge.svg?name=pytest) 
-![[pylint]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/pylint.yml/badge.svg?name=pylint) 
-![[rsaudit]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/rsaudit.yml/badge.svg?name=rsaudit) 
-![[rstest]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/rstest.yml/badge.svg?name=rstest)
+![[pytest]](https://github.com/naschidaniel/spatialmos/actions/workflows/pytest.yml/badge.svg?name=pytest) 
+![[pylint]](https://github.com/naschidaniel/spatialmos/actions/workflows/pylint.yml/badge.svg?name=pylint) 
+![[rsaudit]](https://github.com/naschidaniel/spatialmos/actions/workflows/rsaudit.yml/badge.svg?name=rsaudit) 
+![[rstest]](https://github.com/naschidaniel/spatialmos/actions/workflows/rstest.yml/badge.svg?name=rstest)
 
 # spatialMOS
 
