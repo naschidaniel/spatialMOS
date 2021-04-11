@@ -5,9 +5,7 @@ services:
     build: ./container/py_requests/
     container_name: spatialMOS_py_requests
     volumes:
-      - log:/log:z
-      - py_spatialmos:/usr/src/app/py_spatialmos:z
-      - get_available_data:/usr/src/app/data/get_available_data:z
+      - ${PWD}:/usr/src/app:z
   
   py_wgrib2:
     build: ./container/py_wgrib2/
