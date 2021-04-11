@@ -140,6 +140,11 @@
           "spool"
         ]
       }
+    },
+    "rsync_get": {
+      "local_dir": "./data/archive",
+      "remote_dir": "/www/spatialMOS/data/archive",
+      "ignore-existing": "True"
     }
   }
 }
