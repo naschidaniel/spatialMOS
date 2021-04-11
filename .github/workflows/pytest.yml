@@ -1,4 +1,4 @@
-on: [push, pull_request]
+on: [pull_request]
 
 name: py_spatialmos requests
 
@@ -33,7 +33,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint pytest maturin requests pytz
+        pip install pytest maturin requests pytz
         cp ./fabric/settings.example.json settings.json
         maturin build
         ls ./target/wheels/
@@ -41,9 +41,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest ./tests
-    # - name: Lint with pylint
-    #   run: |
-    #     pylint py_spatialmos/get_lwd_data.py
-    #     pylint py_spatialmos/get_suedtirol_data.py
-    #     pylint py_spatialmos/get_zamg_data.py
-    #     pylint run_get_data.py
