@@ -284,6 +284,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2021-04-11 The generic script `run_get_data.py` was added for lwd, suedtirol and zamg.
 - 2021-03-21 Refactoring of lwd, suedtirol and zamg data download.
 - 2021-03-21 [http://at-wetter.tk/](http://at-wetter.tk/) and [https://www.uibk.ac.at/acinn/](https://www.uibk.ac.at/acinn/) data download was removed.
 - 2021-03-20 Build the Rust libraries for python.
