@@ -1,3 +1,4 @@
+![[maturin]](https://github.com/naschidaniel/spatialmos/actions/workflows/maturin.yml/badge.svg?name=maturin) 
 ![[pytest]](https://github.com/naschidaniel/spatialmos/actions/workflows/pytest.yml/badge.svg?name=pytest) 
 ![[pylint]](https://github.com/naschidaniel/spatialmos/actions/workflows/pylint.yml/badge.svg?name=pylint) 
 ![[rsaudit]](https://github.com/naschidaniel/spatialmos/actions/workflows/rsaudit.yml/badge.svg?name=rsaudit) 
