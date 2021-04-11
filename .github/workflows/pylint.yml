@@ -30,9 +30,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint requests pytz
         pip install ./target/wheels/spatial_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
-    - name: Lint with pylint
+    - name: Lint run_get_data
       run: |
         pylint py_spatialmos/get_lwd_data.py
         pylint py_spatialmos/get_suedtirol_data.py
         pylint py_spatialmos/get_zamg_data.py
         pylint run_get_data.py
+    - name: Lint tests
+      run: |
+        pylint tests
