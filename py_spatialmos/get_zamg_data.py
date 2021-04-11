@@ -100,7 +100,8 @@ class ZamgSpatialConverter:
             logging.error(
                 'The maximum number of retries was reached %s/%s and not all data could be saved.', retry, max_retries)
 
-    def manipulate_html_text(self, raw_html_text: str) -> Tuple[List[List[str]], str]:
+    @staticmethod
+    def manipulate_html_text(raw_html_text: str) -> Tuple[List[List[str]], str]:
         '''manipulate_html_text changes the html text and returns the extracted information'''
         utc_now_hour = datetime.datetime.utcnow().replace(
             minute=0, second=0, microsecond=0)

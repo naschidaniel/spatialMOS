@@ -60,66 +60,59 @@ class LwdData:
         return data.json()
 
 
-class LwdSpatialConverter:
-    '''LwdSpatialConverter for data conversion into spatialMOS format'''
 
-    def __init__(self, request_data: dict, target: TextIO) -> None:
-        parameter = LwdData.parameters()
-        now_current_hour = datetime.datetime.now().replace(
-            minute=0, second=0, microsecond=0)
-        count_stations = 0
-        count_stations_successfull = 0
-        writer = SpatialWriter(parameter, target)
-        for station in request_data['features']:
-            count_stations += 1
-            append_data = station['properties']
-            append_data.update({'station': station['id'],
-                                'alt': station['geometry']['coordinates'][2],
-                                'lon': station['geometry']['coordinates'][0],
-                                'lat': station['geometry']['coordinates'][1],
-                                })
+def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
+    '''lwd_spatial_converter for data conversion into spatialMOS format'''
+    parameter = LwdData.parameters()
+    now_current_hour = datetime.datetime.now().replace(
+        minute=0, second=0, microsecond=0)
+    count_stations = 0
+    count_stations_successfull = 0
+    writer = SpatialWriter(parameter, target)
+    for station in request_data['features']:
+        count_stations += 1
+        append_data = station['properties']
+        append_data.update({'station': station['id'],
+                            'alt': station['geometry']['coordinates'][2],
+                            'lon': station['geometry']['coordinates'][0],
+                            'lat': station['geometry']['coordinates'][1],
+                            })
 
-            if 'date' not in append_data:
-                logging.warning(
-                    'No date could be found in the data for the station \'%s\'.', append_data['name'])
+        if 'date' not in append_data:
+            logging.warning(
+                'No date could be found in the data for the station \'%s\'.', append_data['name'])
+            continue
+
+        row = []
+        for key in parameter:
+            if key == 'date':
+                date = datetime.datetime.strptime(
+                    append_data['date'], '%Y-%m-%dT%H:%M:%S%z')
+                timedelta = (now_current_hour.timestamp() -
+                                date.timestamp()) / 60
+                if abs(timedelta) >= 15:
+                    logging.warning(
+                        'The received date \'%s\' for the station \'%s\' is too old and will not be saved.', date, append_data['name'])
+                    break
+                row.append(datetime.datetime.utcnow().replace(
+                    minute=0, second=0, microsecond=0))
                 continue
 
-            row = []
-            for key in parameter:
-                if key == 'date':
-                    date = datetime.datetime.strptime(
-                        append_data['date'], '%Y-%m-%dT%H:%M:%S%z')
-                    timedelta = (now_current_hour.timestamp() -
-                                 date.timestamp()) / 60
-                    if abs(timedelta) >= 15:
-                        logging.warning(
-                            'The received date \'%s\' for the station \'%s\' is too old and will not be saved.', date, append_data['name'])
-                        break
-                    else:
-                        row.append(datetime.datetime.utcnow().replace(
-                            minute=0, second=0, microsecond=0))
-                        continue
+            if key in append_data:
+                row.append(append_data[key])
 
-                if key in append_data:
-                    row.append(append_data[key])
+        if len(row) != 0:
+            logging.info(
+                'The received data for the date \'%s\' and the station \'%s\' are stored.', date, append_data['name'])
+            writer.append(row)
+            count_stations_successfull += 1
 
-            if len(row) != 0:
-                logging.info(
-                    'The received data for the date \'%s\' and the station \'%s\' are stored.', date, append_data['name'])
-                writer.append(row)
-                count_stations_successfull += 1
-
-        if count_stations_successfull <= 50:
-            logging.error('Only %s from %s stations are transmitted correctly',
-                          count_stations_successfull, count_stations)
-        else:
-            logging.info('%s from %s stations have been successfully saved.',
-                         count_stations_successfull, count_stations)
-
-    @classmethod
-    def convert(cls, request_data: dict, target: TextIO):
-        '''convert the data and save it in spatialMOS CSV format'''
-        cls(request_data, target)
+    if count_stations_successfull <= 50:
+        logging.error('Only %s from %s stations are transmitted correctly',
+                        count_stations_successfull, count_stations)
+    else:
+        logging.info('%s from %s stations have been successfully saved.',
+                        count_stations_successfull, count_stations)
 
 
 def fetch_lwd_data():
@@ -143,4 +136,4 @@ def fetch_lwd_data():
         raise ex
 
     with open(data_path.joinpath(f'lwd_{utcnow_str}.csv'), 'w', newline='') as target:
-        LwdSpatialConverter.convert(request_data, target)
+        lwd_spatial_converter(request_data, target)

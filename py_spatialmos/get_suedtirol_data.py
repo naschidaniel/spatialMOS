@@ -6,7 +6,7 @@ import logging
 import os
 import datetime
 from pathlib import Path
-from typing import Dict, List, TextIO, Union
+from typing import Dict, List, Union
 import requests
 import spatial_util
 
@@ -69,41 +69,33 @@ class SuedtirolData:
 
         if request_type == 'stations':
             return {station['properties']['SCODE']: station['properties'] for station in data_dict['features']}
-        else:
-            return data_dict
+
+        return data_dict
 
 
-class SuedtirolDataConverter:
-    '''SuedtirolDataConverter Class'''
+def suedtirol_spatial_converter(measurements: Dict[str, Dict[str, Union[str, float]]], filename: Path) -> None:
+    '''convert suedtirol data and save it in spatialMOS CSV format'''
+    try:
+        columns = list(SuedtirolData.parameters().keys())
+        measurements_write_lines: List[List] = spatial_util.convert_measurements(
+            measurements, columns)
+        if len(measurements_write_lines) != 0:
+            with open(filename, mode='w', newline='') as target:
+                logging.info(
+                    'The suedtirol data will be written into the file \'%s\'', target)
+                parameters = SuedtirolData.parameters()
+                writer = SpatialWriter(parameters, target)
 
-    def __init__(self, measurements_write_lines: List[List], target: TextIO) -> None:
-        '''init the class'''
-        parameters = SuedtirolData.parameters()
-        writer = SpatialWriter(parameters, target)
-
-        # Convert data to spatialMOS CSV format
-        station = measurements_write_lines[0][1]
-        logging.info('%s data lines will be written for the station %s.', len(
-            measurements_write_lines), station)
-        for entry in measurements_write_lines:
-            writer.append(entry)
-
-    @ classmethod
-    def convert(cls, measurements: Dict[str, Dict[str, Union[str, float]]], filename: Path) -> None:
-        '''convert the data and save it in spatialMOS CSV format'''
-        try:
-            columns = list(SuedtirolData.parameters().keys())
-            measurements_write_lines: List[List] = spatial_util.convert_measurements(
-                measurements, columns)
-            if len(measurements_write_lines) != 0:
-                with open(filename, mode='w', newline='') as target:
-                    logging.info(
-                        'The suedtirol data will be written into the file \'%s\'', target)
-                    cls(measurements_write_lines, target)
-        except ValueError:
-            logging.error(
-                'The spatialmos CSV file \'%s\' could not be written.', filename)
-            raise
+                # Convert data to spatialMOS CSV format
+                station = measurements_write_lines[0][1]
+                logging.info('%s data lines will be written for the station %s.', len(
+                    measurements_write_lines), station)
+                for entry in measurements_write_lines:
+                    writer.append(entry)
+    except ValueError:
+        logging.error(
+            'The spatialmos CSV file \'%s\' could not be written.', filename)
+        raise
 
 
 def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
@@ -157,4 +149,4 @@ def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
 
         csv_filename = data_path.joinpath(
             f"suedtirol_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
-        SuedtirolDataConverter.convert(measurements, csv_filename)
+        suedtirol_spatial_converter(measurements, csv_filename)
