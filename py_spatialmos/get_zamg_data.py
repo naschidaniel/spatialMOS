@@ -12,11 +12,7 @@ from typing import Dict, List, TextIO, Tuple
 import requests
 import pytz
 
-from spatial_logging import spatial_logging
-from spatial_writer import SpatialWriter
-
-spatial_logging.logging_init(__file__)
-
+from .spatial_writer import SpatialWriter
 
 class ZamgData:
     '''ZamgData Class'''
@@ -45,18 +41,14 @@ class ZamgData:
         '''request_data loads the data from the Website'''
         request_url = f'https://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/{state}/temperatur/?mode=geo&druckang=red'
         logging.info('The web page will be loaded %s', request_url)
-        try:
-            request_data = requests.get(request_url)
-            if request_data.status_code != 200:
-                raise(RuntimeError(
-                    f'The response of the Webpage \'{request_url}\' does not match 200'))
-            else:
-                logging.info('The URL %s was loaded successfully', request_url)
-            return request_data.text
-        except:
+        request_data = requests.get(request_url)
+        if request_data.status_code != 200:
             logging.error('The request for \'%s\' failed', request_url)
-            return ''
+            raise(RuntimeError(
+                f'The response of the Webpage \'{request_url}\' does not match 200'))
 
+        logging.info('The URL %s was loaded successfully', request_url)
+        return request_data.text
 
 class ZamgSpatialConverter:
     '''ZamgSpatialConverter Class'''
@@ -212,23 +204,7 @@ def fetch_zamg_data():
     '''fetch_zamg_data is used to store zamg data in csv files.'''
     utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
     data_path = Path('./data/get_available_data/zamg/data')
-    try:
-        os.makedirs(data_path, exist_ok=True)
-    except:
-        logging.error('The folders could not be created.')
+    os.makedirs(data_path, exist_ok=True)
 
     with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='') as target:
         ZamgSpatialConverter.convert(target)
-
-
-# Main
-if __name__ == '__main__':
-    try:
-        STARTTIME = datetime.datetime.now()
-        logging.info('The data zamg download has started.')
-        fetch_zamg_data()
-        DURATION = datetime.datetime.now() - STARTTIME
-        logging.info('The script has run successfully in %s', DURATION)
-    except Exception as ex:
-        logging.exception(ex)
-        raise ex

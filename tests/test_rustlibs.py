@@ -4,21 +4,15 @@
 """Unittest for the rust module spatial_util"""
 
 import unittest
-import pathlib
-import sys
-
-# Rust Lib
 import spatial_util
+from py_spatialmos import get_suedtirol_data
 
-# spatialMOS python Scripts
-py_spatialmos_path = pathlib.Path(__file__).parents[1].joinpath("py_spatialmos")
-sys.path.insert(1, str(py_spatialmos_path))
-get_suedtirol_data = __import__("get_suedtirol_data")
 
 
 class TestRustModules(unittest.TestCase):
-
+    '''Test spatialMOS Rust library'''
     def test_convert_measurements_ok(self):
+        '''This test ends without error if the dictionary can be converted correctly.'''
         columns = list(get_suedtirol_data.SuedtirolData.parameters().keys())
         measurements = {
             '2021-01-01T00:00:00CET': {'SCODE': '82500WS', 'LAT': 46.6156, 'LONG': 11.4604, 'ALT': 2260, 'LT': 11, 'LF': 100.5},

@@ -10,11 +10,7 @@ from pathlib import Path
 from typing import Dict, TextIO
 import requests
 
-from spatial_logging import spatial_logging
-from spatial_writer import SpatialWriter
-
-# Init logging
-spatial_logging.logging_init(__file__)
+from .spatial_writer import SpatialWriter
 
 
 class LwdData:
@@ -57,9 +53,10 @@ class LwdData:
         try:
             target.write(data.text)
             logging.info('A original data file \'%s\' was written.', str(target))
-        except:
-            raise(
-                OSError(f'The API interface data could not be stored into {str(target)}.'))
+        except Exception as ex:
+            logging.error('The API interface data could not be stored into %s.', str(target))
+            logging.exception(ex)
+            raise ex
         return data.json()
 
 
@@ -105,8 +102,6 @@ class LwdSpatialConverter:
 
                 if key in append_data:
                     row.append(append_data[key])
-                else:
-                    row.append('')
 
             if len(row) != 0:
                 logging.info(
@@ -134,32 +129,18 @@ def fetch_lwd_data():
     data_path = Path('./data/get_available_data/lwd/data')
     ogd_path = Path('./data/get_available_data/lwd/ogd')
 
-    try:
-        os.makedirs(data_path, exist_ok=True)
-        os.makedirs(ogd_path, exist_ok=True)
-    except:
-        logging.error('The folders could not be created.')
+    os.makedirs(data_path, exist_ok=True)
+    os.makedirs(ogd_path, exist_ok=True)
 
     ogd_filename = ogd_path.joinpath(f'ogd_{utcnow_str}.geojson')
     try:
         with open(ogd_filename, mode='w') as target:
             request_data = LwdData.request_data(target)
-    except:
+    except Exception as ex:
         logging.error(
             'The original data file \'%s\' could not be written.', ogd_filename)
+        logging.exception(ex)
+        raise ex
 
     with open(data_path.joinpath(f'lwd_{utcnow_str}.csv'), 'w', newline='') as target:
         LwdSpatialConverter.convert(request_data, target)
-
-
-# Main
-if __name__ == '__main__':
-    try:
-        STARTTIME = datetime.datetime.now()
-        logging.info('The data lwd download has started.')
-        fetch_lwd_data()
-        DURATION = datetime.datetime.now() - STARTTIME
-        logging.info('The script has run successfully in %s', DURATION)
-    except Exception as ex:
-        logging.exception(ex)
-        raise ex
