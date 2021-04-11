@@ -1,3 +1,8 @@
+![[pytest]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/pytest.yml/badge.svg?name=pytest) 
+![[pylint]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/pylint.yml/badge.svg?name=pylint) 
+![[rsaudit]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/rsaudit.yml/badge.svg?name=rsaudit) 
+![[rstest]](https://github.com/naschidaniel/convert-spatialmos-data-archive/actions/workflows/rstest.yml/badge.svg?name=rstest)
+
 # spatialMOS
 
 spatialMOS is currently being completely redesigned. In section [CHANGELOG](#CHANGELOG) the already implemented program parts and functionalities are listed. The website is available online again and can be reached at [https://moses.tirol](https://moses.tirol).
@@ -284,6 +289,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2021-04-11 CI: Github actions for pylint, pytest and rust tests
 - 2021-04-11 The generic script `run_get_data.py` was added for lwd, suedtirol and zamg.
 - 2021-03-21 Refactoring of lwd, suedtirol and zamg data download.
 - 2021-03-21 [http://at-wetter.tk/](http://at-wetter.tk/) and [https://www.uibk.ac.at/acinn/](https://www.uibk.ac.at/acinn/) data download was removed.

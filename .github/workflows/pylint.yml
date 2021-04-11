@@ -3,7 +3,8 @@ on: [push, pull_request]
 name: pylint
 
 jobs:
-  build:
+  pylint:
+    name: pylint
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -3,7 +3,8 @@ on: [pull_request]
 name: py_spatialmos requests
 
 jobs:
-  build:
+  pytest:
+    name: pytest
     runs-on: ubuntu-latest
     strategy:
       matrix:

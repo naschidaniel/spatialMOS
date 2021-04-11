@@ -3,8 +3,8 @@ on: [push, pull_request]
 name: cargo test
 
 jobs:  
-  test:
-    name: Test Suite
+  rstest:
+    name: rstest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
