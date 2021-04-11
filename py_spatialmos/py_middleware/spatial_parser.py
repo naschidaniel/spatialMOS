@@ -8,13 +8,14 @@ import logging
 from datetime import datetime
 
 
-def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", resolution=False, name_resolution=""):
+def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=False, date=False, dataprovider=False, available_dataprovider=[], end=False, enddate=False, folder=False, name_folder="", host=False, name_host="", parameter=False, name_parameter="", resolution=False, name_resolution=""):
     """A function to proceed some parsed Arguments."""
     parser = argparse.ArgumentParser(description="All required arguments for spatialMOS are captured and the input is checked.")
     parser.add_argument("--modeltype", dest="modeltype", help=f"Enter the GFSE Mean or Spread: {name_modeltype}", default="avg", type=str)
     parser.add_argument("--begin", dest="begin", help="Enter a number for one day in the calendar year: e.g. 1", default=1, type=int)
     parser.add_argument("--begindate", dest="begindate", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--date", dest="date", help="Enter the begindate in the format YYYY-MM-DD.", default="", type=str)
+    parser.add_argument("--dataprovider", dest="dataprovider", help="Enter one dataprovider from the list [lwd, suedtirol, zamg].", default="", type=str)
     parser.add_argument("--end", dest="end", help="Enter a number for one day in the calendar year: e.g. 1", default=365, type=int)
     parser.add_argument("--enddate", dest="enddate", help="Enter the enddate in the format YYYY-MM-DD.", default="", type=str)
     parser.add_argument("--folder", dest="folder", help=f"Enter a folder: {name_folder}", default="", type=str)
@@ -66,6 +67,16 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
             raise ValueError("The date is not entered in the correct format: YYYY-MM-DD")
     else:
         date = None
+
+    if dataprovider is True:
+        if options.dataprovider in available_dataprovider:
+            dataprovider = options.dataprovider
+            logging.info("PARSER | {:>20} | {}".format("--dataprovider", dataprovider))
+        else:
+            logging.error("PARSER | {:>20} | {}".format("--dataprovider", options.dataprovider))
+            raise ValueError("--dataprovider | Enter a folder from the list: {}".format(available_dataprovider))
+    else:
+        dataprovider = None
 
     if end is True:
         if isinstance(options.end, int):
@@ -138,15 +149,15 @@ def spatial_parser(modeltype=False, name_modeltype="", begin=False, begindate=Fa
     else:
         resolution = None
 
-    parser_dict = {"modeltype": modeltype,
-                   "begin": begin,
-                   "begindate": begindate,
-                   "date": date,
-                   "end": end,
-                   "enddate": enddate,
-                   "folder": folder,
-                   "host": host,
-                   "parameter": parameter,
-                   "resolution": resolution
-                   }
-    return parser_dict
+    return {"modeltype": modeltype,
+            "begin": begin,
+            "begindate": begindate,
+            "date": date,
+            "dataprovider": dataprovider,
+            "end": end,
+            "enddate": enddate,
+            "folder": folder,
+            "host": host,
+            "parameter": parameter,
+            "resolution": resolution
+            }

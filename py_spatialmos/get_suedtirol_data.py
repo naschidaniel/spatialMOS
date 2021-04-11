@@ -6,19 +6,11 @@ import logging
 import os
 import datetime
 from pathlib import Path
-from typing import Dict, List, TextIO, Union, NewType
+from typing import Dict, List, TextIO, Union
 import requests
 import spatial_util
-from py_middleware import spatial_parser
 
-from spatial_logging import spatial_logging
-from spatial_writer import SpatialWriter
-
-
-spatial_logging.logging_init(__file__)
-
-Measurements = NewType('Measurements', Dict[str, Dict[str, Union[str, float]]])
-
+from .spatial_writer import SpatialWriter
 
 class SuedtirolData:
     '''SuedtirolData Class'''
@@ -69,9 +61,10 @@ class SuedtirolData:
 
         try:
             data_dict = data.json()
-        except:
+        except ValueError as ex:
             logging.error(
                 'The loaded Data from the \'%s\' could not be converted into a json.',  url)
+            logging.exception(ex)
             return {}
 
         if request_type == 'stations':
@@ -96,7 +89,7 @@ class SuedtirolDataConverter:
             writer.append(entry)
 
     @ classmethod
-    def convert(cls, measurements: Measurements, filename: Path) -> None:
+    def convert(cls, measurements: Dict[str, Dict[str, Union[str, float]]], filename: Path) -> None:
         '''convert the data and save it in spatialMOS CSV format'''
         try:
             columns = list(SuedtirolData.parameters().keys())
@@ -107,20 +100,17 @@ class SuedtirolDataConverter:
                     logging.info(
                         'The suedtirol data will be written into the file \'%s\'', target)
                     cls(measurements_write_lines, target)
-        except:
+        except ValueError:
             logging.error(
                 'The spatialmos CSV file \'%s\' could not be written.', filename)
+            raise
 
 
 def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
     '''fetch_suedtirol_data from dati.retecivica.bz.it and store the original data json file. Additionally the converted data is saved in spatialMOS CSV Format.'''
     utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
     data_path = Path('./data/get_available_data/suedtirol/data')
-
-    try:
-        os.makedirs(data_path, exist_ok=True)
-    except:
-        logging.error('The folders could not be created.')
+    os.makedirs(data_path, exist_ok=True)
 
     stations = SuedtirolData.request_data('stations')
     sensors = SuedtirolData.request_data('sensors')
@@ -139,7 +129,7 @@ def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
             stations[sensor['SCODE']]['SENSORS'] = [sensor['TYPE']]
 
     for station in stations.values():
-        measurements: Measurements = dict()
+        measurements: Dict = {}
         for sensor in station['SENSORS']:
             if not sensor in SuedtirolData.parameters().keys():
                 continue
@@ -148,14 +138,17 @@ def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
             for ts in timeseries:
                 if not ':00:00' in ts['DATE']:
                     continue
-                if ts['DATE'] not in list(measurements.keys()):
+
+                try:
+                    measurements[ts['DATE']][sensor] = ts['VALUE']
+                except KeyError:
                     measurements[ts['DATE']] = {
                         'SCODE': station['SCODE'],
                         'LAT': station['LAT'],
                         'LONG': station['LONG'],
                         'ALT': station['ALT'],
+                        sensor: ts['VALUE']
                     }
-                measurements[ts['DATE']][sensor] = ts['VALUE']
 
         if len(list(measurements.keys())) == 0:
             logging.info(
@@ -165,19 +158,3 @@ def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
         csv_filename = data_path.joinpath(
             f"suedtirol_{station['SCODE']}_{begindate}_{enddate}_{utcnow_str}.csv")
         SuedtirolDataConverter.convert(measurements, csv_filename)
-
-
-# Main
-if __name__ == '__main__':
-    try:
-        STARTTIME = datetime.datetime.now()
-        PARSER_DICT = spatial_parser.spatial_parser(
-            begindate=True, enddate=True)
-        logging.info('The data suedtirol download from \'%s\' to \'%s\' has started.',
-                     PARSER_DICT['begindate'], PARSER_DICT['enddate'])
-        fetch_suedtirol_data(PARSER_DICT['begindate'], PARSER_DICT['enddate'])
-        DURATION = datetime.datetime.now() - STARTTIME
-        logging.info('The script has run successfully in %s', DURATION)
-    except Exception as ex:
-        logging.exception(ex)
-        raise ex

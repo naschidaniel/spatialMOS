@@ -1,5 +1,6 @@
 [BASIC]
 good-names= c, cp, df, env, ex, f, i, j, k, m, p, pk, ts, x
+extension-pkg-whitelist=spatial_util
 
 [FORMAT]
 max-line-length=250
