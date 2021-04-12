@@ -290,6 +290,7 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 
 ## Changelog
 
+- 2021-04-12 #blacklivesmatter
 - 2021-04-11 CI: Github actions for pylint, pytest and rust tests
 - 2021-04-11 The generic script `run_get_data.py` was added for lwd, suedtirol and zamg.
 - 2021-03-21 Refactoring of lwd, suedtirol and zamg data download.

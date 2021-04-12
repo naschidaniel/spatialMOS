@@ -15,7 +15,7 @@ import inv_rsync
 
 @task
 def check_upstream(c):
-    """Check master """
+    """Check main"""
     inv_logging.task(check_upstream.__name__)
     print("Do you really want to run on production? [y/N]")
     answer = input()
@@ -23,13 +23,13 @@ def check_upstream(c):
     if answer.upper() not in ("Y", "YES", "JA", "J"):
         sys.exit(1)
 
-    if c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip() != "master":
-        logging.error("You are not in the master branch. Only the master branch can be uploaded onto the server.")
+    if c.run("git rev-parse --abbrev-ref HEAD", hide=True).stdout.strip() != "main":
+        logging.error("You are not in the main branch. Only the main branch can be uploaded onto the server.")
         sys.exit(1)
 
-    c.run("git fetch origin master", hide=True)
-    if c.run("git diff origin/master", hide=True).stdout.strip() != "":
-        logging.error("Your local branch differs from upstream master (run git diff)")
+    c.run("git fetch origin main", hide=True)
+    if c.run("git diff origin/main", hide=True).stdout.strip() != "":
+        logging.error("Your local branch differs from upstream main (run git diff)")
         sys.exit(1)
 
     if c.run("git status --short", hide=True).stdout.strip() != "":
