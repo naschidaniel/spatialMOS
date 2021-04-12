@@ -3,7 +3,7 @@ good-names= c, cp, df, env, ex, f, i, j, k, m, p, pk, ts, x
 extension-pkg-whitelist=spatial_rust_util
 
 [DESIGN]
-max-locals=20
+max-locals=25
 max-statements=55
 
 [FORMAT]

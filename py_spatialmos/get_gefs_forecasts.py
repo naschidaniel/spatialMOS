@@ -13,7 +13,7 @@ import logging
 from datetime import datetime
 import subprocess as sub
 import requests
-
+import pathlib
 
 class IdxEntry(object):
     '''A small helper class to handle index entries.'''
@@ -45,22 +45,15 @@ class IdxEntry(object):
 
         Returns end byte.
         '''
-        try:
-            x = getattr(self, '_byte_end')
-            return x
-        except:
-            logging.error('whoops, _byte_end attribute not found.')
+        return getattr(self, '_byte_end')
+
 
     def start_byte(self):
         '''start_byte()
 
         Returns start byte.
         '''
-        try:
-            x = getattr(self, '_byte_start')
-            return x
-        except:
-            logging.error('whoops, _byte_start attribute not found.')
+        return getattr(self, '_byte_start')
 
     def key(self):
         '''key()
@@ -69,12 +62,8 @@ class IdxEntry(object):
         -------
         Returns a character string '<param name>:<param level>'.
         '''
-        try:
-            var = getattr(self, '_var')
-            lev = getattr(self, '_lev')
-        except Exception as ex:
-            raise Exception(ex)
-
+        var = getattr(self, '_var')
+        lev = getattr(self, '_lev')
         return '{:s}:{:s}'.format(var, lev)
 
     def range(self):
@@ -87,8 +76,9 @@ class IdxEntry(object):
         try:
             start = getattr(self, '_byte_start')
             end = getattr(self, '_byte_end')
-        except Exception as ex:
-            raise Exception(ex)
+        except AttributeError as ex:
+            logging.exception(ex)
+            raise AttributeError from ex
         end = '' if end is None else '{:d}'.format(end)
 
         return '{:d}-{:s}'.format(start, end)
@@ -103,7 +93,6 @@ class IdxEntry(object):
         return 'IDX ENTRY: {:10d}-{:>10s}, \'{:s}\''.format(self._byte_start,
                                                             end, self.key())
 
-# Functions
 
 
 def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution):
@@ -152,9 +141,12 @@ def parse_index_file(idxfile, params):
         logging.info('The index file is going to be downloaded: %s', idxfile)
         req = requests.get(idxfile)
         data = req.text.split('\n')
-    except:
-        logging.error(
-            'Problems reading index file ... %s ... return None', idxfile)
+    except requests.exceptions.HTTPError as ex:
+        logging.error('Problems downloading index file ... %s ... return None', idxfile)
+        logging.exception(ex)
+        return None
+    except requests.exceptions.Timeout as ex:
+        logging.exception(ex)
         return None
 
     # List to store the required index message information
@@ -170,7 +162,7 @@ def parse_index_file(idxfile, params):
         # Else crate the variable hash
         idx_entries.append(IdxEntry(match[0]))
 
-    for k in range(0, len(idx_entries)):
+    for k, _ in enumerate(idx_entries):
         if (k + 1) == len(idx_entries):
             idx_entries[k].add_end_byte(None)
         else:
@@ -180,7 +172,6 @@ def parse_index_file(idxfile, params):
     for x in idx_entries:
         if x.key() in params:
             res.append(x.range())
-
     return res
 
 
@@ -194,10 +185,22 @@ def download_grib(grib, local, required):
             f.write(req_grib.content)
             f.close()
         return True
-    except:
+    except OSError as ex:
         logging.error(
             'The Grbifile \'%s\' could not be loaded and saved in \'%s\'', grib, local)
+        logging.exception(ex)
         return False
+
+
+def select_params(p):
+    '''A function to select a parameter'''
+    available_params = {
+        'tmp_2m': 'TMP:2 m above ground',
+        'rh_2m': 'RH:2 m above ground',
+        'ugrd_10m': 'UGRD:10 m above ground',
+        'vgrd_10m': 'VGRD:10 m above ground',
+    }
+    return available_params.get(p, None)
 
 
 def fetch_gefs_data(modeltype, date, parameter, resolution):
@@ -206,15 +209,7 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
     # A failure variable if an error occurs
     exit_with_error = False
 
-    params = None
-    if parameter == 'tmp_2m':
-        params = ['TMP:2 m above ground']
-    elif parameter == 'rh_2m':
-        params = ['RH:2 m above ground']
-    elif parameter == 'ugrd_10m':
-        params = ['UGRD:10 m above ground']
-    elif parameter == 'vgrd_10m':
-        params = ['VGRD:10 m above ground']
+    params = select_params(parameter)
 
     # Subset (requires wgrib2), can also be None.
     # Else a dict with N/S/E/W in degrees (0-360!)
@@ -235,27 +230,22 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
         members = range(0, 1, 1)
         logging.info('Downloading members: {:s}:  '.format(modeltype))
         if resolution == 1:
-            data_path = f'./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}'
+            data_path = pathlib.Path(f'./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}')
             # url exchanged on 2020-09-23 response with a 404 error
             baseurl = 'https://www.ftp.ncep.noaa.gov/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2a/'
         elif resolution == 0.5:
-            data_path = f'./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}'
+            data_path = pathlib.Path(f'./data/get_available_data/gefs_avgspr_forecast_p05/{parameter}')
             # baseurl = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2ap5/' # url exchanged on 2020-09-23 response with a 404 error
             baseurl = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/atmos/pgrb2ap5/'
-        else:
-            logging.error('The resolution is not supported')
-            sys.exit(1)
-    elif modeltype in ['ens']:
-        data_path = f'./data/get_available_data/gefs_ens_forecast_p05/{parameter}'
+    else:
+        data_path = pathlib.Path(f'./data/get_available_data/gefs_ens_forecast_p05/{parameter}')
         members = range(0, 30+1, 1)
         logging.info('Downloading members: {:s}'.format(
             ', '.join(['{:d}'.format(x) for x in members])))
         # url exchanged on 2020-09-23 response with a 404 error
         #baseurl = ' http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/'
         baseurl = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/00/atmos/pgrb2ap5/'
-    else:
-        logging.info('The modeltype is not supported: %s', modeltype)
-        sys.exit(1)
+
 
     steps_str = ', '.join(['{:d}'.format(x) for x in steps])
     logging.info('Downloading steps: %s', steps_str)
@@ -277,14 +267,9 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                     'Processing +{:03d}h forecast, member {:02d}'.format(step, mem))
 
             # Specify and create output directory if necessary
-            data_path_gribfile = '{:s}/{:s}'.format(
-                data_path, date.strftime('%Y%m%d%H%M'))
-            if not os.path.isdir(data_path_gribfile):
-                try:
-                    os.makedirs(data_path_gribfile)
-                except:
-                    raise Exception(
-                        'Cannot create directory {:s}!'.format(data_path_gribfile))
+            data_path_gribfile = data_path.joinpath(date.strftime('%Y%m%d%H%M'))
+            os.makedirs(data_path_gribfile, exist_ok=True)
+
 
             files = get_file_names(
                 data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
