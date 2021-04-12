@@ -32,6 +32,7 @@ jobs:
         pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
     - name: Lint run_get_data
       run: |
+        pylint py_spatialmos/get_gefs_forecasts.py
         pylint py_spatialmos/get_lwd_data.py
         pylint py_spatialmos/get_suedtirol_data.py
         pylint py_spatialmos/get_zamg_data.py
