@@ -2,12 +2,14 @@ on:
   workflow_run:
     workflows: ["maturin"]
     types: [completed]
+    branches:
+      - main
 
 name: pytest
 
 jobs:
   pytest:
-    name: pytest
+    name: pytest get data
     runs-on: ubuntu-latest
     strategy:
       matrix:
