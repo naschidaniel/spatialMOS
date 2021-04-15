@@ -12,8 +12,8 @@ import re
 import logging
 from datetime import datetime
 import subprocess as sub
-import requests
 import pathlib
+import requests
 
 class IdxEntry(object):
     '''A small helper class to handle index entries.'''
@@ -325,5 +325,5 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
 
             logging.info('{:s}'.format(''.join(['-']*70)))
     if exit_with_error:
-        logging.error('Not all gribfiles could be loaded.')
-        sys.exit(1)
+        logging.exception('Not all gribfiles could be loaded.')
+        raise RuntimeError('Not all gribfiles could be loaded.')
