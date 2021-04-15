@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Dict, List, Union
 import requests
 import spatial_util
-
 from .spatial_writer import SpatialWriter
 
 class SuedtirolData:

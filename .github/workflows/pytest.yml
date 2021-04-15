@@ -33,7 +33,7 @@ jobs:
         pip install pytest requests pytz
         cp ./fabric/settings.example.json settings.json
         ls ./target/wheels/
-        pip install ./target/wheels/spatial_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
+        pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
     - name: Test with pytest
       run: |
         pytest ./tests

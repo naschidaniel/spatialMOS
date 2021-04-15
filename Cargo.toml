@@ -1,11 +1,11 @@
 [package]
-name = "spatial-util"
+name = "spatial-rust-util"
 version = "0.1.0"
 authors = ["Daniel Naschberger <daniel@naschi.at>"]
 edition = "2018"
 
 [lib]
-name = "spatial_util"
+name = "spatial_rust_util"
 crate-type = ["cdylib"]
 
 [dependencies]

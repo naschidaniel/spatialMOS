@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-"""Unittest for the rust module spatial_util"""
+"""Unittest for the rust module spatial_rust_util"""
 
 import unittest
-import spatial_util
+import spatial_rust_util
 from py_spatialmos import get_suedtirol_data
 
 
@@ -23,7 +23,7 @@ class TestRustModules(unittest.TestCase):
             ['2021-03-28 00:00:00', '82500WS', 46.6156, 11.4604,
                 6, 17, 60.5, None, None, 360, None, None, None]]
         self.assertEqual(
-            result, spatial_util.convert_measurements(measurements, columns))
+            result, spatial_rust_util.convert_measurements(measurements, columns))
 
 
 if __name__ == '__main__':

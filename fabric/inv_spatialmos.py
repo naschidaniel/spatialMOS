@@ -217,7 +217,10 @@ def py_spatialmos__django_import_statusfiles(c):
 def py_spatialmos__maturin_build(c):
     """Build the Rust libraries for Spatialmos"""
     inv_logging.task(py_spatialmos__maturin_build.__name__)
+    user, group = inv_base.uid_gid(c)
     c.run("docker run --rm -v $(pwd):/io konstin2/maturin build")
+    # TODO rm sudo
+    c.run(f"sudo chown {user}:{group} -R target")
     c.run("mv ./target/wheels/*.whl ./container/py_requests/")
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
 

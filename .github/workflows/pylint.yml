@@ -29,7 +29,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint requests pytz
-        pip install ./target/wheels/spatial_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
+        pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-manylinux_2_24_x86_64.whl
     - name: Lint run_get_data
       run: |
         pylint py_spatialmos/get_lwd_data.py
