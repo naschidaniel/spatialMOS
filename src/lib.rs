@@ -44,7 +44,7 @@ fn convert_measurements(measurements: &PyDict, columns: &PyList) -> PyResult<PyO
 
 /// A python module implemented in Rust for spatialMOS.
 #[pymodule]
-fn spatial_util(_py: Python, m: &PyModule) -> PyResult<()> {
+fn spatial_rust_util(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(convert_measurements, m)?)?;
 
     Ok(())

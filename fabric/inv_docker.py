@@ -19,7 +19,6 @@ def docker(c, cmd):
 def restart(c, cmd):
     """Restart a single docker container"""
     inv_logging.task(restart.__name__)
-    user, group = inv_base.uid_gid(c)
     inv_logging.cmd(cmd)
     inv_base.docker_compose(c, f"restart -t 10 {cmd}", pty=True)
     inv_logging.success(restart.__name__)

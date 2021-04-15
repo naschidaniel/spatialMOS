@@ -1,6 +1,6 @@
 [BASIC]
 good-names= c, cp, df, env, ex, f, i, j, k, m, p, pk, ts, x
-extension-pkg-whitelist=spatial_util
+extension-pkg-whitelist=spatial_rust_util
 
 [DESIGN]
 max-locals=20
