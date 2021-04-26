@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 chrono = "0.4.19"
+libmath = "0.2.1"
 
 [dependencies.pyo3]
 version = "0.13.2"

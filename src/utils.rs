@@ -1,3 +1,5 @@
+use std::{array::IntoIter, ops::DerefMut};
+
 use chrono::{DateTime, Utc};
 use pyo3::prelude::*;
 use math::round;
@@ -9,19 +11,20 @@ pub fn rs_convert_datetime(date: &str, _utc: DateTime<Utc>) -> String {
 }
 
 fn log_spr(spread: &f64) -> f64 { 
-    if spread > &&0. {
-        return round(spread.log(10.), 3)
+    if spread > &0. {
+        return round::ceil(spread.log(2.7182818), 2);
     }
     return 0.
 } 
 
 
-pub fn rs_combine_gribdata(latitudes: Vec<f64>, longitudes: Vec<f64>, values_avg: Vec<[f64; 3]>, values_spr: Vec<[f64; 3]>) {
-    let mut values_log_spr = values_spr.clone();
-    // values_log_spr.into_iter().for_each(|f| f.into_iter().map(|x| x.log(10.)));
-    
-    for entry in values_log_spr.iter_mut() {
-        entry.into_iter().map(|x| log_spr(x));
+pub fn rs_combine_gribdata(latitudes: Vec<f64>, longitudes: Vec<f64>, values_avg: Vec<[f64; 3]>, values_spr: Vec<[f64; 3]>) -> Vec<[&'static f64; 5]>{
+    let mut values_log_spr = values_spr.clone();   
+
+    for x in values_log_spr.iter_mut() {
+        for i in x.iter_mut() {
+            *i = log_spr(i);
+        }
     }
     
     let mut data = Vec::new();
@@ -30,14 +33,8 @@ pub fn rs_combine_gribdata(latitudes: Vec<f64>, longitudes: Vec<f64>, values_avg
             data.push([latitude, longitude, &values_spr[i][j], &values_log_spr[i][j], &values_avg[i][j]]);
         }
     }
-
-    // for (i, entry) in data.into_iter().enumerate() {
-    //     match i {
-            
-    //     } 
-    //     let rudi = entry.iter().map(|x| x.log(10.)).collect::<Vec<_>>();
-    //     println!("{:?}", rudi);
-    // }
+    let hansi = data.into_iter();
+    data
 }
 
 pub fn log_py_error(err: PyErr) {
@@ -50,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_log_spr_ok() {
-        assert_eq!(0.477, log_spr(&3.))
+        assert_eq!(0.48, log_spr(&3.))
     }
 
     #[test]
