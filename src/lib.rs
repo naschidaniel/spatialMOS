@@ -2,16 +2,16 @@ mod utils;
 
 use chrono::Utc;
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyIterator};
+use pyo3::types::{PyDict, PyList};
 use pyo3::wrap_pyfunction;
 use pyo3::Python;
 
 #[pyfunction]
 fn combine_gribdata(
-    py_values_avg: &PyIterator,
-    py_values_spr: &PyIterator,
     py_latitudes: &PyList,
     py_longitudes: &PyList,
+    py_values_avg: &PyList,
+    py_values_spr: &PyList,
 ) -> PyResult<PyObject>{
     let gil = Python::acquire_gil();
     let py = gil.python();
