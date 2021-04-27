@@ -1,4 +1,4 @@
-use std::{array::IntoIter, ops::DerefMut};
+use std;
 
 use chrono::{DateTime, Utc};
 use pyo3::prelude::*;
@@ -10,7 +10,7 @@ pub fn rs_convert_datetime(date: &str, _utc: DateTime<Utc>) -> String {
     format!("{}", DateTime::format(&utc_converted, "%Y-%m-%d %H:%M:%S"))
 }
 
-fn log_spr(spread: &f64) -> f64 { 
+pub fn log_spr(spread: &f64) -> f64 { 
     if spread > &0. {
         return round::ceil(spread.log(2.7182818), 2);
     }
@@ -18,22 +18,14 @@ fn log_spr(spread: &f64) -> f64 {
 } 
 
 
-pub fn rs_combine_gribdata(latitudes: Vec<f64>, longitudes: Vec<f64>, values_avg: Vec<[f64; 3]>, values_spr: Vec<[f64; 3]>) -> Vec<[&'static f64; 5]>{
-    let mut values_log_spr = values_spr.clone();   
-
-    for x in values_log_spr.iter_mut() {
-        for i in x.iter_mut() {
-            *i = log_spr(i);
-        }
-    }
-    
+pub fn rs_combine_gribdata<'a>(latitudes: &'a Vec<f64>, longitudes: &'a Vec<f64>, values_avg: &'a Vec<[f64; 3]>, values_spr: &'a Vec<[f64; 3]>, values_log_spr: &'a Vec<[f64; 3]>) -> Vec<[&'a f64; 5]> {
+  
     let mut data = Vec::new();
     for (i, latitude) in latitudes.iter().enumerate() {
         for (j,longitude) in longitudes.iter().enumerate() {
             data.push([latitude, longitude, &values_spr[i][j], &values_log_spr[i][j], &values_avg[i][j]]);
         }
     }
-    let hansi = data.into_iter();
     data
 }
 
@@ -47,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_log_spr_ok() {
-        assert_eq!(0.48, log_spr(&3.))
+        assert_eq!(1.1, log_spr(&3.))
     }
 
     #[test]
