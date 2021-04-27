@@ -2,8 +2,6 @@ on:
   workflow_run:
     workflows: ["maturin"]
     types: [completed]
-    branches:
-      - main
 
 name: pytest
 
