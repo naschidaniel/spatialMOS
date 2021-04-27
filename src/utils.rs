@@ -1,5 +1,3 @@
-use std;
-
 use chrono::{DateTime, Utc};
 use pyo3::prelude::*;
 use math::round;

@@ -2,41 +2,40 @@ mod utils;
 
 use chrono::Utc;
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList};
+use pyo3::types::{PyDict, PyList, PyIterator};
 use pyo3::wrap_pyfunction;
 use pyo3::Python;
 
 #[pyfunction]
 fn combine_gribdata(
-    values_avg: &PyList,
-    values_spr: &PyList,
-    latitudes: &PyList,
-    longitudes: &PyList,
-) -> PyResult<PyObject> {
+    py_values_avg: &PyIterator,
+    py_values_spr: &PyIterator,
+    py_latitudes: &PyList,
+    py_longitudes: &PyList,
+) -> PyResult<PyObject>{
     let gil = Python::acquire_gil();
     let py = gil.python();
-    let data = PyList::empty(py);
 
-    let mut i = 0;
-    let mut j = 0;
-    let _values_avg_vec: Vec<f32> = values_avg.extract()?;
+    let latitudes = py_latitudes.extract()?;
+    let longitudes = py_longitudes.extract()?;
+    let values_avg= py_values_avg.extract()?;
+    let values_spr: Vec<[f64; 3]> = py_values_spr.extract()?;
+    let mut values_log_spr= values_spr.clone();
 
-    for latitude in latitudes {
-        j = 0;
-        let row = PyList::empty(py);
-        for longitude in longitudes {
-            j += 1;
-            let v = vec![latitude, longitude, values_avg.get_item(i)];
-            row.append(v).map_err(|err| utils::log_py_error(err)).ok();
-            println!("{}", row);
+    for x in values_log_spr.iter_mut() {
+        for i in x.iter_mut() {
+            *i = utils::log_spr(i);
         }
-        data.append(row)
-            .map_err(|err| utils::log_py_error(err))
-            .ok();
-
-        i += 1;
     }
-    Ok(data.into())
+
+    let data = utils::rs_combine_gribdata(
+        &latitudes,
+        &longitudes,
+        &values_avg,
+        &values_spr,
+        &values_log_spr,
+    );
+    Ok(data.into_py(py))
 }
 
 #[pyfunction]
