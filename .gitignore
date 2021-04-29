@@ -40,6 +40,8 @@ node_modules/
 npm-debug.log
 container/node/dist
 
-
 # Rust
 /target
+
+# Testdata
+*.idx
