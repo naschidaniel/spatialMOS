@@ -8,9 +8,9 @@ import spatial_rust_util
 from py_spatialmos import get_suedtirol_data
 
 
-
 class TestRustModules(unittest.TestCase):
     '''Test spatialMOS Rust library'''
+
     def test_convert_measurements_ok(self):
         '''This test ends without an error if the dictionary can be converted correctly.'''
         columns = list(get_suedtirol_data.SuedtirolData.parameters().keys())
@@ -51,6 +51,7 @@ class TestRustModules(unittest.TestCase):
             [46.0, 9.0, 0.15, -1.89, -0.41],
         ]
         self.assertEqual(combined_ok, data)
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)
