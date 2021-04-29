@@ -10,13 +10,13 @@ pub fn rs_convert_datetime(date: &str, _utc: DateTime<Utc>) -> String {
 
 pub fn log_spr(spread: &f64) -> f64 { 
     if spread > &0. {
-        return round::ceil(spread.log(2.7182818), 2);
+        return round::half_away_from_zero(spread.log(2.7182818), 2);
     }
     return 0.
 } 
 
 
-pub fn rs_combine_gribdata<'a>(latitudes: &'a Vec<f64>, longitudes: &'a Vec<f64>, values_avg: &'a Vec<[f64; 3]>, values_spr: &'a Vec<[f64; 3]>, values_log_spr: &'a Vec<[f64; 3]>) -> Vec<[&'a f64; 5]> {
+pub fn rs_combine_gribdata<'a>(latitudes: &'a Vec<f64>, longitudes: &'a Vec<f64>, values_avg: &'a Vec<Vec<f64>>, values_spr: &'a Vec<Vec<f64>>, values_log_spr: &'a Vec<Vec<f64>>) -> Vec<[&'a f64; 5]> {
   
     let mut data = Vec::new();
     for (i, latitude) in latitudes.iter().enumerate() {
