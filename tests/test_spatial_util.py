@@ -59,8 +59,6 @@ class TestSpatialUtil(unittest.TestCase):
 
         json_file = spatial_util.gribfile_to_json(
             test_avg_gribfile, test_spr_gribfile, 'tmp_2m', 'avg', test_subset)
-        print(test_info_file)
-        print(json_file)
         self.assertDictEqual(test_info_file, json_file)
 
 
