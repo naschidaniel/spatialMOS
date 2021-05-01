@@ -1,3 +1,10 @@
+cfgrib
+matplotlib
+numpy
+pandas
+pyproj
 pytz
 requests
+scipy
 spatial_rust_util-0.1.0-cp39-cp39-manylinux1_x86_64.whl
+xarray
