@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from py_middleware import logger_module
 from py_middleware import scandir
-from py_middleware import spatial_parser
+from . import spatial_parser
 from py_middleware import log_spread_calc
 
 # Functions
@@ -140,6 +140,10 @@ def create_gamlss_climatologies(parameter):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "apcp_sfc", "wind_10m"])
+    argsinfo = {'parameter': True,
+                'available_parameter': ["tmp_2m", "rh_2m", "apcp_sfc", "wind_10m"]
+                }
+    arguments = sys.argv[1:]
+    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
     create_gamlss_climatologies(PARSER_DICT["parameter"])
     logger_module.end_logging(STARTTIME)
