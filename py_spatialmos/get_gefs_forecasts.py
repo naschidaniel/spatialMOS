@@ -211,10 +211,6 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
 
     params = select_params(parameter)
 
-    # Subset (requires wgrib2), can also be None.
-    # Else a dict with N/S/E/W in degrees (0-360!)
-    subset = {'E': 20, 'W': 8, 'S': 45, 'N': 53}
-
     # runhour is in [0, 6, 12, 18]
     runhour = 0
     date = datetime.strptime('{:s} {:02d}:00:00'.format(
@@ -301,27 +297,6 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
             if not download_grib_success:
                 exit_with_error = True
                 continue
-
-            # If wgrib2 ist installed: crate subset (small_grib)
-            if not subset is None:
-                we_bounds = '{:.2f}:{:.2f}'.format(subset['W'], subset['E'])
-                sn_bounds = '{:.2f}:{:.2f}'.format(subset['S'], subset['N'])
-                cmd = ['wgrib2', files['local'], '-small_grib',
-                       we_bounds, sn_bounds, files['subset']]
-                logging.info('- Subsetting: {:s}'.format(' '.join(cmd)))
-                p = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE)
-                p.communicate()
-
-                if p.returncode == 0:
-                    os.remove(files['local'])
-                    logging.info(
-                        'Subset created, delete global file: %s', files['local'])
-                else:
-                    logging.error(
-                        'Problem with subset, do not delete global grib2 file.')
-                    exit_with_error = True
-            else:
-                logging.info('No subset was created')
 
             logging.info('{:s}'.format(''.join(['-']*70)))
     if exit_with_error:
