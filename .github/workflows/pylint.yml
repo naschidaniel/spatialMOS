@@ -32,10 +32,6 @@ jobs:
         pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-linux_x86_64.whl
     - name: Lint run_get_data
       run: |
-        pylint --exit-zero py_spatialmos/get_lwd_data.py
-        pylint --exit-zero py_spatialmos/get_get_data.py
-        pylint --exit-zero py_spatialmos/get_zamg_data.py
+        pylint --exit-zero py_spatialmos/
+        pylint --exit-zero tests/
         pylint --exit-zero run_get_data.py
-    - name: Lint tests
-      run: |
-        pylint tests
