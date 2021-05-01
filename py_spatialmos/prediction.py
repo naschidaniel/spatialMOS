@@ -13,7 +13,7 @@ import pandas as pd
 import pytz
 from scipy.interpolate import griddata
 from py_middleware import logger_module
-from py_middleware import spatial_parser
+from . import spatial_parser
 from py_middleware import plot_functions
 from py_middleware import scandir
 
@@ -249,6 +249,14 @@ def spatial_predictions(parser_dict):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], resolution=True, name_resolution=[0.5, 1], date=True)
+    arguments = sys.argv[1:]
+    argsinfo = {
+        'parameter': True,
+        'available_parameter': ["tmp_2m", "rh_2m", "wind_10m"],
+        'resolution': True,
+        'available_resolution': [0.5, 1],
+        'date': True
+    }
+    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
     spatial_predictions(PARSER_DICT)
     logger_module.end_logging(STARTTIME)

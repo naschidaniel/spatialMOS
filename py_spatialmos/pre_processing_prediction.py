@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from py_middleware import logger_module
-from py_middleware import spatial_parser
+from . import spatial_parser
 from py_middleware import gribfile_to_pandasdf
 
 
@@ -127,6 +127,13 @@ def gribfiles_to_pandasdataframe(parser_dict):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "rh_2m", "wind_10m"], date=True, resolution=True, name_resolution=[0.5, 1])
+    arguments = sys.argv[1:]
+    argsinfo = {'parameter': True,
+                'available_parameter': ["tmp_2m", "rh_2m", "wind_10m"],
+                'date': True,
+                'resolution': True,
+                'available_resolution': [0.5, 1]
+                }
+    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
     gribfiles_to_pandasdataframe(PARSER_DICT)
     logger_module.end_logging(STARTTIME)

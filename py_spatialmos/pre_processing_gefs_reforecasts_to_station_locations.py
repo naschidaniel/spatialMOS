@@ -14,7 +14,7 @@ import pandas as pd
 from scipy.interpolate import griddata
 from py_middleware import logger_module
 from py_middleware import scandir
-from py_middleware import spatial_parser
+from . import spatial_parser
 from py_middleware import meteorological_calc
 from py_middleware import gribfile_to_pandasdf
 
@@ -202,6 +202,10 @@ def interpolate_grib_files(gribfiles_mean_spread_parameter):
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    PARSER_DICT = spatial_parser.spatial_parser(parameter=True, name_parameter=["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "rh_2m", "ugrd_10m", "vgrd_10m", "rh_2m", "wind_10m"])
+    argsinfo = {'parameter': True,
+                'available_parameter': ["tmp_2m", "pres_sfc", "spfh_2m", "apcp_sfc", "rh_2m", "ugrd_10m", "vgrd_10m", "rh_2m", "wind_10m"]
+                }
+    arguments = sys.argv[1:]
+    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
     gefs_reforecasts_to_station_location(PARSER_DICT["parameter"])
     logger_module.end_logging(STARTTIME)

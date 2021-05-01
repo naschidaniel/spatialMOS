@@ -6,14 +6,18 @@ import os
 import sys
 import logging
 from datetime import datetime
-from py_middleware import spatial_parser
+from . import spatial_parser
 from py_middleware import logger_module
 
 
 # Main
 if __name__ == "__main__":
     STARTTIME = logger_module.start_logging("get_available_data", "archive", docker=False)
-    PARSER_DICT = spatial_parser.spatial_parser(folder=True, name_folder=["gefs_avgspr_forecast_p05", "gefs_avgspr_forecast_p1", "gefs_reforecast", "suedtirol", "lwd", "zamg"])
+    arguments = sys.argv[1:]
+    argsinfo = {'folder': True,
+                'available_folder': ["gefs_avgspr_forecast_p05", "gefs_avgspr_forecast_p1", "gefs_reforecast", "suedtirol", "lwd", "zamg"],
+                }
+    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
 
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 
@@ -30,7 +34,7 @@ if __name__ == "__main__":
     if not os.path.exists(archive_path):
         os.makedirs(archive_path)
         logging.info("The archive folder '%s' was created.", archive_path)
-    
+
     count_files_to_tar = 0
     if os.path.exists(path_to_tar):
         for root, dirs, files in os.walk(path_to_tar):
