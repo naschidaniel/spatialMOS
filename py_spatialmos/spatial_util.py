@@ -17,9 +17,9 @@ def log_spread(spread):
     log_spread_val = np.where(spread == 0., np.log(0.001), np.log(spread))
     return log_spread_val.round(3)
 
-def gribfile_to_json(file_avg, file_spr, parameter, modeltype, subset):
+def gribfiles_to_json(file_avg, file_spr, parameter, subset):
     '''A function to open gribfiles and write out a json file'''
-    with xr.open_dataset(file_avg, engine='cfgrib') as ds_avg, xr.open_dataset(file_spr, engine='cfgrib') as ds_spr: 
+    with xr.open_dataset(file_avg, engine='cfgrib') as ds_avg, xr.open_dataset(file_spr, engine='cfgrib') as ds_spr:
         latitude = np.arange(subset['S'], subset['N'] + subset['resolution'], subset['resolution'])
         longitude = np.arange(subset['W'], subset['E'] + subset['resolution'], subset['resolution'])
 

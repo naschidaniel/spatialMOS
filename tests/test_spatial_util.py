@@ -91,8 +91,8 @@ class TestSpatialUtil(unittest.TestCase):
 
     def test_gribfile_to_json_ok(self):
         '''This test should return valid data from a *.grb2 file'''
-        json_file = spatial_util.gribfile_to_json(
-            test_avg_gribfile, test_spr_gribfile, 'tmp_2m', 'avg', test_subset)
+        json_file = spatial_util.gribfiles_to_json(
+            test_avg_gribfile, test_spr_gribfile, 'tmp_2m', test_subset)
         self.assertDictEqual(test_info_file, json_file)
 
     def test_spatial_parser_value_in_list_ok(self):
