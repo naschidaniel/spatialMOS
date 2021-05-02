@@ -11,12 +11,9 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import pytz
+from pathlib import Path
 from scipy.interpolate import griddata
-from py_middleware import logger_module
-from . import spatial_parser
-from py_middleware import plot_functions
-from py_middleware import scandir
-
+from .py_middleware import plot_functions
 
 
 # Functions
@@ -50,36 +47,31 @@ def spatial_predictions(parser_dict):
     alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
 
     # Read preprocessed Info Files
-    data_path = f"./data/get_available_data/gefs_pre_processed_forecast/{parser_dict['parameter']}/{parser_dict['date']}0000/"
-    gribinfo_files = scandir.scandir(data_path, parameter=None, ending=".json")
-    
+    data_path = Path(f"./data/get_available_data/gefs_avgspr_forecast_p05/{parser_dict['parameter']}/{parser_dict['date']}0000/")
+
     # A complete infofile about the status of the forecast
     spatialmos_run_status = dict()
 
     # Provide available NWP forecasts
-    for json_info_filename in gribinfo_files:
-        with open(json_info_filename) as json_file:
-            gribfile_info = json.load(json_file)
-            json_file.close()
+    for json_file in sorted(data_path.glob('*.json')):
+        with open(json_file) as f:
+            gribfiles_data = json.load(f)
 
         # Consider Timezone
         timezone = pytz.timezone("UTC")
-        anal_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["anal_date_avg"], "%Y-%m-%d %H:%M"))
-        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfile_info["valid_date_avg"], "%Y-%m-%d %H:%M"))
+        anal_date_aware = timezone.localize(dt.datetime.strptime(gribfiles_data["anal_date"], "%Y-%m-%d %H:%M:%S"))
+        valid_date_aware = timezone.localize(dt.datetime.strptime(gribfiles_data["valid_date"], "%Y-%m-%d %H:%M:%S"))
 
         # Create required grids for NWP
-        if parser_dict["resolution"] == 0.5:
-            latlon_correction = 0.25
-        else:
-            latlon_correction = 0.5
-        
+        latlon_correction = 0.25 / gribfiles_data['resolution']
+
         # Create meshgrid and add M + 1, N + 1
         # https://matplotlib.org/3.3.0/gallery/images_contours_and_fields/pcolormesh_grids.html
         # shading='auto'
-        gribfile_info["longitude"].append(gribfile_info["longitude"][-1] + parser_dict["resolution"])
-        gribfile_info["latitude"].append(gribfile_info["latitude"][-1] + parser_dict["resolution"])
-        lons = [x - latlon_correction for x in gribfile_info["longitude"]]
-        lats = [x - latlon_correction for x in gribfile_info["latitude"]]
+        gribfiles_data["longitude"].append(gribfiles_data["longitude"][-1] + gribfiles_data['resolution'])
+        gribfiles_data["latitude"].append(gribfiles_data["latitude"][-1] + gribfiles_data['resolution'])
+        lons = [x - latlon_correction for x in gribfiles_data["longitude"]]
+        lats = [x - latlon_correction for x in gribfiles_data["latitude"]]
         xx_nwp, yy_nwp = np.meshgrid(lons, lats)
 
         # Create required meshgrid for spatialMOS
@@ -88,7 +80,7 @@ def spatial_predictions(parser_dict):
         xx_spatialmos, yy_spatialmos = np.meshgrid(lons_spatialmos, lats_spatialmos)
 
         # Read in preprocessed NWP CSV file with the predictions
-        nwp_df = pd.read_csv(gribfile_info["gribfile_data_filename"])
+        nwp_df = pd.DataFrame(gribfiles_data["data"], columns =gribfiles_data["data_columns"], dtype = float)
 
         # Interpolation of NWP forecasts
         mean_interpolation = griddata(nwp_df[["longitude", "latitude"]], nwp_df["mean"], (xx_spatialmos, yy_spatialmos), method="linear")
@@ -96,14 +88,14 @@ def spatial_predictions(parser_dict):
         mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
         log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
 
-        climate_spatialmos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}.csv"
-        climate_spatialmos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos_nwp/yday_{gribfile_info['yday']:03d}_dayminute_{gribfile_info['dayminute']}_step_{gribfile_info['step']:03d}.csv"
+        climate_spatialmos_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos/yday_{gribfiles_data['yday']:03d}_dayminute_{gribfiles_data['dayminute']}.csv"
+        climate_spatialmos_nwp_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos_nwp/yday_{gribfiles_data['yday']:03d}_dayminute_{gribfiles_data['dayminute']}_step_{gribfiles_data['step']:03d}.csv"
 
         # Check if climatologies files are available
         if not os.path.exists(climate_spatialmos_file) or not os.path.exists(climate_spatialmos_nwp_file):
-            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfile_info["step"], climate_spatialmos_nwp_file, climate_spatialmos_file)
+            logging.error("parameter: %9s | step: %03d | missing '%s' or '%s'", parser_dict["parameter"], gribfiles_data["step"], climate_spatialmos_nwp_file, climate_spatialmos_file)
             # Write info file to spool directory
-            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS NWP or spatialMOS climatologies")
+            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfiles_data["step"], "missing spatialMOS NWP or spatialMOS climatologies")
             exit_with_error = True
             continue
 
@@ -145,13 +137,13 @@ def spatial_predictions(parser_dict):
         log_spread_nwp_anom = (log_spread_interpolation_spatial_area.data - log_spread_fit) / log_spread_sd
 
         # Check if spatialmos coefficients are available
-        spatialmos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/spatialmos_coef/spatialmos_coef_{parser_dict['parameter']}_{gribfile_info['step']:03d}.csv"
+        spatialmos_coef_file = f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/spatialmos_coef/spatialmos_coef_{parser_dict['parameter']}_{gribfiles_data['step']:03d}.csv"
         if os.path.exists(spatialmos_coef_file):
             spatialmos_coef = pd.read_csv(spatialmos_coef_file, sep=";", quoting=csv.QUOTE_NONNUMERIC)
         else:
-            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfile_info["step"], spatialmos_coef_file)
+            logging.error("There are no spatialMOS coefficients for the parameter %s and step %s available. '%s'", parser_dict["parameter"], gribfiles_data["step"], spatialmos_coef_file)
             # Write info file to spool directory
-            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfile_info["step"], "missing spatialMOS coefficients")
+            write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, gribfiles_data["step"], "missing spatialMOS coefficients")
             exit_with_error = True
             continue
 
@@ -168,19 +160,19 @@ def spatial_predictions(parser_dict):
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
         plot_filenames_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            xx_nwp, yy_nwp, np.load(gribfile_info["grb_avg_filename"]), gribfile_info, what="nwp_mean")
+            xx_nwp, yy_nwp, gribfiles_data["values_avg"], gribfiles_data, what="nwp_mean")
         plot_filenames_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            xx_nwp, yy_nwp, np.load(gribfile_info["grb_spr_filename"]), gribfile_info, what="nwp_spread")
+            xx_nwp, yy_nwp, gribfiles_data["values_spr"], gribfiles_data, what="nwp_spread")
         plot_filenames_spatialmos_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
-            xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfile_info, what="spatialmos_mean")
+            xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfiles_data, what="spatialmos_mean")
         plot_filenames_spatialmos_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
-            xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfile_info, what="spatialmos_spread")
+            xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfiles_data, what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
         spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
         spatialmos_point = spatialmos_point.dropna()
         spatialmos_point_dict = spatialmos_point.to_dict('records')
-        
+
         # Declare Unit
         if parser_dict["parameter"] == "tmp_2m":
             unit = "° C"
@@ -192,7 +184,7 @@ def spatial_predictions(parser_dict):
             unit = ""
 
         # Exchange file for spatialMOS Run in JSON format. This file is imported into the database.
-        filename_spatialmos_step = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfile_info["step"]))
+        filename_spatialmos_step = os.path.join(data_path_spool, "{}_step_{:03d}.json".format(anal_date_aware.strftime("%Y%m%d"), gribfiles_data["step"]))
         prediction_json_file = {"SpatialMosRun":
                                     {
                                      "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
@@ -202,7 +194,7 @@ def spatial_predictions(parser_dict):
                                 "SpatialMosStep":
                                     {"path_filename_SpatialMosStep": filename_spatialmos_step,
                                      "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
-                                     "step": gribfile_info["step"],
+                                     "step": gribfiles_data["step"],
                                      "filename_nwp_mean_sm": plot_filenames_nwp_mean["filename_sm"],
                                      "filename_nwp_mean_md": plot_filenames_nwp_mean["filename_md"],
                                      "filename_nwp_mean_lg": plot_filenames_nwp_mean["filename_lg"],
@@ -235,7 +227,7 @@ def spatial_predictions(parser_dict):
             f.close()
 
         # Write info file to spool directory
-        spatialmos_run_status[f"{gribfile_info['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfile_info['step']:03d}"}
+        spatialmos_run_status[f"{gribfiles_data['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfiles_data['step']:03d}"}
         write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
 
         logging.info("parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s", \
@@ -245,18 +237,3 @@ def spatial_predictions(parser_dict):
     if exit_with_error:
         logging.error("Not all plots could be created")
         sys.exit(1)
-
-# Main
-if __name__ == "__main__":
-    STARTTIME = logger_module.start_logging("py_spatialmos", os.path.basename(__file__))
-    arguments = sys.argv[1:]
-    argsinfo = {
-        'parameter': True,
-        'available_parameter': ["tmp_2m", "rh_2m", "wind_10m"],
-        'resolution': True,
-        'available_resolution': [0.5, 1],
-        'date': True
-    }
-    PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
-    spatial_predictions(PARSER_DICT)
-    logger_module.end_logging(STARTTIME)

@@ -44,11 +44,12 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
         elif parameter == 'rh_2m': # %
             values_avg = ds_avg['r2']
             values_spr = ds_spr['r2']
+            values_avg = np.round(values_avg.values.tolist(), 2)
+            values_spr = np.round(values_spr.values.tolist(), 2)
         values_avg = [list(el) for el in values_avg]
         values_spr = [list(el) for el in values_spr]
 
         data = spatial_rust_util.combine_gribdata(list(latitude), list(longitude), values_avg, values_spr)
-        data.insert(0, ['latitude', 'longitude', 'spread', 'log_spread', 'mean'])
         return {
             'parameter': parameter,
             'anal_date': ds_avg.time.dt.strftime('%Y-%m-%d %H:%M:%S').values.tolist(),
@@ -58,5 +59,9 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
             'step': int(ds_avg.step.values / (3.6*10**12)),
             'latitude': ds_avg.latitude.values.tolist(),
             'longitude': ds_avg.longitude.values.tolist(),
+            'resolution': subset['resolution'],
+            'values_avg': values_avg,
+            'values_spr': values_spr,
+            'data_columns': ['latitude', 'longitude', 'spread', 'log_spread', 'mean'],
             'data': data,
         }

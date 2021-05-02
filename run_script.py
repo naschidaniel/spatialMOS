@@ -16,13 +16,15 @@ from py_spatialmos import get_zamg_data
 from py_spatialmos import spatial_logging
 from py_spatialmos import spatial_parser
 from py_spatialmos import pre_processing_prediction
+from py_spatialmos import prediction
 
 # Main
 if __name__ == '__main__':
     try:
         STARTTIME = datetime.datetime.now()
         argsinfo = {'available_script': ['get_gefs_forecasts', 'get_lwd_data',
-                                         'get_suedtirol_data', 'get_zamg_data', 'pre_processing_prediction'],
+                                         'get_suedtirol_data', 'get_zamg_data', 'pre_processing_prediction',
+                                         'prediction'],
                     'script': True,
                     }
         arguments = sys.argv[1:]
@@ -64,12 +66,22 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             pre_processing_prediction.combine_gribfiles(PARSER_DICT)
+        elif PARSER_DICT['script'] == 'prediction':
+            argsinfo = argsinfo | {'parameter': True,
+                                   'available_parameter': ["tmp_2m", "rh_2m"],
+                                   'resolution': True,
+                                   'available_resolution': [0.5, 1],
+                                   'date': True
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            prediction.spatial_predictions(PARSER_DICT)
         else:
             raise RuntimeError(
                 'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])
 
         DURATION = datetime.datetime.now() - STARTTIME
-        logging.info('The script \'%s\' has run successfully in %s', PARSER_DICT['script'], DURATION)
+        logging.info('The script \'%s\' has run successfully in %s',
+                     PARSER_DICT['script'], DURATION)
     except Exception as ex:
         logging.exception(ex)
         raise ex
