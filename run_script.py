@@ -55,6 +55,15 @@ if __name__ == '__main__':
         elif PARSER_DICT['script'] == 'get_zamg_data':
             logging.info('The data zamg download has started.')
             get_zamg_data.fetch_zamg_data()
+        elif PARSER_DICT['script'] == 'pre_processing_prediction':
+            argsinfo = argsinfo | {'parameter': True,
+                                   'available_parameter': ["tmp_2m", "rh_2m"],
+                                   'date': True,
+                                   'resolution': True,
+                                   'available_resolution': [0.5, 1]
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            pre_processing_prediction.combine_gribfiles(PARSER_DICT)
 
         DURATION = datetime.datetime.now() - STARTTIME
         logging.info('The script has run successfully in %s', DURATION)

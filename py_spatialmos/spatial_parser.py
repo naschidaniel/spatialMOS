@@ -58,7 +58,7 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
     parser.add_argument('--parameter', dest='parameter',
                         help=f"Enter a parameter from the list: {argsinfo['available_parameter']}", default='', type=str)
     parser.add_argument('--resolution', dest='resolution',
-                        help=f"Model initialization hour: {argsinfo['available_resolution']}", default=1, type=float)
+                        help=f"Model initialization hour: {argsinfo['available_resolution']}", default=0.5, type=float)
     parser.add_argument('--script', dest='script',
                         help=f"Enter a script from the list: {argsinfo['available_script']}", default='', type=str)
 

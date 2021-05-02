@@ -47,8 +47,6 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
         values_avg = [list(el) for el in values_avg]
         values_spr = [list(el) for el in values_spr]
 
-        print(values_avg)
-
         data = spatial_rust_util.combine_gribdata(list(latitude), list(longitude), values_avg, values_spr)
         data.insert(0, ['latitude', 'longitude', 'spread', 'log_spread', 'mean'])
         return {
