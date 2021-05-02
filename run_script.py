@@ -64,9 +64,12 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             pre_processing_prediction.combine_gribfiles(PARSER_DICT)
+        else:
+            raise RuntimeError(
+                'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])
 
         DURATION = datetime.datetime.now() - STARTTIME
-        logging.info('The script has run successfully in %s', DURATION)
+        logging.info('The script \'%s\' has run successfully in %s', PARSER_DICT['script'], DURATION)
     except Exception as ex:
         logging.exception(ex)
         raise ex

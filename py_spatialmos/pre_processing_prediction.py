@@ -24,11 +24,25 @@ def combine_gribfiles(parser_dict: Dict[str, Any]):
 
     gribfiles_path = Path(f"./data/get_available_data/{folder}/{parser_dict['parameter']}/{parser_dict['date']}0000/")
     spr_files = sorted(gribfiles_path.glob('*spr*.grb2'))
+    exit_with_error = False
     for avg_gribfile in sorted(gribfiles_path.glob('*avg*.grb2')):
-        logging.info('')
+        logging.info('The avg file \'%s\' is processed', avg_gribfile)
         step = f'{avg_gribfile.name[-9:-5]}'
+
+        is_spr_gribfile = False
         for spr_gribfile in spr_files:
             if spr_gribfile.match(f'*{step}*'):
+                is_spr_gribfile = True
+                logging.info('The spr file \'%s\' was found and will be processed', spr_gribfile)
                 json_file = data_path.joinpath(f"./GFSE_{parser_dict['date']}_0000_{step}.json")
+                logging.info('The data are written to \'%s\'.', json_file)
                 with open(Path(json_file), 'w') as f:
                     json.dump(spatial_util.gribfiles_to_json(avg_gribfile, spr_gribfile, 'tmp_2m', subset), f)
+                break
+
+        if not is_spr_gribfile:
+            logging.error('No spr_gribfile could be found for \'%s\'.', avg_gribfile)
+            exit_with_error = True
+
+    if exit_with_error:
+        raise RuntimeError('Not all gribfiles could be combined.')

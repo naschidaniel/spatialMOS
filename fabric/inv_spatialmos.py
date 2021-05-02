@@ -171,7 +171,7 @@ def r_spatialmos__spatial_climatologies_obs(c, begin, end, parameter):
 def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
     """Create the csv file and the jsonfile from the available gribfiles."""
     inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
-    cmd = ["py_requests", "python", "./py_spatialmos/pre_processing_prediction.py", "--date", date, "--resolution", resolution, "--parameter", parameter]
+    cmd = ["py_requests", "python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gribfiles.__name__, cmd)
