@@ -26,8 +26,6 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
         'begin': False,
         'begindate': False,
         'date': False,
-        'dataprovider': False,
-        'available_dataprovider': [],
         'end': False,
         'enddate': False,
         'folder': False,
@@ -35,7 +33,10 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
         'parameter': False,
         'available_parameter': [],
         'resolution': False,
-        'available_resolution': []}
+        'available_resolution': [],
+        'script': True,
+        'available_script': [],
+        }
 
     argsinfo = {**argsinfo_default, **argsinfo}
     parser = argparse.ArgumentParser(
@@ -48,8 +49,6 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
                         help='Enter the begindate in the format YYYY-MM-DD.', default='', type=str)
     parser.add_argument('--date', dest='date',
                         help='Enter the begindate in the format YYYY-MM-DD.', default='', type=str)
-    parser.add_argument('--dataprovider', dest='dataprovider',
-                        help=f"Enter one dataprovider from the list {argsinfo['available_parameter']}.", default='', type=str)
     parser.add_argument(
         '--end', dest='end', help='Enter a number for one day in the calendar year: e.g. 1', default=365, type=int)
     parser.add_argument('--enddate', dest='enddate',
@@ -60,6 +59,8 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
                         help=f"Enter a parameter from the list: {argsinfo['available_parameter']}", default='', type=str)
     parser.add_argument('--resolution', dest='resolution',
                         help=f"Model initialization hour: {argsinfo['available_resolution']}", default=1, type=float)
+    parser.add_argument('--script', dest='script',
+                        help=f"Enter a script from the list: {argsinfo['available_script']}", default='', type=str)
 
     options = parser.parse_args(args)
     parsed_args: Dict[str, Any] = {}
@@ -78,9 +79,6 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
         parsed_args['date'] = dt.strftime(
             dt.strptime(options.date, '%Y-%m-%d'), '%Y%m%d')
 
-    if argsinfo['dataprovider']:
-        parsed_args = spatial_parser_value_in_list(
-            argsinfo, 'dataprovider', options, parsed_args)
 
     if argsinfo['end']:
         parsed_args['end'] = getattr(options, 'end')
@@ -101,4 +99,7 @@ def spatial_parser(args: List[str], argsinfo: Dict[str, Any]) -> Dict[str, Any]:
         parsed_args = spatial_parser_value_in_list(
             argsinfo, 'resolution', options, parsed_args)
 
+    if argsinfo['script']:
+        parsed_args = spatial_parser_value_in_list(
+            argsinfo, 'script', options, parsed_args)
     return parsed_args

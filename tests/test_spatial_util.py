@@ -59,8 +59,6 @@ TEST_ARGSINFO = {
     'begin': True,
     'begindate': True,
     'date': True,
-    'dataprovider': True,
-    'available_dataprovider': ['gefs', 'lwd', 'suedtirol', 'zamg'],
     'end': True,
     'enddate': True,
     'folder': True,
@@ -68,20 +66,23 @@ TEST_ARGSINFO = {
     'parameter': True,
     'available_parameter': ['tmp_2m', 'rh_2m'],
     'resolution': True,
-    'available_resolution': [0.5, 1]}
+    'available_resolution': [0.5, 1],
+    'script': True,
+    'available_script': ['get_lwd_data', 'pre_processing_prediction']}
 
-TEST_ARGS_OK = ['--modeltype', 'avg', '--begin', '10', '--begindate', '2021-01-10', '--date', '2021-02-10', '--dataprovider',
-                'gefs', '--end', '11', '--enddate', '2021-01-11', '--folder', 'suedtirol', '--parameter', 'tmp_2m', '--resolution', '0.5']
+TEST_ARGS_OK = ['--modeltype', 'avg', '--begin', '10', '--begindate', '2021-01-10', '--date', '2021-02-10',
+                '--end', '11', '--enddate', '2021-01-11', '--folder', 'suedtirol', '--parameter', 'tmp_2m',
+                '--resolution', '0.5', '--script', 'get_lwd_data']
 TEST_PARSED_DICT_OK = {'modeltype': 'avg',
                        'begin': 10,
                        'begindate': '20210110',
                        'date': '20210210',
-                       'dataprovider': 'gefs',
                        'end': 11,
                        'enddate': '20210111',
                        'folder': 'suedtirol',
                        'parameter': 'tmp_2m',
-                       'resolution': 0.5
+                       'resolution': 0.5,
+                       'script': 'get_lwd_data',
                        }
 
 
