@@ -34,4 +34,4 @@ jobs:
       run: |
         pylint --exit-zero py_spatialmos/
         pylint --exit-zero tests/
-        pylint --exit-zero run_get_data.py
+        pylint --exit-zero run_script.py

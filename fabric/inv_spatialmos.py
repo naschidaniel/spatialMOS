@@ -57,7 +57,7 @@ def py_spatialmos__archive_available_data(c, folder):
 def py_spatialmos__get_gefs(c, date, resolution, modeltype, parameter):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_requests", "python", "./run_get_data.py", "--dataprovider", "gefs", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
+    cmd = ["py_requests", "python", "./run_script.py", "--dataprovider", "gefs", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_gefs.__name__, cmd)
@@ -83,7 +83,7 @@ def py_spatialmos__get_gefs_forecasts(c, date, parameter):
 def py_spatialmos__get_suedtirol(c, begindate, enddate):
     """Download data from South Tyrol."""
     inv_logging.task(py_spatialmos__get_suedtirol.__name__)
-    cmd = ["py_requests", "python", "./run_get_data.py", "--dataprovider", "suedtirol",
+    cmd = ["py_requests", "python", "./run_script.py", "--dataprovider", "suedtirol",
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
@@ -94,7 +94,7 @@ def py_spatialmos__get_suedtirol(c, begindate, enddate):
 def py_spatialmos__get_lwd(c):
     """Download data from lwd tirol"""
     inv_logging.task(py_spatialmos__get_lwd.__name__)
-    cmd = ["py_requests", "python", "./run_get_data.py", "--dataprovider", "lwd"]
+    cmd = ["py_requests", "python", "./run_script.py", "--dataprovider", "lwd"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_lwd.__name__, cmd)
@@ -104,7 +104,7 @@ def py_spatialmos__get_lwd(c):
 def py_spatialmos__get_zamg(c):
     """Download data from zamg webpage."""
     inv_logging.task(py_spatialmos__get_zamg.__name__)
-    cmd = ["py_requests", "python", "./run_get_data.py", "--dataprovider", "zamg"]
+    cmd = ["py_requests", "python", "./run_script.py", "--dataprovider", "zamg"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_zamg.__name__, cmd)
