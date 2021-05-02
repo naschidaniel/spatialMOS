@@ -11,7 +11,6 @@ import sys
 import re
 import logging
 from datetime import datetime
-import subprocess as sub
 import pathlib
 import requests
 
@@ -113,10 +112,8 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
             sys.exit(1)
 
         gribfile = os.path.join(date.strftime(baseurl), filename)
-        local = date.strftime('GFEE_%Y%m%d_%H00') + \
+        gribfile_path = date.strftime('GFEE_%Y%m%d_%H00') + \
             '_{:s}_f{:03d}.grb2'.format(modeltype, step)
-        subset = date.strftime('GFSE_%Y%m%d_%H00') + \
-            '_{:s}_f{:03d}_subset.grb2'.format(modeltype, step)
     else:
         # UPDATE NAMES 2020-09-27
         # Create URL for gec00.t00z.pgrb2a.0p50.f000.idx
@@ -125,14 +122,11 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
                                 'ge{:s}{:02d}.t{:s}z.pgrb2a.0p50.f{:s}'.format(
             'c' if mem == 0 else 'p', mem, date.strftime('%H'),
             '{:03d}'.format(step)))
-        local = date.strftime('GEFS_%Y%m%d_%H00') + \
+        gribfile_path = date.strftime('GEFS_%Y%m%d_%H00') + \
             '_{:02d}_f{:03d}.grb2'.format(mem, step)
-        subset = date.strftime('GEFS_%Y%m%d_%H00') + \
-            '_{:02d}_f{:03d}_subset.grb2'.format(mem, step)
     return {'grib': gribfile,
             'idx': '{:s}.idx'.format(gribfile),
-            'local': os.path.join(data_path_gribfile, local),
-            'subset': os.path.join(data_path_gribfile, subset)}
+            'gribfile_path': os.path.join(data_path_gribfile, gribfile_path)}
 
 
 def parse_index_file(idxfile, params):
@@ -175,19 +169,19 @@ def parse_index_file(idxfile, params):
     return res
 
 
-def download_grib(grib, local, required):
+def download_grib(grib, gribfile_path, required):
     '''A function to download GRIB files.'''
     headers = {'Range': 'bytes={:s}'.format(','.join(required))}
     req_grib = requests.get(grib, headers=headers)
 
     try:
-        with open(local, 'wb') as f:
+        with open(gribfile_path, 'wb') as f:
             f.write(req_grib.content)
             f.close()
         return True
     except OSError as ex:
         logging.error(
-            'The Grbifile \'%s\' could not be loaded and saved in \'%s\'', grib, local)
+            'The Grbifile \'%s\' could not be loaded and saved in \'%s\'', grib, gribfile_path)
         logging.exception(ex)
         return False
 
@@ -269,19 +263,14 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
 
             files = get_file_names(
                 data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
-            if os.path.isfile(files['subset']):
-                logging.info('Local subset exists, skip: %s', files['subset'])
-                logging.info('{:s}'.format(''.join(['-']*70)))
-                continue
-            if os.path.isfile(files['local']):
-                logging.info('Local file exists, skip: %s', files['local'])
+            if os.path.isfile(files['gribfile_path']):
+                logging.info('gribfile_path file exists, skip: %s', files['gribfile_path'])
                 logging.info('{:s}'.format(''.join(['-']*70)))
                 continue
 
             logging.info('Grib file: %s', files['grib'])
             logging.info('Index file: %s', files['idx'])
-            logging.info('Local file: %s', files['local'])
-            logging.info('Subset file: %s', files['subset'])
+            logging.info('gribfile_path file: %s', files['gribfile_path'])
 
             # Read/parse index file (if possible)
             required = parse_index_file(files['idx'], params)
@@ -292,7 +281,7 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                 continue
 
             download_grib_success = download_grib(
-                files['grib'], files['local'], required)
+                files['grib'], files['gribfile_path'], required)
 
             if not download_grib_success:
                 exit_with_error = True
