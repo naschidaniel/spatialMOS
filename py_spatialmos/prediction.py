@@ -8,10 +8,10 @@ import json
 import csv
 import logging
 import datetime as dt
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytz
-from pathlib import Path
 from scipy.interpolate import griddata
 from .py_middleware import plot_functions
 
@@ -52,8 +52,11 @@ def spatial_predictions(parser_dict):
     # A complete infofile about the status of the forecast
     spatialmos_run_status = dict()
 
+    steps = [f'{s:03d}' for s in range(6, 192+1, 6)]
+    json_files = [f for step in steps for f in sorted(data_path.glob(f'*{step}*.json'))]
+
     # Provide available NWP forecasts
-    for json_file in sorted(data_path.glob('*.json')):
+    for json_file in json_files:
         with open(json_file) as f:
             gribfiles_data = json.load(f)
 
