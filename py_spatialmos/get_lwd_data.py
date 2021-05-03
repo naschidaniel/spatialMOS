@@ -108,11 +108,9 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
             count_stations_successfull += 1
 
     if count_stations_successfull <= 50:
-        logging.error('Only %s from %s stations are transmitted correctly',
-                        count_stations_successfull, count_stations)
-    else:
-        logging.info('%s from %s stations have been successfully saved.',
-                        count_stations_successfull, count_stations)
+        raise RuntimeError('Only %s from %s stations are transmitted correctly' % (count_stations_successfull, count_stations))
+
+    logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
 
 
 def fetch_lwd_data():
