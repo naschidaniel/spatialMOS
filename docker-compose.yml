@@ -7,31 +7,6 @@ services:
     volumes:
       - ${PWD}:/usr/src/app:z
   
-  py_wgrib2:
-    build: ./container/py_wgrib2/
-    container_name: spatialMOS_py_wgrib2
-    volumes:
-      - ${PWD}:/usr/src/app:z
-  
-  py_cartopy:
-    build: ./container/py_cartopy/
-    container_name: spatialMOS_py_cartopy
-    volumes:
-      - log:/log:z
-      - py_spatialmos:/usr/src/app/py_spatialmos:z
-      - get_available_data:/usr/src/app/data/get_available_data:z
-      - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
-      - spool:/usr/src/app/data/spool:z
-  
-  py_cfgrib:
-    build: ./container/py_cfgrib/
-    container_name: py_cfgrib
-    volumes:
-      - log:/log:z
-      - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
-      - py_spatialmos:/usr/src/app/py_spatialmos:z
-      - get_available_data:/usr/src/app/data/get_available_data:z
-
   django:
     restart: always
     build: ./django/

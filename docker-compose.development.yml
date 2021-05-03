@@ -112,14 +112,6 @@ services:
       - spatialmos_climatology:/usr/src/app/data/spatialmos_climatology:z
       - static:/usr/src/app/data/static:z
 
-  py_pre_processing_topography:
-    build: ./container/py_gdal/
-    container_name: spatialMOS_py_pre_processing_topography
-    volumes:
-      - log:/log:z
-      - py_spatialmos:/usr/src/app/py_spatialmos:z
-      - get_available_data:/usr/src/app/data/get_available_data:z
-
   nginx:
     restart: always
     container_name: spatialMOS_nginx

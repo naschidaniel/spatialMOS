@@ -114,7 +114,7 @@ def py_spatialmos__get_zamg(c):
 def py_spatialmos__pre_processing_reforecasts(c, parameter):
     """GEFS Reforecasts are bilinear interpolated at station locations."""
     inv_logging.task(py_spatialmos__pre_processing_reforecasts.__name__)
-    cmd = ["py_cfgrib", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
+    cmd = ["py_requests", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_reforecasts.__name__, cmd)
