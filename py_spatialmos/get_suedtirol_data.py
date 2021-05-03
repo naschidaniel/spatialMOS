@@ -91,10 +91,10 @@ def suedtirol_spatial_converter(measurements: Dict[str, Dict[str, Union[str, flo
                     measurements_write_lines), station)
                 for entry in measurements_write_lines:
                     writer.append(entry)
-    except ValueError:
+    except ValueError as ex:
         logging.error(
             'The spatialmos CSV file \'%s\' could not be written.', filename)
-        raise
+        raise ex
 
 
 def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
