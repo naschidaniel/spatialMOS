@@ -47,7 +47,7 @@ def spatialmos__init_topography(c):
 def py_spatialmos__archive_folder(c, folder):
     """The csv-files are created with the 7zip. The folder must be specified e.g. zamg."""
     inv_logging.task(py_spatialmos__archive_folder.__name__)
-    cmd = ['py_requests', 'python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
+    cmd = ['py_container', 'python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__archive_folder.__name__, cmd)
@@ -57,7 +57,7 @@ def py_spatialmos__archive_folder(c, folder):
 def py_spatialmos__get_gefs(c, date, resolution, modeltype, parameter):
     """Download data gefs files."""
     inv_logging.task(py_spatialmos__get_gefs.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "get_gefs_forecasts", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
+    cmd = ["py_container", "python", "./run_script.py", "--script", "get_gefs_forecasts", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_gefs.__name__, cmd)
@@ -83,7 +83,7 @@ def py_spatialmos__get_gefs_forecasts(c, date, parameter):
 def py_spatialmos__get_suedtirol(c, begindate, enddate):
     """Download data from South Tyrol."""
     inv_logging.task(py_spatialmos__get_suedtirol.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "get_suedtirol_data",
+    cmd = ["py_container", "python", "./run_script.py", "--script", "get_suedtirol_data",
            "--begindate", begindate, "--enddate", enddate]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
@@ -94,7 +94,7 @@ def py_spatialmos__get_suedtirol(c, begindate, enddate):
 def py_spatialmos__get_lwd(c):
     """Download data from lwd tirol"""
     inv_logging.task(py_spatialmos__get_lwd.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "get_lwd_data"]
+    cmd = ["py_container", "python", "./run_script.py", "--script", "get_lwd_data"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_lwd.__name__, cmd)
@@ -104,7 +104,7 @@ def py_spatialmos__get_lwd(c):
 def py_spatialmos__get_zamg(c):
     """Download data from zamg webpage."""
     inv_logging.task(py_spatialmos__get_zamg.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "get_zamg_data"]
+    cmd = ["py_container", "python", "./run_script.py", "--script", "get_zamg_data"]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__get_zamg.__name__, cmd)
@@ -114,7 +114,7 @@ def py_spatialmos__get_zamg(c):
 def py_spatialmos__pre_processing_reforecasts(c, parameter):
     """GEFS Reforecasts are bilinear interpolated at station locations."""
     inv_logging.task(py_spatialmos__pre_processing_reforecasts.__name__)
-    cmd = ["py_requests", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
+    cmd = ["py_container", "python", "./py_spatialmos/pre_processing_gefs_reforecasts_to_station_locations.py", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_reforecasts.__name__, cmd)
@@ -171,7 +171,7 @@ def r_spatialmos__spatial_climatologies_obs(c, begin, end, parameter):
 def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
     """Create the csv file and the jsonfile from the available gribfiles."""
     inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
+    cmd = ["py_container", "python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gribfiles.__name__, cmd)
@@ -180,7 +180,7 @@ def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
 def py_spatialmos__prediction(c, date, parameter):
     """Create the predictions and the spatialMOS plots."""
     inv_logging.task(py_spatialmos__prediction.__name__)
-    cmd = ["py_requests", "python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", parameter]
+    cmd = ["py_container", "python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__prediction.__name__, cmd)
@@ -221,7 +221,7 @@ def py_spatialmos__maturin_build(c):
     c.run("docker run --rm -v $(pwd):/io konstin2/maturin build")
     # TODO rm sudo
     c.run(f"sudo chown {user}:{group} -R target")
-    c.run("mv ./target/wheels/*.whl ./container/py_requests/")
+    c.run("mv ./target/wheels/*.whl ./container/py_container/")
     inv_logging.success(r_spatialmos__spatial_climatologies_obs.__name__)
 
 SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
