@@ -44,13 +44,13 @@ def spatialmos__init_topography(c):
 
 
 @task
-def py_spatialmos__archive_available_data(c, folder):
+def py_spatialmos__archive_folder(c, folder):
     """The csv-files are created with the 7zip. The folder must be specified e.g. zamg."""
-    inv_logging.task(py_spatialmos__archive_available_data.__name__)
-    cmd = ["python", "./py_spatialmos/archive_available_data.py", "--folder", folder]
+    inv_logging.task(py_spatialmos__archive_folder.__name__)
+    cmd = ['py_requests', 'python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     cmd = ' '.join(cmd)
-    c.run(cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__archive_available_data.__name__, cmd)
+    inv_docker.run(c, cmd)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__archive_folder.__name__, cmd)
 
 
 @task
@@ -226,7 +226,7 @@ def py_spatialmos__maturin_build(c):
 
 SPATIALMOS_DEVELOPMENT_NS = Collection("spatialmos")
 SPATIALMOS_DEVELOPMENT_NS.add_task(spatialmos__init_topography)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_available_data)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__archive_folder)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs_forecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
@@ -248,7 +248,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
 
 
 SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_available_data)
+SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_folder)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_gefs)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)

@@ -9,6 +9,7 @@
 import datetime
 import logging
 import sys
+from py_spatialmos import archive_folder
 from py_spatialmos import get_gefs_forecasts
 from py_spatialmos import get_lwd_data
 from py_spatialmos import get_suedtirol_data
@@ -22,9 +23,9 @@ from py_spatialmos import prediction
 if __name__ == '__main__':
     try:
         STARTTIME = datetime.datetime.now()
-        argsinfo = {'available_script': ['get_gefs_forecasts', 'get_lwd_data',
-                                         'get_suedtirol_data', 'get_zamg_data', 'pre_processing_prediction',
-                                         'prediction'],
+        argsinfo = {'available_script': ['archive_folder', 'get_gefs_forecasts',
+                                         'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
+                                         'pre_processing_prediction',  'prediction'],
                     'script': True,
                     }
         arguments = sys.argv[1:]
@@ -75,6 +76,18 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             prediction.spatial_predictions(PARSER_DICT)
+        elif PARSER_DICT['script'] == 'archive_folder':
+            argsinfo = argsinfo | {'folder': True,
+                                   'available_folder':
+                                   ["gefs_avgspr_forecast_p05",
+                                    "gefs_avgspr_forecast_p1",
+                                    "gefs_reforecast",
+                                    "suedtirol",
+                                    "lwd",
+                                    "zamg"],
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            archive_folder.run_archive_folder(PARSER_DICT)
         else:
             raise RuntimeError(
                 'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])
