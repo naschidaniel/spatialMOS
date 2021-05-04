@@ -42,7 +42,6 @@ def spatial_predictions(parser_dict):
 
     with open("./data/get_available_data/gadm/spatial_alt_area.json") as f:
         alt_area = json.load(f)
-        f.close()
 
     alt = pd.read_csv("./data/get_available_data/gadm/spatial_alt_area.csv", header=None)
 
