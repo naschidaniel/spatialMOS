@@ -17,7 +17,6 @@ from py_spatialmos import get_zamg_data
 from py_spatialmos import spatial_logging
 from py_spatialmos import spatial_parser
 from py_spatialmos import pre_processing_prediction
-from py_spatialmos import pre_processing_topography
 from py_spatialmos import prediction
 
 # Main
@@ -90,8 +89,6 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             archive_folder.run_archive_folder(PARSER_DICT)
-        elif PARSER_DICT['script'] == 'pre_processing_topography':
-            pre_processing_topography.run_preprocessing_topography()
         else:
             raise RuntimeError(
                 'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])
