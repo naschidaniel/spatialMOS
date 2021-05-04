@@ -21,7 +21,7 @@ def spatialmos__init_topography(c):
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
 
-    cmd = ["py_pre_processing_topography", "/opt/conda/envs/spatialmos/bin/python", "./py_spatialmos/pre_processing_topography.py"]
+    cmd = ['py_container', 'python', './run_script.py', '--script', 'pre_processing_topography']
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
 
