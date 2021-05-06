@@ -32,4 +32,4 @@ jobs:
         pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-linux_x86_64.whl
     - name: Lint run_get_data
       run: |
-        mypy --junit-xml report.xml *.py py_spatialmos/
+        mypy *.py py_spatialmos/
