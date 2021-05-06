@@ -6,7 +6,7 @@ on:
 name: mypy
 
 jobs:
-  pylint:
+  mypy:
     name: mypy
     runs-on: ubuntu-latest
     strategy:
