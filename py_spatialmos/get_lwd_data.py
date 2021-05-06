@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, TextIO
 import requests
 
-from .spatial_writer import SpatialWriter
+from .spatial_util.spatial_writer import SpatialWriter
 
 
 class LwdData:

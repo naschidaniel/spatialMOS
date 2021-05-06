@@ -12,7 +12,7 @@ from typing import Dict, List, TextIO, Tuple
 import requests
 import pytz
 
-from .spatial_writer import SpatialWriter
+from .spatial_util.spatial_writer import SpatialWriter
 
 class ZamgData:
     '''ZamgData Class'''

@@ -8,8 +8,8 @@ import datetime
 from pathlib import Path
 from typing import Dict, List, Union
 import requests
-from . import spatial_util
-from .spatial_writer import SpatialWriter
+from .spatial_util import spatial_util
+from .spatial_util.spatial_writer import SpatialWriter
 
 class SuedtirolData:
     '''SuedtirolData Class'''

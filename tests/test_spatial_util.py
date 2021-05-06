@@ -6,8 +6,8 @@
 from argparse import Namespace
 import unittest
 import pathlib
-from py_spatialmos import spatial_util
-from py_spatialmos import spatial_parser
+from py_spatialmos.spatial_util import spatial_util
+from py_spatialmos.spatial_util import spatial_parser
 
 # Convert Grib Files
 test_avg_gribfile = pathlib.Path(__file__).parent.absolute().joinpath(
