@@ -30,7 +30,7 @@ jobs:
         sudo apt-get install -y libeccodes-tools  
         python -m pip install --upgrade pip
         pip install wheel
-        pip install cfgrib eccodes numpy requests pytest pytz xarray
+        pip install cfgrib eccodes numpy requests pytest pytest-cov pytz xarray
         cp ./fabric/settings.example.json settings.json
         ls ./target/wheels/
         pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-linux_x86_64.whl
