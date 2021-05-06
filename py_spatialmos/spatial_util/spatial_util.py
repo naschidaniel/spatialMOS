@@ -12,10 +12,6 @@ def convert_measurements(measurements: Dict[str, Dict[str, Union[str, float]]], 
     '''convert_measurements wraps the spatial_rust_util.convert_measurements function'''
     return spatial_rust_util.convert_measurements(measurements, columns)
 
-def log_spread(spread):
-    '''A function which is used to calculate the log value of the spread.'''
-    log_spread_val = np.where(spread == 0., np.log(0.001), np.log(spread))
-    return log_spread_val.round(3)
 
 def gribfiles_to_json(file_avg, file_spr, parameter, subset):
     '''A function to open gribfiles and write out a json file'''

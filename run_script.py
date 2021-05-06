@@ -14,10 +14,10 @@ from py_spatialmos import get_gefs_forecasts
 from py_spatialmos import get_lwd_data
 from py_spatialmos import get_suedtirol_data
 from py_spatialmos import get_zamg_data
-from py_spatialmos import spatial_logging
-from py_spatialmos import spatial_parser
 from py_spatialmos import pre_processing_prediction
 from py_spatialmos import prediction
+from py_spatialmos.spatial_util import spatial_logging
+from py_spatialmos.spatial_util import spatial_parser
 
 # Main
 if __name__ == '__main__':

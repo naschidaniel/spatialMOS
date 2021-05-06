@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import pytz
 from scipy.interpolate import griddata
-from .py_middleware import plot_functions
+from .spatial_util import spatial_plots
 
 
 # Functions
@@ -127,12 +127,12 @@ def spatial_predictions(parser_dict):
         spatialmos = spatialmos.loc[:, ~spatialmos.columns.duplicated()]
 
         ## Reshape dataframe
-        climate_fit = plot_functions.reshapearea(spatialmos["climate_fit"], alt)
-        climate_sd = plot_functions.reshapearea(spatialmos["climate_sd"], alt)
-        mean_fit = plot_functions.reshapearea(spatialmos["mean_fit"], alt)
-        mean_sd = plot_functions.reshapearea(spatialmos["mean_sd"], alt)
-        log_spread_fit = plot_functions.reshapearea(spatialmos["log_spread_fit"], alt)
-        log_spread_sd = plot_functions.reshapearea(spatialmos["log_spread_sd"], alt)
+        climate_fit = spatial_plots.reshapearea(spatialmos["climate_fit"], alt)
+        climate_sd = spatial_plots.reshapearea(spatialmos["climate_sd"], alt)
+        mean_fit = spatial_plots.reshapearea(spatialmos["mean_fit"], alt)
+        mean_sd = spatial_plots.reshapearea(spatialmos["mean_sd"], alt)
+        log_spread_fit = spatial_plots.reshapearea(spatialmos["log_spread_fit"], alt)
+        log_spread_sd = spatial_plots.reshapearea(spatialmos["log_spread_sd"], alt)
 
         # Generate anomalies
         nwp_anom = (mean_interpolation_spatial_area.data - mean_fit) / mean_sd
@@ -161,13 +161,13 @@ def spatial_predictions(parser_dict):
         spatialmos_spread = np.round(spatialmos_spread, decimals=5)
 
         # Create filename for the plots for NWP and spatialMOS forecast maps
-        plot_filenames_nwp_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
+        plot_filenames_nwp_mean = spatial_plots.plot_forecast(parser_dict["parameter"], \
             xx_nwp, yy_nwp, gribfiles_data["values_avg"], gribfiles_data, what="nwp_mean")
-        plot_filenames_nwp_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
+        plot_filenames_nwp_spread = spatial_plots.plot_forecast(parser_dict["parameter"], \
             xx_nwp, yy_nwp, gribfiles_data["values_spr"], gribfiles_data, what="nwp_spread")
-        plot_filenames_spatialmos_mean = plot_functions.plot_forecast(parser_dict["parameter"], \
+        plot_filenames_spatialmos_mean = spatial_plots.plot_forecast(parser_dict["parameter"], \
             xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfiles_data, what="spatialmos_mean")
-        plot_filenames_spatialmos_spread = plot_functions.plot_forecast(parser_dict["parameter"], \
+        plot_filenames_spatialmos_spread = spatial_plots.plot_forecast(parser_dict["parameter"], \
             xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfiles_data, what="spatialmos_spread")
 
         # Point Forecasts for North and South Tyrol without consideration of values outside the borders
