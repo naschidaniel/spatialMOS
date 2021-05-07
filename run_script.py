@@ -14,8 +14,9 @@ from py_spatialmos import get_gefs_forecasts
 from py_spatialmos import get_lwd_data
 from py_spatialmos import get_suedtirol_data
 from py_spatialmos import get_zamg_data
-from py_spatialmos import pre_processing_prediction
 from py_spatialmos import prediction
+from py_spatialmos import pre_processing_prediction
+from py_spatialmos import pre_processing_interpolate_gribfiles
 from py_spatialmos.spatial_util import spatial_logging
 from py_spatialmos.spatial_util import spatial_parser
 
@@ -25,6 +26,7 @@ if __name__ == '__main__':
         STARTTIME = datetime.datetime.now()
         argsinfo = {'available_script': ['archive_folder', 'get_gefs_forecasts',
                                          'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
+                                         'pre_processing_interpolate_gribfiles',
                                          'pre_processing_prediction', 'pre_processing_topography',
                                          'prediction'],
                     'script': True,
@@ -35,15 +37,15 @@ if __name__ == '__main__':
         if PARSER_DICT['script'] == 'get_gefs_forecasts':
             argsinfo = argsinfo | {'modeltype': True,
                                    'date': True,
-                                   'available_modeltype': ["avg", "spr", "ens"],
+                                   'available_modeltype': ['avg', 'spr', 'ens'],
                                    'parameter': True,
-                                   'available_parameter': ["tmp_2m", "rh_2m", "ugrd_10m", "vgrd_10m"],
+                                   'available_parameter': ['tmp_2m', 'rh_2m', 'ugrd_10m', 'vgrd_10m'],
                                    'resolution': True,
                                    'available_resolution': [0.5, 1],
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             get_gefs_forecasts.fetch_gefs_data(
-                PARSER_DICT["modeltype"], PARSER_DICT["date"], PARSER_DICT["parameter"], PARSER_DICT["resolution"])
+                PARSER_DICT['modeltype'], PARSER_DICT['date'], PARSER_DICT['parameter'], PARSER_DICT['resolution'])
         elif PARSER_DICT['script'] == 'get_lwd_data':
             logging.info('The data lwd download has started.')
             get_lwd_data.fetch_lwd_data()
@@ -61,7 +63,7 @@ if __name__ == '__main__':
             get_zamg_data.fetch_zamg_data()
         elif PARSER_DICT['script'] == 'pre_processing_prediction':
             argsinfo = argsinfo | {'parameter': True,
-                                   'available_parameter': ["tmp_2m", "rh_2m"],
+                                   'available_parameter': ['tmp_2m', 'rh_2m'],
                                    'date': True,
                                    'resolution': True,
                                    'available_resolution': [0.5, 1]
@@ -70,7 +72,7 @@ if __name__ == '__main__':
             pre_processing_prediction.combine_gribfiles(PARSER_DICT)
         elif PARSER_DICT['script'] == 'prediction':
             argsinfo = argsinfo | {'parameter': True,
-                                   'available_parameter': ["tmp_2m", "rh_2m"],
+                                   'available_parameter': ['tmp_2m', 'rh_2m'],
                                    'resolution': True,
                                    'available_resolution': [0.5, 1],
                                    'date': True
@@ -80,15 +82,30 @@ if __name__ == '__main__':
         elif PARSER_DICT['script'] == 'archive_folder':
             argsinfo = argsinfo | {'folder': True,
                                    'available_folder':
-                                   ["gefs_avgspr_forecast_p05",
-                                    "gefs_avgspr_forecast_p1",
-                                    "gefs_reforecast",
-                                    "suedtirol",
-                                    "lwd",
-                                    "zamg"],
+                                   ['gefs_avgspr_forecast_p05',
+                                    'gefs_avgspr_forecast_p1',
+                                    'gefs_reforecast',
+                                    'suedtirol',
+                                    'lwd',
+                                    'zamg'],
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             archive_folder.run_archive_folder(PARSER_DICT)
+        elif PARSER_DICT['script'] == 'pre_processing_interpolate_gribfiles':
+            argsinfo = argsinfo | {'parameter': True,
+                                   'available_parameter':
+                                   ['tmp_2m',
+                                    'pres_sfc',
+                                    'spfh_2m',
+                                    'apcp_sfc',
+                                    'rh_2m',
+                                    'ugrd_10m',
+                                    'vgrd_10m',
+                                    'rh_2m',
+                                    'wind_10m']
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            pre_processing_interpolate_gribfiles.run_interpolate_gribfiles(PARSER_DICT)
         else:
             raise RuntimeError(
                 'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])
