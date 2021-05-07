@@ -40,6 +40,28 @@ fn combine_gribdata(
 }
 
 #[pyfunction]
+fn get_value_from_gribdata(
+    py_latitudes: &PyList,
+    py_longitudes: &PyList,
+    py_values: &PyList,
+    x: f64,
+    y: f64,
+) -> PyResult<f64>{
+    let gil = Python::acquire_gil();
+    let _py = gil.python();
+
+    let latitudes: Vec<f64> = py_latitudes.extract()?;
+    let longitudes: Vec<f64> = py_longitudes.extract()?;
+    let values: Vec<Vec<f64>> = py_values.extract()?;
+    
+    let x1_index = longitudes.iter().position(|&lon| lon == x).unwrap();
+    let y1_index = latitudes.iter().position(|&lat| lat == y).unwrap();
+
+    let value = values[y1_index][x1_index];
+    Ok(value.into())
+}
+
+#[pyfunction]
 fn convert_measurements(measurements: &PyDict, columns: &PyList) -> PyResult<PyObject> {
     let gil = Python::acquire_gil();
     let py = gil.python();
@@ -80,6 +102,7 @@ fn interpolate_gribdata() -> PyResult<()>{
     let gil = Python::acquire_gil();
     let _py = gil.python();
     
+    bilinear_interpolation::rs_select_points();
     let grid_data = bilinear_interpolation::Grid {
         p11: bilinear_interpolation::Point{x: 0., y: 0., value: 0.}, 
         p12: bilinear_interpolation::Point{x: 0., y: 1., value: 1.},
@@ -98,6 +121,7 @@ fn spatial_rust_util(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(combine_gribdata, m)?)?;
     m.add_function(wrap_pyfunction!(convert_measurements, m)?)?;
     m.add_function(wrap_pyfunction!(interpolate_gribdata, m)?)?;
+    m.add_function(wrap_pyfunction!(get_value_from_gribdata, m)?)?;
     Ok(())
 }
 
