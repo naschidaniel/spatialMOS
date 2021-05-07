@@ -6,7 +6,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict
-from . import spatial_util
+from .spatial_util import spatial_util
 
 
 def combine_gribfiles(parser_dict: Dict[str, Any]):
