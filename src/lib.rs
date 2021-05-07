@@ -1,4 +1,5 @@
 mod utils;
+mod bilinear_interpolation;
 
 use chrono::Utc;
 use pyo3::prelude::*;
@@ -74,11 +75,29 @@ fn convert_measurements(measurements: &PyDict, columns: &PyList) -> PyResult<PyO
     Ok(measurements_write_lines.into())
 }
 
+#[pyfunction]
+fn interpolate_gribdata() -> PyResult<()>{  
+    let gil = Python::acquire_gil();
+    let _py = gil.python();
+    
+    let grid_data = bilinear_interpolation::Grid {
+        p11: bilinear_interpolation::Point{x: 0., y: 0., value: 0.}, 
+        p12: bilinear_interpolation::Point{x: 0., y: 1., value: 1.},
+        p21: bilinear_interpolation::Point{x: 1., y: 0., value: 1.},
+        p22: bilinear_interpolation::Point{x: 1., y: 1., value: 1.},
+    };
+    
+    assert_eq!(0.75 , bilinear_interpolation::rs_bilinear_interpolate_point(0.5, 0.5, grid_data));
+
+    Ok(())
+}
+
 /// A python module implemented in Rust for spatialMOS.
 #[pymodule]
 fn spatial_rust_util(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(combine_gribdata, m)?)?;
     m.add_function(wrap_pyfunction!(convert_measurements, m)?)?;
+    m.add_function(wrap_pyfunction!(interpolate_gribdata, m)?)?;
     Ok(())
 }
 
