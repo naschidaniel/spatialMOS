@@ -52,6 +52,10 @@ class TestRustModules(unittest.TestCase):
         ]
         self.assertEqual(combined_ok, data)
 
+    def test_interpolate_gribdata(self):
+        '''test_interpolate_gribdata checks if the gribdata can be interpolated.'''
+        spatial_rust_util.interpolate_gribdata()
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)
