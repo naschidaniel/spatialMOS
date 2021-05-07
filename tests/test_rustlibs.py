@@ -8,6 +8,19 @@ import spatial_rust_util
 from py_spatialmos import get_suedtirol_data
 
 
+latitudes = [45.0, 45.5, 46.0]
+longitudes = [8.0, 8.5, 9.0]
+values_avg = [
+    [4.600, 4.300, 3.270],
+    [2.660, 4.830, 5.820],
+    [-8.550, -0.610, -0.410],
+]
+values_spr = [
+    [0.24, 0.27, 0.32],
+    [0.19, 0.18, 0.14],
+    [0.87, 0.18, 0.15],
+]
+
 class TestRustModules(unittest.TestCase):
     '''Test spatialMOS Rust library'''
 
@@ -27,17 +40,8 @@ class TestRustModules(unittest.TestCase):
 
     def test_combine_data_ok(self):
         '''This test ends without an error if the data can be combined correctly.'''
-        latitude = [45.0, 45.5, 46.0]
-        longitude = [8.0, 8.5, 9.0]
-        values_avg = [
-            [4.600, 4.300, 3.270],
-            [2.660, 4.830, 5.820],
-            [-8.550, -0.610, -0.410],
-        ]
-        values_spr = [[0.24, 0.27, 0.32], [
-            0.19, 0.18, 0.14], [0.87, 0.18, 0.15]]
         data = spatial_rust_util.combine_gribdata(
-            latitude, longitude, values_avg, values_spr)
+            latitudes, longitudes, values_avg, values_spr)
 
         combined_ok = [
             [45.0, 8.0, 0.24, -1.43, 4.6],
@@ -55,6 +59,14 @@ class TestRustModules(unittest.TestCase):
     def test_interpolate_gribdata(self):
         '''test_interpolate_gribdata checks if the gribdata can be interpolated.'''
         spatial_rust_util.interpolate_gribdata()
+
+    def test_get_value_from_gribdata(self):
+        '''test_get_value_from_gribdata checks if a values can be selected within the gribdata value field.'''
+        self.assertEqual(4.3, spatial_rust_util.get_value_from_gribdata(latitudes, longitudes, values_avg, 8.5, 45.0))
+        self.assertEqual(-0.41, spatial_rust_util.get_value_from_gribdata(latitudes, longitudes, values_avg, 9.0, 46.0))
+
+        self.assertEqual(0.87, spatial_rust_util.get_value_from_gribdata(latitudes, longitudes, values_spr, 8.0, 46.0))
+        self.assertEqual(0.32, spatial_rust_util.get_value_from_gribdata(latitudes, longitudes, values_spr, 9.0, 45.0))
 
 
 if __name__ == '__main__':
