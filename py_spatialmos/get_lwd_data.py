@@ -28,8 +28,8 @@ class LwdData:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {'date': {'name': 'date', 'unit': '[UTC]'},
                 'name': {'name': 'name', 'unit': '[String]'},
-                'lat': {'name': 'lat', 'unit': '[Degree]'},
-                'lon': {'name': 'lon', 'unit': '[Degree]'},
+                'lat': {'name': 'lat', 'unit': '[angle Degree]'},
+                'lon': {'name': 'lon', 'unit': '[angle Degree]'},
                 'alt': {'name': 'alt', 'unit': '[m]'},
                 'LD': {'name': 'ldstat', 'unit': '[hPa]'},
                 'LT': {'name': 't', 'unit': '[Degree C]'},

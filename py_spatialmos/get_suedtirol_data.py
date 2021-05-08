@@ -26,8 +26,8 @@ class SuedtirolData:
         '''parameters and a unit which is encapsulated in the spatialmos format.'''
         return {'DATE': {'name': 'date', 'unit': '[UTC]'},
                 'SCODE': {'name': 'name', 'unit': '[String]'},
-                'LAT': {'name': 'lat', 'unit': '[Degree]'},
-                'LONG': {'name': 'lon', 'unit': '[Degree]'},
+                'LAT': {'name': 'lat', 'unit': '[angle Degree]'},
+                'LONG': {'name': 'lon', 'unit': '[angle Degree]'},
                 'ALT': {'name': 'alt', 'unit': '[m]'},
                 'LT': {'name': 't', 'unit': '[Degree C]'},
                 'LF': {'name': 'rf', 'unit': '[Percent]'},
