@@ -139,7 +139,6 @@ fn interpolate_gribdata(
         );
         station.append(&mut data)
     }
-    println!("{:?}", stations);
     Ok(stations.into())
 }
 

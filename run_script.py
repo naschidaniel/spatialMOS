@@ -95,14 +95,7 @@ if __name__ == '__main__':
             argsinfo = argsinfo | {'parameter': True,
                                    'available_parameter':
                                    ['tmp_2m',
-                                    'pres_sfc',
-                                    'spfh_2m',
-                                    'apcp_sfc',
-                                    'rh_2m',
-                                    'ugrd_10m',
-                                    'vgrd_10m',
-                                    'rh_2m',
-                                    'wind_10m']
+                                    'rh_2m'],
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             pre_processing_interpolate_gribfiles.run_interpolate_gribfiles(PARSER_DICT)
