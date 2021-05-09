@@ -16,7 +16,7 @@ from py_spatialmos import get_suedtirol_data
 from py_spatialmos import get_zamg_data
 from py_spatialmos import prediction
 from py_spatialmos import pre_processing_prediction
-from py_spatialmos import pre_processing_interpolate_gribfiles
+from py_spatialmos import interpolate_gribfiles
 from py_spatialmos.spatial_util import spatial_logging
 from py_spatialmos.spatial_util import spatial_parser
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
         STARTTIME = datetime.datetime.now()
         argsinfo = {'available_script': ['archive_folder', 'get_gefs_forecasts',
                                          'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
-                                         'pre_processing_interpolate_gribfiles',
+                                         'interpolate_gribfiles',
                                          'pre_processing_prediction', 'pre_processing_topography',
                                          'prediction'],
                     'script': True,
@@ -91,14 +91,14 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             archive_folder.run_archive_folder(PARSER_DICT)
-        elif PARSER_DICT['script'] == 'pre_processing_interpolate_gribfiles':
+        elif PARSER_DICT['script'] == 'interpolate_gribfiles':
             argsinfo = argsinfo | {'parameter': True,
                                    'available_parameter':
                                    ['tmp_2m',
                                     'rh_2m'],
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
-            pre_processing_interpolate_gribfiles.run_interpolate_gribfiles(PARSER_DICT)
+            interpolate_gribfiles.run_interpolate_gribfiles(PARSER_DICT)
         else:
             raise RuntimeError(
                 'The script \'%s\' has not yet been implemented.' % PARSER_DICT['script'])

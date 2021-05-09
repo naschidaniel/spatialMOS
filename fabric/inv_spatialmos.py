@@ -111,13 +111,13 @@ def py_spatialmos__get_zamg(c):
 
 
 @task
-def py_spatialmos__pre_processing_interpolate_gribfiles(c, parameter):
+def py_spatialmos__interpolate_gribfiles(c, parameter):
     """GEFS Reforecasts are bilinear interpolated at station locations."""
-    inv_logging.task(py_spatialmos__pre_processing_interpolate_gribfiles.__name__)
-    cmd = ['py_container', 'python', './run_script.py', '--script', 'pre_processing_interpolate_gribfiles', '--parameter', parameter]
+    inv_logging.task(py_spatialmos__interpolate_gribfiles.__name__)
+    cmd = ['py_container', 'python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
     cmd = ' '.join(cmd)
     inv_docker.run(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_interpolate_gribfiles.__name__, cmd)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__interpolate_gribfiles.__name__, cmd)
 
 
 @task
@@ -232,7 +232,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_gefs_forecasts)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_suedtirol)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_interpolate_gribfiles)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__interpolate_gribfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)
