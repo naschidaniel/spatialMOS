@@ -2,6 +2,7 @@ on:
   workflow_run:
     workflows: ["maturin"]
     types: [completed]
+    branches-ignore: ["**"]
 
 name: mypy
 
