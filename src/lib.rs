@@ -1,3 +1,4 @@
+mod bilinear_interpolation;
 mod utils;
 
 use chrono::Utc;
@@ -12,13 +13,13 @@ fn combine_gribdata(
     py_longitudes: &PyList,
     py_values_avg: &PyList,
     py_values_spr: &PyList,
-) -> PyResult<PyObject>{
+) -> PyResult<PyObject> {
     let gil = Python::acquire_gil();
     let py = gil.python();
 
     let latitudes = py_latitudes.extract()?;
     let longitudes = py_longitudes.extract()?;
-    let values_avg= py_values_avg.extract()?;
+    let values_avg = py_values_avg.extract()?;
     let values_spr: Vec<Vec<f64>> = py_values_spr.extract()?;
     let mut values_log_spr = values_spr.clone();
 
@@ -36,6 +37,25 @@ fn combine_gribdata(
         &values_log_spr,
     );
     Ok(data.into_py(py))
+}
+
+#[pyfunction]
+fn get_value_from_gribdata(
+    py_latitudes: &PyList,
+    py_longitudes: &PyList,
+    py_values: &PyList,
+    x: f64,
+    y: f64,
+) -> PyResult<f64> {
+    let latitudes: Vec<f64> = py_latitudes.extract()?;
+    let longitudes: Vec<f64> = py_longitudes.extract()?;
+    let values: Vec<Vec<f64>> = py_values.extract()?;
+
+    let x1_index = longitudes.iter().position(|&lon| lon == x).unwrap();
+    let y1_index = latitudes.iter().position(|&lat| lat == y).unwrap();
+
+    let value = values[y1_index][x1_index];
+    Ok(value.into())
 }
 
 #[pyfunction]
@@ -74,11 +94,61 @@ fn convert_measurements(measurements: &PyDict, columns: &PyList) -> PyResult<PyO
     Ok(measurements_write_lines.into())
 }
 
+#[pyfunction]
+fn interpolate_gribdata(
+    py_latitudes: &PyList,
+    py_longitudes: &PyList,
+    py_values_avg: &PyList,
+    py_values_spr: &PyList,
+    py_stations: &PyList,
+) -> PyResult<Vec<Vec<f64>>> {
+    let latitudes: Vec<f64> = py_latitudes.extract()?;
+    let longitudes: Vec<f64> = py_longitudes.extract()?;
+    let values_avg: Vec<Vec<f64>> = py_values_avg.extract()?;
+    let values_spr: Vec<Vec<f64>> = py_values_spr.extract()?;
+    let mut stations: Vec<Vec<f64>> = py_stations.extract()?;
+
+    let resolution = latitudes[0] - latitudes[1];
+    for station in stations.iter_mut() {
+        // station[0] = lon
+        // station[1] = lat
+        let x_select = station[0] - station[0] % resolution;
+        let y_select = station[1] - station[1] % resolution;
+
+        let x1_index = longitudes.iter().position(|&lon| lon == x_select).unwrap();
+        let y1_index = latitudes.iter().position(|&lat| lat == y_select).unwrap();
+
+        let bilinear_data = bilinear_interpolation::BiLinearData {
+            x1: longitudes[x1_index],
+            x2: longitudes[x1_index + 1],
+            y1: latitudes[y1_index],
+            y2: latitudes[y1_index + 1],
+            v_avg_11: values_avg[y1_index][x1_index],
+            v_avg_12: values_avg[y1_index + 1][x1_index],
+            v_avg_21: values_avg[y1_index][x1_index + 1],
+            v_avg_22: values_avg[y1_index + 1][x1_index + 1],
+            v_spr_11: values_spr[y1_index][x1_index],
+            v_spr_12: values_spr[y1_index + 1][x1_index],
+            v_spr_21: values_spr[y1_index][x1_index + 1],
+            v_spr_22: values_spr[y1_index + 1][x1_index + 1],
+        };
+        let mut data = bilinear_interpolation::rs_bilinear_interpolate_point(
+            station[0],
+            station[1],
+            bilinear_data,
+        );
+        station.append(&mut data)
+    }
+    Ok(stations.into())
+}
+
 /// A python module implemented in Rust for spatialMOS.
 #[pymodule]
 fn spatial_rust_util(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(combine_gribdata, m)?)?;
     m.add_function(wrap_pyfunction!(convert_measurements, m)?)?;
+    m.add_function(wrap_pyfunction!(interpolate_gribdata, m)?)?;
+    m.add_function(wrap_pyfunction!(get_value_from_gribdata, m)?)?;
     Ok(())
 }
 
@@ -108,7 +178,11 @@ mod tests {
             vec![2.660, 4.830, 5.820],
             vec![-8.550, -0.610, -0.410],
         ];
-        let values_spr = vec![vec![0.24, 0.27, 0.32], vec![0.19, 0.18, 0.14], vec![0.87, 0.18, 0.15]];
+        let values_spr = vec![
+            vec![0.24, 0.27, 0.32],
+            vec![0.19, 0.18, 0.14],
+            vec![0.87, 0.18, 0.15],
+        ];
         let mut values_log_spr = values_spr.clone();
 
         for x in values_log_spr.iter_mut() {
