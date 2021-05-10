@@ -1,8 +1,7 @@
-
 #!/usr/bin/env python
 # coding: utf-8
 
-'''Unittest for the interpolate_gribfile functions'''
+'''Unittest for the interpolate_gribfiles functions'''
 
 import csv
 import os
@@ -24,7 +23,7 @@ STATION_LOCATIONS = [[15.0, 46.0], [15.5, 46.5], [16.3, 46.2]]
 
 
 class TestExitCodes(unittest.TestCase):
-    '''pytest for spatialMOS'''
+    '''pytest for interpolate_gribfiles'''
 
     def test_interpolate_gribfiles(self):
         '''test_interpolate_gribfiles tests the output of the data'''
