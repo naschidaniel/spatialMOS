@@ -26,7 +26,7 @@ if __name__ == '__main__':
         STARTTIME = datetime.datetime.now()
         argsinfo = {'available_script': ['archive_folder', 'get_gefs_forecasts',
                                          'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
-                                         'interpolate_gribfiles',
+                                         'interpolate_gribfiles', 'untar_folder',
                                          'pre_processing_prediction', 'pre_processing_topography',
                                          'prediction'],
                     'script': True,
@@ -91,6 +91,18 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             archive_folder.run_archive_folder(PARSER_DICT)
+        elif PARSER_DICT['script'] == 'untar_folder':
+            argsinfo = argsinfo | {'folder': True,
+                                   'available_folder':
+                                   ['gefs_avgspr_forecast_p05',
+                                    'gefs_avgspr_forecast_p1',
+                                    'gefs_reforecast',
+                                    'suedtirol',
+                                    'lwd',
+                                    'zamg'],
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            archive_folder.run_untar_archive_files(PARSER_DICT)
         elif PARSER_DICT['script'] == 'interpolate_gribfiles':
             argsinfo = argsinfo | {'parameter': True,
                                    'available_parameter':
