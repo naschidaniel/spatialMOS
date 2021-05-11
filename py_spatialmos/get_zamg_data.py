@@ -8,7 +8,7 @@ import time
 import os
 import datetime
 from pathlib import Path
-from typing import Dict, List, TextIO, Tuple
+from typing import Any, Dict, List, TextIO, Tuple
 import requests
 import pytz
 
@@ -27,6 +27,8 @@ class ZamgData:
         return {'date': {'name': 'date', 'unit': '[UTC]'},
                 'name': {'name': 'name', 'unit': '[String]'},
                 'alt': {'name': 'alt', 'unit': '[m]'},
+                'lon': {'name': 'lon', 'unit': '[angle Degree]'},
+                'lat': {'name': 'lat', 'unit': '[angle Degree]'},
                 't': {'name': 't', 'unit': '[Degree C]'},
                 'rf': {'name': 'rf', 'unit': '[Percent]'},
                 'wr': {'name': 'wg', 'unit': '[String]'},
@@ -50,6 +52,31 @@ class ZamgData:
         logging.info('The URL %s was loaded successfully', request_url)
         return request_data.text
 
+    @ staticmethod
+    def get_station_locations() -> Dict[str, Dict[str, Any]]:
+        '''folders returns the destination and source folder'''
+
+        url = 'https://www.zamg.ac.at/cms/de/dokumente/klima/dok_messnetze/zamg-stationsliste-als-csv'
+        data = requests.get(url)
+        if data.status_code != 200:
+            raise RuntimeError(
+                'The response of the API \'%s\' does not match 200' % url)
+
+        try:
+            station_info = {}
+            for line in data.text.splitlines():
+                entry = line.split(';')
+                station_info.update({f"{entry[5][0]}{entry[1][0:2]}": {
+                    'alt': entry[5],
+                    'lon': entry[-2],
+                    'lat': entry[-1],
+                    'rawdata': entry,
+                }})
+            return station_info
+        except ValueError as ex:
+            logging.error(
+                'The loaded csv Data from the \'%s\' could not be converted into a csv file.', url)
+            raise ex
 class ZamgSpatialConverter:
     '''ZamgSpatialConverter Class'''
 
@@ -58,6 +85,7 @@ class ZamgSpatialConverter:
         federal_state = ['burgenland', 'kaernten', 'niederoesterreich',
                          'oberoesterreich', 'salzburg', 'steiermark', 'tirol', 'vorarlberg', 'wien']
         parameters = ZamgData.parameters()
+        station_info = ZamgData.get_station_locations()
         writer = SpatialWriter(parameters, target)
         raw_text_time = None
         retry = 0
@@ -75,6 +103,17 @@ class ZamgSpatialConverter:
                 # Check the data status of the website
                 if now_hour == int(raw_text_time):
                     for row in measurements_optimized:
+                        # '2251PATSCHERKOFEL' => 'ALTSTAION'
+                        key = f"{row[2][0]}{row[1][0:2]}".replace(' ', '-').upper()
+                        logging.info('The key \'%s\' is searched in the station_info', key)
+                        try:
+                            row.insert(3, station_info[key]['lon'])
+                            row.insert(4, station_info[key]['lat'])
+                        except ValueError:
+                            logging.warning('No data could be found for the key \'%s\'', key)
+                            row.insert(3, key)
+                            row.insert(4, key)
+
                         writer.append(row)
                     logging.info(
                         'The weather data for %s has been saved.', state)
@@ -85,20 +124,19 @@ class ZamgSpatialConverter:
                         'The weather data for %s is not yet up to date.', state)
                 time.sleep(10)
 
-            # Check whether all federal states have been successfully loaded
-            if len(federal_state) != 0:
-                logging.error(
-                    'No current data could be loaded for the federal state %s and retry %s/%s ', federal_state, retry, max_retries)
-                logging.info('The process is repeated in 600 seconds.')
-                retry += 1
-                time.sleep(600)
-            else:
+            if len(federal_state) == 0:
                 logging.info(
                     'All data for was downloaded from the Zamg website and saved as CSV files.')
                 break
-        else:
+            # Check whether all federal states have been successfully loaded
             logging.error(
-                'The maximum number of retries was reached %s/%s and not all data could be saved.', retry, max_retries)
+                'No current data could be loaded for the federal state %s and retry %s/%s ', federal_state, retry, max_retries)
+            logging.info('The process is repeated in 600 seconds.')
+            retry += 1
+            time.sleep(600)
+        else:
+            raise RuntimeError(
+                'The maximum number of retries was reached %s/%s and not all data could be saved.' % (retry, max_retries))
 
     @staticmethod
     def manipulate_html_text(raw_html_text: str) -> Tuple[List[List[str]], str]:
