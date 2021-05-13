@@ -111,8 +111,8 @@ class ZamgSpatialConverter:
                             row.insert(4, station_info[key]['lat'])
                         except KeyError:
                             logging.warning('No data could be found for the key \'%s\'', key)
-                            row.insert(3, key)
-                            row.insert(4, key)
+                            row.insert(3, '-999')
+                            row.insert(4, '-999')
 
                         writer.append(row)
                     logging.info(
