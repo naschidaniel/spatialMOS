@@ -20,25 +20,25 @@ def str2bool(string):
         logging.error("Check the typo (True || False) of ignore-existing in the settings file.")
         sys.exit(1)
 
-def exclude_include_ignore(settings, rsync_task):
+def exclude_include_ignore(settings, rsync_direction, rsync_task):
     """A function to process include and exclude arguments."""
-    if "include" in settings["rsync_push"][rsync_task]:
-        include = settings["rsync_push"][rsync_task]["include"]
+    if "include" in settings[rsync_direction][rsync_task]:
+        include = settings[rsync_direction][rsync_task]["include"]
     else:
         include = None
 
-    if "exclude" in settings["rsync_push"][rsync_task]:
-        exclude = settings["rsync_push"][rsync_task]["exclude"]
+    if "exclude" in settings[rsync_direction][rsync_task]:
+        exclude = settings[rsync_direction][rsync_task]["exclude"]
     else:
         exclude = None
 
-    if "exclude-from" in settings["rsync_push"][rsync_task]:
-        exclude_from = settings["rsync_push"][rsync_task]["exclude-from"]
+    if "exclude-from" in settings[rsync_direction][rsync_task]:
+        exclude_from = settings[rsync_direction][rsync_task]["exclude-from"]
     else:
         exclude_from = None
 
-    if "ignore-existing" in settings["rsync_push"][rsync_task]:
-        ignore_existing = str2bool(settings["rsync_push"][rsync_task]["ignore-existing"])
+    if "ignore-existing" in settings[rsync_direction][rsync_task]:
+        ignore_existing = str2bool(settings[rsync_direction][rsync_task]["ignore-existing"])
     else:
         ignore_existing = False
 
@@ -113,10 +113,11 @@ def push(c, what):
         inv_logging.error(what)
         sys.exit(1)
 
-    include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, what)
+    rsync_direction = "rsync_get"
+    include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_direction, what)
     rsync_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], \
-        settings["rsync_push"][what]["local_dir"], \
-        settings["rsync_push"][what]["remote_dir"], \
+        settings[rsync_direction][what]["local_dir"], \
+        settings[rsync_direction][what]["remote_dir"], \
         include, exclude, exclude_from, ignore_existing)
     inv_logging.success(push.__name__)
 
@@ -126,11 +127,13 @@ def get(c):
     inv_logging.task(get.__name__)
     settings = inv_base.read_settings("production")
 
-    for rsync_task in settings["rsync_get"]:
-        include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_task)
+    rsync_direction = "rsync_get"
+    for rsync_task in settings[rsync_direction]:
+        print(rsync_task)
+        include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_direction, rsync_task)
         rsync_get(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], \
-            settings["rsync_get"][rsync_task]["local_dir"], \
-            settings["rsync_get"][rsync_task]["remote_dir"], \
+            settings[rsync_direction][rsync_task]["local_dir"], \
+            settings[rsync_direction][rsync_task]["remote_dir"], \
             include, exclude, exclude_from, ignore_existing)
     inv_logging.success(get.__name__)
 
