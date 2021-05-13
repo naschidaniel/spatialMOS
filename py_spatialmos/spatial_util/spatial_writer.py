@@ -3,8 +3,7 @@
 """The Writer module for spatialMOS,"""
 
 import csv
-from typing import TextIO
-
+from typing import List, TextIO
 
 class SpatialWriter:
     '''SpatialWriter for spatialMOS data'''
@@ -14,6 +13,10 @@ class SpatialWriter:
         self.out.writerow([parameters[parameter]['name'] for parameter in parameters])
         self.out.writerow([parameters[parameter]['unit'] for parameter in parameters])
 
-    def append(self, row) -> None:
+    def append(self, row: List[str]) -> None:
         '''append a new dataset'''
         self.out.writerow(row)
+
+    def appendrows(self, rows: List[List[str]]) -> None:
+        '''append multiple lines to a dataset'''
+        self.out.writerows(rows)

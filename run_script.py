@@ -10,6 +10,7 @@ import datetime
 import logging
 import sys
 from py_spatialmos import archive_folder
+from py_spatialmos import combine_data
 from py_spatialmos import get_gefs_forecasts
 from py_spatialmos import get_lwd_data
 from py_spatialmos import get_suedtirol_data
@@ -24,7 +25,7 @@ from py_spatialmos.spatial_util import spatial_parser
 if __name__ == '__main__':
     try:
         STARTTIME = datetime.datetime.now()
-        argsinfo = {'available_script': ['archive_folder', 'get_gefs_forecasts',
+        argsinfo = {'available_script': ['archive_folder', 'combine_data', 'get_gefs_forecasts',
                                          'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
                                          'interpolate_gribfiles', 'untar_folder',
                                          'pre_processing_prediction', 'pre_processing_topography',
@@ -49,6 +50,16 @@ if __name__ == '__main__':
         elif PARSER_DICT['script'] == 'get_lwd_data':
             logging.info('The data lwd download has started.')
             get_lwd_data.fetch_lwd_data()
+        elif PARSER_DICT['script'] == 'combine_data':
+            logging.info('The combine_data has started.')
+            argsinfo = argsinfo | {'folder': True,
+                                   'available_folder':
+                                   ['suedtirol',
+                                    'lwd',
+                                    'zamg'],
+                                   }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            combine_data.run_combine_data(PARSER_DICT)
         elif PARSER_DICT['script'] == 'get_suedtirol_data':
             argsinfo = argsinfo | {'begindate': True,
                                    'enddate': True,
