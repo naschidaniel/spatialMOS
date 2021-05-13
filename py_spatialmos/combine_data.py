@@ -3,7 +3,6 @@
 '''A script to combine data from get_lwd_data, get_suedtirol_data and get_zamg_data'''
 
 import csv
-from io import TextIOWrapper
 import logging
 import os
 from pathlib import Path
@@ -41,7 +40,7 @@ def run_combine_data(parser_dict: Dict[str, Any]):
 
 def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], target: TextIO):
     '''combine_data creates one csv file with all the data from one dataprovider'''
-    parameters_keys = list(parameters.keys())
+    parameters_keys =  [parameters[k]['name'] for k in parameters]
     parameters_units = [parameters[k]['unit'] for k in parameters]
 
     writer = spatial_writer.SpatialWriter(parameters, target)
@@ -49,7 +48,16 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
         logging.info('The file %s is added to %s', csv_file, target)
         with open(csv_file) as f:
             data = list(csv.reader(f, delimiter=';'))
+
+        if len(data) <= 3:
+            logging.warning("There is no data so the csv file \'%s\' will be skiped.", csv_file)
+            continue
+
         if data[0] != parameters_keys and data[1] != parameters_units:
+            logging.error("Header Keys expected: %s", parameters_keys)
+            logging.error("Header Keys     File: %s", data[0])
+            logging.error("Header Units Expected: %s", parameters_units)
+            logging.error("Header Units     File: %s", data[1])
             raise RuntimeError(
                 'The header in the file %s is not supported' % csv_file)
         writer.appendrows(data[2:])
@@ -63,7 +71,7 @@ def data_for_spatialmos(file: Path, parameters: Dict[str, Dict[str, str]], param
 
     parameters_names = [parameters[k]['name'] for k in list(parameters.keys())]
 
-    date_index = parameters_names.index('name')
+    date_index = parameters_names.index('date')
     alt_index = parameters_names.index('alt')
     lon_index = parameters_names.index('lon')
     lat_index = parameters_names.index('lat')
@@ -78,14 +86,21 @@ def data_for_spatialmos(file: Path, parameters: Dict[str, Dict[str, str]], param
     with open(file) as f:
         data = list(csv.reader(f, delimiter=';'))
 
-    writer_parameter = spatial_writer.SpatialWriter(header_parameter, target_parameter)
-    station_locations = set()
-    for row in data[2:]:
-        writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
-        station_locations.add((row[lon_index], row[lat_index]))
+    if len(data) <= 3:
+        logging.warning("There is no data so the csv file \'%s\' will be skiped.", file)
+    else:
+        writer_parameter = spatial_writer.SpatialWriter(header_parameter, target_parameter)
+        station_locations = set()
+        for row in data[2:]:
+            try:
+                writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
+                station_locations.add((row[lon_index], row[lat_index]))
+            except IndexError:
+                print(row)
+                print("error len row %s+ %s", len(row), [date_index, alt_index, lon_index, lat_index, value_index])
 
-    header_stations = {'lon': {'name': 'lon', 'unit': '[angle Degree]'},
-                       'lat': {'name': 'lat', 'unit': '[angle Degree]'}}
+        header_stations = {'lon': {'name': 'lon', 'unit': '[angle Degree]'},
+                        'lat': {'name': 'lat', 'unit': '[angle Degree]'}}
 
-    writer_stations = spatial_writer.SpatialWriter(header_stations, target_stations)
-    writer_stations.appendrows(station_locations)
+        writer_stations = spatial_writer.SpatialWriter(header_stations, target_stations)
+        writer_stations.appendrows(station_locations)
