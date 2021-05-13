@@ -96,11 +96,10 @@ def data_for_spatialmos(file: Path, parameters: Dict[str, Dict[str, str]], param
                 writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
                 station_locations.add((row[lon_index], row[lat_index]))
             except IndexError:
-                print(row)
-                print("error len row %s+ %s", len(row), [date_index, alt_index, lon_index, lat_index, value_index])
+                logging.error("The columns read in the file \'%s\' are of unequal length.", file)
 
         header_stations = {'lon': {'name': 'lon', 'unit': '[angle Degree]'},
                         'lat': {'name': 'lat', 'unit': '[angle Degree]'}}
 
         writer_stations = spatial_writer.SpatialWriter(header_stations, target_stations)
-        writer_stations.appendrows(station_locations)
+        writer_stations.appendrows(sorted(station_locations))

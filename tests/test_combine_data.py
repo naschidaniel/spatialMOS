@@ -30,7 +30,7 @@ class TestExitCodes(unittest.TestCase):
 
     def test_combine_data_suedtirol(self):
         '''This test checks if the data can be combined'''
-        #get_suedtirol_data.fetch_suedtirol_data('20210101', '20210102')
+        get_suedtirol_data.fetch_suedtirol_data('20210101', '20210102')
         parameters = get_suedtirol_data.SuedtirolData.parameters()
 
         csv_files_path = Path("./data/get_available_data/suedtirol/data")
@@ -56,7 +56,7 @@ class TestExitCodes(unittest.TestCase):
 
         self.assertEqual(MEASUREMENTS_RH_2M_OK, measurements_rh_2m)
         # All stations for a parameter
-        with open(Path(temp_parameter_file)) as f:
+        with open(Path(temp_stations_file)) as f:
             stations_rh_2m = list(csv.reader(f, delimiter=';'))
 
         self.assertEqual(STATIONS_RH_2M_OK, stations_rh_2m)
