@@ -17,3 +17,7 @@ class SpatialWriter:
     def append(self, row) -> None:
         '''append a new dataset'''
         self.out.writerow(row)
+
+    def appendrows(self, row) -> None:
+        '''append multiple lines to a dataset'''
+        self.out.writerows(row)
