@@ -113,7 +113,7 @@ def push(c, what):
         inv_logging.error(what)
         sys.exit(1)
 
-    rsync_direction = "rsync_get"
+    rsync_direction = "rsync_push"
     include, exclude, exclude_from, ignore_existing = exclude_include_ignore(settings, rsync_direction, what)
     rsync_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], \
         settings[rsync_direction][what]["local_dir"], \
