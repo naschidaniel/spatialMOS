@@ -49,11 +49,6 @@ class TestExitCodes(unittest.TestCase):
         self.assertDictEqual(station_info_ok['5IN'], station_info['5IN'])
 
     @staticmethod
-    def test_fetch_suedtirol_data_ok():
-        '''This test should complete successfully if all the data from suedtirol could be downloaded.'''
-        get_suedtirol_data.fetch_suedtirol_data('20210101', '20210102')
-
-    @staticmethod
     def test_fetch_zamg_data_ok():
         '''This test should complete successfully if all the data from zamg could be downloaded.'''
         get_zamg_data.fetch_zamg_data()
