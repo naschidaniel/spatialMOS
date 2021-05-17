@@ -95,11 +95,13 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
                         'The received date \'%s\' for the station \'%s\' is too old and will not be saved.', date, append_data['name'])
                     break
                 row.append(datetime.datetime.utcnow().replace(
-                    minute=0, second=0, microsecond=0))
+                    minute=0, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
                 continue
 
             if key in append_data:
                 row.append(append_data[key])
+            else:
+                row.append('')
 
         if len(row) != 0:
             logging.info(
@@ -107,7 +109,7 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
             writer.append(row)
             count_stations_successfull += 1
 
-    if count_stations_successfull <= 50:
+    if count_stations_successfull <= 2:
         raise RuntimeError('Only %s from %s stations are transmitted correctly' % (count_stations_successfull, count_stations))
 
     logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
