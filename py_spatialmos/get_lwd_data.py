@@ -109,7 +109,7 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
             writer.append(row)
             count_stations_successfull += 1
 
-    if count_stations_successfull <= 2:
+    if count_stations_successfull <= 50:
         raise RuntimeError('Only %s from %s stations are transmitted correctly' % (count_stations_successfull, count_stations))
 
     logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
@@ -117,7 +117,6 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
 
 def fetch_lwd_data():
     '''fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format.'''
-
     utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
     data_path = Path('./data/get_available_data/lwd/data')
     ogd_path = Path('./data/get_available_data/lwd/ogd')
