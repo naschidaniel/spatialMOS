@@ -237,13 +237,15 @@ class ZamgSpatialConverter:
         '''convert the data and save it in spatialMOS CSV format'''
         cls(target)
 
-
-# Functions
-def fetch_zamg_data():
-    '''fetch_zamg_data is used to store zamg data in csv files.'''
-    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
+def run_fetch_zamg_data():
+    '''run_fetch_zamg_data runs fetch_zamg_data'''
     data_path = Path('./data/get_available_data/zamg/data')
     os.makedirs(data_path, exist_ok=True)
+    fetch_zamg_data(data_path)
+
+def fetch_zamg_data(data_path: Path):
+    '''fetch_zamg_data is used to store zamg data in csv files.'''
+    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
 
     with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='') as target:
         ZamgSpatialConverter.convert(target)
