@@ -19,24 +19,33 @@ def run_combine_data(parser_dict: Dict[str, Any]):
     target_path = Path("./data/get_available_data/measurements/")
     os.makedirs(target_path, exist_ok=True)
     targetfile = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
+    parameters = select_parameters(parser_dict['folder'])
     with open(targetfile, mode='w') as target:
-        if parser_dict['folder'] == 'lwd':
-            parameters = get_lwd_data.LwdData.parameters()
-        elif parser_dict['folder'] == 'suedtirol':
-            parameters = get_suedtirol_data.SuedtirolData.parameters()
-        elif parser_dict['folder'] == 'zamg':
-            parameters = get_zamg_data.ZamgData.parameters()
-        else:
-            raise RuntimeError('The run_combine_data is for the folder \'%s\' is not implemented' % parser_dict['folder'])
-
         csv_files_path = Path(f"./data/get_available_data/{parser_dict['folder']}")
         combine_data(csv_files_path, parameters, target)
 
+def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
+    '''run_data_for_spatialmos combins the data for spatialmos'''
+    target_path = Path("./data/get_available_data/measurements/")
+    targetfile = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
+    parameters = select_parameters(parser_dict['folder'])
     for parameter in ['tmp_2m', 'rh_2m']:
         targetfile_parameter = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements_{parameter}.csv")
         targetfile_stations = Path(target_path).joinpath(f"{parser_dict['folder']}_stations_{parameter}.csv")
         with open(targetfile_parameter, mode='w') as target_parameter, open(targetfile_stations, mode='w') as target_stations:
             data_for_spatialmos(targetfile, parameters, parameter, target_parameter, target_stations)
+
+def select_parameters(folder: str) -> Dict[str, Dict[str, str]]:
+    '''select_parameters selects the parameters from the folder name'''
+    if folder == 'lwd':
+        parameters = get_lwd_data.LwdData.parameters()
+    elif folder == 'suedtirol':
+        parameters = get_suedtirol_data.SuedtirolData.parameters()
+    elif folder == 'zamg':
+        parameters = get_zamg_data.ZamgData.parameters()
+    else:
+        raise RuntimeError('The run_combine_data is for the folder \'%s\' is not implemented' % folder)
+    return parameters
 
 def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], target: TextIO):
     '''combine_data creates one csv file with all the data from one dataprovider'''
