@@ -115,14 +115,18 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
     logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
 
 
-def fetch_lwd_data():
-    '''fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format.'''
-    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
+def run_fetch_lwd_data():
+    '''run_fetch_lwd_data runs fetch_lwd_data'''
     data_path = Path('./data/get_available_data/lwd/data')
     ogd_path = Path('./data/get_available_data/lwd/ogd')
 
     os.makedirs(data_path, exist_ok=True)
     os.makedirs(ogd_path, exist_ok=True)
+    fetch_lwd_data(data_path, ogd_path)
+
+def fetch_lwd_data(data_path: Path, ogd_path: Path):
+    '''fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format.'''
+    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
 
     ogd_filename = ogd_path.joinpath(f'ogd_{utcnow_str}.geojson')
     try:

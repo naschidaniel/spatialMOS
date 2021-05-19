@@ -67,8 +67,7 @@ if __name__ == '__main__':
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             logging.info('The data suedtirol download from \'%s\' to \'%s\' has started.',
                          PARSER_DICT['begindate'], PARSER_DICT['enddate'])
-            get_suedtirol_data.fetch_suedtirol_data(
-                PARSER_DICT['begindate'], PARSER_DICT['enddate'])
+            get_suedtirol_data.run_fetch_suedtirol_data(PARSER_DICT)
         elif PARSER_DICT['script'] == 'get_zamg_data':
             logging.info('The data zamg download has started.')
             get_zamg_data.fetch_zamg_data()
