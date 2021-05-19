@@ -70,7 +70,7 @@ if __name__ == '__main__':
             get_suedtirol_data.run_fetch_suedtirol_data(PARSER_DICT)
         elif PARSER_DICT['script'] == 'get_zamg_data':
             logging.info('The data zamg download has started.')
-            get_zamg_data.fetch_zamg_data()
+            get_zamg_data.run_fetch_zamg_data()
         elif PARSER_DICT['script'] == 'pre_processing_prediction':
             argsinfo = argsinfo | {'parameter': True,
                                    'available_parameter': ['tmp_2m', 'rh_2m'],

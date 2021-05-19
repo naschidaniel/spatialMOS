@@ -69,10 +69,18 @@ class TestExitCodes(unittest.TestCase):
         self.assertDictEqual(station_info_ok['2PA'], station_info['2PA'])
         self.assertDictEqual(station_info_ok['5IN'], station_info['5IN'])
 
-    @staticmethod
-    def test_fetch_zamg_data_ok():
+    def test_fetch_zamg_data_ok(self):
         '''This test should complete successfully if all the data from zamg could be downloaded.'''
-        get_zamg_data.fetch_zamg_data()
+        data_path = Path(tempfile.mkdtemp())
+        get_zamg_data.fetch_zamg_data(data_path)
+
+        try:
+            for csv_file in data_path.glob('*.csv'):
+                with open(csv_file) as f:
+                    csv_data = list(csv.reader(f, delimiter=';'))
+                self.assertEqual(len(csv_data) >= 50, True)
+        finally:
+            shutil.rmtree(data_path)
 
 if __name__ == '__main__':
     unittest.main(exit=False)
