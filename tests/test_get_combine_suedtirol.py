@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-'''Unittest for the get_data modules'''
+'''Unittest for the get_suedtirol_data and combine_data modules'''
 
 import tempfile
 import os
