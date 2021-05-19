@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 PARSER_DICT['modeltype'], PARSER_DICT['date'], PARSER_DICT['parameter'], PARSER_DICT['resolution'])
         elif PARSER_DICT['script'] == 'get_lwd_data':
             logging.info('The data lwd download has started.')
-            get_lwd_data.fetch_lwd_data()
+            get_lwd_data.run_fetch_lwd_data()
         elif PARSER_DICT['script'] == 'combine_data':
             logging.info('The combine_data has started.')
             argsinfo = argsinfo | {'folder': True,
