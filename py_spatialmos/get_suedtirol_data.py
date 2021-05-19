@@ -96,12 +96,16 @@ def suedtirol_spatial_converter(measurements: Dict[str, Dict[str, Union[str, flo
             'The spatialmos CSV file \'%s\' could not be written.', filename)
         raise ex
 
-
-def fetch_suedtirol_data(begindate: str, enddate: str) -> None:
-    '''fetch_suedtirol_data from dati.retecivica.bz.it and store the original data json file. Additionally the converted data is saved in spatialMOS CSV Format.'''
-    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
+def run_fetch_suedtirol_data(parser_dict):
+    '''run_fetch_suedtirol_data runs fetch_suedtirol_Data'''
     data_path = Path('./data/get_available_data/suedtirol/data')
     os.makedirs(data_path, exist_ok=True)
+    fetch_suedtirol_data(parser_dict['begindate'], parser_dict['enddate'], data_path)
+
+
+def fetch_suedtirol_data(begindate: str, enddate: str, data_path: Path):
+    '''fetch_suedtirol_data from dati.retecivica.bz.it and store the original data json file. Additionally the converted data is saved in spatialMOS CSV Format.'''
+    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
 
     stations = SuedtirolData.request_data('stations')
     sensors = SuedtirolData.request_data('sensors')

@@ -6,7 +6,7 @@ import csv
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, TextIO
+from typing import Any, Dict, List, TextIO
 from . import get_lwd_data
 from . import get_suedtirol_data
 from . import get_zamg_data
@@ -27,13 +27,19 @@ def run_combine_data(parser_dict: Dict[str, Any]):
 def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
     '''run_data_for_spatialmos combins the data for spatialmos'''
     target_path = Path("./data/get_available_data/measurements/")
-    targetfile = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
+    measurements_file = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
     parameters = select_parameters(parser_dict['folder'])
     for parameter in ['tmp_2m', 'rh_2m']:
+        with open(measurements_file) as f:
+            data = list(csv.reader(f, delimiter=';'))
+        if len(data) <= 3:
+            logging.warning("There is no data so the csv file \'%s\' will be skiped.", measurements_file)
+            continue
+
         targetfile_parameter = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements_{parameter}.csv")
         targetfile_stations = Path(target_path).joinpath(f"{parser_dict['folder']}_stations_{parameter}.csv")
         with open(targetfile_parameter, mode='w') as target_parameter, open(targetfile_stations, mode='w') as target_stations:
-            data_for_spatialmos(targetfile, parameters, parameter, target_parameter, target_stations)
+            data_for_spatialmos(data, parameters, parameter, target_parameter, target_stations)
 
 def select_parameters(folder: str) -> Dict[str, Dict[str, str]]:
     '''select_parameters selects the parameters from the folder name'''
@@ -53,7 +59,7 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
     parameters_units = [parameters[k]['unit'] for k in parameters]
 
     writer = spatial_writer.SpatialWriter(parameters, target)
-    for csv_file in csv_files_path.glob('**/*.csv'):
+    for csv_file in sorted(csv_files_path.glob('**/*.csv')):
         logging.info('The file %s is added to %s', csv_file, target)
         with open(csv_file) as f:
             data = list(csv.reader(f, delimiter=';'))
@@ -71,7 +77,7 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
                 'The header in the file %s is not supported' % csv_file)
         writer.appendrows(data[2:])
 
-def data_for_spatialmos(file: Path, parameters: Dict[str, Dict[str, str]], parameter: str, target_parameter: TextIO, target_stations: TextIO):
+def data_for_spatialmos(data: List[List[str]], parameters: Dict[str, Dict[str, str]], parameter: str, target_parameter: TextIO, target_stations: TextIO):
     '''get_station_locations extracts the station locations for a parameter'''
     header_parameter = {'date': {'name': 'date', 'unit': '[UTC]'},
                         'alt': {'name': 'alt', 'unit': '[m]'},
@@ -92,23 +98,17 @@ def data_for_spatialmos(file: Path, parameters: Dict[str, Dict[str, str]], param
         header_parameter.update({'rf': {'name': 'rf', 'unit': '[Percent]'}})
         value_index = parameters_names.index('rf')
 
-    with open(file) as f:
-        data = list(csv.reader(f, delimiter=';'))
+    writer_parameter = spatial_writer.SpatialWriter(header_parameter, target_parameter)
+    station_locations = set()
+    for row in data[2:]:
+        try:
+            writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
+            station_locations.add((row[lon_index], row[lat_index]))
+        except IndexError:
+            logging.error("The columns read in the file are of unequal length.")
 
-    if len(data) <= 3:
-        logging.warning("There is no data so the csv file \'%s\' will be skiped.", file)
-    else:
-        writer_parameter = spatial_writer.SpatialWriter(header_parameter, target_parameter)
-        station_locations = set()
-        for row in data[2:]:
-            try:
-                writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
-                station_locations.add((row[lon_index], row[lat_index]))
-            except IndexError:
-                logging.error("The columns read in the file \'%s\' are of unequal length.", file)
+    header_stations = {'lon': {'name': 'lon', 'unit': '[angle Degree]'},
+                    'lat': {'name': 'lat', 'unit': '[angle Degree]'}}
 
-        header_stations = {'lon': {'name': 'lon', 'unit': '[angle Degree]'},
-                        'lat': {'name': 'lat', 'unit': '[angle Degree]'}}
-
-        writer_stations = spatial_writer.SpatialWriter(header_stations, target_stations)
-        writer_stations.appendrows(sorted(station_locations))
+    writer_stations = spatial_writer.SpatialWriter(header_stations, target_stations)
+    writer_stations.appendrows(sorted(station_locations))
