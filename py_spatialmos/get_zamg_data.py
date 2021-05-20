@@ -68,8 +68,8 @@ class ZamgData:
                 entry = line.split(';')
                 station_info.update({f"{entry[5][0]}{entry[1][0:2]}": {
                     'alt': entry[5],
-                    'lon': entry[-2],
-                    'lat': entry[-1],
+                    'lon': entry[-2].replace(',', '.'),
+                    'lat': entry[-1].replace(',', '.'),
                     'rawdata': entry,
                 }})
             return station_info
