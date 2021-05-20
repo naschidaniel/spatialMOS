@@ -60,6 +60,7 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             combine_data.run_combine_data(PARSER_DICT)
+            combine_data.run_data_for_spatialmos(PARSER_DICT)
         elif PARSER_DICT['script'] == 'get_suedtirol_data':
             argsinfo = argsinfo | {'begindate': True,
                                    'enddate': True,
