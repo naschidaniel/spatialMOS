@@ -12,7 +12,7 @@ from py_spatialmos import interpolate_gribfiles
 from py_spatialmos.spatial_util.spatial_writer import SpatialWriter
 from . import test_spatial_util
 
-DATA_OK = [['anal_data', 'valid_data', 'yday', 'step', 'lon', 'lat', 'mean', 'mean'],
+DATA_OK = [['anal_data', 'valid_data', 'yday', 'step', 'lon', 'lat', 'spread', 'mean'],
            ['[UTC]', '[UTC]', '[Integer]', '[Integer]',
            '[angle Degree]', '[angle Degree]', '[Degree C]', '[Degree C]'],
            ['2021-04-16 00:00:00', '2021-04-16 06:00:00', '106', '6', '15.0', '46.0', '0.14', '2.44'],
@@ -26,7 +26,7 @@ class TestExitCodes(unittest.TestCase):
     '''pytest for interpolate_gribfiles'''
 
     def test_interpolate_gribfiles(self):
-        '''test_interpolate_gribfiles tests the output of the data'''
+        '''test_interpolate_gribfiles tests the output of the interpolated gribdata'''
         gribdata = test_spatial_util.test_info_file
         fid, temp_source_file = tempfile.mkstemp(suffix='.csv')
         os.close(fid)
