@@ -79,6 +79,10 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
 
 def data_for_spatialmos(data: List[List[str]], parameters: Dict[str, Dict[str, str]], parameter: str, target_parameter: TextIO, target_stations: TextIO):
     '''get_station_locations extracts the station locations for a parameter'''
+
+    # Only select stations for the region of North- and Southtirol
+    spatialmos_subset: Dict[str, float] = {'W': 10., 'E': 12., 'S': 46., 'N': 48.}
+
     header_parameter = {'date': {'name': 'date', 'unit': '[UTC]'},
                         'alt': {'name': 'alt', 'unit': '[m]'},
                         'lon': {'name': 'lon', 'unit': '[angle Degree]'},
@@ -101,9 +105,22 @@ def data_for_spatialmos(data: List[List[str]], parameters: Dict[str, Dict[str, s
     writer_parameter = spatial_writer.SpatialWriter(header_parameter, target_parameter)
     station_locations = set()
     for row in data[2:]:
+        if row[value_index] == '':
+            continue
+
         try:
-            writer_parameter.append([row[date_index], row[alt_index], row[lon_index], row[lat_index], row[value_index]])
-            station_locations.add((row[lon_index], row[lat_index]))
+            lon = round(float(row[lon_index]), 3)
+            lat = round(float(row[lat_index]), 3)
+        except ValueError:
+            logging.error("Could not convert string %s, %s to float", row[lon_index], row[lat_index])
+            continue
+
+        if not (spatialmos_subset['W'] <= lon <= spatialmos_subset['E']) and (spatialmos_subset['S'] <= lat <= spatialmos_subset['N']):
+            continue
+
+        try:
+            writer_parameter.append([row[date_index], row[alt_index], str(lon), str(lat), row[value_index]])
+            station_locations.add((str(lon), str(lat)))
         except IndexError:
             logging.error("The columns read in the file are of unequal length.")
 
