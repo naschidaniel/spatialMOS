@@ -15,8 +15,8 @@ PARAMETERS = {'anal_data': {'name': 'anal_data', 'unit': '[UTC]'},
               'step': {'name': 'step', 'unit': '[Integer]'},
               'lon': {'name': 'lon', 'unit': '[angle Degree]'},
               'lat': {'name': 'lat', 'unit': '[angle Degree]'},
-              'mean': {'name': 'mean', 'unit': '[Degree C]'},
-              'spread': {'name': 'mean', 'unit': '[Degree C]'}}
+              'spread': {'name': 'spread', 'unit': '[Degree C]'},
+              'mean': {'name': 'mean', 'unit': '[Degree C]'}}
 
 
 def run_interpolate_gribfiles(parser_dict: Dict[str, Any]):
