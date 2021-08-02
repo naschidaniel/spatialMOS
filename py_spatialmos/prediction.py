@@ -52,7 +52,7 @@ def spatial_predictions(parser_dict):
     spatialmos_run_status = dict()
 
     steps = [f'{s:03d}' for s in range(6, 192+1, 6)]
-    json_files = [f for step in steps for f in sorted(data_path.glob(f'*{step}*.json'))]
+    json_files = [f for step in steps for f in sorted(data_path.glob(f'*{step}.json'))]
 
     # Provide available NWP forecasts
     for json_file in json_files:
