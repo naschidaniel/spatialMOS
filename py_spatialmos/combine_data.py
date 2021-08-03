@@ -20,7 +20,7 @@ def run_combine_data(parser_dict: Dict[str, Any]):
     os.makedirs(target_path, exist_ok=True)
     targetfile = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
     parameters = select_parameters(parser_dict['folder'])
-    with open(targetfile, mode='w') as target:
+    with open(targetfile, mode='w', newline='') as target:
         csv_files_path = Path(f"./data/get_available_data/{parser_dict['folder']}")
         combine_data(csv_files_path, parameters, target)
 
@@ -38,7 +38,7 @@ def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
 
         targetfile_parameter = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements_{parameter}.csv")
         targetfile_stations = Path(target_path).joinpath(f"{parser_dict['folder']}_stations_{parameter}.csv")
-        with open(targetfile_parameter, mode='w') as target_parameter, open(targetfile_stations, mode='w') as target_stations:
+        with open(targetfile_parameter, mode='w', newline='') as target_parameter, open(targetfile_stations, mode='w', newline='') as target_stations:
             data_for_spatialmos(data, parameters, parameter, target_parameter, target_stations)
 
 def select_parameters(folder: str) -> Dict[str, Dict[str, str]]:
