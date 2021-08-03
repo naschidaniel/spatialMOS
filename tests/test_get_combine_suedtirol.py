@@ -12,13 +12,13 @@ from pathlib import Path
 from py_spatialmos import get_suedtirol_data
 from py_spatialmos import combine_data
 
-with open(Path('./tests/testdata/suedtirol_20210101_20210102_2021-05-13T19_00_00.csv')) as testdata:
+with open(Path('./tests/testdata/test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00.csv')) as testdata:
     MEASUREMENTS_OK = list(csv.reader(testdata, delimiter=';'))
 
-with open(Path('./tests/testdata/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m.csv')) as testdata:
+with open(Path('./tests/testdata/test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m.csv')) as testdata:
     MEASUREMENTS_RH_2M_OK = list(csv.reader(testdata, delimiter=';'))
 
-with open(Path('./tests/testdata/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m_stations.csv')) as testdata:
+with open(Path('./tests/testdata/test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m_stations.csv')) as testdata:
     STATIONS_RH_2M_OK = list(csv.reader(testdata, delimiter=';'))
 
 PARAMETERS = get_suedtirol_data.SuedtirolData.parameters()
