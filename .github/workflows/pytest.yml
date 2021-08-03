@@ -33,7 +33,7 @@ jobs:
         pip install cfgrib eccodes numpy requests pytest pytest-cov pytz xarray
         cp ./fabric/settings.example.json settings.json
         ls ./target/wheels/
-        pip install ./target/wheels/spatial_rust_util-0.1.0-cp39-cp39-linux_x86_64.whl
+        pip install ./target/wheels/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
     - name: Test with pytest
       run: |
         pytest --cov=py_spatialmos ./tests/
