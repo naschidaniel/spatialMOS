@@ -19,7 +19,7 @@ class TestExitCodes(unittest.TestCase):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
 
         current_minute = int(datetime.now().strftime("%M"))
-        if current_minute > 25:
+        if not 10 <= current_minute < 25:
             print(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
             return
 
@@ -50,7 +50,7 @@ class TestExitCodes(unittest.TestCase):
     def test_fetch_lwd_data_fail(self):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
         current_minute = int(datetime.now().strftime("%M"))
-        if 25 <= current_minute < 35:
+        if current_minute < 35:
             print(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
             return
 
