@@ -31,7 +31,7 @@ class TestExitCodes(unittest.TestCase):
         fid, temp_source_file = tempfile.mkstemp(suffix='.csv')
         os.close(fid)
         target = Path(temp_source_file)
-        with open(target, mode='w') as f:
+        with open(target, mode='w', newline='') as f:
             csv_writer = SpatialWriter(interpolate_gribfiles.PARAMETERS, f)
             interpolate_gribfiles.interpolate_gribfiles(gribdata, csv_writer, STATION_LOCATIONS)
 

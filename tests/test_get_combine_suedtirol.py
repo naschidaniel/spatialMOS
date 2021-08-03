@@ -37,7 +37,7 @@ class TestExitCodes(unittest.TestCase):
         get_suedtirol_data.fetch_suedtirol_data('20210101', '20210102', csv_files_temp_path)
         # All measurements
         temp_measurements_file = create_csv_tempfile()
-        with open(Path(temp_measurements_file), mode='w') as target:
+        with open(Path(temp_measurements_file), mode='w', newline='') as target:
             combine_data.combine_data(csv_files_temp_path, PARAMETERS, target)
 
         with open(Path(temp_measurements_file)) as f:
@@ -54,7 +54,7 @@ class TestExitCodes(unittest.TestCase):
         temp_parameter_file = create_csv_tempfile()
         temp_stations_file = create_csv_tempfile()
 
-        with open(temp_parameter_file, mode='w') as target_parameter, open(temp_stations_file, mode='w') as target_stations:
+        with open(temp_parameter_file, mode='w', newline='') as target_parameter, open(temp_stations_file, mode='w', newline='') as target_stations:
             combine_data.data_for_spatialmos(MEASUREMENTS_OK, PARAMETERS, 'rh_2m', target_parameter, target_stations)
 
         with open(Path(temp_parameter_file)) as f:

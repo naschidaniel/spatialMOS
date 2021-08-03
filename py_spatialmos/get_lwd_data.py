@@ -130,7 +130,7 @@ def fetch_lwd_data(data_path: Path, ogd_path: Path):
 
     ogd_filename = ogd_path.joinpath(f'ogd_{utcnow_str}.geojson')
     try:
-        with open(ogd_filename, mode='w') as target:
+        with open(ogd_filename, mode='w', newline='') as target:
             request_data = LwdData.request_data(target)
     except Exception as ex:
         logging.error(
