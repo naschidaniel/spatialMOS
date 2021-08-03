@@ -5,14 +5,14 @@
 
 from argparse import Namespace
 import unittest
-import pathlib
+from  pathlib import Path
 from py_spatialmos.spatial_util import spatial_util
 from py_spatialmos.spatial_util import spatial_parser
 
 # Convert Grib Files
-test_avg_gribfile = pathlib.Path(__file__).parent.absolute().joinpath(
+test_avg_gribfile = Path(__file__).parent.absolute().joinpath(
     './testdata/test_spatial_util/GFEE_20210416_0000_avg_f006.grb2')
-test_spr_gribfile = pathlib.Path(__file__).parent.absolute().joinpath(
+test_spr_gribfile = Path(__file__).parent.absolute().joinpath(
     './testdata/test_spatial_util/GFEE_20210416_0000_spr_f006.grb2')
 test_subset = {'W': 15, 'E': 17, 'S': 46, 'N': 48, 'resolution': 0.5}
 test_info_file = {'parameter': 'tmp_2m',
