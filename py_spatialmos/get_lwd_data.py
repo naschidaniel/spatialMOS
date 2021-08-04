@@ -64,8 +64,9 @@ class LwdData:
 def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
     '''lwd_spatial_converter for data conversion into spatialMOS format'''
     parameter = LwdData.parameters()
-    now_current_hour = datetime.datetime.now().replace(
-        minute=0, second=0, microsecond=0)
+    now = datetime.datetime.now()
+    now_current_hour = now.replace(hour=round(now.hour + now.minute / 60.0),
+                                   minute=0, second=0, microsecond=0)
     count_stations = 0
     count_stations_successfull = 0
     writer = SpatialWriter(parameter, target)
@@ -90,7 +91,7 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
                     append_data['date'], '%Y-%m-%dT%H:%M:%S%z')
                 timedelta = (now_current_hour.timestamp() -
                                 date.timestamp()) / 60
-                if abs(timedelta) >= 15:
+                if abs(timedelta) > 15:
                     logging.warning(
                         'The received date \'%s\' for the station \'%s\' is too old and will not be saved.', date, append_data['name'])
                     break
