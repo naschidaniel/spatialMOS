@@ -46,8 +46,8 @@ for (yday in dayseq){
       predict_climate_day_df <- data.frame(yday = yday, dayminute = dayminute, alt = spatial_alt_area_df["alt"], lon= spatial_alt_area_df["lon"], lat=spatial_alt_area_df["lat"])
       predict_climate_day_df_na_omit <- na.omit(predict_climate_day_df)
       
-      climate_fit = predict(gam_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response")
-      climate_sd = predict(gam_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response")
+      climate_fit = round(predict(gam_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response") ,2)
+      climate_sd = round(predict(gam_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response"), 2)
 
       save_predict_climate_day_df <- cbind(predict_climate_day_df_na_omit, climate_fit)
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, climate_sd)
