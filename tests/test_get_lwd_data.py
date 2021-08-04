@@ -20,7 +20,7 @@ class TestExitCodes(unittest.TestCase):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
 
         current_minute = int(datetime.now().strftime("%M"))
-        if not 10 > current_minute > 25:
+        if 10 > current_minute > 25:
             pytest.skip(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
 
         data_path = Path(tempfile.mkdtemp())
