@@ -49,11 +49,11 @@ for (i in 1:length(climate_nwp_files)){
       predict_climate_day_df <- data.frame(yday = yday, dayminute=dayminute, alt = spatial_alt_area_df["alt"], lon= spatial_alt_area_df["lon"], lat=spatial_alt_area_df["lat"])
       predict_climate_day_df_na_omit <- na.omit(predict_climate_day_df)
 
-      mean_fit = predict(gam_nwp_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response")
-      mean_sd = predict(gam_nwp_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response")
+      mean_fit = round(predict(gam_nwp_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response"), 2)
+      mean_sd = round(predict(gam_nwp_climate, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response"), 2)
       
-      log_spread_fit = predict(gam_nwp_log_sd, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response")
-      log_spread_sd = predict(gam_nwp_log_sd, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response")
+      log_spread_fit = round(predict(gam_nwp_log_sd, data = climate, newdata=predict_climate_day_df_na_omit, what= "mu", type="response"), 4)
+      log_spread_sd = round(predict(gam_nwp_log_sd, data = climate, newdata=predict_climate_day_df_na_omit, what= "sigma", type="response"), 4)
 
       save_predict_climate_day_df <- cbind(predict_climate_day_df_na_omit, mean_fit)
       save_predict_climate_day_df <- cbind(save_predict_climate_day_df, mean_sd)
