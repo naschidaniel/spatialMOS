@@ -10,6 +10,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 import shutil
+import pytest
 from py_spatialmos import get_lwd_data
 
 class TestExitCodes(unittest.TestCase):
@@ -19,17 +20,11 @@ class TestExitCodes(unittest.TestCase):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
 
         current_minute = int(datetime.now().strftime("%M"))
-        if not 10 <= current_minute < 25:
-            print(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
-            return
+        if not 10 > current_minute > 25:
+            pytest.skip(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
 
         data_path = Path(tempfile.mkdtemp())
         ogd_path = Path(tempfile.mkdtemp())
-        with self.assertRaises(RuntimeError):
-            get_lwd_data.fetch_lwd_data(data_path, ogd_path)
-            shutil.rmtree(ogd_path)
-            shutil.rmtree(data_path)
-
         get_lwd_data.fetch_lwd_data(data_path, ogd_path)
         try:
             for csv_file in data_path.glob('*.csv'):
@@ -51,9 +46,9 @@ class TestExitCodes(unittest.TestCase):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
         current_minute = int(datetime.now().strftime("%M"))
         if current_minute < 35:
-            print(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
-            return
+            pytest.skip(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
 
+        print(f'The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}.')
         data_path = Path(tempfile.mkdtemp())
         ogd_path = Path(tempfile.mkdtemp())
         with self.assertRaises(RuntimeError):
