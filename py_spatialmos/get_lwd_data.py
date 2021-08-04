@@ -91,9 +91,10 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
                     append_data['date'], '%Y-%m-%dT%H:%M:%S%z')
                 timedelta = (now_current_hour.timestamp() -
                                 date.timestamp()) / 60
-                if abs(timedelta) > 15:
+                if abs(timedelta) > 21:
                     logging.warning(
-                        'The received date \'%s\' for the station \'%s\' is too old and will not be saved.', date, append_data['name'])
+                        'The timedelda \'%s\' in minutes for the received date \'%s\' at station \'%s\' is too old.', \
+                        abs(timedelta), date, append_data['name'])
                     break
                 row.append(datetime.datetime.utcnow().replace(
                     minute=0, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
