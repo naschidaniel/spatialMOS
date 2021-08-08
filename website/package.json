@@ -5,7 +5,7 @@
   "description": "My personal Website",
   "author": "Daniel Naschberger",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
     "build:gh-pages": "DEPLOY_ENV=GH_PAGES npm run build",
     "lint": "vue-cli-service lint",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
+    "bootstrap": "^5.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "vue": "^3.0.5"
   },

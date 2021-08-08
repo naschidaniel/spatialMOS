@@ -72,11 +72,9 @@ services:
   node:
     restart: always
     build: ./website/
-    container_name: spatialMOS_node
+    container_name: node
     user: "${USERID}:${GROUPID}"
-    command: "npm run-script start"
-    ports:
-      - 80:3000
+    command: "yarn dev"
     volumes:
       - node:/www/
       - static:/www/static:z
@@ -108,6 +106,8 @@ services:
       context: "./container/nginx"
       args: 
         NGINX_CONF: ${NGINX_CONF}
+    ports:
+      - 80:80
     volumes:
       - static:/www/static:z
       - media:/www/media:z
