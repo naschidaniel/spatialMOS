@@ -38,7 +38,7 @@ settings.json
 
 # Website
 node_modules/
-npm-debug.log
+yarn-error.log
 website/dist
 
 # Rust
