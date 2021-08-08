@@ -3,7 +3,6 @@
 """A script for generating surface forecasts based on GEFS predictions and GAMLSS climatologies."""
 
 import os
-import sys
 import json
 import csv
 import logging
@@ -12,13 +11,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytz
+import pytest
+import spatial_rust_util
 from scipy.interpolate import griddata
 from .spatial_util import spatial_plots
 
 
 # Functions
 def write_spatialmos_run_file(data_path_spool, anal_date, spatialmos_run_status):
-    """A function to create an Info File"""
+    '''A function to create an Info File'''
     anal_date_aware = dt.datetime.strptime(anal_date, "%Y-%m-%d %H:%M:%S")
     filename_spatialmos_run = os.path.join(data_path_spool, "{}_run.json".format(anal_date_aware.strftime("%Y%m%d")))
     with open(filename_spatialmos_run, "w") as f:
@@ -26,13 +27,8 @@ def write_spatialmos_run_file(data_path_spool, anal_date, spatialmos_run_status)
         f.close()
     logging.info("The Info File '%s' for the spatialMOS run was written.", filename_spatialmos_run)
 
-def write_spatialmos_run_file_failed(data_path_spool, anal_date_aware, spatialmos_run_status, step, reason):
-    """A function to write missing spatialMOS data."""
-    spatialmos_run_status[f"{step:03d}"] = {"status": "failed", "reason": reason, "step": f"{step:03d}"}
-    write_spatialmos_run_file(data_path_spool, anal_date_aware, spatialmos_run_status)
-
-
 def run_spatial_predictions(parser_dict):
+    '''A run_spatial_predictions runs the main function'''
     steps = [f'{s:03d}' for s in range(6, 192+1, 6)]
     data_path = Path(f"./data/get_available_data/gefs_avgspr_forecast_p05/{parser_dict['parameter']}/{parser_dict['date']}0000/")
     json_files = [f for step in steps for f in sorted(data_path.glob(f'*{step}.json'))]
@@ -61,7 +57,7 @@ def run_spatial_predictions(parser_dict):
             if not os.path.exists(spatialmos_coef_file):
                 logging.error("File %s is missing", spatialmos_coef_file)
 
-            write_spatialmos_run_file_failed(data_path_spool, gribfiles_data["anal_date"], spatialmos_run_status, gribfiles_data["step"], "missing spatialMOS NWP or spatialMOS climatologies")
+            spatialmos_run_status[f"{gribfiles_data['step']:03d}"] = {"status": "failed", "step": f"{gribfiles_data['step']:03d}"}
             continue
 
         # Check if spatialmos coefficients are available
@@ -70,7 +66,11 @@ def run_spatial_predictions(parser_dict):
 
 def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatialmos_coef_file, spatialmos_run_status, parser_dict):
     '''spatial_prediction creates the plot and predictions for North and South Tyrol'''
+
     alt = pd.read_csv(alt_file, header=None)
+    with open(alt_file, newline='') as f:
+        alt_new = list(csv.reader(f, delimiter=','))
+
     with open(alt_area_file) as f:
         alt_area = json.load(f)
 
@@ -92,8 +92,8 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     xx_nwp, yy_nwp = np.meshgrid(lons, lats)
 
     # Create required meshgrid for spatialMOS
-    lons_spatialmos = np.linspace(alt_area["min_lon"], alt_area["max_lon"], alt.shape[1])
-    lats_spatialmos = np.linspace(alt_area["max_lat"], alt_area["min_lat"], alt.shape[0])
+    lons_spatialmos = np.linspace(alt_area["min_lon"], alt_area["max_lon"], len(alt_new[0]))
+    lats_spatialmos = np.linspace(alt_area["max_lat"], alt_area["min_lat"], len(alt_new))
     xx_spatialmos, yy_spatialmos = np.meshgrid(lons_spatialmos, lats_spatialmos)
 
     # Read in preprocessed NWP CSV file with the predictions
@@ -104,7 +104,6 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     log_spread_interpolation = griddata(nwp_df[["longitude", "latitude"]], nwp_df["log_spread"], (xx_spatialmos, yy_spatialmos), method="linear")
     mean_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), mean_interpolation)
     log_spread_interpolation_spatial_area = np.ma.masked_where(np.isnan(alt), log_spread_interpolation)
-
 
     # Read in GAMLSS climatologies
     climate_spatialmos = pd.read_csv(climate_spatialmos_file, header=0, index_col=0)
@@ -156,14 +155,27 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     spatialmos_spread = np.round(spatialmos_spread, decimals=5)
 
     # Create filename for the plots for NWP and spatialMOS forecast maps
-    plot_filenames_nwp_mean = spatial_plots.plot_forecast(parser_dict["parameter"], \
-        xx_nwp, yy_nwp, gribfiles_data["values_avg"], gribfiles_data, what="nwp_mean")
-    plot_filenames_nwp_spread = spatial_plots.plot_forecast(parser_dict["parameter"], \
-        xx_nwp, yy_nwp, gribfiles_data["values_spr"], gribfiles_data, what="nwp_spread")
-    plot_filenames_spatialmos_mean = spatial_plots.plot_forecast(parser_dict["parameter"], \
-        xx_spatialmos, yy_spatialmos, spatialmos_mean, gribfiles_data, what="spatialmos_mean")
-    plot_filenames_spatialmos_spread = spatial_plots.plot_forecast(parser_dict["parameter"], \
-        xx_spatialmos, yy_spatialmos, spatialmos_spread, gribfiles_data, what="spatialmos_spread")
+    data_path_spool_images = data_path_spool.joinpath('images')
+    os.makedirs(data_path_spool_images, exist_ok=True)
+
+    plot_filenames = []
+    for what in ['nwp_mean', 'nwp_spread', 'spatialmos_mean', 'spatialmos_spread']:
+        if what in ['nwp_mean', 'nwp_spread']:
+            xx = xx_nwp
+            yy = yy_nwp
+        else:
+            xx = xx_spatialmos
+            yy = yy_spatialmos
+
+        plotparameter = {
+            'nwp_mean': gribfiles_data["values_avg"],
+            'nwp_spread': gribfiles_data["values_spr"],
+            'spatialmos_mean': spatialmos_mean,
+            'spatialmos_spread': spatialmos_spread
+        }
+        plot_filename = data_path_spool_images.joinpath(f"{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.jpg")
+        spatial_plots.plot_forecast(plot_filename, parser_dict["parameter"], xx, yy, plotparameter.get(what), gribfiles_data, what)
+        plot_filenames.append(plot_filename)
 
     # Point Forecasts for North and South Tyrol without consideration of values outside the borders
     spatialmos_point = pd.DataFrame({"lat": yy_spatialmos.flatten().tolist(), "lon": xx_spatialmos.flatten().tolist(), "spatialmos_mean": spatialmos_mean.flatten().tolist(), "spatialmos_spread": spatialmos_spread.flatten().tolist()})
@@ -173,12 +185,8 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     # Declare Unit
     if parser_dict["parameter"] == "tmp_2m":
         unit = "° C"
-    elif parser_dict["parameter"] == "rh_2m":
-        unit = "%"
-    elif parser_dict["parameter"] == "wind_10m":
-        unit = "m/s"
     else:
-        unit = ""
+        unit = "%"
 
     # Exchange file for spatialMOS Run in JSON format. This file is imported into the database.
     filename_spatialmos_step = f"{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.json"
@@ -192,10 +200,10 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                 {"filename_SpatialMosStep": filename_spatialmos_step,
                                 "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
                                 "step": gribfiles_data["step"],
-                                "filename_nwp_mean_lg": plot_filenames_nwp_mean["filename_lg"],
-                                "filename_nwp_spread_lg": plot_filenames_nwp_spread["filename_lg"],
-                                "filename_spatialmos_mean_lg": plot_filenames_spatialmos_mean["filename_lg"],
-                                "filename_spatialmos_spread_lg": plot_filenames_spatialmos_spread["filename_lg"],
+                                "filename_nwp_mean": str(plot_filenames[0].name),
+                                "filename_nwp_spread": str(plot_filenames[1].name),
+                                "filename_spatialmos_mean": str(plot_filenames[2].name),
+                                "filename_spatialmos_spread": str(plot_filenames[3].name),
                                 },
                             "SpatialMosPoint": spatialmos_point_dict
                             }
