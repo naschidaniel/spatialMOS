@@ -1,0 +1,39 @@
+{
+  "name": "naschi.at",
+  "version": "0.2.0",
+  "private": true,
+  "description": "My personal Website",
+  "author": "Daniel Naschberger",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:gh-pages": "DEPLOY_ENV=GH_PAGES npm run build",
+    "lint": "vue-cli-service lint",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "vue": "^3.0.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "@vitejs/plugin-vue": "^1.2.5",
+    "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-plugin-typescript": "^4.5.13",
+    "@vue/cli-service": "^4.5.13",
+    "@vue/compiler-sfc": "^3.0.5",
+    "@vuedx/typescript-plugin-vue": "^0.7.4",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-vue": "^7.13.0",
+    "prettier": "2.3.2",
+    "prettier-eslint": "^12.0.0",
+    "typescript": "^4.3.2",
+    "vite": "^2.4.2",
+    "vite-plugin-eslint": "^1.3.0",
+    "vue-tsc": "^0.0.24"
+  }
+}

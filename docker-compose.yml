@@ -6,22 +6,6 @@ services:
     container_name: spatialMOS_py_container
     volumes:
       - ${PWD}:/usr/src/app:z
-  
-  django:
-    restart: always
-    build: ./django/
-    container_name: spatialMOS_django
-    expose:
-      - "8000"
-    user: "${USERID}:${GROUPID}"
-    volumes:
-      - django:/www/site:z
-      - static:/www/static:z
-      - media:/www/media:z
-      - spool:/www/data/spool:z
-      - log:/log:z
-    depends_on:
-      - postgres
 
   postgres:
     restart: always

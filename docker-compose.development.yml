@@ -61,27 +61,17 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/data/spatialmos_climatology
-  django:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/django
   node:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/container/node
+      device: ${PWD}/website
 
 services:
-  django:
-    build:
-      target: development
-
   node:
     restart: always
-    build: ./container/node/
+    build: ./website/
     container_name: spatialMOS_node
     user: "${USERID}:${GROUPID}"
     command: "npm run-script start"
@@ -89,7 +79,6 @@ services:
       - 80:3000
     volumes:
       - node:/www/
-      - django:/www/site:z
       - static:/www/static:z
       - log:/log:z
 
