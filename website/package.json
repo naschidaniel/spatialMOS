@@ -12,11 +12,13 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.9.3",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
     "bootstrap": "^5.1.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "vue": "^3.0.5"
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.10"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.3",
