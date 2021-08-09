@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 
 import Adresse from "../pages/Adresse.vue";
 import Api from "../pages/Api.vue";
@@ -11,7 +11,7 @@ import Systemstatus from "../pages/Systemstatus.vue";
 import Vorhersagekarten from "../pages/Vorhersagekarten.vue";
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: '/', component: Vorhersagekarten },
     { path: '/adresse', component: Adresse },
