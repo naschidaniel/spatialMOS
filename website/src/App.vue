@@ -30,4 +30,8 @@ export default defineComponent({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.pointer {
+  cursor: pointer;
+}
 </style>
