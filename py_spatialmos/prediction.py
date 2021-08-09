@@ -216,5 +216,18 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
         prediction_json_file["SpatialMosRun"]["parameter"], prediction_json_file["SpatialMosRun"]["anal_date"], \
         prediction_json_file["SpatialMosStep"]["valid_date"], prediction_json_file["SpatialMosStep"]["step"], filename_spatialmos_step)
 
-    spatialmos_run_status[f"{gribfiles_data['step']:03d}"] = {"status": "ok", "prediction_json_file": filename_spatialmos_step, "step": f"{gribfiles_data['step']:03d}"}
+    spatialmos_run_status[f"{gribfiles_data['step']:03d}"] = {"status": "ok",
+                                                              "step": f"{gribfiles_data['step']:03d}",
+                                                              "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
+                                                              "valid_date": valid_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
+                                                              "parameter": parser_dict['parameter'],
+                                                              parser_dict['parameter']: {
+                                                                  "unit": unit,
+                                                                  "prediction_json_file": filename_spatialmos_step,
+                                                                  "filename_nwp_mean": str(plot_filenames[0].name),
+                                                                  "filename_nwp_spread": str(plot_filenames[1].name),
+                                                                  "filename_spatialmos_mean": str(plot_filenames[2].name),
+                                                                  "filename_spatialmos_spread": str(plot_filenames[3].name),
+                                                                }
+                                                              }
     return spatialmos_run_status
