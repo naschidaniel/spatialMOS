@@ -1,8 +1,19 @@
 <template>
-  <div class="container-fluid">VorhersageKarten</div>
+  <div class="container-fluid">
+    <h1>Vorhersagekarten</h1>
+    <Predictions />  
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+import Predictions from "../components/Predictions.vue";
+
+export default defineComponent({
+  name: "Vorhersagekarten",
+  components: {
+    Predictions
+  }
+});
+
 </script>
