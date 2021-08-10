@@ -11,14 +11,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Navigation from "./components/Navigation.vue";
-import Predictions from "./pages/Vorhersagekarten.vue";
 import Footer from "./components/Footer.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     Navigation,
-    Predictions,
     Footer,
   },
 });

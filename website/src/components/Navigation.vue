@@ -13,19 +13,27 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div id="navbarNav" class="collapse navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link active" aria-current="page" to="/">Vorhersagekarten</router-link>
+            <router-link class="nav-link active" aria-current="page" to="/"
+              >Vorhersagekarten</router-link
+            >
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/adresse">Adressvorhersagen</router-link>
+            <router-link class="nav-link" to="/adresse"
+              >Adressvorhersagen</router-link
+            >
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/punktvorhersagen">Punktvorhersagen</router-link>
+            <router-link class="nav-link" to="/punktvorhersagen"
+              >Punktvorhersagen</router-link
+            >
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/projektbeschreibung">Projektbeschreibung</router-link>
+            <router-link class="nav-link" to="/projektbeschreibung"
+              >Projektbeschreibung</router-link
+            >
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/api">API</router-link>

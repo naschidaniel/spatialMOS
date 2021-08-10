@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <h1>Vorhersagekarten</h1>
-    <Predictions />  
+    <Predictions />
   </div>
 </template>
 
@@ -12,8 +12,7 @@ import Predictions from "../components/Predictions.vue";
 export default defineComponent({
   name: "Vorhersagekarten",
   components: {
-    Predictions
-  }
+    Predictions,
+  },
 });
-
 </script>
