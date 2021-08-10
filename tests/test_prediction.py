@@ -18,7 +18,7 @@ class TestRustModules(unittest.TestCase):
 
         alt_file = Path("./tests/testdata/test_prediction/spatial_alt_area.csv")
         alt_area_file = Path("./tests/testdata/test_prediction/spatial_alt_area.json")
-        spatialmos_run_status = dict()
+        spatialmos_run_status = []
         with open(Path("./tests/testdata/test_prediction/GFSE_20210803_0000_f006.json")) as f:
             gribfiles_data = json.load(f)
 
@@ -34,7 +34,7 @@ class TestRustModules(unittest.TestCase):
         with open(Path("./tests/testdata/test_prediction/20210803_run.json")) as f_ok, open(data_path_spool.joinpath("20210803_run.json")) as f:
             spatialmos_run_status_ok = json.load(f_ok)
             spatialmos_run_status = json.load(f)
-        self.assertDictEqual(spatialmos_run_status_ok, spatialmos_run_status)
+        self.assertEqual(spatialmos_run_status_ok, spatialmos_run_status)
 
         with open(Path("./tests/testdata/test_prediction/20210803_step_006.json")) as f_ok, open(data_path_spool.joinpath("20210803_step_006.json")) as f:
             spatialmos_prediction_ok = json.load(f_ok)
