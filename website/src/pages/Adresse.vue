@@ -1,8 +1,14 @@
 <template>
-  <div class="container-fluid">Adresse</div>
+  <div class="container-fluid">
+    <h1>Adresse</h1>
+    <AddressMap />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+import AddressMap from "../components/AddressMap.vue";
+export default defineComponent({
+  components: { AddressMap },
+});
 </script>
