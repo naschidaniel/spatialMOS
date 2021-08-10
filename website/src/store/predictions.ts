@@ -16,13 +16,12 @@ export interface SpatialMosStep {
 
 export interface Predictions {
   analDate: string;
-  steps: string[],
-  data: SpatialMosStep[] | undefined,
-  isError: boolean,
-  statusText: string,
-  step: string,
+  steps: string[];
+  data: SpatialMosStep[] | undefined;
+  isError: boolean;
+  statusText: string;
+  step: string;
 }
-
 
 const predictions: Predictions = reactive({
   analDate: "",
@@ -34,13 +33,16 @@ const predictions: Predictions = reactive({
 });
 
 export function usePrediction() {
-  async function fetchPrediction(url: string, options?: Object) {
+  async function fetchPrediction(
+    url: string,
+    options?: Record<string, unknown>
+  ) {
     const res = await fetch(url, options);
     if (res.ok) {
       try {
         res.json().then((data: SpatialMosStep[]) => {
           predictions.analDate = data[0].anal_date;
-          predictions.steps = Object.values(data).map(s => s.step);
+          predictions.steps = Object.values(data).map((s) => s.step);
           predictions.statusText = res.statusText;
           predictions.isError = false;
           predictions.data = data;
@@ -57,18 +59,24 @@ export function usePrediction() {
   }
 
   const selectedStep = computed(() => {
-    let data = predictions.data;
+    const data = predictions.data;
     if (data === undefined) {
-      return []
+      return [];
     }
-    return data.find((s) => s.step === unref(predictions.step))
+    return data.find((s) => s.step === unref(predictions.step));
   });
 
   function setStep(change: string | number) {
-    if (typeof change === 'number') {
-      const newIndex = predictions.steps.indexOf(unref(predictions.step)) + change
-      predictions.step = (newIndex === predictions.steps.length) ? predictions.steps[0] : (newIndex === -1) ? predictions.steps[predictions.steps.length - 1] : predictions.steps[newIndex]
-      return
+    if (typeof change === "number") {
+      const newIndex =
+        predictions.steps.indexOf(unref(predictions.step)) + change;
+      predictions.step =
+        newIndex === predictions.steps.length
+          ? predictions.steps[0]
+          : newIndex === -1
+          ? predictions.steps[predictions.steps.length - 1]
+          : predictions.steps[newIndex];
+      return;
     }
     predictions.step = change;
   }

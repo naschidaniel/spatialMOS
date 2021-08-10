@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router";
 
 import Adresse from "../pages/Adresse.vue";
 import Api from "../pages/Api.vue";
@@ -13,16 +13,16 @@ import Vorhersagekarten from "../pages/Vorhersagekarten.vue";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: Vorhersagekarten },
-    { path: '/adresse', component: Adresse },
-    { path: '/api', component: Api },
-    { path: '/dsgvo', component: Dsgvo },
-    { path: '/impressum', component: Impressum },
-    { path: '/kontakt', component: Kontakt },
-    { path: '/projektbeschreibung', component: Projektbeschreibung },
-    { path: '/punktvorhersagen', component: Punktvorhersagen },
-    { path: '/systemstatus', component: Systemstatus },
+    { path: "/", component: Vorhersagekarten },
+    { path: "/adresse", component: Adresse },
+    { path: "/api", component: Api },
+    { path: "/dsgvo", component: Dsgvo },
+    { path: "/impressum", component: Impressum },
+    { path: "/kontakt", component: Kontakt },
+    { path: "/projektbeschreibung", component: Projektbeschreibung },
+    { path: "/punktvorhersagen", component: Punktvorhersagen },
+    { path: "/systemstatus", component: Systemstatus },
   ],
-})
+});
 
 export default router;

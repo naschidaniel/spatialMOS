@@ -123,9 +123,9 @@
     </p>
     <p>
       Eines ist nicht von der Hand zu weisen: Cookies sind echt nützliche
-      Helferlein. Fast alle Webseiten verwenden Cookies. Genauer gesprochen sind
+      Helferlein. Fast alle Webseiten verwenden Cookies. Genauer gesprochen sind
       es HTTP-Cookies, da es auch noch andere Cookies für andere
-      Anwendungsbereiche gibt. HTTP-Cookies sind kleine Dateien, die von unserer
+      Anwendungsbereiche gibt. HTTP-Cookies sind kleine Dateien, die von unserer
       Webseite auf Ihrem Computer gespeichert werden. Diese Cookie-Dateien
       werden automatisch im Cookie-Ordner, quasi dem “Hirn” Ihres Browsers,
       untergebracht. Ein Cookie besteht aus einem Namen und einem Wert. Bei der
@@ -133,30 +133,30 @@
       angegeben werden.
     </p>
     <p>
-      Cookies speichern gewisse Nutzerdaten von Ihnen, wie beispielsweise
+      Cookies speichern gewisse Nutzerdaten von Ihnen, wie beispielsweise
       Sprache oder persönliche Seiteneinstellungen. Wenn Sie unsere Seite wieder
       aufrufen, übermittelt Ihr Browser die „userbezogenen“ Informationen an
       unsere Seite zurück. Dank der Cookies weiß unsere Webseite, wer Sie sind
       und bietet Ihnen die Einstellung, die Sie gewohnt sind. In einigen
-      Browsern hat jedes Cookie eine eigene Datei, in anderen wie beispielsweise
-      Firefox sind alle Cookies in einer einzigen Datei gespeichert.
+      Browsern hat jedes Cookie eine eigene Datei, in anderen wie beispielsweise
+      Firefox sind alle Cookies in einer einzigen Datei gespeichert.
     </p>
     <p>
       Es gibt sowohl Erstanbieter Cookies als auch Drittanbieter-Cookies.
       Erstanbieter-Cookies werden direkt von unserer Seite erstellt,
       Drittanbieter-Cookies werden von Partner-Webseiten (z.B. Google Analytics)
-      erstellt. Jedes Cookie ist individuell zu bewerten, da jedes Cookie andere
+      erstellt. Jedes Cookie ist individuell zu bewerten, da jedes Cookie andere
       Daten speichert. Auch die Ablaufzeit eines Cookies variiert von ein paar
-      Minuten bis hin zu ein paar Jahren. Cookies sind keine Software-Programme
+      Minuten bis hin zu ein paar Jahren. Cookies sind keine Software-Programme
       und enthalten keine Viren, Trojaner oder andere „Schädlinge“. Cookies
       können auch nicht auf Informationen Ihres PCs zugreifen.
     </p>
     <p>So können zum Beispiel Cookie-Daten aussehen:</p>
     <p>
       <strong>Name:</strong> _ga<br />
-      <strong>Wert:</strong> GA1.2.1326744211.152121389948-9<br />
+      <strong>Wert:</strong> GA1.2.1326744211.152121389948-9<br />
       <strong>Verwendungszweck:</strong> Unterscheidung der Webseitenbesucher<br />
-      <strong>Ablaufdatum:</strong> nach 2 Jahren
+      <strong>Ablaufdatum:</strong> nach 2 Jahren
     </p>
     <p>Diese Mindestgrößen sollte ein Browser unterstützen können:</p>
     <ul>
@@ -205,7 +205,7 @@
     <p>
       Wie und ob Sie Cookies verwenden wollen, entscheiden Sie selbst.
       Unabhängig von welchem Service oder welcher Webseite die Cookies stammen,
-      haben Sie immer die Möglichkeit Cookies zu löschen, zu deaktivieren oder
+      haben Sie immer die Möglichkeit Cookies zu löschen, zu deaktivieren oder
       nur teilweise zuzulassen. Zum Beispiel können Sie Cookies von
       Drittanbietern blockieren, aber alle anderen Cookies zulassen.
     </p>
@@ -593,14 +593,15 @@
     <p>
       Google Fonts (früher Google Web Fonts) ist ein Verzeichnis mit über 800
       Schriftarten, die
-      <a href="https://de.wikipedia.org/wiki/Google_LLC?tid=121389948">Google</a
-      > Ihren Nutzern kostenlos zu Verfügung stellen.
+      <a href="https://de.wikipedia.org/wiki/Google_LLC?tid=121389948"
+        >Google</a
+      >
+      Ihren Nutzern kostenlos zu Verfügung stellen.
     </p>
     <p>
-      Viele dieser Schriftarten sind unter der SIL Open Font
-      License veröffentlicht, während andere unter
-      der Apache-Lizenz veröffentlicht wurden. Beides sind freie
-      Software-Lizenzen.
+      Viele dieser Schriftarten sind unter der SIL Open Font License
+      veröffentlicht, während andere unter der Apache-Lizenz veröffentlicht
+      wurden. Beides sind freie Software-Lizenzen.
     </p>
     <h3>Warum verwenden wir Google Fonts auf unserer Webseite?</h3>
     <p>
@@ -616,8 +617,8 @@
       zu Fehlern führen. Solche Fehler können teilweise Texte bzw. ganze
       Webseiten optisch verzerren. Dank des schnellen Content Delivery Network
       (CDN) gibt es mit Google Fonts keine plattformübergreifenden Probleme.
-      Google Fonts unterstützt alle gängigen Browser (Google Chrome, Mozilla
-      Firefox, Apple Safari, Opera) und funktioniert zuverlässig auf den meisten
+      Google Fonts unterstützt alle gängigen Browser (Google Chrome, Mozilla
+      Firefox, Apple Safari, Opera) und funktioniert zuverlässig auf den meisten
       modernen mobilen Betriebssystemen, einschließlich Android 2.2+ und iOS
       4.2+ (iPhone, iPad, iPod). Wir verwenden die Google Fonts also, damit wir
       unser gesamtes Online-Service so schön und einheitlich wie möglich
@@ -631,24 +632,23 @@
       IP-Adresse unsere Webseite besucht. Die Google Fonts API wurde entwickelt,
       um Verwendung, Speicherung und Erfassung von Endnutzerdaten auf das zu
       reduzieren, was für eine ordentliche Bereitstellung von Schriften nötig
-      ist. API steht übrigens für „Application Programming Interface“ und dient
+      ist. API steht übrigens für „Application Programming Interface“ und dient
       unter anderem als Datenübermittler im Softwarebereich.
     </p>
     <p>
       Google Fonts speichert CSS- und Schrift-Anfragen sicher bei Google und ist
-      somit geschützt. Durch die gesammelten Nutzungszahlen kann Google
+      somit geschützt. Durch die gesammelten Nutzungszahlen kann Google
       feststellen, wie gut die einzelnen Schriften ankommen. Die Ergebnisse
       veröffentlicht Google auf internen Analyseseiten, wie beispielsweise
       Google Analytics. Zudem verwendet Google auch Daten des eigenen
       Web-Crawlers, um festzustellen, welche Webseiten Google-Schriften
       verwenden. Diese Daten werden in der BigQuery-Datenbank von Google Fonts
-      veröffentlicht. Unternehmer und Entwickler nützen das
-      Google-Webservice BigQuery, um große Datenmengen untersuchen und bewegen
-      zu können.
+      veröffentlicht. Unternehmer und Entwickler nützen das Google-Webservice
+      BigQuery, um große Datenmengen untersuchen und bewegen zu können.
     </p>
     <p>
       Zu bedenken gilt allerdings noch, dass durch jede Google Font Anfrage auch
-      Informationen wie Spracheinstellungen, IP-Adresse, Version des Browsers,
+      Informationen wie Spracheinstellungen, IP-Adresse, Version des Browsers,
       Bildschirmauflösung des Browsers und Name des Browsers automatisch an die
       Google-Server übertragen werden. Ob diese Daten auch gespeichert werden,
       ist nicht klar feststellbar bzw. wird von Google nicht eindeutig
@@ -720,9 +720,11 @@
     <p>
       Früher nannte man Google Fonts auch Google Web Fonts. Dabei handelt es
       sich um ein interaktives Verzeichnis mit über 800 Schriftarten, die
-      <a href="https://de.wikipedia.org/wiki/Google_LLC?tid=121389948">Google</a
-      > kostenlos bereitstellt. Mit Google Fonts könnte man Schriften nutzen,
-      ohne sie auf den eigenen Server hochzuladen. Doch um diesbezüglich jede
+      <a href="https://de.wikipedia.org/wiki/Google_LLC?tid=121389948"
+        >Google</a
+      >
+      kostenlos bereitstellt. Mit Google Fonts könnte man Schriften nutzen, ohne
+      sie auf den eigenen Server hochzuladen. Doch um diesbezüglich jede
       Informationsübertragung zu Google-Servern zu unterbinden, haben wir die
       Schriftarten auf unseren Server heruntergeladen. Auf diese Weise handeln
       wir datenschutzkonform und senden keine Daten an Google Fonts weiter.
