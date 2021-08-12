@@ -1,44 +1,43 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
       <router-link class="navbar-brand" to="/">MOSes.tirol</router-link>
       <button
         class="navbar-toggler"
+        :class="isOpen ? 'collapsed' : ''"
         type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
+        :aria-expanded="isOpen"
         aria-label="Toggle navigation"
+        @click="toogleNavbar()"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div id="navbarNav" class="collapse navbar-collapse">
+      <div class="collapse navbar-collapse" :class="isOpen ? 'show' : ''">
         <ul class="navbar-nav">
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link active" aria-current="page" to="/"
               >Vorhersagekarten</router-link
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/adresse"
               >Adressvorhersagen</router-link
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/punktvorhersagen"
               >Punktvorhersagen</router-link
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/projektbeschreibung"
               >Projektbeschreibung</router-link
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/api">API</router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/kontakt">Kontakt</router-link>
           </li>
         </ul>
@@ -49,5 +48,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+export default defineComponent({
+  data() {
+    return {
+      isOpen: false,
+    };
+  },
+  methods: {
+    toogleNavbar() {
+      this.isOpen = !this.isOpen;
+    },
+  },
+});
 </script>
