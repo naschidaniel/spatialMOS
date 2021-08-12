@@ -1,7 +1,7 @@
 <template>
   <div>
     <Navigation />
-    <main class="container-fluid">
+    <main class="my-3">
       <router-view />
     </main>
     <Footer />
@@ -27,6 +27,10 @@ export default defineComponent({
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none !important;
 }
 
 .pointer {

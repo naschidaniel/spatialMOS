@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">Api</div>
+  <div class="container">Api</div>
 </template>
 
 <script lang="ts">

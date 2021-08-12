@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container">
     <h1>Datenschutzerklärung</h1>
     <h2>Inhaltsverzeichnis</h2>
     <ul>

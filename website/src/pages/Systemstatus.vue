@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">Systemstatus</div>
+  <div class="container">Systemstatus</div>
 </template>
 
 <script lang="ts">
