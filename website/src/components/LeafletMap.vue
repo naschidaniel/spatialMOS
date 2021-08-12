@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     updateActiveBounds() {
-      if (this.point[0] === undefined || this.point[0] === undefined) {
+      if (this.point === undefined) {
         return;
       }
       this.map.setView(this.point);

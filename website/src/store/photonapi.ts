@@ -28,9 +28,8 @@ export function usePhotonApi() {
       photonApi.url = url;
       try {
         res.json().then((data: Record<string, any>) => {
-          const coordinates = data.features[0].geometry.coordinates;
-          photonApi.lon = coordinates[0];
-          photonApi.lat = coordinates[1];
+          photonApi.lon = data.features[0].geometry.coordinates[0];
+          photonApi.lat = data.features[0].geometry.coordinates[1];
           photonApi.isError = false;
           photonApi.statusText = res.statusText;
         });
@@ -45,10 +44,12 @@ export function usePhotonApi() {
     }
   }
 
-  const point = computed(() => {
+  const point = computed((): number[] | undefined => {
     const lat = unref(photonApi.lat);
     const lon = unref(photonApi.lon);
-    console.log(lat);
+    if (lat === undefined || lon === undefined) {
+      return undefined;
+    }
     return [lat, lon];
   });
 
