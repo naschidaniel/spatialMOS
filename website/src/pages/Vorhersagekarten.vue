@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container">
     <h1>Vorhersagekarten</h1>
     <Predictions />
   </div>

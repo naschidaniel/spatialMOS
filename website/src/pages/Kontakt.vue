@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container">
     <h1>Kontakt</h1>
     <strong>Daniel Naschberger</strong><br />
     <p>
