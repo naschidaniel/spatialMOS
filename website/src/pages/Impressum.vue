@@ -20,11 +20,16 @@
       <strong>Firmenbuchgericht:</strong> Innsbruck<br />
       <strong>Firmensitz:</strong> 6020 Innsbruck<br />
       <br />
-      <strong>Tel.:</strong> +43 699 10030004<br />
-      <strong>E-Mail:</strong> daniel@naschi.at<br />
+      <strong>Tel.:</strong>
+      <a target="_blank" href="tel:004369910030004">+43 699 10030004</a><br />
+      <strong>E-Mail:</strong>
+      <a target="_blank" href="mailto:daniel@naschi.at">daniel@naschi.at</a
+      ><br />
       <br />
       <strong>Mitglied bei:</strong> WKO<br />
-      <strong>Berufsrecht:</strong> Gewerbeordnung: www.ris.bka.gv.at<br />
+      <strong>Berufsrecht:</strong> Gewerbeordnung:
+      <a target="_blank" href="http://www.ris.bka.gv.at">www.ris.bka.gv.at</a
+      ><br />
       <br />
       <strong>Aufsichtsbehörde/Gewerbebehörde:</strong> Bezirkshauptmannschaft
       innsbruck<br />
@@ -39,8 +44,11 @@
       (OS-Plattform) informieren.<br />
       Verbraucher haben die Möglichkeit, Beschwerden an die Online
       Streitbeilegungsplattform der Europäischen Kommission unter
-      http://ec.europa.eu/odr?tid=121389948 zu richten. Die dafür notwendigen
-      Kontaktdaten finden Sie oberhalb in unserem Impressum.
+      <a target="_blank" href="http://ec.europa.eu/odr?tid=121389948"
+        >http://ec.europa.eu/odr?tid=121389948</a
+      >
+      zu richten. Die dafür notwendigen Kontaktdaten finden Sie oberhalb in
+      unserem Impressum.
     </p>
     <p>
       Wir möchten Sie jedoch darauf hinweisen, dass wir nicht bereit oder
