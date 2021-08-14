@@ -1,9 +1,8 @@
 <template>
   <div class="container">
     <h1>Adresse</h1>
-    <AddressMap />
-    <h2 class="mt-4">Karte</h2>
-    <LeafletMap />
+    <AddressForm />
+    <LeafletMapContainer />
     <h2 class="mt-4">Vorhersagen für Orte in Tirol</h2>
     <ul class="list-group">
       <li class="list-group-item">
@@ -54,10 +53,15 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import AddressMap from "../components/AddressForm.vue";
-import LeafletMap from "../components/LeafletMap.vue";
+import { usePhotonApi } from "../store/photonapi";
+import AddressForm from "../components/AddressForm.vue";
+import LeafletMapContainer from "../components/LeafletMapContainer.vue";
 
 export default defineComponent({
-  components: { AddressMap, LeafletMap },
+  components: { AddressForm, LeafletMapContainer },
+  setup() {
+    const { photonApi } = usePhotonApi();
+    return { photonApi };
+  },
 });
 </script>

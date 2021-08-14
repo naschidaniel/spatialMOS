@@ -64,9 +64,7 @@ export default defineComponent({
     SolidChevronRightIcon,
   },
   setup() {
-    const { predictions, fetchPrediction, selectedStep, setStep } =
-      usePrediction();
-    fetchPrediction("/20210802_step_006.json");
+    const { predictions, selectedStep, setStep } = usePrediction();
     return { predictions, selectedStep, setStep };
   },
   computed: {

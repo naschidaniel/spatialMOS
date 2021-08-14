@@ -3,16 +3,18 @@ import { reactive, computed, unref } from "vue";
 export interface PhotonApi {
   url: string | undefined;
   isError: boolean;
+  isLoading: boolean;
   statusText: string;
   lon: number | undefined;
   lat: number | undefined;
 }
 const photonApi: PhotonApi = reactive({
-  url: undefined,
   isError: false,
-  statusText: "",
-  lon: undefined,
+  isLoading: false,
   lat: undefined,
+  lon: undefined,
+  statusText: "",
+  url: undefined,
 });
 
 export function usePhotonApi() {
@@ -21,8 +23,14 @@ export function usePhotonApi() {
     options?: Record<string, unknown>
   ) {
     if (url === undefined) {
+      photonApi.isError = false;
+      photonApi.lat = undefined;
+      photonApi.lon = undefined;
+      photonApi.statusText = "";
+      photonApi.url = undefined;
       return;
     }
+    photonApi.isLoading = true;
     const res = await fetch(url, options);
     if (res.ok) {
       photonApi.url = url;
@@ -42,6 +50,7 @@ export function usePhotonApi() {
       photonApi.statusText = res.statusText;
       photonApi.isError = true;
     }
+    photonApi.isLoading = false;
   }
 
   const point = computed((): number[] | undefined => {

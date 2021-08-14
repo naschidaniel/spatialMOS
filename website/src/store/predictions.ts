@@ -1,5 +1,4 @@
 import { reactive, computed, unref } from "vue";
-
 export interface SpatialMosStep {
   status: string;
   step: string;
@@ -16,11 +15,12 @@ export interface SpatialMosStep {
 
 export interface Predictions {
   analDate: string;
-  steps: string[];
   data: SpatialMosStep[] | undefined;
+  isLoading: boolean;
   isError: boolean;
   statusText: string;
   step: string;
+  steps: string[];
 }
 
 const predictions: Predictions = reactive({
@@ -28,6 +28,7 @@ const predictions: Predictions = reactive({
   steps: [],
   data: undefined,
   isError: false,
+  isLoading: false,
   statusText: "",
   step: "6",
 });
@@ -37,6 +38,7 @@ export function usePrediction() {
     url: string,
     options?: Record<string, unknown>
   ) {
+    predictions.isLoading = true;
     const res = await fetch(url, options);
     if (res.ok) {
       try {
@@ -54,8 +56,8 @@ export function usePrediction() {
     } else {
       predictions.statusText = res.statusText;
       predictions.isError = true;
-      throw new Error(res.statusText);
     }
+    predictions.isLoading = false;
   }
 
   const selectedStep = computed(() => {
