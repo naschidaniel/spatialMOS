@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div>
+    <form>
       <div class="row">
         <div class="col">
           <input
@@ -31,11 +31,11 @@
       </div>
       <button
         class="btn btn-primary mt-2"
-        @click="fetchPhotonApiData(queryAddressUrl)"
+        @click.prevent="fetchPhotonApiData(queryAddressUrl)"
       >
         Submit
       </button>
-    </div>
+    </form>
   </div>
 </template>
 
