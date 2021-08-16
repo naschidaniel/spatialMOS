@@ -89,7 +89,7 @@ if __name__ == '__main__':
                                    'date': True
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
-            prediction.spatial_predictions(PARSER_DICT)
+            prediction.run_spatial_predictions(PARSER_DICT)
         elif PARSER_DICT['script'] == 'archive_folder':
             argsinfo = argsinfo | {'folder': True,
                                    'available_folder':

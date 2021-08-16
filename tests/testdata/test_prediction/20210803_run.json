@@ -1,0 +1,15 @@
+[
+  {
+    "status": "ok",
+    "step": "6",
+    "anal_date": "2021-08-03 00:00:00",
+    "valid_date": "2021-08-03 06:00:00",
+    "parameter": "tmp_2m",
+    "unit": "\u00b0 C",
+    "prediction_json_file": "20210803_step_006.json",
+    "filename_nwp_mean": "nwp_mean_20210803_step_006.jpg",
+    "filename_nwp_spread": "nwp_spread_20210803_step_006.jpg",
+    "filename_spatialmos_mean": "spatialmos_mean_20210803_step_006.jpg",
+    "filename_spatialmos_spread": "spatialmos_spread_20210803_step_006.jpg"
+  }
+]
