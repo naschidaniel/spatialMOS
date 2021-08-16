@@ -36,10 +36,10 @@ settings.json
 # Nginx
 .well-known
 
-# React
+# Website
 node_modules/
-npm-debug.log
-container/node/dist
+yarn-error.log
+website/dist
 
 # Rust
 /target
