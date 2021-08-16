@@ -23,6 +23,7 @@ class TestExitCodes(unittest.TestCase):
         if 10 > current_minute > 25:
             pytest.skip(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
 
+        print(f'The Test test_fetch_lwd_data_ok is running. The current minute is {current_minute}.')
         data_path = Path(tempfile.mkdtemp())
         ogd_path = Path(tempfile.mkdtemp())
         get_lwd_data.fetch_lwd_data(data_path, ogd_path)
@@ -45,7 +46,7 @@ class TestExitCodes(unittest.TestCase):
     def test_fetch_lwd_data_fail(self):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
         current_minute = int(datetime.now().strftime("%M"))
-        if current_minute < 35:
+        if current_minute < 35 or current_minute > 50:
             pytest.skip(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
 
         print(f'The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}.')
