@@ -22,9 +22,9 @@ import { usePrediction } from "../store/predictions";
 export default defineComponent({
   name: "Vorhersagekarten",
   setup() {
-    const url = "/20210802_step_006.json";
+    const url = "/spatialmosrun_tmp2m.json";
     const { predictions, fetchPrediction } = usePrediction();
-    fetchPrediction(url);
+    fetchPrediction(url, { cache: "no-cache" });
     return { url, predictions };
   },
   components: {
