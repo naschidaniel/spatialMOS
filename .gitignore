@@ -46,3 +46,7 @@ website/dist
 
 # Testdata
 *.idx
+
+## Shapefiles
+gadm36_AUT_shp
+gadm36_AUT_shp.zip

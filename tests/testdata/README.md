@@ -7,3 +7,8 @@ The files `./test_spatial_util/GFEE_20210416_0000_avg_f006.grb2` and `./test_spa
 ## Suedtirol DATA
 
 The files `./test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00.csv`, `./test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m.csv` and `./test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00_rh_2m_stations.csv` were created with the data from the API endpoint [http://dati.retecivica.bz.it/services/meteo/v1/stations](http://dati.retecivica.bz.it/services/meteo/v1/stations) and [http://dati.retecivica.bz.it/services/meteo/v1/sensors](http://dati.retecivica.bz.it/services/meteo/v1/sensors).
+
+
+## GADM DATA
+
+Data from [https://gadm.org/](https://gadm.org/) are used for the areas and heights. The data is used for testing and loaded in advance with wget.

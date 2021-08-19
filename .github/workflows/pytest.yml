@@ -21,6 +21,18 @@ jobs:
       with:
         path: ./target
         key: ${{ github.sha }}
+    - name: copy spatial_rust_util
+      run: |
+        ls ./target/wheels/
+        cp ./target/wheels/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl .
+    - name: get gadm36_AUT_shp
+      run: |
+        sudo apt-get install -y wget unzip
+        cd ./tests/testdata/test_prediction/
+        mkdir gadm36_AUT_shp
+        wget https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip
+        unzip gadm36_AUT_shp.zip -d gadm36_AUT_shp
+        ls ./gadm36_AUT_shp
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -28,12 +40,11 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get install -y libeccodes-tools  
+        sudo apt-get install gdal-bin libeccodes0 libgdal-dev libproj-dev proj-bin proj-data libgeos-dev -y
         python -m pip install --upgrade pip
-        pip install wheel
-        pip install cfgrib eccodes numpy requests pytest pytest-cov pytz xarray scipy matplotlib cartopy
+        pip install --no-cache-dir -r ./container/py_container/requirements.txt
+        pip install cartopy
         cp ./fabric/settings.example.json settings.json
-        ls ./target/wheels/
-        pip install ./target/wheels/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
     - name: Test with pytest
       run: |
         pytest --cov=py_spatialmos ./tests/

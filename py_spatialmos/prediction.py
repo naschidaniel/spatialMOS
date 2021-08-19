@@ -11,8 +11,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytz
-import pytest
-import spatial_rust_util
 from scipy.interpolate import griddata
 from .spatial_util import spatial_plots
 
@@ -42,7 +40,12 @@ def run_spatial_predictions(parser_dict):
     alt_file = Path("./data/get_available_data/gadm/spatial_alt_area.csv")
     alt_area_file = Path(
         "./data/get_available_data/gadm/spatial_alt_area.json")
-    
+
+    gadm36_shape_file = Path(
+        './data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0.shp')
+
+    spatial_alt_area_file = Path(
+        "./data/get_available_data/gadm/spatial_alt_area_df.csv")
     spatialmos_run_status = []
     for json_file in json_files:
         with open(json_file) as f:
@@ -75,12 +78,12 @@ def run_spatial_predictions(parser_dict):
 
         # Check if spatialmos coefficients are available
         spatialmos_run_status = spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file,
-                                                   data_path_spool, gribfiles_data, spatialmos_coef_file, spatialmos_run_status, parser_dict)
+                                                   data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
         write_spatialmos_run_file(
             data_path_spool, gribfiles_data["anal_date"], spatialmos_run_status)
 
 
-def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatialmos_coef_file, spatialmos_run_status, parser_dict):
+def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file):
     '''spatial_prediction creates the plot and predictions for North and South Tyrol'''
 
     alt = pd.read_csv(alt_file, header=None)
@@ -155,7 +158,7 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     climate_spatialmos_nwp = climate_spatialmos_nwp.set_index(["lat", "lon"])
 
     spatial_alt_area = pd.read_csv(
-        "./data/get_available_data/gadm/spatial_alt_area_df.csv", header=0, index_col=0)
+        spatial_alt_area_file, header=0, index_col=0)
     cols_spatialmos = spatial_alt_area.select_dtypes(exclude=["float"]).columns
     spatial_alt_area[cols_spatialmos] = spatial_alt_area[cols_spatialmos].apply(
         pd.to_numeric, downcast="float", errors="coerce")
@@ -217,7 +220,7 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
         plot_filename = data_path_spool_images.joinpath(
             f"{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.jpg")
         spatial_plots.plot_forecast(
-            plot_filename, parser_dict["parameter"], xx, yy, plotparameter.get(what), gribfiles_data, what)
+            plot_filename, parser_dict["parameter"], xx, yy, plotparameter.get(what), gribfiles_data, gadm36_shape_file, what)
         plot_filenames.append(plot_filename)
 
     # Point Forecasts for North and South Tyrol without consideration of values outside the borders

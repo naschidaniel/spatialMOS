@@ -26,9 +26,11 @@ class TestRustModules(unittest.TestCase):
         climate_spatialmos_file = Path("./tests/testdata/test_prediction/yday_215_dayminute_360.csv")
         climate_spatialmos_nwp_file = Path("./tests/testdata/test_prediction/yday_215_dayminute_360_step_006.csv")
         spatialmos_coef_file = Path("./tests/testdata/test_prediction/spatialmos_coef_tmp_2m_006.csv")
+        spatial_alt_area_file = Path("./tests/testdata/test_prediction/spatial_alt_area_df.csv")
+        gadm36_shape_file = Path('./tests/testdata/test_prediction/gadm36_AUT_shp/gadm36_AUT_0.shp')
 
         # Check if spatialmos coefficients are available
-        prediction.spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatialmos_coef_file, spatialmos_run_status, parser_dict)
+        prediction.spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
         prediction.write_spatialmos_run_file(data_path_spool, gribfiles_data["anal_date"], spatialmos_run_status)
 
         with open(Path("./tests/testdata/test_prediction/20210803_run.json")) as f_ok, open(data_path_spool.joinpath("20210803_run.json")) as f:

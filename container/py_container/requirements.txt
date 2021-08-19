@@ -4,12 +4,14 @@ geos
 matplotlib
 numpy
 pandas
-pillow
 pyproj
 pyshp
 pytz
+pytest
+pytest-cov
 requests
 scipy
-spatial_rust_util-0.1.0-cp39-cp39-manylinux1_x86_64.whl
 shapely --no-binary shapely
+spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
 xarray
+wheel

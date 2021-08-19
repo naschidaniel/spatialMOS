@@ -1,7 +1,13 @@
 FROM node:16
 
-ADD ./package.*json /www/
+RUN mkdir -p /www/website
 
-WORKDIR /www
+ADD ./package.json /www/website/
+
+ADD ./yarn.lock /www/website/
+
+RUN yarn
+
+WORKDIR /www/website
 
 EXPOSE 3000

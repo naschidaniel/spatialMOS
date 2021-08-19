@@ -13,7 +13,7 @@ import cartopy.io.shapereader as shpreader
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 # Functions
-def plot_forecast(filename, parameter, xx, yy, plotparameter, gribfiles_data, what):
+def plot_forecast(filename, parameter, xx, yy, plotparameter, gribfiles_data, gadm36_shape_file, what):
     '''A function to create the GEFS and spatialMOS forecast plots.'''
     step = gribfiles_data['step']
 
@@ -81,8 +81,7 @@ def plot_forecast(filename, parameter, xx, yy, plotparameter, gribfiles_data, wh
         cities_offset = 0.02
 
     # Add Austrian Borders
-    gadm36_shape = list(shpreader.Reader(
-        './data/get_available_data/gadm/gadm36_AUT_shp/gadm36_AUT_0.shp').geometries())
+    gadm36_shape = list(shpreader.Reader(str(gadm36_shape_file)).geometries())
     ax.add_geometries(gadm36_shape, ccrs.PlateCarree(),
                       edgecolor='black', facecolor='None', alpha=0.5)
 
