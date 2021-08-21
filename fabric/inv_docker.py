@@ -80,7 +80,6 @@ def serve(c):
 def start(c):
     """Start in detached Modus"""
     inv_logging.task(start.__name__)
-    #inv_django.migrate(c)
     inv_base.docker_compose(c, "up -d")
     inv_logging.success(start.__name__)
 

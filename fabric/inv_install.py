@@ -12,7 +12,6 @@ import inv_base
 import inv_logging
 import inv_docker
 import inv_docker
-import inv_django
 import inv_node
 import inv_rsync
 
@@ -25,9 +24,7 @@ def quickinstallation(c):
     setenvironment(c, "development")
     inv_docker.rebuild(c)
     inv_node.npm(c, "install")
-    inv_django.migrate(c)
     inv_node.build(c)
-    inv_django.collectstatic(c)
     inv_docker.serve(c)
     inv_logging.success(quickinstallation.__name__)
 

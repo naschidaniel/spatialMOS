@@ -7,7 +7,6 @@ import sys
 from invoke import task
 import inv_logging
 import inv_docker
-import inv_django
 import inv_docker
 import inv_install
 import inv_rsync
@@ -45,13 +44,11 @@ def deploy(c):
     inv_logging.task(deploy.__name__)
     c.run("./task.py local.spatialmos.py-spatialmos--maturin-build")
     c.run("./task.py local.node.build")
-    c.run("./task.py local.django.collectstatic")
     inv_docker.stop(c)
     inv_install.setproductionenvironment(c)
     inv_rsync.push(c, "sourcefiles")
     inv_rsync.push(c, "staticfiles")
     inv_docker.rebuild(c)
-    inv_django.migrate(c)
     inv_docker.start(c)
     c.run("./task.py local.docker-compose.start")
     inv_logging.success(deploy.__name__)
