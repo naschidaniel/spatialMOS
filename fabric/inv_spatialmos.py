@@ -9,7 +9,6 @@ import requests
 from invoke import task, Collection
 import inv_base
 import inv_logging
-import inv_django
 import inv_docker
 
 
@@ -203,33 +202,6 @@ def py_spatialmos__prediction(c, date, parameter):
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__prediction.__name__, cmd)
 
-@task
-def py_spatialmos__django_import_spatialmos_run(c, date, parameter):
-    """Create the predictions and the spatialMOS plots."""
-    inv_logging.task(py_spatialmos__django_import_spatialmos_run.__name__)
-    cmd = ["import_spatialmos_run", date, parameter]
-    cmd = ' '.join(cmd)
-    inv_django.managepy(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__django_import_spatialmos_run.__name__, cmd)
-
-@task
-def py_spatialmos__django_delete_spatialmos_runs(c, parameter, days):
-    """Delete the predictions and the spatialMOS plots from the database."""
-    inv_logging.task(py_spatialmos__django_delete_spatialmos_runs.__name__)
-    cmd = ["delete_spatialmos_run", parameter, days]
-    cmd = ' '.join(cmd)
-    inv_django.managepy(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__django_delete_spatialmos_runs.__name__, cmd)
-
-@task
-def py_spatialmos__django_import_statusfiles(c):
-    """Import the statusfiles from the invoke tasks into the database."""
-    inv_logging.task(py_spatialmos__django_import_statusfiles.__name__)
-    cmd = ["import_statusfiles"]
-    cmd = ' '.join(cmd)
-    inv_django.managepy(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__django_import_statusfiles.__name__, cmd)
-
 
 @task
 def py_spatialmos__maturin_build(c):
@@ -258,9 +230,6 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_cli
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__prediction)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__maturin_build)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_import_spatialmos_run)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_delete_spatialmos_runs)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__django_import_statusfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__gamlss_crch_model)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_nwp)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
@@ -274,6 +243,3 @@ SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__pre_processing_gribfiles)
 SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__prediction)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__django_import_spatialmos_run)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__django_delete_spatialmos_runs)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__django_import_statusfiles)

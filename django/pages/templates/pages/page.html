@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-{% load show_markdown %}
-{% block content %}
-    <div class="content"">
-        {{ content.content | show_markdown| safe }}
-    </div>
-{% endblock content %}
