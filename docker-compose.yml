@@ -1,20 +1,25 @@
 version: '3.7'
 
-services:  
+services:
+  node:
+    restart: always
+    build: ./website/
+    container_name: node
+    user: "${USERID}:${GROUPID}"
+    command: bash -c "cd /www/website/ && yarn dev"
+    ports:
+      - 3000:3000
+    volumes:
+      - ${PWD}:/www/:z
+
+  r_base:
+    build: ./container/r_base/
+    container_name: spatialMOS_r_base
+    volumes:
+      - ${PWD}:/usr/src/app:z
+
   py_container:
     build: ./container/py_container/
     container_name: spatialMOS_py_container
     volumes:
       - ${PWD}:/usr/src/app:z
-
-  postgres:
-    restart: always
-    build: "./container/postgres"
-    container_name: spatialMOS_postgres
-    shm_size: 1gb
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data:z
-      - postgres_backup:/var/backup:z
