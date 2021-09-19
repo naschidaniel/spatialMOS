@@ -7,9 +7,8 @@ import sys
 import os
 import logging
 from datetime import datetime
-import inv_logging
 
-def manage_py(c, cmd, **kwargs):
+def manage_py(c, cmd):
     """The function executes the django manage.py command."""
     user, group = uid_gid(c)
     docker_compose(c, f"run -u {user}:{group} django python3 /www/site/manage.py {cmd}", pty=True)
@@ -58,12 +57,12 @@ def uid_gid(c):
 def docker_environment(c):
     """The function generates the docker environment variables."""
     settings = read_settings(c.config["collection"])
-    docker_environment = settings["docker"]
+    docker_env_variables = settings["docker"]
     if c.config["collection"] in ["development"]:
         uid, gid = uid_gid(c)
-        docker_environment["USERID"] = f"{uid}"
-        docker_environment["GROUPID"] = f"{gid}"
-    return docker_environment
+        docker_env_variables["USERID"] = f"{uid}"
+        docker_env_variables["GROUPID"] = f"{gid}"
+    return docker_env_variables
 
 
 def dockerdaemon(c, cmd, **kwargs):
@@ -96,7 +95,6 @@ def write_statusfile(taskname, cmd):
     data_path = "./data/spool/statusfiles"
     if not os.path.exists(f"{data_path}"):
         os.mkdir(f"{data_path}")
-    
     statusfile = f"{data_path}/statusfile_{timestr}.json"
 
     try:
@@ -112,4 +110,4 @@ def write_statusfile(taskname, cmd):
 def write_statusfile_and_success_logging(taskname, cmd):
     """Write statusfile and write out the final logging msg for the task"""
     write_statusfile (taskname, cmd)
-    inv_logging.success(taskname)
+    logging.info("The task '%s' with the command '%s' has run successfull.", taskname, cmd)
