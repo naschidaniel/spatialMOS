@@ -22,7 +22,7 @@ import { usePrediction } from "../store/predictions";
 export default defineComponent({
   name: "Vorhersagekarten",
   setup() {
-    const url = "/spatialmosrun_tmp2m.json";
+    const url = "/media/tmp_2m/spatialmosrun_tmp_2m.json";
     const { predictions, fetchPrediction } = usePrediction();
     fetchPrediction(url, { cache: "no-cache" });
     return { url, predictions };

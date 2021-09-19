@@ -1,5 +1,5 @@
-import { defineConfig } from "vite"
-import vue from "@vitejs/plugin-vue"
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 import { execSync } from "child_process";
 
@@ -11,4 +11,13 @@ process.env.VITE_APP_VUE_APP_UPDATETIME = new Date().getTime().toString();
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    proxy: {
+      "/media": {
+        target: "https://moses.tirol/",
+        changeOrigin: true,
+      },
+    },
+    cors: true,
+  },
 });
