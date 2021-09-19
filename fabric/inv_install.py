@@ -82,16 +82,9 @@ def setenvironment(c, cmd):
         filename = ".env"
 
     dict_env = {
-        "django": os.path.join(development_dir, f"django/spatialmos/{filename}"),
         "docker": os.path.join(development_dir, f"{filename}")
     }
     
-    # set the last commit msg
-    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c)
-
-    # set the updatetimestamp
-    settings["django"]["UPDATETIME"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     for dict_env_key, dict_env_file in dict_env.items():
         try:
             with open(dict_env_file, "w") as f:
@@ -117,20 +110,14 @@ def setproductionenvironment(c):
 
     dict_env = setenvironment(c, "production")
     remote_env = {
-        "django": os.path.join(settings["docker"]["INSTALLFOLDER"], "django/spatialmos/.env"),
         "docker": os.path.join(settings["docker"]["INSTALLFOLDER"], ".env")
     }
 
     # set the last commit msg
-    settings["django"]["LASTCOMMIT"] = inv_base.generate_lastcommit(c)
-
     inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["docker"], remote_env["docker"])
-    inv_rsync.scp_push(c, settings["REMOTE_USER"], settings["REMOTE_HOST"], dict_env["django"], remote_env["django"])
 
     os.system(f"rm {dict_env['docker']}")
     logging.info(f"The environment '{dict_env['docker']}' variable was deleted.")
-    os.system(f"rm {dict_env['django']}")
-    logging.info(f"The environment '{dict_env['django']}' variable was deleted.")
 
     for folder in settings['initFolders']:
         folder = os.path.join(settings["docker"]["INSTALLFOLDER"], folder)

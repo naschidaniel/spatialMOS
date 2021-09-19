@@ -49,8 +49,6 @@ def deploy(c):
     inv_rsync.push(c, "sourcefiles")
     inv_rsync.push(c, "staticfiles")
     inv_docker.rebuild(c)
-    inv_docker.start(c)
-    c.run("./task.py local.docker-compose.start")
     inv_logging.success(deploy.__name__)
 
 @task

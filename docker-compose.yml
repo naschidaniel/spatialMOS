@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   node:
-    restart: always
     build: ./website/
     container_name: node
     user: "${USERID}:${GROUPID}"
