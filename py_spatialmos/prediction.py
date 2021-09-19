@@ -16,14 +16,12 @@ from .spatial_util import spatial_plots
 
 
 # Functions
-def write_spatialmos_run_file(data_path_spool, anal_date, spatialmos_run_status):
+def write_spatialmos_run_file(data_path_media, spatialmos_run_status, parameter):
     '''A function to create an Info File'''
-    anal_date_aware = dt.datetime.strptime(anal_date, "%Y-%m-%d %H:%M:%S")
-    filename_spatialmos_run = os.path.join(
-        data_path_spool, "{}_run.json".format(anal_date_aware.strftime("%Y%m%d")))
+    filename_spatialmos_run = os.path.join(data_path_media, f"spatialmosrun_{parameter}.json")
+    print(filename_spatialmos_run)
     with open(filename_spatialmos_run, "w") as f:
         json.dump(spatialmos_run_status, f)
-        f.close()
     logging.info(
         "The Info File '%s' for the spatialMOS run was written.", filename_spatialmos_run)
 
@@ -35,7 +33,7 @@ def run_spatial_predictions(parser_dict):
         f"./data/get_available_data/gefs_avgspr_forecast_p05/{parser_dict['parameter']}/{parser_dict['date']}0000/")
     json_files = [f for step in steps for f in sorted(
         data_path.glob(f'*{step}.json'))]
-    data_path_spool = Path(f"./data/spool/{parser_dict['parameter']}/")
+    data_path_media = Path(f"./data/media/{parser_dict['parameter']}/")
 
     alt_file = Path("./data/get_available_data/gadm/spatial_alt_area.csv")
     alt_area_file = Path(
@@ -78,9 +76,9 @@ def run_spatial_predictions(parser_dict):
 
         # Check if spatialmos coefficients are available
         spatialmos_run_status = spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file,
-                                                   data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
-        write_spatialmos_run_file(
-            data_path_spool, gribfiles_data["anal_date"], spatialmos_run_status)
+                                                   data_path_media, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
+        print(parser_dict['parameter'])
+        write_spatialmos_run_file(data_path_media, spatialmos_run_status, parser_dict['parameter'])
 
 
 def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file):
