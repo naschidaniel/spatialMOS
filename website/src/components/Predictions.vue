@@ -70,7 +70,7 @@ export default defineComponent({
   computed: {
     imgHref() {
       const img = this.selectedStep?.filename_spatialmos_mean;
-      return img ? `/images/${img}` : "";
+      return img ? `/media/tmp_2m/images/${img}` : "";
     },
   },
 });

@@ -31,7 +31,7 @@ export default defineComponent({
   },
   setup() {
     const { systemstatus, fetchSystemChecks } = useSystemstatus();
-    const url = "/systemstatus.json";
+    const url = "/media/systemstatus.json";
     fetchSystemChecks(url, { cache: "no-cache" });
     return { systemstatus, url, fetchSystemChecks };
   },

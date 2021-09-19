@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
-    "build:gh-pages": "DEPLOY_ENV=GH_PAGES npm run build",
     "lint": "vue-cli-service lint",
     "serve": "vite preview"
   },
