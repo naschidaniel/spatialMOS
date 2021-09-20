@@ -14,7 +14,7 @@
             title="{{ systemCheck.taskFinishedTime }}"
             >&nbsp;</span
           >
-          {{ systemCheck.taskname }}
+          {{ systemCheck.checkName }}
         </small>
       </span>
       <span class="d-none d-md-inline ml-2">
@@ -22,11 +22,11 @@
           class="d-none d-md-inline ml-2 mr-3 badge rounded-pill"
           :class="systemCheck.isTooOld ? 'bg-success' : 'bg-danger'"
           style="width: 60px"
-          :title="`${systemCheck.taskFinishedTime} ${systemCheck.taskname}`"
+          :title="`${systemCheck.taskFinishedTime} ${systemCheck.tasNname}`"
         >
           {{ systemCheck.isTooOld ? "passed" : "failed" }}
         </span>
-        <span class="mx-2">{{ systemCheck.taskname }}</span
+        <span class="mx-2">{{ systemCheck.checkName }}</span
         >&ndash;<small class="mx-2">{{
           formatDateTime(systemCheck.taskFinishedTime)
         }}</small>

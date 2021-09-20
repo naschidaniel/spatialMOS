@@ -62,11 +62,11 @@ export function useSystemstatus() {
   }
 
   const updateTime = computed((): string => {
-    const updateTime =
-      import.meta.env.VITE_APP_VUE_APP_UPDATETIME !== undefined
-        ? parseInt(import.meta.env.VITE_APP_VUE_APP_UPDATETIME.toString())
-        : undefined;
-    return formatDateTime(updateTime);
+    const VITE_APP_VUE_APP_UPDATETIME =
+      import.meta.env.VITE_APP_VUE_APP_UPDATETIME ?? undefined;
+    return typeof VITE_APP_VUE_APP_UPDATETIME === "string"
+      ? formatDateTime(parseInt(VITE_APP_VUE_APP_UPDATETIME.toString()))
+      : formatDateTime(undefined);
   });
 
   const lastCommit = computed((): string => {

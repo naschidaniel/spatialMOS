@@ -69,11 +69,12 @@ def py_spatialmos_merge_statusfiles(c):
     statusfiles_path = Path("./data/spool/statusfiles/")
     statusfiles = []
     for file in statusfiles_path.glob("*.json"):
+        logging.info("The file %s will be added to the systemstatus file.", file)
         with (open(file, mode="r")) as f:
             status = json.load(f)
         statusfiles.append(status)
 
-    merge_statusfile = Path("./data/media/statusfiles.json")
+    merge_statusfile = Path("./data/media/systemstatus.json")
     with open(merge_statusfile, "w") as f:
         json.dump(statusfiles, f)
     logging.info("The merged status file %s has been written.", merge_statusfile)

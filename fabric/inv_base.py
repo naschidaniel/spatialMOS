@@ -113,7 +113,7 @@ def write_statusfile_and_success_logging(taskname, cmd):
     data_path = Path("./data/spool/statusfiles")
     os.makedirs(data_path, exist_ok=True)
 
-    statusfile = data_path.joinpath(checkName)
+    statusfile = data_path.joinpath(f"{checkName}.json")
 
     try:
         with open(statusfile, "w") as f:
