@@ -61,11 +61,10 @@ export function usePrediction() {
   }
 
   const selectedStep = computed(() => {
-    const data = predictions.data;
-    if (data === undefined) {
-      return [];
-    }
-    return data.find((s) => s.step === unref(predictions.step));
+    return (
+      predictions.data?.find((s) => s.step === unref(predictions.step)) ||
+      undefined
+    );
   });
 
   function setStep(change: string | number) {

@@ -8,10 +8,10 @@
 import { unref } from "vue";
 import { usePhotonApi } from "../store/photonapi";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import * as L from "leaflet";
 
+import "leaflet/dist/leaflet.css";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // fix "Uncaught TypeError: this._map is null" when zooming
 (L.Tooltip.prototype as any)._updatePosition = function () {
   if (!this._map || !this._latlng) return;
@@ -27,44 +27,45 @@ import L from "leaflet";
 export default {
   name: "LeafletMap",
   setup() {
-    const { point } = usePhotonApi();
-    return { point };
+    const { point, lat, lon, tooltip } = usePhotonApi();
+    return { point, lat, lon, tooltip };
   },
   data() {
     return {
-      map: undefined,
-      activeLayer: undefined,
-      tooltip:
-        "29, Peter-Mayr-Straße, Wilten, Innsbruck, Tirol, 6020, Österreich",
+      map: undefined as unknown as L.Map,
+      activeLayer: undefined as unknown as L.TileLayer,
+      marker: undefined as unknown as L.Marker,
+      selectedLayer: undefined as unknown as L.LayerGroup,
     };
   },
   mounted() {
-    const lat = unref(this.lat) || 47.258502750000005;
-    const lon = unref(this.lon) || 11.388483871855112;
-    this.map = L.map("mapContainer").setView([lat, lon], 16);
+    const lat = unref(this.lat);
+    const lon = unref(this.lon);
+    const tooltip = unref(this.tooltip);
+    this.map = new L.Map("mapContainer").setView([lat, lon], 16);
 
-    this.activeLayer = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(this.map);
-    L.marker([lat, lon])
-      .bindTooltip(this.tooltip)
-      .openTooltip()
-      .addTo(this.map);
+    this.activeLayer = new L.TileLayer(
+      "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+      {
+        attribution:
+          '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      }
+    ).addTo(this.map);
+    this.updateActiveBounds();
   },
   watch: {
     point() {
-      console.log("done watch");
       this.updateActiveBounds();
     },
   },
   methods: {
-    updateActiveBounds() {
+    updateActiveBounds(): void {
       if (this.point === undefined) {
         return;
       }
-      this.map.setView(this.point);
-      L.marker(this.point)
+      const _latlng = L.latLng(this.point);
+      this.map.setView(_latlng);
+      this.marker = new L.Marker(_latlng)
         .bindTooltip(this.tooltip)
         .openTooltip()
         .addTo(this.map);

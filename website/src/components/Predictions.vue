@@ -59,18 +59,21 @@ import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
 export default defineComponent({
   name: "Predictions",
-  components: {
-    SolidChevronLeftIcon,
-    SolidChevronRightIcon,
-  },
   setup() {
     const { predictions, selectedStep, setStep } = usePrediction();
     return { predictions, selectedStep, setStep };
   },
+  components: {
+    SolidChevronLeftIcon,
+    SolidChevronRightIcon,
+  },
   computed: {
     imgHref() {
-      const img = this.selectedStep?.filename_spatialmos_mean;
-      return img ? `/media/tmp_2m/images/${img}` : "";
+      if (this.selectedStep === undefined) {
+        return "";
+      }
+      const img = this.selectedStep.filename_spatialmos_mean;
+      return `/media/tmp_2m/images/${img}`;
     },
   },
 });

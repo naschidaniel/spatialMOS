@@ -62,5 +62,19 @@ export function usePhotonApi() {
     return [lat, lon];
   });
 
-  return { photonApi, point, fetchPhotonApiData };
+  const lat = computed((): number | undefined => {
+    const lat = unref(photonApi.lat);
+    return lat;
+  });
+
+  const lon = computed((): number | undefined => {
+    const lon = unref(photonApi.lon);
+    return lon;
+  });
+
+  const tooltip = computed((): string => {
+    return "afdasdfadfdfadf";
+  });
+
+  return { photonApi, lat, lon, tooltip, point, fetchPhotonApiData };
 }
