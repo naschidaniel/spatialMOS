@@ -14,6 +14,9 @@ jobs:
         python-version: [3.9]
 
     steps:
+    - name: update ubuntu
+      run: |
+        sudo apt-get update -y
     - uses: actions/checkout@v2
     - name: cache maturin builds
       uses: actions/cache@v2

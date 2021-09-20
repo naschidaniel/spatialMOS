@@ -6,7 +6,7 @@ ENV TZ=Europe/Berlin
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update
+RUN apt-get update -y
 
 RUN apt-get install gdal-bin libeccodes0 libgdal-dev libproj-dev proj-bin proj-data libgeos-dev -y
 
