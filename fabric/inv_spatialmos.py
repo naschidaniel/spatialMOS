@@ -4,8 +4,10 @@
 
 import os
 import sys
+import json
 import logging
 import requests
+from pathlib import Path
 from invoke import task, Collection
 import inv_base
 import inv_logging
@@ -60,6 +62,23 @@ def py_spatialmos__untar_folder(c, folder):
     inv_docker.run(c, cmd)
     inv_base.write_statusfile_and_success_logging(py_spatialmos__untar_folder.__name__, cmd)
 
+
+@task
+def py_spatialmos_merge_statusfiles(c):
+    """Merge statusfiles"""
+    statusfiles_path = Path("./data/spool/statusfiles/")
+    statusfiles = []
+    for file in statusfiles_path.glob("*.json"):
+        with (open(file, mode="r")) as f:
+            status = json.load(f)
+        statusfiles.append(status)
+
+    merge_statusfile = Path("./data/media/statusfiles.json")
+    with open(merge_statusfile, "w") as f:
+        json.dump(statusfiles, f)
+    logging.info("The merged status file %s has been written.", merge_statusfile)
+
+    inv_base.write_statusfile_and_success_logging(py_spatialmos_merge_statusfiles.__name__, "")
 
 
 @task
@@ -225,6 +244,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__combine_data)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__interpolate_gribfiles)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos_merge_statusfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)

@@ -6,6 +6,7 @@ import json
 import sys
 import os
 import logging
+from pathlib import Path
 from datetime import datetime
 
 def manage_py(c, cmd):
@@ -82,32 +83,42 @@ def docker_compose(c, cmd, **kwargs):
     return c.run(" ".join(command), env=docker_environment(c), **kwargs)
 
 
-def write_statusfile(taskname, cmd):
-    """Write a statusfile for a successful run which can be imported into django"""
-    timestr = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+def write_statusfile_and_success_logging(taskname, cmd):
+    """Write statusfile and write out the final logging msg for the task"""
+    cmd_args_dict = {}
+    i = 1
+    cmd_args = cmd.split(" ")
+    for arg in cmd_args:
+        if "--" in arg:
+            cmd_args_dict[arg[2:]] = cmd_args[i]
+        i += 1
+
+    checkName = taskname
+    for key, value in cmd_args_dict.items():
+        if key == "date":
+            continue
+        checkName = f"{checkName}__{value}"
+
+    checkName = checkName.replace(".", "_")
+
     status = {
-        "taskname": taskname,
-        "task_finished_time": timestr,
-        "cmd": cmd
+        "taskName": taskname,
+        "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "cmd": cmd,
+        "cmdArgs": cmd_args_dict,
+        "checkName": checkName,
         }
 
     # Provide folder structure.
-    data_path = "./data/spool/statusfiles"
-    if not os.path.exists(f"{data_path}"):
-        os.mkdir(f"{data_path}")
-    statusfile = f"{data_path}/statusfile_{timestr}.json"
+    data_path = Path("./data/spool/statusfiles")
+    os.makedirs(data_path, exist_ok=True)
+
+    statusfile = data_path.joinpath(checkName)
 
     try:
         with open(statusfile, "w") as f:
             json.dump(status, f)
-            f.close()
-        logging.info("The status file %s was written.", statusfile)
-    except:
+        logging.info("The status file %s has been written.", statusfile)
+    except OSError:
         logging.error("The infofile could not be written.")
-        sys.exit(1)
-
-
-def write_statusfile_and_success_logging(taskname, cmd):
-    """Write statusfile and write out the final logging msg for the task"""
-    write_statusfile (taskname, cmd)
     logging.info("The task '%s' with the command '%s' has run successfull.", taskname, cmd)

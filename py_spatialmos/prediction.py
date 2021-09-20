@@ -19,7 +19,6 @@ from .spatial_util import spatial_plots
 def write_spatialmos_run_file(data_path_media, spatialmos_run_status, parameter):
     '''A function to create an Info File'''
     filename_spatialmos_run = os.path.join(data_path_media, f"spatialmosrun_{parameter}.json")
-    print(filename_spatialmos_run)
     with open(filename_spatialmos_run, "w") as f:
         json.dump(spatialmos_run_status, f)
     logging.info(
@@ -77,7 +76,6 @@ def run_spatial_predictions(parser_dict):
         # Check if spatialmos coefficients are available
         spatialmos_run_status = spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file,
                                                    data_path_media, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
-        print(parser_dict['parameter'])
         write_spatialmos_run_file(data_path_media, spatialmos_run_status, parser_dict['parameter'])
 
 
