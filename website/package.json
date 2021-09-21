@@ -6,7 +6,7 @@
   "author": "Daniel Naschberger",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "lint": "vue-cli-service lint",
     "serve": "vite preview"
   },
@@ -15,10 +15,10 @@
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
     "bootstrap": "^5.1.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "heroicons": "^1.0.2",
     "leaflet": "^1.7.1",
-    "vue": "^3.0.5",
+    "vue": "^3.2.12",
     "vue-router": "^4.0.10"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
     "@vitejs/plugin-vue": "^1.2.5",
+    "@vue/cli": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
     "@vue/cli-plugin-typescript": "^4.5.13",
     "@vue/cli-service": "^4.5.13",
@@ -35,11 +36,11 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^7.13.0",
-    "prettier": "2.3.2",
-    "prettier-eslint": "^12.0.0",
+    "prettier": "2.4.1",
+    "prettier-eslint": "^13.0.0",
     "typescript": "^4.3.2",
     "vite": "^2.4.2",
     "vite-plugin-eslint": "^1.3.0",
-    "vue-tsc": "^0.0.24"
+    "vue-tsc": "^0.3.0"
   }
 }
