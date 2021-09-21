@@ -8,10 +8,10 @@
 import { unref } from "vue";
 import { usePhotonApi } from "../store/photonapi";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // fix "Uncaught TypeError: this._map is null" when zooming
 (L.Tooltip.prototype as any)._updatePosition = function () {
   if (!this._map || !this._latlng) return;
@@ -41,7 +41,6 @@ export default {
   mounted() {
     const lat = unref(this.lat);
     const lon = unref(this.lon);
-    const tooltip = unref(this.tooltip);
     this.map = new L.Map("mapContainer").setView([lat, lon], 16);
 
     this.activeLayer = new L.TileLayer(
@@ -51,24 +50,28 @@ export default {
           '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       }
     ).addTo(this.map);
-    this.updateActiveBounds();
+    this.updateMarker();
   },
   watch: {
     point() {
-      this.updateActiveBounds();
+      this.updateMarker();
     },
   },
   methods: {
-    updateActiveBounds(): void {
+    updateMarker(): void {
       if (this.point === undefined) {
         return;
       }
       const _latlng = L.latLng(this.point);
       this.map.setView(_latlng);
-      this.marker = new L.Marker(_latlng)
-        .bindTooltip(this.tooltip)
-        .openTooltip()
-        .addTo(this.map);
+      const tooltip = this.tooltip;
+      this.marker =
+        tooltip === ""
+          ? new L.Marker(_latlng).addTo(this.map)
+          : new L.Marker(_latlng)
+              .bindTooltip(tooltip)
+              .openTooltip()
+              .addTo(this.map);
     },
   },
 };

@@ -68,7 +68,7 @@ export default defineComponent({
     SolidChevronRightIcon,
   },
   computed: {
-    imgHref() {
+    imgHref(): string {
       if (this.selectedStep === undefined) {
         return "";
       }

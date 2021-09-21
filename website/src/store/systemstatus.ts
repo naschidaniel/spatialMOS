@@ -2,6 +2,7 @@ import { reactive, computed } from "vue";
 import { formatDateTime } from "../util/formatters";
 
 export interface SystemCheck {
+  name: string;
   taskName: string;
   taskFinishedTime: string;
   maxAge: number;
@@ -32,7 +33,7 @@ const systemstatus: systemstatus = reactive({
 });
 
 export function useSystemstatus() {
-  async function fetchSystemChecks(
+  async function fetchSystemStatus(
     url: string,
     options?: Record<string, unknown>
   ) {
@@ -61,6 +62,10 @@ export function useSystemstatus() {
     systemstatus.isLoading = false;
   }
 
+  const systemChecks = computed((): SystemCheck[] => {
+    return systemstatus.systemChecks;
+  });
+
   const updateTime = computed((): string => {
     const VITE_APP_VUE_APP_UPDATETIME =
       import.meta.env.VITE_APP_VUE_APP_UPDATETIME ?? undefined;
@@ -73,5 +78,11 @@ export function useSystemstatus() {
     return import.meta.env.VITE_APP_CURRENT_GIT_SHA as string;
   });
 
-  return { lastCommit, systemstatus, updateTime, fetchSystemChecks };
+  return {
+    lastCommit,
+    systemstatus,
+    systemChecks,
+    updateTime,
+    fetchSystemStatus,
+  };
 }

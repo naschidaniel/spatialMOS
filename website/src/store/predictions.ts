@@ -21,6 +21,7 @@ export interface Predictions {
   statusText: string;
   step: string;
   steps: string[];
+  parameter: string;
 }
 
 const predictions: Predictions = reactive({
@@ -31,6 +32,7 @@ const predictions: Predictions = reactive({
   isLoading: false,
   statusText: "",
   step: "6",
+  parameter: "",
 });
 
 export function usePrediction() {
@@ -48,6 +50,7 @@ export function usePrediction() {
           predictions.statusText = res.statusText;
           predictions.isError = false;
           predictions.data = data;
+          predictions.parameter = data[0].parameter;
         });
       } catch {
         predictions.isError = true;

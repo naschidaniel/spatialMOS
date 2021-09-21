@@ -3,31 +3,44 @@ import { reactive, computed, unref } from "vue";
 export interface PhotonApi {
   url: string | undefined;
   isError: boolean;
+  isEmpty: boolean;
   isLoading: boolean;
   statusText: string;
   lon: number | undefined;
   lat: number | undefined;
+  city: string | undefined;
+  street: string | undefined;
+  housenumber: string | undefined;
 }
 const photonApi: PhotonApi = reactive({
   isError: false,
   isLoading: false,
+  isEmpty: false,
   lat: undefined,
   lon: undefined,
   statusText: "",
   url: undefined,
+  city: undefined,
+  street: undefined,
+  housenumber: undefined,
 });
 
 export function usePhotonApi() {
   async function fetchPhotonApiData(
-    url: string,
+    url: string | undefined,
     options?: Record<string, unknown>
   ) {
     if (url === undefined) {
       photonApi.isError = false;
+      photonApi.isEmpty = false;
       photonApi.lat = undefined;
       photonApi.lon = undefined;
       photonApi.statusText = "";
       photonApi.url = undefined;
+      photonApi.city = undefined;
+      photonApi.street = undefined;
+      photonApi.housenumber = undefined;
+
       return;
     }
     photonApi.isLoading = true;
@@ -36,10 +49,18 @@ export function usePhotonApi() {
       photonApi.url = url;
       try {
         res.json().then((data: Record<string, any>) => {
-          photonApi.lon = data.features[0].geometry.coordinates[0];
-          photonApi.lat = data.features[0].geometry.coordinates[1];
-          photonApi.isError = false;
-          photonApi.statusText = res.statusText;
+          if (data.features.length === 0) {
+            photonApi.isEmpty = true;
+            photonApi.url = url;
+          } else {
+            photonApi.lon = data.features[0].geometry.coordinates[0];
+            photonApi.lat = data.features[0].geometry.coordinates[1];
+            photonApi.isError = false;
+            photonApi.statusText = res.statusText;
+            photonApi.city = data.features[0].properties.city;
+            photonApi.street = data.features[0].properties.street;
+            photonApi.housenumber = data.features[0].properties.housenumber;
+          }
         });
       } catch {
         photonApi.isError = true;
@@ -63,17 +84,22 @@ export function usePhotonApi() {
   });
 
   const lat = computed((): number | undefined => {
-    const lat = unref(photonApi.lat);
-    return lat;
+    return unref(photonApi.lat);
   });
 
   const lon = computed((): number | undefined => {
-    const lon = unref(photonApi.lon);
-    return lon;
+    return unref(photonApi.lon);
   });
 
   const tooltip = computed((): string => {
-    return "afdasdfadfdfadf";
+    const tooltip = [
+      unref(photonApi.city),
+      unref(photonApi.street),
+      unref(photonApi.housenumber),
+    ]
+      .join(" ")
+      .trim();
+    return tooltip;
   });
 
   return { photonApi, lat, lon, tooltip, point, fetchPhotonApiData };

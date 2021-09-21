@@ -1,5 +1,12 @@
 <template>
   <div class="container">
+    <div v-if="photonApi.isEmpty" class="alert alert-danger" role="alert">
+      Die Suchanfrage
+      <a :href="photonApi.url" target="_balnk" rel="nofollow">{{
+        photonApi.url
+      }}</a>
+      hat zu keinem Ergebniss geführt.
+    </div>
     <form>
       <div class="row">
         <div class="col">
@@ -57,7 +64,7 @@ export default {
     };
   },
   computed: {
-    queryAddressUrl() {
+    queryAddressUrl(): string | undefined {
       if (this.street === "" && this.city === "" && this.postcode === "") {
         return undefined;
       }
@@ -69,7 +76,7 @@ export default {
         );
       return `https://photon.komoot.io/api/?q=${queryAddressString}&bbox=10,46.6,12.9,47.8&limit=1`;
     },
-    routerParams() {
+    routerParams(): string {
       return this.$route.query;
     },
   },

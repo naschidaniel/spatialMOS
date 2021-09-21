@@ -30,10 +30,10 @@ export default defineComponent({
     SystemChecks,
   },
   setup() {
-    const { systemstatus, fetchSystemChecks } = useSystemstatus();
+    const { systemstatus, fetchSystemStatus } = useSystemstatus();
     const url = "/media/systemstatus.json";
-    fetchSystemChecks(url, { cache: "no-cache" });
-    return { systemstatus, url, fetchSystemChecks };
+    fetchSystemStatus(url, { cache: "no-cache" });
+    return { systemstatus, url, fetchSystemStatus };
   },
 });
 </script>
