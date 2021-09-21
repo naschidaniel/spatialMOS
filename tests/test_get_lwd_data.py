@@ -31,7 +31,7 @@ class TestExitCodes(unittest.TestCase):
             for csv_file in data_path.glob('*.csv'):
                 with open(csv_file) as f:
                     csv_data = list(csv.reader(f, delimiter=';'))
-                self.assertEqual(len(csv_data) >= 50, True)
+                self.assertEqual(len(csv_data) >= 57, True)
         finally:
             shutil.rmtree(data_path)
 
@@ -46,7 +46,7 @@ class TestExitCodes(unittest.TestCase):
     def test_fetch_lwd_data_fail(self):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
         current_minute = int(datetime.now().strftime("%M"))
-        if current_minute < 35 or current_minute > 50:
+        if current_minute < 35 or current_minute > 57:
             pytest.skip(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
 
         print(f'The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}.')
