@@ -10,7 +10,7 @@
         <small>
           <span
             class="mr-1 badge rounded-pill mr-2"
-            :class="systemCheck.isTooOld ? 'bg-success' : 'bg-danger'"
+            :class="systemCheck.failed ? 'bg-danger' : 'bg-success'"
             title="{{ systemCheck.taskFinishedTime }}"
             >&nbsp;</span
           >
@@ -20,11 +20,11 @@
       <span class="d-none d-md-inline ml-2">
         <span
           class="d-none d-md-inline ml-2 mr-3 badge rounded-pill"
-          :class="systemCheck.isTooOld ? 'bg-success' : 'bg-danger'"
+          :class="systemCheck.failed ? 'bg-danger' : 'bg-success'"
           style="width: 60px"
           :title="`${systemCheck.taskFinishedTime} ${systemCheck.taskName}`"
         >
-          {{ systemCheck.isTooOld ? "passed" : "failed" }}
+          {{ systemCheck.failed ? "failed" : "passed" }}
         </span>
         <span class="mx-2">{{ systemCheck.checkName }}</span
         >&ndash;<small class="mx-2">{{

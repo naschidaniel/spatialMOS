@@ -2,19 +2,12 @@ import { reactive, computed } from "vue";
 import { formatDateTime } from "../util/formatters";
 
 export interface SystemCheck {
-  name: string;
   taskName: string;
   taskFinishedTime: string;
-  maxAge: number;
+  taskMaxAgeTime: string;
+  failed: boolean;
   cmd: string;
-  isTooOld: boolean;
-  cmdArgs: {
-    script: string;
-    date: string;
-    resolution: number;
-    modeltype: string;
-    parameter: string;
-  };
+  cmdArgs: Record<string, string>;
   checkName: string;
 }
 
@@ -45,9 +38,7 @@ export function useSystemstatus() {
           systemstatus.isError = false;
           systemstatus.statusText = res.statusText;
           systemstatus.systemChecks = data.map((c: SystemCheck) => {
-            c.isTooOld =
-              new Date().getTime() <=
-              Date.parse(c.taskFinishedTime) + c.maxAge * 1000;
+            c.failed = new Date().getTime() >= Date.parse(c.taskMaxAgeTime);
             return c;
           });
         });

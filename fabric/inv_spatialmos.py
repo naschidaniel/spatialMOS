@@ -64,11 +64,12 @@ def py_spatialmos__untar_folder(c, folder):
 
 
 @task
-def py_spatialmos_merge_statusfiles(c):
+def py_spatialmos__merge_statusfiles(c):
     """Merge statusfiles"""
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__merge_statusfiles.__name__, "")
     statusfiles_path = Path("./data/spool/statusfiles/")
     statusfiles = []
-    for file in statusfiles_path.glob("*.json"):
+    for file in sorted(statusfiles_path.glob("*.json")):
         logging.info("The file %s will be added to the systemstatus file.", file)
         with (open(file, mode="r")) as f:
             status = json.load(f)
@@ -79,7 +80,15 @@ def py_spatialmos_merge_statusfiles(c):
         json.dump(statusfiles, f)
     logging.info("The merged status file %s has been written.", merge_statusfile)
 
-    inv_base.write_statusfile_and_success_logging(py_spatialmos_merge_statusfiles.__name__, "")
+    settings = inv_base.read_settings("development")
+    systemchecks_available = sorted(settings["systemChecks"].keys())
+    systemchecks_done = sorted([c["checkName"] for c in statusfiles])
+    systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
+    if len(systemchecks_missing) == 0:
+        inv_base.write_statusfile_and_success_logging("py_spatialmos__available_systemchecks", "")
+    else:
+        for check in systemchecks_missing:
+            logging.error("The check '%s' is missing", check)
 
 
 @task
@@ -245,7 +254,7 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_lwd)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__get_zamg)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__combine_data)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__interpolate_gribfiles)
-SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos_merge_statusfiles)
+SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__merge_statusfiles)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_observations_and_reforecasts_to_stations)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gamlss_crch_climatologies)
 SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__pre_processing_gribfiles)

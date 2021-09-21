@@ -6,7 +6,8 @@
   "author": "Daniel Naschberger",
   "scripts": {
     "dev": "vite --host",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
+    "tscbuild": "vue-tsc --noEmit && vite build",
     "lint": "vue-cli-service lint",
     "serve": "vite preview"
   },

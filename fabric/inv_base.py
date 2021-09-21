@@ -7,7 +7,7 @@ import sys
 import os
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def manage_py(c, cmd):
     """The function executes the django manage.py command."""
@@ -100,10 +100,12 @@ def write_statusfile_and_success_logging(taskname, cmd):
         checkName = f"{checkName}__{value}"
 
     checkName = checkName.replace(".", "_")
-
+    settings = read_settings("development")
     status = {
         "taskName": taskname,
         "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "taskMaxAgeTime": (datetime.now() + timedelta(minutes=int(settings["systemChecks"][checkName]))).strftime("%Y-%m-%dT%H:%M:%S"),
+        "failed": datetime.now() >= (datetime.now() + timedelta(minutes=int(settings["systemChecks"][checkName]))),
         "cmd": cmd,
         "cmdArgs": cmd_args_dict,
         "checkName": checkName,
