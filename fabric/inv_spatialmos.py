@@ -66,7 +66,6 @@ def py_spatialmos__untar_folder(c, folder):
 @task
 def py_spatialmos__merge_statusfiles(c):
     """Merge statusfiles"""
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__merge_statusfiles.__name__, "")
     statusfiles_path = Path("./data/spool/statusfiles/")
     statusfiles = []
     for file in sorted(statusfiles_path.glob("*.json")):
@@ -81,7 +80,7 @@ def py_spatialmos__merge_statusfiles(c):
     logging.info("The merged status file %s has been written.", merge_statusfile)
 
     settings = inv_base.read_settings("development")
-    systemchecks_available = sorted(settings["systemChecks"].keys())
+    systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != "py_spatialmos__available_systemchecks"]
     systemchecks_done = sorted([c["checkName"] for c in statusfiles])
     systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
     if len(systemchecks_missing) == 0:
@@ -89,6 +88,7 @@ def py_spatialmos__merge_statusfiles(c):
     else:
         for check in systemchecks_missing:
             logging.error("The check '%s' is missing", check)
+    inv_base.write_statusfile_and_success_logging(py_spatialmos__merge_statusfiles.__name__, "")
 
 
 @task

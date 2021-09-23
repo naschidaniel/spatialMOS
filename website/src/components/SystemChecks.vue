@@ -14,7 +14,7 @@
             title="{{ systemCheck.taskFinishedTime }}"
             >&nbsp;</span
           >
-          {{ systemCheck.checkName }}
+          {{ systemCheck.displayNameWebsite }}
         </small>
       </span>
       <span class="d-none d-md-inline ml-2">
@@ -26,7 +26,7 @@
         >
           {{ systemCheck.failed ? "failed" : "passed" }}
         </span>
-        <span class="mx-2">{{ systemCheck.checkName }}</span
+        <span class="mx-2">{{ systemCheck.displayNameWebsite }}</span
         >&ndash;<small class="mx-2">{{
           formatDateTime(systemCheck.taskFinishedTime)
         }}</small>

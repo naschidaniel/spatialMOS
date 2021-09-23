@@ -1,4 +1,4 @@
-import { reactive, computed } from "vue";
+import { reactive, computed, unref } from "vue";
 import { formatDateTime } from "../util/formatters";
 
 export interface SystemCheck {
@@ -9,6 +9,7 @@ export interface SystemCheck {
   cmd: string;
   cmdArgs: Record<string, string>;
   checkName: string;
+  displayNameWebsite: string;
 }
 
 export interface systemstatus {
@@ -54,7 +55,10 @@ export function useSystemstatus() {
   }
 
   const systemChecks = computed((): SystemCheck[] => {
-    return systemstatus.systemChecks;
+    const systemChecks = unref(systemstatus.systemChecks);
+    return systemChecks.sort((s1, s2) =>
+      s1.displayNameWebsite > s2.displayNameWebsite ? -1 : -1
+    );
   });
 
   const updateTime = computed((): string => {

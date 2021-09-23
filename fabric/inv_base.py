@@ -93,29 +93,40 @@ def write_statusfile_and_success_logging(taskname, cmd):
             cmd_args_dict[arg[2:]] = cmd_args[i]
         i += 1
 
-    checkName = taskname
+    check_name = taskname
+    display_name_website = ""
     for key, value in cmd_args_dict.items():
         if key == "date":
             continue
-        checkName = f"{checkName}__{value}"
+        check_name = f"{check_name}__{value}"
+        display_name_website = f"{display_name_website} {value}"
 
-    checkName = checkName.replace(".", "_")
+    check_name = check_name.replace(".", "_")
     settings = read_settings("development")
+
+    max_age = 60
+    if check_name in settings["systemChecks"].keys():
+        max_age = int(settings["systemChecks"][check_name])
+
+    if display_name_website == "":
+        display_name_website = taskname
+
     status = {
         "taskName": taskname,
         "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-        "taskMaxAgeTime": (datetime.now() + timedelta(minutes=int(settings["systemChecks"][checkName]))).strftime("%Y-%m-%dT%H:%M:%S"),
-        "failed": datetime.now() >= (datetime.now() + timedelta(minutes=int(settings["systemChecks"][checkName]))),
+        "taskMaxAgeTime": (datetime.now() + timedelta(minutes=max_age)).strftime("%Y-%m-%dT%H:%M:%S"),
+        "failed": datetime.now() >= (datetime.now() + timedelta(minutes=max_age)),
         "cmd": cmd,
         "cmdArgs": cmd_args_dict,
-        "checkName": checkName,
+        "checkName": check_name,
+        "displayNameWebsite": display_name_website,
         }
 
     # Provide folder structure.
     data_path = Path("./data/spool/statusfiles")
     os.makedirs(data_path, exist_ok=True)
 
-    statusfile = data_path.joinpath(f"{checkName}.json")
+    statusfile = data_path.joinpath(f"{check_name}.json")
 
     try:
         with open(statusfile, "w") as f:
