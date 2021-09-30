@@ -59,13 +59,13 @@ import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
 export default defineComponent({
   name: "Predictions",
-  setup() {
-    const { predictions, selectedStep, setStep } = usePrediction();
-    return { predictions, selectedStep, setStep };
-  },
   components: {
     SolidChevronLeftIcon,
     SolidChevronRightIcon,
+  },
+  setup() {
+    const { predictions, selectedStep, setStep } = usePrediction();
+    return { predictions, selectedStep, setStep };
   },
   computed: {
     imgHref(): string {

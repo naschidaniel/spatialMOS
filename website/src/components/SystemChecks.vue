@@ -3,7 +3,7 @@
     <li class="list-group-item">Check</li>
     <li
       v-for="systemCheck in systemChecks"
-      :key="systemCheck.name"
+      :key="systemCheck.taskName"
       class="list-group-item"
     >
       <span class="d-inline d-sm-inline d-md-none ml-1">
