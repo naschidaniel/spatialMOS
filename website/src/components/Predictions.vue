@@ -30,6 +30,24 @@
         />
       </button>
     </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button
+        type="button"
+        class="btn btn-outline-dark me-2"
+        :class="parameter === 'tmp_2m' ? 'active' : ''"
+        @click="changeParameter('tmp_2m')"
+      >
+        Temperatur {{ parameter }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-dark me-2"
+        :class="parameter === 'rh_2m' ? 'active' : ''"
+        @click="changeParameter('rh_2m')"
+      >
+        Relative Luftfeuchte
+      </button>
+    </div>
     <table class="table mt-4">
       <thead>
         <tr>
@@ -64,8 +82,22 @@ export default defineComponent({
     SolidChevronRightIcon,
   },
   setup() {
-    const { predictions, selectedStep, setStep } = usePrediction();
-    return { predictions, selectedStep, setStep };
+    const {
+      parameter,
+      fetchPrediction,
+      predictions,
+      selectedStep,
+      setStep,
+      setParameter,
+    } = usePrediction();
+    return {
+      parameter,
+      fetchPrediction,
+      predictions,
+      selectedStep,
+      setStep,
+      setParameter,
+    };
   },
   computed: {
     imgHref(): string {
@@ -73,7 +105,15 @@ export default defineComponent({
         return "";
       }
       const img = this.selectedStep.filename_spatialmos_mean;
-      return `/media/tmp_2m/images/${img}`;
+      return `/media/${this.parameter}/images/${img}`;
+    },
+  },
+  methods: {
+    changeParameter(change: string) {
+      this.setParameter(change);
+      const url = `/media/${change}/spatialmosrun_${change}.json`;
+      this.fetchPrediction(url);
+      this.$router.push({ path: "/", query: { parameter: change } });
     },
   },
 });

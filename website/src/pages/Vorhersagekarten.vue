@@ -6,7 +6,9 @@
     </div>
     <div v-else>
       <div v-if="predictions.isError" class="alert alert-danger" role="alert">
-        Beim Laden der Datei '<a :href="url" target="_blank">{{ url }}</a
+        Beim Laden der Datei '<a :href="predictions.url" target="_blank">{{
+          predictions.url
+        }}</a
         >' ist folgender Fehler aufgetretten: {{ predictions.statusText }}
       </div>
       <Predictions v-else />
@@ -25,10 +27,10 @@ export default defineComponent({
     Predictions,
   },
   setup() {
-    const url = "/media/tmp_2m/spatialmosrun_tmp_2m.json";
-    const { predictions, fetchPrediction } = usePrediction();
+    const { parameter, predictions, fetchPrediction } = usePrediction();
+    const url = `/media/${parameter.value}/spatialmosrun_${parameter.value}.json`;
     fetchPrediction(url, { cache: "no-cache" });
-    return { url, predictions };
+    return { predictions, fetchPrediction };
   },
 });
 </script>

@@ -22,6 +22,7 @@ export interface Predictions {
   step: string;
   steps: string[];
   parameter: string;
+  url: string;
 }
 
 const predictions: Predictions = reactive({
@@ -32,7 +33,8 @@ const predictions: Predictions = reactive({
   isLoading: false,
   statusText: "",
   step: "6",
-  parameter: "",
+  parameter: "tmp_2m",
+  url: "",
 });
 
 export function usePrediction() {
@@ -40,6 +42,7 @@ export function usePrediction() {
     url: string,
     options?: Record<string, unknown>
   ) {
+    predictions.url = url;
     predictions.isLoading = true;
     const res = await fetch(url, options);
     if (res.ok) {
@@ -63,6 +66,10 @@ export function usePrediction() {
     predictions.isLoading = false;
   }
 
+  const parameter = computed(() => {
+    return unref(predictions.parameter);
+  });
+
   const selectedStep = computed(() => {
     return (
       predictions.data?.find((s) => s.step === unref(predictions.step)) ||
@@ -85,5 +92,16 @@ export function usePrediction() {
     predictions.step = change;
   }
 
-  return { predictions, fetchPrediction, selectedStep, setStep };
+  function setParameter(change: string) {
+    predictions.parameter = change;
+  }
+
+  return {
+    parameter,
+    predictions,
+    fetchPrediction,
+    selectedStep,
+    setStep,
+    setParameter,
+  };
 }
