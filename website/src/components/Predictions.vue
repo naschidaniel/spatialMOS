@@ -37,7 +37,7 @@
         :class="parameter === 'tmp_2m' ? 'active' : ''"
         @click="changeParameter('tmp_2m')"
       >
-        Temperatur {{ parameter }}
+        Temperatur
       </button>
       <button
         type="button"
