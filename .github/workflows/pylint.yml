@@ -33,8 +33,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint requests pytz
         pip install ./target/wheels/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
-    - name: Lint run_get_data
+    - name: Lint fabric
+      run: |
+        pylint --exit-zero fabric/
+        pylint --exit-zero task.py
+    - name: Lint py_spatialmos
       run: |
         pylint --exit-zero py_spatialmos/
-        pylint --exit-zero tests/
         pylint --exit-zero run_script.py
+    - name: Lint tests
+      run: |
+        pylint --exit-zero tests/

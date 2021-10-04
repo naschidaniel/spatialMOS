@@ -6,12 +6,12 @@ import os
 import sys
 import json
 import logging
-import requests
 from pathlib import Path
+import requests
 from invoke import task, Collection
-import inv_base
-import inv_logging
-import inv_docker
+from . import inv_base
+from . import inv_logging
+from . import inv_docker
 
 
 @task
@@ -79,7 +79,7 @@ def py_spatialmos__merge_statusfiles(c):
         json.dump(statusfiles, f)
     logging.info("The merged status file %s has been written.", merge_statusfile)
 
-    settings = inv_base.read_settings("development")
+    settings = inv_base.read_settings()
     systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != "py_spatialmos__available_systemchecks"]
     systemchecks_done = sorted([c["checkName"] for c in statusfiles])
     systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
@@ -263,13 +263,3 @@ SPATIALMOS_DEVELOPMENT_NS.add_task(py_spatialmos__maturin_build)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__gamlss_crch_model)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_nwp)
 SPATIALMOS_DEVELOPMENT_NS.add_task(r_spatialmos__spatial_climatologies_obs)
-
-
-
-SPATIALMOS_PRODUCTION_NS = Collection("spatialmos")
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__archive_folder)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_gefs)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_lwd)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__get_zamg)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__pre_processing_gribfiles)
-SPATIALMOS_PRODUCTION_NS.add_task(py_spatialmos__prediction)

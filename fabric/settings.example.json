@@ -1,147 +1,103 @@
 {
-  "development": {
-    "collection": "development",
-    "docker_compose_files": [
-      "./docker-compose.yml",
-      "./docker-compose.development.yml"
-    ],
-    "initFolders": [
-      "./data/archive",
-      "./data/get_available_data",
-      "./data/get_available_data/gefs_reforecast",
-      "./data/get_available_data/gefs_reforecast/nwp",
-      "./data/spatialmos_climatology",
-      "./data/media",
-      "./data/postgresdata",
-      "./data/postgresdata_backup",
-      "./data/spool",
-      "./data/static",
-      "./log/fabric",
-      "./log/nginx"
-    ],
-    "django": {
-      "DEBUG": "True",
-      "ALLOWED_HOSTS": "127.0.0.1,localhost",
-      "DB": "postgres",
-      "POSTGRES_HOST": "postgres",
-      "POSTGRES_USER": "postgres",
-      "POSTGRES_PASSWORD": "postgres",
-      "SECRET_KEY": "jd3jqb@r1jaaj^(2e&$qam8#fbp)6qqu+9cz8u^u+4)%scl^f#"
-    },
-    "docker": {
-      "POSTGRES_USER": "postgres",
-      "POSTGRES_PASSWORD": "postgres",
-      "NGINX_CONF": "development.conf"
-    },
-    "postgres_backup_folder": "./data/postgresdata_backup"
+  "collection": "development",
+  "docker_compose_files": [
+    "./docker-compose.yml"
+  ],
+  "initFolders": [
+    "./data/.well-known",
+    "./data/archive",
+    "./data/get_available_data",
+    "./data/get_available_data/gefs_reforecast",
+    "./data/get_available_data/gefs_reforecast/nwp",
+    "./data/spatialmos_climatology",
+    "./data/media",
+    "./data/spool",
+    "./data/static"
+  ],
+  "systemChecks": {
+    "py_spatialmos__merge_statusfiles": "30",
+    "py_spatialmos__available_systemchecks": "30",
+    "py_spatialmos__get_lwd__get_lwd_data": "75",
+    "py_spatialmos__get_zamg__get_zamg_data": "75",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__avg__ugrd_10m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__avg__vgrd_10m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__avg__rh_2m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__avg__tmp_2m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__spr__rh_2m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__spr__tmp_2m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__spr__ugrd_10m": "1455",
+    "py_spatialmos__get_gefs__get_gefs_forecasts__0_5__spr__vgrd_10m": "1455",
+    "py_spatialmos__prediction__prediction__0_5__tmp_2m": "1455",
+    "py_spatialmos__prediction__prediction__0_5__rh_2m": "1455",
+    "py_spatialmos__pre_processing_gribfiles__pre_processing_prediction__0_5__tmp_2m": "1455",
+    "py_spatialmos__pre_processing_gribfiles__pre_processing_prediction__0_5__rh_2m": "1455"
   },
-  "production": {
-    "collection": "production",
-    "initFolders": [
-      "./data/.well-known",
-      "./data/archive",
-      "./data/get_available_data",
-      "./data/spatialmos_climatology",
-      "./data/media",
-      "./data/postgresdata",
-      "./data/postgresdata_backup",
-      "./data/spool",
-      "./data/static",
-      "./log/fabric",
-      "./log/nginx"
-    ],
-    "django": {
-      "DEBUG": "False",
-      "ALLOWED_HOSTS": "moses.tirol,www.moses.tirol",
-      "DB": "postgres",
-      "POSTGRES_HOST": "postgres",
-      "POSTGRES_USER": "postgres",
-      "POSTGRES_PASSWORD": "postgres",
-      "SECRET_KEY": "ENTER A VALID SECRET KEY"
+  "REMOTE_USER": "example",
+  "REMOTE_HOST": "example.com",
+  "rsync_push": {
+    "sourcefiles": {
+      "local_dir": ".",
+      "remote_dir": "/www/spatialMOS",
+      "include": [
+        "fabric/cert/ca.pem",
+        "fabric/cert/cert.pem",
+        "fabric/cert/key.pem",
+        "container/py_container/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl",
+        "container/py_container/spatial_rust_util-0.1.1-cp310-cp310-linux_x86_64.whl",
+        "website/dist",
+        "settings.json",
+        "task.py"
+      ],
+      "exclude": [
+        "*.git*",
+        ".pylintrc",
+        ".editorconfig"
+      ],
+      "exclude-from": [
+        ".gitignore"
+      ]
     },
-    "docker": {
-      "USERID": "1001",
-      "GROUPID": "1001",
-      "INSTALLFOLDER": "/www/spatialMOS",
-      "HOST": "production",
-      "DOCKER_TLS_VERIFY": "1",
-      "DOCKER_HOST": "tcp://webserver@naschi.info:2376",
-      "DOCKER_CERT_PATH": "./fabric/cert/",
-      "POSTGRES_USER": "postgres",
-      "POSTGRES_PASSWORD": "Ip31HCKX"
+    "staticfiles": {
+      "local_dir": "./data",
+      "remote_dir": "/www/spatialMOS",
+      "include": [
+        "static"
+      ],
+      "exclude": [
+        ".well-known",
+        "*.h5",
+        "*.RData",
+        "*_station_observations.csv",
+        "archive",
+        "get_available_data",
+        "media",
+        "spatialmos_climatology",
+        "spool"
+      ]
     },
-    "postgres_backup_folder": "./postgresdata_backup",
-    "docker_compose_files": [
-      "./docker-compose.yml",
-      "./docker-compose.production.yml"
-    ],
-    "REMOTE_USER": "example",
-    "REMOTE_HOST": "example.com",
-    "rsync_push": {
-      "sourcefiles": {
-        "local_dir": ".",
-        "remote_dir": "/www/spatialMOS",
-        "include": [
-          "fabric/cert/ca.pem",
-          "fabric/cert/cert.pem",
-          "fabric/cert/key.pem",
-          "settings.json",
-          "task.py"
-        ],
-        "exclude": [
-          "*.git*",
-          ".pylintrc",
-          ".editorconfig"
-        ],
-        "exclude-from": [
-          ".gitignore"
-        ]
-      },
-      "staticfiles": {
-        "local_dir": "./data",
-        "remote_dir": "/www/spatialMOS",
-        "include": [
-          "static"
-        ],
-        "exclude": [
-          "static/js",
-          "*.h5",
-          "*.RData",
-          "*_station_observations.csv",
-          ".well-known",
-          "archive",
-          "media",
-          "postgresdata",
-          "postgresdata_backup",
-          "spool",
-          "spatialmos_climatology",
-          "get_available_data"
-        ]
-      },
-      "climatologies": {
-        "local_dir": "./data",
-        "remote_dir": "/www/spatialMOS/",
-        "ignore-existing": "True",
-        "include": [
-          "get_available_data/gadm",
-          "spatialmos_climatology/gam/"
-        ],
-        "exclude": [
-          "get_available_data/*",
-          "*.h5",
-          "*.RData",
-          "*_station_observations.csv",
-          ".well-known",
-          "archive",
-          "media",
-          "postgresdata",
-          "postgresdata_backup",
-          "static",
-          "spool"
-        ]
-      }
-    },
-    "rsync_get": {
+    "climatologies": {
+      "local_dir": "./data",
+      "remote_dir": "/www/spatialMOS/",
+      "ignore-existing": "True",
+      "include": [
+        "get_available_data/gadm",
+        "spatialmos_climatology/gam/"
+      ],
+      "exclude": [
+        "get_available_data/*",
+        "*.h5",
+        "*.RData",
+        "*_station_observations.csv",
+        ".well-known",
+        "archive",
+        "media",
+        "static",
+        "spool"
+      ]
+    }
+  },
+  "rsync_get": {
+    "archive": {
       "local_dir": "./data/archive",
       "remote_dir": "/www/spatialMOS/data/archive",
       "ignore-existing": "True"
