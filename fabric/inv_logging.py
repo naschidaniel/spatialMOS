@@ -3,29 +3,21 @@
 """spatialMOS logging module for fabric."""
 
 import logging
-import logging.config
-import os
+import logging.handlers
 import time
-from datetime import datetime
 
 
 def start_logging():
     """A function to start the logging.
     """
-    logging_folder = os.path.join(os.getcwd(), "log/fabric")
-    if not os.path.exists(os.path.join(os.getcwd(), "log")):
-        os.mkdir(os.path.join(os.getcwd(), "log"))
+    logging.basicConfig(
+    format='%(asctime)s\t%(process)d\t%(levelname)s\t%(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.handlers.TimedRotatingFileHandler(
+            filename='log/fabric.log', when='midnight'),
+        logging.StreamHandler()])
 
-    if not os.path.exists(logging_folder):
-        os.mkdir(logging_folder)
-
-    logging_cfg_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logging.cfg")
-
-    logfile = os.path.join(
-        logging_folder, f"logfile-{datetime.now().strftime('%Y-%m-%d')}.log")
-    logging.config.fileConfig(logging_cfg_file,
-                              disable_existing_loggers=False,
-                              defaults={"logfilename": logfile})
     logging.getLogger()
     logging.Formatter.converter = time.localtime
     logging.info("spatialMOS fabric logging module was started.")

@@ -7,8 +7,8 @@ import subprocess
 import logging
 from itertools import chain, repeat
 from invoke import task, Collection
-import inv_base
-import inv_logging
+from . import inv_base
+from . import inv_logging
 
 def str2bool(string):
     """A function to convert strings of the settings file to Bool variables"""

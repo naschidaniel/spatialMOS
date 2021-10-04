@@ -4,9 +4,9 @@
 
 import logging
 from invoke import task, Collection
-import inv_base
-import inv_logging
-import inv_install
+from . import inv_base
+from . import inv_logging
+from . import inv_install
 
 @task
 def build(c):

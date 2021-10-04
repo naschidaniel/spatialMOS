@@ -3,7 +3,6 @@
 """The fabricfile of the project."""
 
 from fabric import inv_deploy
-from invoke import Collection, Program
 from fabric import inv_base
 from fabric import inv_docker
 from fabric import inv_logging
@@ -11,6 +10,7 @@ from fabric import inv_node
 from fabric import inv_install
 from fabric import inv_rsync
 from fabric import inv_spatialmos
+from invoke import Collection, Program
 
 # Logging
 inv_logging.start_logging()

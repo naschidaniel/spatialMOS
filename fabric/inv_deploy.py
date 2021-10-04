@@ -5,12 +5,10 @@
 import logging
 import sys
 from invoke import task
-import inv_logging
-import inv_docker
-import inv_docker
-import inv_install
-import inv_rsync
-
+from . import inv_logging
+from . import inv_docker
+from . import inv_install
+from . import inv_rsync
 
 @task
 def check_upstream(c):

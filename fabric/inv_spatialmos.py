@@ -6,12 +6,12 @@ import os
 import sys
 import json
 import logging
-import requests
 from pathlib import Path
+import requests
 from invoke import task, Collection
-import inv_base
-import inv_logging
-import inv_docker
+from . import inv_base
+from . import inv_logging
+from . import inv_docker
 
 
 @task

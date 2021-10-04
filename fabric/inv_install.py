@@ -8,12 +8,12 @@ import logging
 import shutil
 import datetime as dt
 from invoke import task, Collection
-import inv_base
-import inv_logging
-import inv_docker
-import inv_docker
-import inv_node
-import inv_rsync
+from . import inv_base
+from . import inv_logging
+from . import inv_docker
+from . import inv_docker
+from . import inv_node
+from . import inv_rsync
 
 
 @task

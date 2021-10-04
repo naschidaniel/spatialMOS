@@ -3,8 +3,8 @@
 """This function contains the most important docker commands."""
 
 from invoke import task, Collection
-import inv_base
-import inv_logging
+from . import inv_base
+from . import inv_logging
 
 @task
 def docker(c, cmd):
