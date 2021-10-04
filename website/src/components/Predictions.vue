@@ -62,7 +62,8 @@
         </tr>
         <tr>
           <th scope="row">Parameter</th>
-          <td>{{ predictions.parameter }}</td>
+          <td v-if="parameter === 'tmp_2m'">Temperatur</td>
+          <td v-else>Relative Luftfeuchte</td>
         </tr>
       </tbody>
     </table>
