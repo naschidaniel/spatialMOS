@@ -30,12 +30,10 @@ def uid_gid(c):
 
 def docker_environment(c):
     """The function generates the docker environment variables."""
-    settings = read_settings()
-    docker_env_variables = settings["docker"]
-    if c.config["collection"] in ["development"]:
-        uid, gid = uid_gid(c)
-        docker_env_variables["USERID"] = f"{uid}"
-        docker_env_variables["GROUPID"] = f"{gid}"
+    uid, gid = uid_gid(c)
+    docker_env_variables = {}
+    docker_env_variables["USERID"] = str(uid)
+    docker_env_variables["GROUPID"] = str(gid)
     return docker_env_variables
 
 

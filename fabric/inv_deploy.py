@@ -35,7 +35,7 @@ def check_upstream(c):
     inv_logging.success(check_upstream.__name__)
 
 
-#@task(pre=[check_upstream])
+@task(pre=[check_upstream])
 @task
 def deploy(c):
     """Everything you need to deploy"""

@@ -11,11 +11,10 @@ def start_logging():
     """A function to start the logging.
     """
     logging.basicConfig(
-    format='%(asctime)s\t%(process)d\t%(levelname)s\t%(message)s',
-    level=logging.INFO,
-    handlers=[
-        logging.handlers.TimedRotatingFileHandler(
-            filename='log/fabric.log', when='midnight'),
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.INFO,
+        handlers=[logging.handlers.TimedRotatingFileHandler(filename='log/fabric.log', when='midnight'),
         logging.StreamHandler()])
 
     logging.getLogger()
