@@ -6,15 +6,13 @@ import logging
 from invoke import task, Collection
 from . import inv_base
 from . import inv_logging
-from . import inv_install
 
 @task
 def build(c):
     """This task is used to build the Javascript components"""
     inv_logging.task(build.__name__)
     user, group = inv_base.uid_gid(c)
-    inv_base.docker_compose(c, f"run -u {user}:{group} node yarn run build", pty=True)
-    inv_install.setenvironment(c, "development")
+    inv_base.docker_compose(c, f"run -u {user}:{group} node yarn build", pty=True)
     logging.info("The Javascript components were built, minified and zipped.")
     inv_logging.success(build.__name__)
 
@@ -29,16 +27,16 @@ def lint(c):
 
 
 @task
-def npm(c, cmd):
-    """This task is used to respond to the packet manager npm, for example: npm install date-fns"""
-    inv_logging.task(npm.__name__)
+def yarn(c, cmd):
+    """This task is used to respond to the packet manager yarn, for example: yarn add date-fns"""
+    inv_logging.task(yarn.__name__)
     user, group = inv_base.uid_gid(c)
     inv_logging.cmd(cmd)
-    inv_base.docker_compose(c, f"run -u {user}:{group} node npm {cmd}", pty=True)
-    inv_logging.success(npm.__name__)
+    inv_base.docker_compose(c, f"run -u {user}:{group} node yarn {cmd}", pty=True)
+    inv_logging.success(yarn.__name__)
 
 
 NODE_NS = Collection("node")
 NODE_NS.add_task(build)
 NODE_NS.add_task(lint)
-NODE_NS.add_task(npm)
+NODE_NS.add_task(yarn)

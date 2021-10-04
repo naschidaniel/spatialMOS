@@ -52,22 +52,6 @@ def rebuild(c):
 
 
 @task
-def serve(c):
-    """Serve the development environment"""
-    inv_logging.task(serve.__name__)
-    inv_base.docker_compose(c, "up")
-    inv_logging.success(serve.__name__)
-
-
-@task
-def start(c):
-    """Start in detached Modus"""
-    inv_logging.task(start.__name__)
-    inv_base.docker_compose(c, "up -d")
-    inv_logging.success(start.__name__)
-
-
-@task
 def stop(c):
     """Stop all running Docker Containers"""
     inv_logging.task(stop.__name__)
@@ -80,15 +64,5 @@ DOCKER_COMPOSE_DEVELOPMENT_NS = Collection("docker-compose")
 DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(restart)
 DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(fullrestart)
 DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(rebuild)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(serve)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(start)
 DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(stop)
 DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(run)
-
-
-DOCKER_COMPOSE_PRODUCTION_NS = Collection("docker-compose")
-DOCKER_COMPOSE_PRODUCTION_NS.add_task(restart)
-DOCKER_COMPOSE_PRODUCTION_NS.add_task(rebuild)
-DOCKER_COMPOSE_PRODUCTION_NS.add_task(start)
-DOCKER_COMPOSE_PRODUCTION_NS.add_task(stop)
-DOCKER_COMPOSE_PRODUCTION_NS.add_task(run)

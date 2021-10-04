@@ -6,8 +6,8 @@ import logging
 import sys
 from invoke import task
 from . import inv_logging
-from . import inv_docker
-from . import inv_install
+from . import inv_node
+from . import inv_spatialmos
 from . import inv_rsync
 
 @task
@@ -35,18 +35,15 @@ def check_upstream(c):
     inv_logging.success(check_upstream.__name__)
 
 
-@task(pre=[check_upstream])
+#@task(pre=[check_upstream])
 @task
 def deploy(c):
     """Everything you need to deploy"""
     inv_logging.task(deploy.__name__)
-    c.run("./task.py local.spatialmos.py-spatialmos--maturin-build")
-    c.run("./task.py local.node.build")
-    inv_docker.stop(c)
-    inv_install.setproductionenvironment(c)
+    inv_spatialmos.py_spatialmos__maturin_build(c)
+    inv_node.build(c)
     inv_rsync.push(c, "sourcefiles")
     inv_rsync.push(c, "staticfiles")
-    inv_docker.rebuild(c)
     inv_logging.success(deploy.__name__)
 
 @task

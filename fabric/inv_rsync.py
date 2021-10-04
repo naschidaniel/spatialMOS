@@ -107,7 +107,7 @@ def _rsync(c, remote_user, remote_host, local_dir, remote_dir, include, exclude,
 def push(c, what):
     """This task synchronizes the local folders to the server"""
     inv_logging.task(push.__name__)
-    settings = inv_base.read_settings("production")
+    settings = inv_base.read_settings()
 
     if what not in ["sourcefiles", "climatologies", "staticfiles"]:
         inv_logging.error(what)
@@ -125,7 +125,7 @@ def push(c, what):
 def get(c):
     """This task synchronizes the server to the local machine"""
     inv_logging.task(get.__name__)
-    settings = inv_base.read_settings("production")
+    settings = inv_base.read_settings()
 
     rsync_direction = "rsync_get"
     for rsync_task in settings[rsync_direction]:

@@ -2,6 +2,7 @@
 #  -*- coding: utf-8 -*-
 """The fabricfile of the project."""
 
+from invoke import Collection, Program
 from fabric import inv_deploy
 from fabric import inv_base
 from fabric import inv_docker
@@ -10,7 +11,6 @@ from fabric import inv_node
 from fabric import inv_install
 from fabric import inv_rsync
 from fabric import inv_spatialmos
-from invoke import Collection, Program
 
 # Logging
 inv_logging.start_logging()
@@ -19,27 +19,16 @@ inv_logging.start_logging()
 MAIN_NS = Collection()
 
 # Local Collection
-LOCAL_NS = Collection("local")
-LOCAL_NS.configure(inv_base.read_settings("development"))
-LOCAL_NS.add_task(inv_docker.docker)
-LOCAL_NS.add_collection(inv_install.INSTALL_DEVELOPMENT_NS)
-LOCAL_NS.add_collection(inv_docker.DOCKER_COMPOSE_DEVELOPMENT_NS)
-LOCAL_NS.add_collection(inv_spatialmos.SPATIALMOS_DEVELOPMENT_NS)
-LOCAL_NS.add_collection(inv_node.NODE_NS)
-MAIN_NS.add_collection(LOCAL_NS)
-
-# Production Collection
-PRODUCTION_NS = Collection("production")
-PRODUCTION_NS.configure(inv_base.read_settings("production"))
-PRODUCTION_NS.add_collection(inv_rsync.RSYNC_NS)
-PRODUCTION_NS.add_collection(inv_install.INSTALL_PRODUCTION_NS)
-PRODUCTION_NS.add_collection(inv_docker.DOCKER_COMPOSE_PRODUCTION_NS)
-PRODUCTION_NS.add_task(inv_docker.docker)
-PRODUCTION_NS.add_task(inv_deploy.deploy)
-PRODUCTION_NS.add_task(inv_deploy.push_climatologies)
-PRODUCTION_NS.add_collection(inv_spatialmos.SPATIALMOS_PRODUCTION_NS)
-MAIN_NS.add_collection(PRODUCTION_NS)
-
+MAIN_NS = Collection("local")
+MAIN_NS.configure(inv_base.read_settings())
+MAIN_NS.add_task(inv_docker.docker)
+MAIN_NS.add_collection(inv_install.INSTALL_DEVELOPMENT_NS)
+MAIN_NS.add_collection(inv_docker.DOCKER_COMPOSE_DEVELOPMENT_NS)
+MAIN_NS.add_collection(inv_spatialmos.SPATIALMOS_DEVELOPMENT_NS)
+MAIN_NS.add_collection(inv_node.NODE_NS)
+MAIN_NS.add_collection(inv_rsync.RSYNC_NS)
+MAIN_NS.add_task(inv_deploy.deploy)
+MAIN_NS.add_task(inv_deploy.push_climatologies)
 
 # Program
 PROGRAM = Program(namespace=MAIN_NS)
