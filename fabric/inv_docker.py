@@ -6,48 +6,72 @@ from invoke import task, Collection
 from . import inv_base
 from . import inv_logging
 
-@task
-def docker(c, cmd):
-    """The Task can execute a Docker command including cmd: docker ps"""
-    inv_logging.task(docker.__name__)
-    inv_logging.cmd(cmd)
-    inv_base.dockerdaemon(c, cmd)
-    inv_logging.success(docker.__name__)
+
+
+
 
 
 @task
-def restart(c, cmd):
-    """Restart a single docker container"""
-    inv_logging.task(restart.__name__)
-    inv_logging.cmd(cmd)
-    inv_base.docker_compose(c, f"restart -t 10 {cmd}", pty=True)
-    inv_logging.success(restart.__name__)
-
-
-@task
-def fullrestart(c):
-    """Restart all docker containers with force"""
-    inv_logging.task(fullrestart.__name__)
-    inv_base.docker_compose(c, "up -d --force-recreate")
-    inv_logging.success(fullrestart.__name__)
-
-
-@task
-def run(c, cmd):
-    """Start a service from the Docker Compose file, for example: docker django"""
-    inv_logging.task(run.__name__)
+def run_node(c, cmd):
+    """run_r_base will run a command in r_base"""
+    inv_logging.task(run_r_base.__name__)
     user, group = inv_base.uid_gid(c)
-    inv_logging.cmd(cmd)
-    inv_base.docker_compose(c, f"run -u {user}:{group} {cmd}", pty=True)
-    inv_logging.success(run.__name__)
+    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/www", "-p 3000:3000", "node_container"]
+    command.extend(cmd)
+    command = ' '.join(command)
+    inv_logging.cmd(command)
+    c.run(command)
+    inv_logging.success(run_r_base.__name__)
+
+
+@task
+def run_r_base(c, cmd):
+    """run_r_base will run a command in r_base"""
+    inv_logging.task(run_r_base.__name__)
+    user, group = inv_base.uid_gid(c)
+    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/usr/src/app", "r_base"]
+    command.extend(cmd)
+    command = ' '.join(command)
+    inv_logging.cmd(command)
+    c.run(command)
+    inv_logging.success(run_r_base.__name__)
+
+
+@task
+def run_py_container(c, cmd):
+    """run_py_container will run a command in py_container"""
+    inv_logging.task(run_py_container.__name__)
+    user, group = inv_base.uid_gid(c)
+    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/usr/src/app", "py_container"]
+    command.extend(cmd)
+    command = ' '.join(command)
+    inv_logging.cmd(command)
+    c.run(command)
+    inv_logging.success(run_py_container.__name__)
+
+
+@task
+def run_maturin_build(c):
+    """Build the Rust libraries for Spatialmos"""
+    inv_logging.task(run_maturin_build.__name__)
+    user, group = inv_base.uid_gid(c)
+    command = ["docker", "run", "--rm", "-v $(pwd):/io", "konstin2/maturin", "build", "--manylinux", "off"]
+    command = ' '.join(command)
+    c.run(command)
+    # TODO rm sudo
+    c.run(f"sudo chown {user}:{group} -R target")
+    c.run("mv ./target/wheels/*.whl ./container/py_container/")
+    inv_logging.success(run_maturin_build.__name__)
 
 
 @task
 def rebuild(c):
     """Rebuild all docker containers"""
     inv_logging.task(rebuild.__name__)
-    inv_base.docker_compose(c, "build")
-    fullrestart(c)
+    run_maturin_build(c)
+    c.run("docker build -t node_container ./website/")
+    c.run("docker build -t r_base ./container/r_base/")
+    c.run("docker build -t py_container ./container/py_container/")
     inv_logging.success(rebuild.__name__)
 
 
@@ -55,14 +79,13 @@ def rebuild(c):
 def stop(c):
     """Stop all running Docker Containers"""
     inv_logging.task(stop.__name__)
-    inv_base.docker_compose(c, "down --remove-orphans")
+    c.run("docker stop node_container")
     inv_logging.success(stop.__name__)
 
 
 
-DOCKER_COMPOSE_DEVELOPMENT_NS = Collection("docker-compose")
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(restart)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(fullrestart)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(rebuild)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(stop)
-DOCKER_COMPOSE_DEVELOPMENT_NS.add_task(run)
+DOCKER_NS = Collection("docker")
+DOCKER_NS.add_task(rebuild)
+DOCKER_NS.add_task(stop)
+DOCKER_NS.add_task(run_py_container)
+DOCKER_NS.add_task(run_maturin_build)
