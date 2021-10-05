@@ -5,7 +5,7 @@
   "description": "A Website for spatial weather predictions.",
   "author": "Daniel Naschberger <daniel@naschi.at>",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "tscbuild": "vue-tsc --noEmit && vite build",
     "lint": "eslint \"src/**/*.{js,ts,vue}\" --fix",
