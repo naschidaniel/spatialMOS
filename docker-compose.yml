@@ -9,16 +9,16 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ${PWD}:/www/:z
+      - ${PWD}:/www/
 
   r_base:
     build: ./container/r_base/
     container_name: spatialMOS_r_base
     volumes:
-      - ${PWD}:/usr/src/app:z
+      - ${PWD}:/usr/src/app
 
   py_container:
     build: ./container/py_container/
     container_name: spatialMOS_py_container
     volumes:
-      - ${PWD}:/usr/src/app:z
+      - ${PWD}:/usr/src/app
