@@ -6,10 +6,6 @@ export interface SystemCheck {
   taskFinishedTime: string;
   taskMaxAgeTime: string;
   failed: boolean;
-  cmd: string;
-  cmdArgs: Record<string, string>;
-  checkName: string;
-  displayNameWebsite: string;
 }
 
 export interface systemstatus {
@@ -57,7 +53,7 @@ export function useSystemstatus() {
   const systemChecks = computed((): SystemCheck[] => {
     const systemChecks = unref(systemstatus.systemChecks);
     return systemChecks.sort((s1, s2) =>
-      s1.displayNameWebsite > s2.displayNameWebsite ? -1 : -1
+      s1.taskName > s2.taskName ? -1 : -1
     );
   });
 

@@ -174,7 +174,7 @@ def py_spatialmos__interpolate_gribfiles(c, parameter):
     inv_logging.task(py_spatialmos__interpolate_gribfiles.__name__)
     cmd = ['python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__interpolate_gribfiles.__name__)
+    inv_logging.success(py_spatialmos__interpolate_gribfiles.__name__)
 
 
 @task
@@ -183,7 +183,7 @@ def py_spatialmos__pre_processing_gamlss_crch_climatologies(c, parameter):
     inv_logging.task(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
     cmd = ["python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
+    inv_logging.success(py_spatialmos__pre_processing_gamlss_crch_climatologies.__name__)
 
 
 @task

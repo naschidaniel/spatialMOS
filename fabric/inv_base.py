@@ -58,26 +58,23 @@ def uid_gid(c):
 def write_statusfile_and_success_logging(taskname):
     """Write statusfile and write out the final logging msg for the task"""
 
-    check_name = taskname
     settings = read_settings()
-
     max_age = 60
-    if check_name in settings["systemChecks"].keys():
-        max_age = int(settings["systemChecks"][check_name])
+    if taskname in settings["systemChecks"].keys():
+        max_age = int(settings["systemChecks"][taskname])
 
     status = {
         "taskName": taskname,
         "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         "taskMaxAgeTime": (datetime.now() + timedelta(minutes=max_age)).strftime("%Y-%m-%dT%H:%M:%S"),
         "failed": datetime.now() >= (datetime.now() + timedelta(minutes=max_age)),
-        "checkName": check_name,
         }
 
     # Provide folder structure.
     data_path = Path("./data/spool/statusfiles")
     os.makedirs(data_path, exist_ok=True)
 
-    statusfile = data_path.joinpath(f"{check_name}.json")
+    statusfile = data_path.joinpath(f"{taskname}.json")
 
     try:
         with open(statusfile, "w") as f:
