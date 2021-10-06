@@ -28,7 +28,7 @@ def merge_statusfiles(c):
 
     settings = read_settings()
     systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != "py_spatialmos__available_systemchecks"]
-    systemchecks_done = sorted([c["checkName"] for c in statusfiles])
+    systemchecks_done = sorted([c["taskName"] for c in statusfiles])
     systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
     if len(systemchecks_missing) == 0:
         write_statusfile_and_success_logging("available_systemchecks")
