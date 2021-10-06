@@ -6,7 +6,6 @@ import os
 import sys
 import logging
 from invoke import task, Collection
-from . import inv_base
 from . import inv_logging
 from . import inv_docker
 from . import inv_node
@@ -18,7 +17,7 @@ def quickinstallation(c):
     inv_logging.task(quickinstallation.__name__)
     folders(c)
     inv_docker.rebuild(c)
-    inv_node.npm(c, "")
+    inv_node.yarn(c, "")
     inv_node.build(c)
     inv_logging.success(quickinstallation.__name__)
 
@@ -45,6 +44,6 @@ def folders(c):
 
 
 
-INSTALL_DEVELOPMENT_NS = Collection("install")
-INSTALL_DEVELOPMENT_NS.add_task(folders)
-INSTALL_DEVELOPMENT_NS.add_task(quickinstallation)
+INSTALL_NS = Collection("install")
+INSTALL_NS.add_task(folders)
+INSTALL_NS.add_task(quickinstallation)

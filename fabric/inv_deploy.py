@@ -7,7 +7,7 @@ import sys
 from invoke import task
 from . import inv_logging
 from . import inv_node
-from . import inv_spatialmos
+from . import inv_docker
 from . import inv_rsync
 
 @task
@@ -40,7 +40,7 @@ def check_upstream(c):
 def deploy(c):
     """Everything you need to deploy"""
     inv_logging.task(deploy.__name__)
-    inv_spatialmos.py_spatialmos__maturin_build(c)
+    inv_docker.run_maturin_build(c)
     inv_node.build(c)
     inv_rsync.push(c, "sourcefiles")
     inv_rsync.push(c, "staticfiles")

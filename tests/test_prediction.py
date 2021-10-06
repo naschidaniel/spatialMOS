@@ -10,7 +10,7 @@ import tempfile
 from py_spatialmos import prediction
 
 # pylint: disable=too-few-public-methods
-class TestRustModules(unittest.TestCase): 
+class TestRustModules(unittest.TestCase):
     '''Test spatialMOS Rust library'''
 
     def test_spatial_prediction(self):
