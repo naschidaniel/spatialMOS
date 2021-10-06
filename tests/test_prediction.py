@@ -5,6 +5,7 @@
 
 import json
 import unittest
+from pathlib import Path
 import tempfile
 from py_spatialmos import prediction
 from pathlib import Path
@@ -12,7 +13,7 @@ class TestRustModules(unittest.TestCase):
     '''Test spatialMOS Rust library'''
 
     def test_spatial_prediction(self):
-
+        '''test_spatial_prediction checks if the predictions are ok'''
         parser_dict = {'parameter': 'tmp_2m', 'resolution': 0.5, 'date': 20210803}
         data_path_spool = Path(tempfile.mkdtemp())
 
