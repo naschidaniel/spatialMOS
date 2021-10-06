@@ -21,6 +21,7 @@ MAIN_NS = Collection()
 # Local Collection
 MAIN_NS = Collection("local")
 MAIN_NS.configure(inv_base.read_settings())
+MAIN_NS.add_task(inv_base.merge_statusfiles)
 MAIN_NS.add_collection(inv_install.INSTALL_NS)
 MAIN_NS.add_collection(inv_docker.DOCKER_NS)
 MAIN_NS.add_collection(inv_spatialmos.SPATIALMOS_NS)

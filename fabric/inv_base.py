@@ -7,7 +7,35 @@ import os
 import logging
 from pathlib import Path
 from datetime import datetime, timedelta
+from invoke import task
 
+
+@task
+def merge_statusfiles(c):
+    """Merge statusfiles"""
+    statusfiles_path = Path("./data/spool/statusfiles/")
+    statusfiles = []
+    for file in sorted(statusfiles_path.glob("*.json")):
+        logging.info("The file %s will be added to the systemstatus file.", file)
+        with (open(file, mode="r")) as f:
+            status = json.load(f)
+        statusfiles.append(status)
+
+    merge_statusfile = Path("./data/media/systemstatus.json")
+    with open(merge_statusfile, 'w', encoding='utf-8') as f:
+        json.dump(statusfiles, f)
+    logging.info("The merged status file %s has been written.", merge_statusfile)
+
+    settings = read_settings()
+    systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != "py_spatialmos__available_systemchecks"]
+    systemchecks_done = sorted([c["checkName"] for c in statusfiles])
+    systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
+    if len(systemchecks_missing) == 0:
+        write_statusfile_and_success_logging("available_systemchecks")
+    else:
+        for check in systemchecks_missing:
+            logging.error("The check '%s' is missing", check)
+    write_statusfile_and_success_logging(merge_statusfiles.__name__)
 
 def read_settings():
     """A function to read the settings file."""
@@ -26,9 +54,6 @@ def uid_gid(c):
     uid = os.getuid()
     gid = os.getgid()
     return uid, gid
-
-
-
 
 def write_statusfile_and_success_logging(taskname):
     """Write statusfile and write out the final logging msg for the task"""
