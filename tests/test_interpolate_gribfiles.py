@@ -31,12 +31,12 @@ class TestExitCodes(unittest.TestCase):
         fid, temp_source_file = tempfile.mkstemp(suffix='.csv')
         os.close(fid)
         target = Path(temp_source_file)
-        with open(target, mode='w', newline='') as f:
+        with open(target, mode='w', newline='', encoding='utf-8') as f:
             csv_writer = SpatialWriter(interpolate_gribfiles.PARAMETERS, f)
             interpolate_gribfiles.interpolate_gribfiles(gribdata, csv_writer, STATION_LOCATIONS)
 
         try:
-            with open(target) as f:
+            with open(target, 'r', encoding='utf-8') as f:
                 data = list(csv.reader(f, delimiter=';'))
         finally:
             self.assertEqual(DATA_OK, data)

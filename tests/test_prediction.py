@@ -19,7 +19,7 @@ class TestRustModules(unittest.TestCase):
         alt_file = Path("./tests/testdata/test_prediction/spatial_alt_area.csv")
         alt_area_file = Path("./tests/testdata/test_prediction/spatial_alt_area.json")
         spatialmos_run_status = []
-        with open(Path("./tests/testdata/test_prediction/GFSE_20210803_0000_f006.json")) as f:
+        with open(Path("./tests/testdata/test_prediction/GFSE_20210803_0000_f006.json"), 'r', encoding='utf-8') as f:
             gribfiles_data = json.load(f)
 
         # Check if climatologies files are available
@@ -33,12 +33,12 @@ class TestRustModules(unittest.TestCase):
         prediction.spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
         prediction.write_spatialmos_run_file(data_path_spool, spatialmos_run_status, parser_dict['parameter'])
 
-        with open(Path("./tests/testdata/test_prediction/spatialmosrun_tmp_2m.json")) as f_ok, open(data_path_spool.joinpath("spatialmosrun_tmp_2m.json")) as f:
+        with open(Path("./tests/testdata/test_prediction/spatialmosrun_tmp_2m.json"), 'r', encoding='utf-8') as f_ok, open(data_path_spool.joinpath("spatialmosrun_tmp_2m.json"), 'r', encoding='utf-8') as f:
             spatialmos_run_status_ok = json.load(f_ok)
             spatialmos_run_status = json.load(f)
         self.assertEqual(spatialmos_run_status_ok, spatialmos_run_status)
 
-        with open(Path("./tests/testdata/test_prediction/20210803_step_006.json")) as f_ok, open(data_path_spool.joinpath("20210803_step_006.json")) as f:
+        with open(Path("./tests/testdata/test_prediction/20210803_step_006.json"), 'r', encoding='utf-8') as f_ok, open(data_path_spool.joinpath("20210803_step_006.json"), 'r', encoding='utf-8') as f:
             spatialmos_prediction_ok = json.load(f_ok)
             spatialmos_prediction = json.load(f)
         self.assertDictEqual(spatialmos_prediction_ok, spatialmos_prediction)

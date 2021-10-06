@@ -29,7 +29,7 @@ class TestExitCodes(unittest.TestCase):
         get_lwd_data.fetch_lwd_data(data_path, ogd_path)
         try:
             for csv_file in data_path.glob('*.csv'):
-                with open(csv_file) as f:
+                with open(csv_file, 'r', encoding='ISO-8859-1') as f:
                     csv_data = list(csv.reader(f, delimiter=';'))
                 self.assertEqual(len(csv_data) >= 57, True)
         finally:
@@ -37,7 +37,7 @@ class TestExitCodes(unittest.TestCase):
 
         try:
             for ogd_file in ogd_path.glob('*.geojson'):
-                with open(ogd_file) as f:
+                with open(ogd_file, 'r', encoding='ISO-8859-1') as f:
                     ogd_data = dict(json.load(f))
                 self.assertEqual(['features', 'type'], list(ogd_data.keys()))
         finally:
