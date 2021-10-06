@@ -20,7 +20,7 @@ class TestExitCodes(unittest.TestCase):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
 
         current_minute = int(datetime.now().strftime("%M"))
-        if current_minute > 10 and current_minute < 25:
+        if current_minute > 25:
             pytest.skip(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
 
         print(f'The Test test_fetch_lwd_data_ok is running. The current minute is {current_minute}.')
@@ -29,7 +29,7 @@ class TestExitCodes(unittest.TestCase):
         get_lwd_data.fetch_lwd_data(data_path, ogd_path)
         try:
             for csv_file in data_path.glob('*.csv'):
-                with open(csv_file) as f:
+                with open(csv_file, 'r', encoding='ISO-8859-1') as f:
                     csv_data = list(csv.reader(f, delimiter=';'))
                 self.assertEqual(len(csv_data) >= 57, True)
         finally:
@@ -37,7 +37,7 @@ class TestExitCodes(unittest.TestCase):
 
         try:
             for ogd_file in ogd_path.glob('*.geojson'):
-                with open(ogd_file) as f:
+                with open(ogd_file, 'r', encoding='ISO-8859-1') as f:
                     ogd_data = dict(json.load(f))
                 self.assertEqual(['features', 'type'], list(ogd_data.keys()))
         finally:
@@ -46,7 +46,7 @@ class TestExitCodes(unittest.TestCase):
     def test_fetch_lwd_data_fail(self):
         '''This test should complete successfully if all the data from lwd could be downloaded.'''
         current_minute = int(datetime.now().strftime("%M"))
-        if current_minute < 35 or current_minute > 57:
+        if current_minute < 35 or current_minute > 50:
             pytest.skip(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
 
         print(f'The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}.')

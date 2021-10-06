@@ -52,7 +52,7 @@ class TestExitCodes(unittest.TestCase):
 
         try:
             for csv_file in data_path.glob('*.csv'):
-                with open(csv_file) as f:
+                with open(csv_file, 'r', encoding='ISO-8859-1') as f:
                     csv_data = list(csv.reader(f, delimiter=';'))
                 self.assertEqual(len(csv_data) >= 50, True)
         finally:
