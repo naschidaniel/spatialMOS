@@ -21,7 +21,7 @@ DATA_OK = [['anal_data', 'valid_data', 'yday', 'step', 'lon', 'lat', 'spread', '
 
 STATION_LOCATIONS = [[15.0, 46.0], [15.5, 46.5], [16.3, 46.2]]
 
-
+ # pylint: disable=too-few-public-methods
 class TestExitCodes(unittest.TestCase):
     '''pytest for interpolate_gribfiles'''
 

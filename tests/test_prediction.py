@@ -8,8 +8,9 @@ import unittest
 from pathlib import Path
 import tempfile
 from py_spatialmos import prediction
-from pathlib import Path
-class TestRustModules(unittest.TestCase):
+
+# pylint: disable=too-few-public-methods
+class TestRustModules(unittest.TestCase): 
     '''Test spatialMOS Rust library'''
 
     def test_spatial_prediction(self):
