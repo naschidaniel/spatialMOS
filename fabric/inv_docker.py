@@ -72,6 +72,9 @@ def rebuild(c):
     c.run("docker build -t node_container ./website/")
     c.run("docker build -t r_base ./container/r_base/")
     c.run("docker build -t py_container ./container/py_container/")
+    c.run("docker save node_container | gzip > ./container/node_container.tar.gz")
+    c.run("docker save py_container | gzip > ./container/py_container.tar.gz")
+    c.run("docker save r_base | gzip > ./container/r_base.tar.gz")
     inv_logging.success(rebuild.__name__)
 
 
