@@ -103,7 +103,8 @@ def py_spatialmos__get_gefs_forecasts(c, date, parameter):
         py_spatialmos__get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter=p)
         py_spatialmos__get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter=p)
 
-    py_spatialmos__pre_processing_gribfiles(c, date=date, resolution="0.5", parameter=parameter)
+    if parameter in ['rh_2m', 'tmp_2m']:
+        py_spatialmos__pre_processing_gribfiles(c, date=date, resolution="0.5", parameter=parameter)
     inv_logging.success(py_spatialmos__get_gefs_forecasts.__name__)
 
 
@@ -219,7 +220,7 @@ def py_spatialmos__pre_processing_gribfiles(c, date, resolution, parameter):
     inv_logging.task(py_spatialmos__pre_processing_gribfiles.__name__)
     cmd = ["python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_spatialmos__pre_processing_gribfiles.__name__)
+    inv_logging.success(py_spatialmos__pre_processing_gribfiles.__name__)
 
 @task
 def py_spatialmos__prediction__rh_2m(c):

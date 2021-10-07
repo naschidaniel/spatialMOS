@@ -15,18 +15,14 @@
     "./data/static"
   ],
   "systemChecks": {
-    "available_systemchecks": "30",
-    "merge_statusfiles": "30",
+    "merge_statusfiles": "16",
     "py_spatialmos__get_lwd": "75",
     "py_spatialmos__get_zamg": "75",
     "py_spatialmos__get_gefs_forecasts__rh_2m": "1455",
     "py_spatialmos__get_gefs_forecasts__tmp_2m": "1455",
     "py_spatialmos__get_gefs_forecasts__wind_10m": "1455",
     "py_spatialmos__prediction__tmp_2m": "1455",
-    "py_spatialmos__prediction__rh_2m": "1455",
-    "py_spatialmos__archive_folder__gefs_avgspr_forecast_p05": "10095",
-    "py_spatialmos__lwd": "10095",
-    "py_spatialmos__zamg": "10095"
+    "py_spatialmos__prediction__rh_2m": "1455"
   },
   "REMOTE_USER": "example",
   "REMOTE_HOST": "example.com",

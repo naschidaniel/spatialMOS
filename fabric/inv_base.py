@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from invoke import task
-
+from . import inv_logging
 
 @task
 def merge_statusfiles(c):
@@ -19,23 +19,41 @@ def merge_statusfiles(c):
         logging.info("The file %s will be added to the systemstatus file.", file)
         with (open(file, mode="r")) as f:
             status = json.load(f)
+            status['failed'] = datetime.now() > datetime.strptime(status['taskMaxAgeTime'], '%Y-%m-%dT%H:%M:%S')
         statusfiles.append(status)
+
+    settings = read_settings()
+    systemchecks_done = sorted([c["taskName"] for c in statusfiles])
+    systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != merge_statusfiles.__name__]
+    systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
+
+    if len(systemchecks_missing) == 0:
+        status_complete = True
+        logging.info("All available checks from the 'settings.json' file are checked.")
+    else:
+        status_complete = False
+        for check in systemchecks_missing:
+            logging.error("The check '%s' is missing", check)
+
+    settings = read_settings()
+    status = {
+        "taskName": merge_statusfiles.__name__,
+        "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "taskMaxAgeTime": (datetime.now() + timedelta(minutes=int(settings['systemChecks'][merge_statusfiles.__name__]))).strftime("%Y-%m-%dT%H:%M:%S"),
+        "maxAge": int(settings['systemChecks'][merge_statusfiles.__name__]),
+        "complete": status_complete,
+        "failed": False,
+        }
+    statusfiles.append(status)
+    statusfiles = sorted(statusfiles, key=lambda x: x['taskName'], reverse=False)
+
 
     merge_statusfile = Path("./data/media/systemstatus.json")
     with open(merge_statusfile, 'w', encoding='utf-8') as f:
         json.dump(statusfiles, f)
     logging.info("The merged status file %s has been written.", merge_statusfile)
+    inv_logging.success(merge_statusfiles.__name__)
 
-    settings = read_settings()
-    systemchecks_available = [check for check in sorted(settings["systemChecks"].keys()) if check != "py_spatialmos__available_systemchecks"]
-    systemchecks_done = sorted([c["taskName"] for c in statusfiles])
-    systemchecks_missing = [check for check in systemchecks_available if check not in systemchecks_done]
-    if len(systemchecks_missing) == 0:
-        write_statusfile_and_success_logging("available_systemchecks")
-    else:
-        for check in systemchecks_missing:
-            logging.error("The check '%s' is missing", check)
-    write_statusfile_and_success_logging(merge_statusfiles.__name__)
 
 def read_settings():
     """A function to read the settings file."""
@@ -67,7 +85,7 @@ def write_statusfile_and_success_logging(taskname):
         "taskName": taskname,
         "taskFinishedTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         "taskMaxAgeTime": (datetime.now() + timedelta(minutes=max_age)).strftime("%Y-%m-%dT%H:%M:%S"),
-        "failed": datetime.now() >= (datetime.now() + timedelta(minutes=max_age)),
+        "maxAge": max_age,
         }
 
     # Provide folder structure.
