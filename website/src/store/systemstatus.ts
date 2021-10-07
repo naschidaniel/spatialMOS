@@ -5,21 +5,33 @@ export interface SystemCheck {
   taskName: string;
   taskFinishedTime: string;
   taskMaxAgeTime: string;
+  maxAge: number;
   failed: boolean;
+  complete?: boolean;
 }
 
-export interface systemstatus {
+export interface SystemChecks {
+  hourly: SystemCheck[];
+  daily: SystemCheck[];
+  weekly: SystemCheck[];
+}
+
+export interface SystemStatus {
   isLoading: boolean;
   isError: boolean;
   statusText: string;
-  systemChecks: SystemCheck[];
+  systemChecks: SystemChecks;
 }
 
-const systemstatus: systemstatus = reactive({
+const systemstatus: SystemStatus = reactive({
   isLoading: false,
   isError: false,
   statusText: "",
-  systemChecks: [],
+  systemChecks: {
+    hourly: [],
+    daily: [],
+    weekly: [],
+  },
 });
 
 export function useSystemstatus() {
@@ -34,10 +46,20 @@ export function useSystemstatus() {
         res.json().then((data) => {
           systemstatus.isError = false;
           systemstatus.statusText = res.statusText;
-          systemstatus.systemChecks = data.map((c: SystemCheck) => {
-            c.failed = new Date().getTime() >= Date.parse(c.taskMaxAgeTime);
-            return c;
-          });
+          const checks = data
+            .sort((s1: SystemCheck, s2: SystemCheck) =>
+              s1.taskName.localeCompare(s2.taskName)
+            )
+            .forEach((c: SystemCheck) => {
+              c.failed = new Date().getTime() >= Date.parse(c.taskMaxAgeTime);
+              if (c.maxAge < 90) {
+                systemstatus.systemChecks.hourly.push(c);
+              } else if (c.maxAge <= 1470) {
+                systemstatus.systemChecks.daily.push(c);
+              } else {
+                systemstatus.systemChecks.weekly.push(c);
+              }
+            });
         });
       } catch {
         systemstatus.isError = true;
@@ -50,11 +72,8 @@ export function useSystemstatus() {
     systemstatus.isLoading = false;
   }
 
-  const systemChecks = computed((): SystemCheck[] => {
-    const systemChecks = unref(systemstatus.systemChecks);
-    return systemChecks.sort((s1, s2) =>
-      s1.taskName > s2.taskName ? -1 : -1
-    );
+  const systemChecks = computed((): SystemChecks => {
+    return unref(systemstatus.systemChecks);
   });
 
   const updateTime = computed((): string => {

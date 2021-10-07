@@ -1,36 +1,46 @@
 <template>
-  <ul class="list-group">
-    <li class="list-group-item">Check</li>
+  <ul v-for="(group, key) in systemChecks" :key="key" class="list-group mt-4">
+    <li class="list-group-item">
+      <span v-if="key === 'hourly'" class="fw-bold">Stündlich</span>
+      <span v-if="key === 'daily'" class="fw-bold">Täglich</span>
+      <span v-if="key === 'weekly'" class="fw-bold">Wöchentlich</span>
+    </li>
     <li
-      v-for="systemCheck in systemChecks"
+      v-for="systemCheck in group"
       :key="systemCheck.taskName"
       class="list-group-item"
     >
-      <span class="d-inline d-sm-inline d-md-none ml-1">
-        <small>
-          <span
-            class="mr-1 badge rounded-pill mr-2"
-            :class="systemCheck.failed ? 'bg-danger' : 'bg-success'"
-            title="{{ systemCheck.taskFinishedTime }}"
-            >&nbsp;</span
-          >
-          {{ systemCheck.taskName }}
-        </small>
-      </span>
-      <span class="d-none d-md-inline ml-2">
-        <span
-          class="d-none d-md-inline ml-2 mr-3 badge rounded-pill"
-          :class="systemCheck.failed ? 'bg-danger' : 'bg-success'"
-          style="width: 60px"
-          :title="`${systemCheck.taskFinishedTime} ${systemCheck.taskName}`"
-        >
-          {{ systemCheck.failed ? "failed" : "passed" }}
-        </span>
-        <span class="mx-2">{{ systemCheck.taskName }}</span
-        >&ndash;<small class="mx-2">{{
-          formatDateTime(systemCheck.taskFinishedTime)
-        }}</small>
-      </span>
+      <div class="container">
+        <div class="row">
+          <div class="col-1">
+            <span
+              class="mr-3 badge rounded-pill pointer"
+              :class="
+                systemCheck.failed
+                  ? 'bg-danger'
+                  : systemCheck.complete
+                  ? 'bg-warning'
+                  : 'bg-success'
+              "
+              :title="`${systemCheck.taskFinishedTime} ${systemCheck.taskName}`"
+            >
+              <span class="d-inline d-sm-inline d-md-none">&nbsp;</span>
+              <span class="d-none d-md-inline">
+                {{ systemCheck.failed ? "failed" : "passed" }}
+              </span>
+            </span>
+          </div>
+          <div class="col-11">
+            <span class="ml-2"
+              >{{ systemCheck.taskName
+              }}<br class="d-inline d-sm-inline d-md-none" /><span
+                class="d-none d-md-inline mx-2"
+                >&ndash;</span
+              > </span
+            ><small>{{ formatDateTime(systemCheck.taskFinishedTime) }}</small>
+          </div>
+        </div>
+      </div>
     </li>
   </ul>
 </template>
