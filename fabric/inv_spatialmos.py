@@ -46,7 +46,7 @@ def init_topography(c):
 def py_archive_folder(c, folder):
     """The *.tar.gz are created with tar. The folder must be specified e.g. zamg."""
     inv_logging.task(py_archive_folder.__name__)
-    cmd = ['./run_script.py', '--script', 'archive_folder', '--folder', folder]
+    cmd = ['python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
     inv_logging.success(py_archive_folder.__name__)
 
