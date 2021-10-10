@@ -90,49 +90,93 @@ def py_get_gefs(c, date, resolution, modeltype, parameter):
 
 
 @task
-def py_get_gefs_forecasts(c, date, parameter):
-    """Download and pre process the forecasts"""
-    inv_logging.task(py_get_gefs_forecasts.__name__)
-
-    if parameter == 'wind_10m':
-        get_gefs_parameter = ['ugrd_10m', 'vgrd_10m']     
-    else:
-        get_gefs_parameter = [parameter]
-
-    for p in get_gefs_parameter:
-        py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter=p)
-        py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter=p)
-
-    if parameter in ['rh_2m', 'tmp_2m']:
-        py_pre_processing_gribfiles(c, date=date, resolution="0.5", parameter=parameter)
-    inv_logging.success(py_get_gefs_forecasts.__name__)
-
-
-@task
-def py_get_gefs_forecasts__tmp_2m(c):
+def py_get_gefs_forecasts__tmp_2m_avg(c):
     """Download and pre process forcasts for tmp_2m"""
-    inv_logging.task(py_get_gefs_forecasts__tmp_2m.__name__)
+    inv_logging.task(py_get_gefs_forecasts__tmp_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs_forecasts(c, date, 'tmp_2m')
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__tmp_2m.__name__)
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__tmp_2m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__rh_2m(c):
+def py_get_gefs_forecasts__tmp_2m_spr(c):
+    """Download and pre process forcasts for tmp_2m"""
+    inv_logging.task(py_get_gefs_forecasts__tmp_2m_spr.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__tmp_2m_spr.__name__)
+
+
+@task
+def py_get_gefs_forecasts__rh_2m_avg(c):
     """Download and pre process forcasts for rh_2m"""
-    inv_logging.task(py_get_gefs_forecasts__rh_2m.__name__)
+    inv_logging.task(py_get_gefs_forecasts__rh_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs_forecasts(c, date, 'rh_2m')
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__rh_2m.__name__)
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__rh_2m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__wind_10m(c):
-    """Download and pre process forcasts for wind_10m"""
-    inv_logging.task(py_get_gefs_forecasts__wind_10m.__name__)
+def py_get_gefs_forecasts__rh_2m_spr(c):
+    """Download and pre process forcasts for rh_2m spr"""
+    inv_logging.task(py_get_gefs_forecasts__rh_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs_forecasts(c, date, 'wind_10m')
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__wind_10m.__name__)
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__rh_2m_spr.__name__)
+
+
+@task
+def py_get_gefs_forecasts__ugrd_10m_avg(c):
+    """Download and pre process forcasts for ugrd_10 avg"""
+    inv_logging.task(py_get_gefs_forecasts__ugrd_10m_avg.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="ugrd_10m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__ugrd_10m_avg.__name__)
+
+
+@task
+def py_get_gefs_forecasts__ugrd_10m_spr(c):
+    """Download and pre process forcasts for ugrd_10 spr"""
+    inv_logging.task(py_get_gefs_forecasts__ugrd_10m_spr.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="ugrd_10m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__ugrd_10m_spr.__name__)
+
+
+@task
+def py_get_gefs_forecasts__vgrd_10m_avg(c):
+    """Download and pre process forcasts for wind_10m avg"""
+    inv_logging.task(py_get_gefs_forecasts__vgrd_10m_avg.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="vgrd_10m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__vgrd_10m_avg.__name__)
+
+
+@task
+def py_get_gefs_forecasts__vgrd_10m_spr(c):
+    """Download and pre process forcasts for wind_10m spr"""
+    inv_logging.task(py_get_gefs_forecasts__vgrd_10m_spr.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="vgrd_10m")
+    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__vgrd_10m_spr.__name__)
+
+
+@task
+def py_pre_processing_gribfiles__tmp_2m(c):
+    """combine tmp_2m gribfiles for predictions"""
+    inv_logging.task(py_pre_processing_gribfiles__tmp_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(py_pre_processing_gribfiles__tmp_2m.__name__)
+
+
+@task
+def py_pre_processing_gribfiles__rh_2m(c):
+    """combine rh_2m gribfiles for predictions"""
+    inv_logging.task(py_pre_processing_gribfiles__rh_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    py_pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(py_pre_processing_gribfiles__rh_2m.__name__)
 
 @task
 def py_get_suedtirol(c, begindate, enddate):
@@ -246,16 +290,22 @@ SPATIALMOS_NS.add_task(py_archive_folder__gefs_avgspr_forecast_p05)
 SPATIALMOS_NS.add_task(py_archive_folder__lwd)
 SPATIALMOS_NS.add_task(py_archive_folder__zamg)
 SPATIALMOS_NS.add_task(py_untar_folder)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__rh_2m)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__tmp_2m)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__wind_10m)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__rh_2m_avg)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__rh_2m_spr)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__tmp_2m_avg)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__tmp_2m_spr)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_avg)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_spr)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__vgrd_10m_avg)
+SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_spr)
 SPATIALMOS_NS.add_task(py_get_suedtirol)
 SPATIALMOS_NS.add_task(py_get_lwd)
 SPATIALMOS_NS.add_task(py_get_zamg)
 SPATIALMOS_NS.add_task(py_combine_data)
 SPATIALMOS_NS.add_task(py_interpolate_gribfiles)
 SPATIALMOS_NS.add_task(py_pre_processing_gamlss_crch_climatologies)
-SPATIALMOS_NS.add_task(py_pre_processing_gribfiles)
+SPATIALMOS_NS.add_task(py_pre_processing_gribfiles__rh_2m)
+SPATIALMOS_NS.add_task(py_pre_processing_gribfiles__tmp_2m)
 SPATIALMOS_NS.add_task(py_prediction__tmp_2m)
 SPATIALMOS_NS.add_task(py_prediction__rh_2m)
 SPATIALMOS_NS.add_task(r_gamlss_crch_model)
