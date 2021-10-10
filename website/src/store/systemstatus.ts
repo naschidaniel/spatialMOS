@@ -40,13 +40,16 @@ export function useSystemstatus() {
     options?: Record<string, unknown>
   ) {
     systemstatus.isLoading = true;
+    systemstatus.systemChecks.hourly = []
+    systemstatus.systemChecks.daily = []
+    systemstatus.systemChecks.weekly = []
     const res = await fetch(url, options);
     if (res.ok) {
       try {
         res.json().then((data) => {
           systemstatus.isError = false;
           systemstatus.statusText = res.statusText;
-          const checks = data
+          data
             .sort((s1: SystemCheck, s2: SystemCheck) =>
               s1.taskName.localeCompare(s2.taskName)
             )
