@@ -15,7 +15,9 @@
     "./data/static"
   ],
   "systemChecks": {
-    "merge_statusfiles": "16",
+    "archive_folder__gefs_avgspr_forecast_p05": "10095",
+    "archive_folder__lwd": "10095",
+    "archive_folder__zamg": "10095",
     "get_lwd": "75",
     "get_zamg": "75",
     "get_gefs_forecasts__rh_2m_avg": "1455",
@@ -26,8 +28,11 @@
     "get_gefs_forecasts__ugrd_10m_spr": "1455",
     "get_gefs_forecasts__vgrd_10m_avg": "1455",
     "get_gefs_forecasts__vgrd_10m_spr": "1455",
+    "merge_statusfiles": "16",
     "prediction__tmp_2m": "1455",
-    "prediction__rh_2m": "1455"
+    "prediction__rh_2m": "1455",
+    "pre_processing_gribfiles__rh-2m": "1455",
+    "pre_processing_gribfiles__tmp-2m": "1455"
   },
   "REMOTE_USER": "example",
   "REMOTE_HOST": "example.com",

@@ -43,192 +43,192 @@ def init_topography(c):
 
 
 @task
-def py_archive_folder(c, folder):
+def archive_folder(c, folder):
     """The *.tar.gz are created with tar. The folder must be specified e.g. zamg."""
-    inv_logging.task(py_archive_folder.__name__)
+    inv_logging.task(archive_folder.__name__)
     cmd = ['python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_archive_folder.__name__)
+    inv_logging.success(archive_folder.__name__)
 
 
 @task
-def py_archive_folder__gefs_avgspr_forecast_p05(c):
+def archive_folder__gefs_avgspr_forecast_p05(c):
     """created a tar file from the folder gefs_avgspr_forecast_p05"""
-    py_archive_folder(c, "gefs_avgspr_forecast_p05")
-    inv_base.write_statusfile_and_success_logging(py_archive_folder__gefs_avgspr_forecast_p05.__name__)
+    archive_folder(c, "gefs_avgspr_forecast_p05")
+    inv_base.write_statusfile_and_success_logging(archive_folder__gefs_avgspr_forecast_p05.__name__)
 
 
 @task
-def py_archive_folder__lwd(c):
+def archive_folder__lwd(c):
     """created a tar file from the folder lwd"""
-    py_archive_folder(c, "lwd")
-    inv_base.write_statusfile_and_success_logging(py_archive_folder__lwd.__name__)
+    archive_folder(c, "lwd")
+    inv_base.write_statusfile_and_success_logging(archive_folder__lwd.__name__)
 
 
 @task
-def py_archive_folder__zamg(c):
+def archive_folder__zamg(c):
     """created a tar file from the folder lwd"""
-    py_archive_folder(c, "zamg")
-    inv_base.write_statusfile_and_success_logging(py_archive_folder__zamg.__name__)
+    archive_folder(c, "zamg")
+    inv_base.write_statusfile_and_success_logging(archive_folder__zamg.__name__)
 
 @task
-def py_untar_folder(c, folder):
+def untar_folder(c, folder):
     """The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg."""
-    inv_logging.task(py_untar_folder.__name__)
+    inv_logging.task(untar_folder.__name__)
     cmd = ['python', './run_script.py', '--script', 'untar_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_untar_folder.__name__)
+    inv_logging.success(untar_folder.__name__)
 
 
 @task
-def py_get_gefs(c, date, resolution, modeltype, parameter):
+def get_gefs(c, date, resolution, modeltype, parameter):
     """Download data gefs files."""
-    inv_logging.task(py_get_gefs.__name__)
+    inv_logging.task(get_gefs.__name__)
     cmd = ["python", "./run_script.py", "--script", "get_gefs_forecasts", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_get_gefs.__name__)
+    inv_logging.success(get_gefs.__name__)
 
 
 @task
-def py_get_gefs_forecasts__tmp_2m_avg(c):
+def get_gefs_forecasts__tmp_2m_avg(c):
     """Download and pre process forcasts for tmp_2m"""
-    inv_logging.task(py_get_gefs_forecasts__tmp_2m_avg.__name__)
+    inv_logging.task(get_gefs_forecasts__tmp_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="tmp_2m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__tmp_2m_avg.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__tmp_2m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__tmp_2m_spr(c):
+def get_gefs_forecasts__tmp_2m_spr(c):
     """Download and pre process forcasts for tmp_2m"""
-    inv_logging.task(py_get_gefs_forecasts__tmp_2m_spr.__name__)
+    inv_logging.task(get_gefs_forecasts__tmp_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="tmp_2m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__tmp_2m_spr.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__tmp_2m_spr.__name__)
 
 
 @task
-def py_get_gefs_forecasts__rh_2m_avg(c):
+def get_gefs_forecasts__rh_2m_avg(c):
     """Download and pre process forcasts for rh_2m"""
-    inv_logging.task(py_get_gefs_forecasts__rh_2m_avg.__name__)
+    inv_logging.task(get_gefs_forecasts__rh_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="rh_2m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__rh_2m_avg.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__rh_2m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__rh_2m_spr(c):
+def get_gefs_forecasts__rh_2m_spr(c):
     """Download and pre process forcasts for rh_2m spr"""
-    inv_logging.task(py_get_gefs_forecasts__rh_2m_spr.__name__)
+    inv_logging.task(get_gefs_forecasts__rh_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="rh_2m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__rh_2m_spr.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__rh_2m_spr.__name__)
 
 
 @task
-def py_get_gefs_forecasts__ugrd_10m_avg(c):
+def get_gefs_forecasts__ugrd_10m_avg(c):
     """Download and pre process forcasts for ugrd_10 avg"""
-    inv_logging.task(py_get_gefs_forecasts__ugrd_10m_avg.__name__)
+    inv_logging.task(get_gefs_forecasts__ugrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="ugrd_10m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__ugrd_10m_avg.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="ugrd_10m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__ugrd_10m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__ugrd_10m_spr(c):
+def get_gefs_forecasts__ugrd_10m_spr(c):
     """Download and pre process forcasts for ugrd_10 spr"""
-    inv_logging.task(py_get_gefs_forecasts__ugrd_10m_spr.__name__)
+    inv_logging.task(get_gefs_forecasts__ugrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="ugrd_10m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__ugrd_10m_spr.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="ugrd_10m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__ugrd_10m_spr.__name__)
 
 
 @task
-def py_get_gefs_forecasts__vgrd_10m_avg(c):
+def get_gefs_forecasts__vgrd_10m_avg(c):
     """Download and pre process forcasts for wind_10m avg"""
-    inv_logging.task(py_get_gefs_forecasts__vgrd_10m_avg.__name__)
+    inv_logging.task(get_gefs_forecasts__vgrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="vgrd_10m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__vgrd_10m_avg.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="vgrd_10m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__vgrd_10m_avg.__name__)
 
 
 @task
-def py_get_gefs_forecasts__vgrd_10m_spr(c):
+def get_gefs_forecasts__vgrd_10m_spr(c):
     """Download and pre process forcasts for wind_10m spr"""
-    inv_logging.task(py_get_gefs_forecasts__vgrd_10m_spr.__name__)
+    inv_logging.task(get_gefs_forecasts__vgrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="vgrd_10m")
-    inv_base.write_statusfile_and_success_logging(py_get_gefs_forecasts__vgrd_10m_spr.__name__)
+    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="vgrd_10m")
+    inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__vgrd_10m_spr.__name__)
 
 
 @task
-def py_pre_processing_gribfiles__tmp_2m(c):
+def pre_processing_gribfiles__tmp_2m(c):
     """combine tmp_2m gribfiles for predictions"""
-    inv_logging.task(py_pre_processing_gribfiles__tmp_2m.__name__)
+    inv_logging.task(pre_processing_gribfiles__tmp_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="tmp_2m")
-    inv_base.write_statusfile_and_success_logging(py_pre_processing_gribfiles__tmp_2m.__name__)
+    pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="tmp_2m")
+    inv_base.write_statusfile_and_success_logging(pre_processing_gribfiles__tmp_2m.__name__)
 
 
 @task
-def py_pre_processing_gribfiles__rh_2m(c):
+def pre_processing_gribfiles__rh_2m(c):
     """combine rh_2m gribfiles for predictions"""
-    inv_logging.task(py_pre_processing_gribfiles__rh_2m.__name__)
+    inv_logging.task(pre_processing_gribfiles__rh_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    py_pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="rh_2m")
-    inv_base.write_statusfile_and_success_logging(py_pre_processing_gribfiles__rh_2m.__name__)
+    pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="rh_2m")
+    inv_base.write_statusfile_and_success_logging(pre_processing_gribfiles__rh_2m.__name__)
 
 @task
-def py_get_suedtirol(c, begindate, enddate):
+def get_suedtirol(c, begindate, enddate):
     """Download data from South Tyrol."""
-    inv_logging.task(py_get_suedtirol.__name__)
+    inv_logging.task(get_suedtirol.__name__)
     cmd = ["python", "./run_script.py", "--script", "get_suedtirol_data",
            "--begindate", begindate, "--enddate", enddate]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_get_suedtirol.__name__)
+    inv_base.write_statusfile_and_success_logging(get_suedtirol.__name__)
 
 
 @task
-def py_get_lwd(c):
+def get_lwd(c):
     """Download data from lwd tirol"""
-    inv_logging.task(py_get_lwd.__name__)
+    inv_logging.task(get_lwd.__name__)
     cmd = ["python", "./run_script.py", "--script", "get_lwd_data"]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_get_lwd.__name__)
+    inv_base.write_statusfile_and_success_logging(get_lwd.__name__)
 
 
 @task
-def py_get_zamg(c):
+def get_zamg(c):
     """Download data from zamg webpage."""
-    inv_logging.task(py_get_zamg.__name__)
+    inv_logging.task(get_zamg.__name__)
     cmd = ["python", "./run_script.py", "--script", "get_zamg_data"]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_get_zamg.__name__)
+    inv_base.write_statusfile_and_success_logging(get_zamg.__name__)
 
 
 @task
-def py_combine_data(c, folder):
+def combine_data(c, folder):
     """Combine downloaded data for a folder."""
-    inv_logging.task(py_combine_data.__name__)
+    inv_logging.task(combine_data.__name__)
     cmd = ["python", "./run_script.py", "--script", "combine_data", "--folder", folder]
     inv_docker.run_py_container(c, cmd)
 
 @task
-def py_interpolate_gribfiles(c, parameter):
+def interpolate_gribfiles(c, parameter):
     """GEFS Reforecasts are bilinear interpolated at station locations."""
-    inv_logging.task(py_interpolate_gribfiles.__name__)
+    inv_logging.task(interpolate_gribfiles.__name__)
     cmd = ['python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_interpolate_gribfiles.__name__)
+    inv_logging.success(interpolate_gribfiles.__name__)
 
 
 @task
-def py_pre_processing_gamlss_crch_climatologies(c, parameter):
+def pre_processing_gamlss_crch_climatologies(c, parameter):
     """Create climatologies for further processing in R with gamlss."""
-    inv_logging.task(py_pre_processing_gamlss_crch_climatologies.__name__)
-    cmd = ["python", "./py_spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
+    inv_logging.task(pre_processing_gamlss_crch_climatologies.__name__)
+    cmd = ["python", "./spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_pre_processing_gamlss_crch_climatologies.__name__)
+    inv_logging.success(pre_processing_gamlss_crch_climatologies.__name__)
 
 
 @task
@@ -259,55 +259,55 @@ def r_spatial_climatologies_obs(c, begin, end, parameter):
     inv_logging.success(r_spatial_climatologies_obs.__name__)
 
 @task
-def py_pre_processing_gribfiles(c, date, resolution, parameter):
+def pre_processing_gribfiles(c, date, resolution, parameter):
     """Create the csv file and the jsonfile from the available gribfiles."""
-    inv_logging.task(py_pre_processing_gribfiles.__name__)
+    inv_logging.task(pre_processing_gribfiles.__name__)
     cmd = ["python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(py_pre_processing_gribfiles.__name__)
+    inv_logging.success(pre_processing_gribfiles.__name__)
 
 @task
-def py_prediction__rh_2m(c):
+def prediction__rh_2m(c):
     """Create the predictions and the spatialMOS plots for rh_2m."""
-    inv_logging.task(py_prediction__rh_2m.__name__)
+    inv_logging.task(prediction__rh_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     cmd = ["python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", "rh_2m"]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_prediction__rh_2m.__name__)
+    inv_base.write_statusfile_and_success_logging(prediction__rh_2m.__name__)
 
 @task
-def py_prediction__tmp_2m(c):
+def prediction__tmp_2m(c):
     """Create the predictions and the spatialMOS plots for tmp_2m."""
-    inv_logging.task(py_prediction__tmp_2m.__name__)
+    inv_logging.task(prediction__tmp_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     cmd = ["python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", "tmp_2m"]
     inv_docker.run_py_container(c, cmd)
-    inv_base.write_statusfile_and_success_logging(py_prediction__tmp_2m.__name__)
+    inv_base.write_statusfile_and_success_logging(prediction__tmp_2m.__name__)
 
 SPATIALMOS_NS = Collection("spatialmos")
 SPATIALMOS_NS.add_task(init_topography)
-SPATIALMOS_NS.add_task(py_archive_folder__gefs_avgspr_forecast_p05)
-SPATIALMOS_NS.add_task(py_archive_folder__lwd)
-SPATIALMOS_NS.add_task(py_archive_folder__zamg)
-SPATIALMOS_NS.add_task(py_untar_folder)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__rh_2m_avg)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__rh_2m_spr)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__tmp_2m_avg)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__tmp_2m_spr)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_avg)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_spr)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__vgrd_10m_avg)
-SPATIALMOS_NS.add_task(py_get_gefs_forecasts__ugrd_10m_spr)
-SPATIALMOS_NS.add_task(py_get_suedtirol)
-SPATIALMOS_NS.add_task(py_get_lwd)
-SPATIALMOS_NS.add_task(py_get_zamg)
-SPATIALMOS_NS.add_task(py_combine_data)
-SPATIALMOS_NS.add_task(py_interpolate_gribfiles)
-SPATIALMOS_NS.add_task(py_pre_processing_gamlss_crch_climatologies)
-SPATIALMOS_NS.add_task(py_pre_processing_gribfiles__rh_2m)
-SPATIALMOS_NS.add_task(py_pre_processing_gribfiles__tmp_2m)
-SPATIALMOS_NS.add_task(py_prediction__tmp_2m)
-SPATIALMOS_NS.add_task(py_prediction__rh_2m)
+SPATIALMOS_NS.add_task(archive_folder__gefs_avgspr_forecast_p05)
+SPATIALMOS_NS.add_task(archive_folder__lwd)
+SPATIALMOS_NS.add_task(archive_folder__zamg)
+SPATIALMOS_NS.add_task(untar_folder)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_avg)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_spr)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__tmp_2m_avg)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__tmp_2m_spr)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__ugrd_10m_avg)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__ugrd_10m_spr)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__vgrd_10m_avg)
+SPATIALMOS_NS.add_task(get_gefs_forecasts__ugrd_10m_spr)
+SPATIALMOS_NS.add_task(get_suedtirol)
+SPATIALMOS_NS.add_task(get_lwd)
+SPATIALMOS_NS.add_task(get_zamg)
+SPATIALMOS_NS.add_task(combine_data)
+SPATIALMOS_NS.add_task(interpolate_gribfiles)
+SPATIALMOS_NS.add_task(pre_processing_gamlss_crch_climatologies)
+SPATIALMOS_NS.add_task(pre_processing_gribfiles__rh_2m)
+SPATIALMOS_NS.add_task(pre_processing_gribfiles__tmp_2m)
+SPATIALMOS_NS.add_task(prediction__tmp_2m)
+SPATIALMOS_NS.add_task(prediction__rh_2m)
 SPATIALMOS_NS.add_task(r_gamlss_crch_model)
 SPATIALMOS_NS.add_task(r_spatial_climatologies_nwp)
 SPATIALMOS_NS.add_task(r_spatial_climatologies_obs)
