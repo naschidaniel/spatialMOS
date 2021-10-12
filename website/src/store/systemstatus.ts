@@ -40,9 +40,9 @@ export function useSystemstatus() {
     options?: Record<string, unknown>
   ) {
     systemstatus.isLoading = true;
-    systemstatus.systemChecks.hourly = []
-    systemstatus.systemChecks.daily = []
-    systemstatus.systemChecks.weekly = []
+    systemstatus.systemChecks.hourly = [];
+    systemstatus.systemChecks.daily = [];
+    systemstatus.systemChecks.weekly = [];
     const res = await fetch(url, options);
     if (res.ok) {
       try {
