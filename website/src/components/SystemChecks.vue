@@ -18,7 +18,7 @@
               :class="
                 systemCheck.failed
                   ? 'bg-danger'
-                  : systemCheck.complete
+                  : systemCheck.complete !== undefined && !systemCheck?.complete
                   ? 'bg-warning'
                   : 'bg-success'
               "
