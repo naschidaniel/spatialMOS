@@ -4,16 +4,15 @@
 
 import logging
 from invoke import task, Collection
-from . import inv_base
 from . import inv_logging
-
+from . import util
 
 
 @task
 def run_node(c, cmd):
     '''run_r_base will run a command in r_base'''
     inv_logging.task(run_r_base.__name__)
-    user, group = inv_base.uid_gid()
+    user, group = util.uid_gid()
     command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/www', '-p 3000:3000', 'node_container']
     command.extend(cmd)
     command = ' '.join(command)
@@ -26,7 +25,7 @@ def run_node(c, cmd):
 def run_r_base(c, cmd):
     '''run_r_base will run a command in r_base'''
     inv_logging.task(run_r_base.__name__)
-    user, group = inv_base.uid_gid()
+    user, group = util.uid_gid()
     command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'r_base']
     command.extend(cmd)
     command = ' '.join(command)
@@ -39,7 +38,7 @@ def run_r_base(c, cmd):
 def run_py_container(c, cmd):
     '''run_py_container will run a command in py_container'''
     inv_logging.task(run_py_container.__name__)
-    user, group = inv_base.uid_gid()
+    user, group = util.uid_gid()
     command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'py_container']
     command.extend(cmd)
     command = ' '.join(command)
@@ -52,7 +51,7 @@ def run_py_container(c, cmd):
 def run_maturin_build(c):
     '''Build the Rust libraries for Spatialmos'''
     inv_logging.task(run_maturin_build.__name__)
-    user, group = inv_base.uid_gid()
+    user, group = util.uid_gid()
     command = ['docker', 'run', '--rm', '-v $(pwd):/io', 'konstin2/maturin', 'build', '--manylinux', 'off']
     command = ' '.join(command)
     c.run(command)

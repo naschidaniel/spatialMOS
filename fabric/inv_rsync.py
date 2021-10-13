@@ -6,8 +6,8 @@ import subprocess
 import logging
 from itertools import chain, repeat
 from invoke import task, Collection
-from . import inv_base
 from . import inv_logging
+from . import util
 
 def str2bool(string):
     '''A function to convert strings of the settings file to Bool variables'''
@@ -104,7 +104,7 @@ def _rsync(remote_user, remote_host, local_dir, remote_dir, include, exclude, ex
 def push(c, what): # pylint: disable=W0613
     '''This task synchronizes the local folders to the server'''
     inv_logging.task(push.__name__)
-    settings = inv_base.read_settings()
+    settings = util.read_settings()
 
     if what not in ['sourcefiles', 'climatologies', 'staticfiles']:
         raise RuntimeError(f'Your entry \'{what}\' was incorrect. Please read the Readme.md')
@@ -130,7 +130,7 @@ def push_climatologies(c):
 def get(c): # pylint: disable=W0613
     '''This task synchronizes the server to the local machine'''
     inv_logging.task(get.__name__)
-    settings = inv_base.read_settings()
+    settings = util.read_settings()
 
     rsync_direction = 'rsync_get'
     for rsync_task in settings[rsync_direction]:
