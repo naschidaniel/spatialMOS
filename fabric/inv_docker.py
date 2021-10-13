@@ -1,93 +1,90 @@
 #!/usr/bin/env python
 #  -*- coding: utf-8 -*-
-"""This function contains the most important docker commands."""
+'''This function contains the most important docker commands.'''
 
+import logging
 from invoke import task, Collection
 from . import inv_base
 from . import inv_logging
 
 
 
-
-
-
 @task
 def run_node(c, cmd):
-    """run_r_base will run a command in r_base"""
+    '''run_r_base will run a command in r_base'''
     inv_logging.task(run_r_base.__name__)
-    user, group = inv_base.uid_gid(c)
-    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/www", "-p 3000:3000", "node_container"]
+    user, group = inv_base.uid_gid()
+    command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/www', '-p 3000:3000', 'node_container']
     command.extend(cmd)
     command = ' '.join(command)
-    inv_logging.cmd(command)
+    logging.info('The following command has entered: \'%s\'', command)
     c.run(command)
     inv_logging.success(run_r_base.__name__)
 
 
 @task
 def run_r_base(c, cmd):
-    """run_r_base will run a command in r_base"""
+    '''run_r_base will run a command in r_base'''
     inv_logging.task(run_r_base.__name__)
-    user, group = inv_base.uid_gid(c)
-    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/usr/src/app", "r_base"]
+    user, group = inv_base.uid_gid()
+    command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'r_base']
     command.extend(cmd)
     command = ' '.join(command)
-    inv_logging.cmd(command)
+    logging.info('The following command has entered: \'%s\'', command)
     c.run(command)
     inv_logging.success(run_r_base.__name__)
 
 
 @task
 def run_py_container(c, cmd):
-    """run_py_container will run a command in py_container"""
+    '''run_py_container will run a command in py_container'''
     inv_logging.task(run_py_container.__name__)
-    user, group = inv_base.uid_gid(c)
-    command = ["docker", "run", "--rm", f"-u {user}:{group}", "-v $(pwd):/usr/src/app", "py_container"]
+    user, group = inv_base.uid_gid()
+    command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'py_container']
     command.extend(cmd)
     command = ' '.join(command)
-    inv_logging.cmd(command)
+    logging.info('The following command has entered: \'%s\'', command)
     c.run(command)
     inv_logging.success(run_py_container.__name__)
 
 
 @task
 def run_maturin_build(c):
-    """Build the Rust libraries for Spatialmos"""
+    '''Build the Rust libraries for Spatialmos'''
     inv_logging.task(run_maturin_build.__name__)
-    user, group = inv_base.uid_gid(c)
-    command = ["docker", "run", "--rm", "-v $(pwd):/io", "konstin2/maturin", "build", "--manylinux", "off"]
+    user, group = inv_base.uid_gid()
+    command = ['docker', 'run', '--rm', '-v $(pwd):/io', 'konstin2/maturin', 'build', '--manylinux', 'off']
     command = ' '.join(command)
     c.run(command)
-    # TODO rm sudo
-    c.run(f"sudo chown {user}:{group} -R target")
-    c.run("mv ./target/wheels/*.whl ./container/py_container/")
+    c.run(f'sudo chown {user}:{group} -R target') # TODO rm sudo # pylint: disable=fixme
+    c.run('mv ./target/wheels/*.whl ./container/py_container/')
     inv_logging.success(run_maturin_build.__name__)
 
 
 @task
 def rebuild(c):
-    """Rebuild all docker containers"""
+    '''Rebuild all docker containers'''
     inv_logging.task(rebuild.__name__)
     run_maturin_build(c)
-    c.run("docker build -t node_container ./website/")
-    c.run("docker build -t r_base ./container/r_base/")
-    c.run("docker build -t py_container ./container/py_container/")
-    c.run("docker save node_container | gzip > ./container/node_container.tar.gz")
-    c.run("docker save py_container | gzip > ./container/py_container.tar.gz")
-    c.run("docker save r_base | gzip > ./container/r_base.tar.gz")
+    c.run('docker build -t node_container ./website/')
+    c.run('docker build -t r_base ./container/r_base/')
+    c.run('docker build -t py_container ./container/py_container/')
+    c.run('docker save node_container | gzip > ./container/node_container.tar.gz')
+    c.run('docker save py_container | gzip > ./container/py_container.tar.gz')
+    c.run('docker save r_base | gzip > ./container/r_base.tar.gz')
     inv_logging.success(rebuild.__name__)
 
 
 @task
 def stop(c):
-    """Stop all running Docker Containers"""
+    '''Stop all running Docker Containers'''
     inv_logging.task(stop.__name__)
-    c.run("docker stop node_container")
+    c.run('docker stop node_container')
     inv_logging.success(stop.__name__)
 
 
 
-DOCKER_NS = Collection("docker")
+DOCKER_NS = Collection('docker')
 DOCKER_NS.add_task(rebuild)
 DOCKER_NS.add_task(stop)
 DOCKER_NS.add_task(run_py_container)

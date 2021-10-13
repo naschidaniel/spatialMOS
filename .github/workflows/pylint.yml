@@ -35,8 +35,8 @@ jobs:
         pip install ./target/wheels/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
     - name: Lint fabric
       run: |
-        pylint --exit-zero fabric/
-        pylint --exit-zero task.py
+        pylint fabric/
+        pylint task.py
     - name: Lint py_spatialmos
       run: |
         pylint --exit-zero py_spatialmos/

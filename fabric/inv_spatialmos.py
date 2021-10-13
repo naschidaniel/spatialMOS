@@ -3,48 +3,46 @@
 '''This collection is used to execute commands for spatialMOS.'''
 
 import os
-import sys
 import logging
-import requests
 from datetime import datetime
-
+import requests
 from invoke import task, Collection
 from . import inv_base
 from . import inv_logging
 from . import inv_docker
-
+from . import inv_node
+from . import inv_rsync
 
 @task
 def init_topography(c):
-    """Create shapefiles for spatialMOS"""
+    '''Create shapefiles for spatialMOS'''
     inv_logging.task(init_topography.__name__)
-    cmd = ["Rscript", "./r_spatialmos/init_shapefiles.R"]
+    cmd = ['Rscript', './r_spatialmos/init_shapefiles.R']
     inv_docker.run_r_base(c, cmd)
 
     cmd = ['python', './run_script.py', '--script', 'pre_processing_topography']
     inv_docker.run_py_container(c, cmd)
 
     # Download Shapefile and unzip it
-    if not os.path.exists("./data/get_available_data/gadm/gadm36_AUT_shp"):
-        req_gadm36_zip_file = "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip"
-        gadm36_zip_file = "./data/get_available_data/gadm/gadm36_AUT_shp.zip"
+    if not os.path.exists('./data/get_available_data/gadm/gadm36_AUT_shp'):
+        req_gadm36_zip_file = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip'
+        gadm36_zip_file = './data/get_available_data/gadm/gadm36_AUT_shp.zip'
         req_shapefile = requests.get(req_gadm36_zip_file, stream=True)
         if req_shapefile.status_code == 200:
-            with open(gadm36_zip_file, mode="wb") as f:
+            with open(gadm36_zip_file, mode='wb') as f:
                 for chunk in req_shapefile.iter_content(chunk_size=128):
                     f.write(chunk)
-            logging.info("The shapefile '%s' has been downloaded.", req_gadm36_zip_file)
-            c.run(f"unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp")
+            logging.info('The shapefile \'%s\' has been downloaded.', req_gadm36_zip_file)
+            c.run(f'unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp')
         else:
-            logging.error("There was a problem with the download of the shapefile '%s'", req_gadm36_zip_file)
-            sys.exit(1)
+            raise RuntimeError(f'There was a problem with the download of the shapefile \'{req_gadm36_zip_file}\'')
 
     inv_logging.success(init_topography.__name__)
 
 
 @task
 def archive_folder(c, folder):
-    """The *.tar.gz are created with tar. The folder must be specified e.g. zamg."""
+    '''The *.tar.gz are created with tar. The folder must be specified e.g. zamg.'''
     inv_logging.task(archive_folder.__name__)
     cmd = ['python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
@@ -53,27 +51,28 @@ def archive_folder(c, folder):
 
 @task
 def archive_folder__gefs_avgspr_forecast_p05(c):
-    """created a tar file from the folder gefs_avgspr_forecast_p05"""
-    archive_folder(c, "gefs_avgspr_forecast_p05")
+    '''created a tar file from the folder gefs_avgspr_forecast_p05'''
+    archive_folder(c, 'gefs_avgspr_forecast_p05')
     inv_base.write_statusfile_and_success_logging(archive_folder__gefs_avgspr_forecast_p05.__name__)
 
 
 @task
 def archive_folder__lwd(c):
-    """created a tar file from the folder lwd"""
-    archive_folder(c, "lwd")
+    '''created a tar file from the folder lwd'''
+    archive_folder(c, 'lwd')
     inv_base.write_statusfile_and_success_logging(archive_folder__lwd.__name__)
 
 
 @task
 def archive_folder__zamg(c):
-    """created a tar file from the folder lwd"""
-    archive_folder(c, "zamg")
+    '''created a tar file from the folder lwd'''
+    archive_folder(c, 'zamg')
     inv_base.write_statusfile_and_success_logging(archive_folder__zamg.__name__)
+
 
 @task
 def untar_folder(c, folder):
-    """The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg."""
+    '''The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg.'''
     inv_logging.task(untar_folder.__name__)
     cmd = ['python', './run_script.py', '--script', 'untar_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
@@ -82,140 +81,140 @@ def untar_folder(c, folder):
 
 @task
 def get_gefs(c, date, resolution, modeltype, parameter):
-    """Download data gefs files."""
+    '''Download data gefs files.'''
     inv_logging.task(get_gefs.__name__)
-    cmd = ["python", "./run_script.py", "--script", "get_gefs_forecasts", "--date", date, "--resolution", resolution, "--modeltype", modeltype, "--parameter", parameter]
+    cmd = ['python', './run_script.py', '--script', 'get_gefs_forecasts', '--date', date, '--resolution', resolution, '--modeltype', modeltype, '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
     inv_logging.success(get_gefs.__name__)
 
 
 @task
 def get_gefs_forecasts__tmp_2m_avg(c):
-    """Download and pre process forcasts for tmp_2m"""
+    '''Download and pre process forcasts for tmp_2m'''
     inv_logging.task(get_gefs_forecasts__tmp_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="tmp_2m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='tmp_2m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__tmp_2m_avg.__name__)
 
 
 @task
 def get_gefs_forecasts__tmp_2m_spr(c):
-    """Download and pre process forcasts for tmp_2m"""
+    '''Download and pre process forcasts for tmp_2m'''
     inv_logging.task(get_gefs_forecasts__tmp_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="tmp_2m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='tmp_2m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__tmp_2m_spr.__name__)
 
 
 @task
 def get_gefs_forecasts__rh_2m_avg(c):
-    """Download and pre process forcasts for rh_2m"""
+    '''Download and pre process forcasts for rh_2m'''
     inv_logging.task(get_gefs_forecasts__rh_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="rh_2m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='rh_2m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__rh_2m_avg.__name__)
 
 
 @task
 def get_gefs_forecasts__rh_2m_spr(c):
-    """Download and pre process forcasts for rh_2m spr"""
+    '''Download and pre process forcasts for rh_2m spr'''
     inv_logging.task(get_gefs_forecasts__rh_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="rh_2m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='rh_2m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__rh_2m_spr.__name__)
 
 
 @task
 def get_gefs_forecasts__ugrd_10m_avg(c):
-    """Download and pre process forcasts for ugrd_10 avg"""
+    '''Download and pre process forcasts for ugrd_10 avg'''
     inv_logging.task(get_gefs_forecasts__ugrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="ugrd_10m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='ugrd_10m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__ugrd_10m_avg.__name__)
 
 
 @task
 def get_gefs_forecasts__ugrd_10m_spr(c):
-    """Download and pre process forcasts for ugrd_10 spr"""
+    '''Download and pre process forcasts for ugrd_10 spr'''
     inv_logging.task(get_gefs_forecasts__ugrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="ugrd_10m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='ugrd_10m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__ugrd_10m_spr.__name__)
 
 
 @task
 def get_gefs_forecasts__vgrd_10m_avg(c):
-    """Download and pre process forcasts for wind_10m avg"""
+    '''Download and pre process forcasts for wind_10m avg'''
     inv_logging.task(get_gefs_forecasts__vgrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="avg", parameter="vgrd_10m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='vgrd_10m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__vgrd_10m_avg.__name__)
 
 
 @task
 def get_gefs_forecasts__vgrd_10m_spr(c):
-    """Download and pre process forcasts for wind_10m spr"""
+    '''Download and pre process forcasts for wind_10m spr'''
     inv_logging.task(get_gefs_forecasts__vgrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    get_gefs(c, date=date, resolution="0.5", modeltype="spr", parameter="vgrd_10m")
+    get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='vgrd_10m')
     inv_base.write_statusfile_and_success_logging(get_gefs_forecasts__vgrd_10m_spr.__name__)
 
 
 @task
 def pre_processing_gribfiles__tmp_2m(c):
-    """combine tmp_2m gribfiles for predictions"""
+    '''combine tmp_2m gribfiles for predictions'''
     inv_logging.task(pre_processing_gribfiles__tmp_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="tmp_2m")
+    pre_processing_gribfiles(c, date=date, resolution='0.5', parameter='tmp_2m')
     inv_base.write_statusfile_and_success_logging(pre_processing_gribfiles__tmp_2m.__name__)
 
 
 @task
 def pre_processing_gribfiles__rh_2m(c):
-    """combine rh_2m gribfiles for predictions"""
+    '''combine rh_2m gribfiles for predictions'''
     inv_logging.task(pre_processing_gribfiles__rh_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    pre_processing_gribfiles(c, date=date, resolution="0.5", parameter="rh_2m")
+    pre_processing_gribfiles(c, date=date, resolution='0.5', parameter='rh_2m')
     inv_base.write_statusfile_and_success_logging(pre_processing_gribfiles__rh_2m.__name__)
 
 @task
 def get_suedtirol(c, begindate, enddate):
-    """Download data from South Tyrol."""
+    '''Download data from South Tyrol.'''
     inv_logging.task(get_suedtirol.__name__)
-    cmd = ["python", "./run_script.py", "--script", "get_suedtirol_data",
-           "--begindate", begindate, "--enddate", enddate]
+    cmd = ['python', './run_script.py', '--script', 'get_suedtirol_data',
+           '--begindate', begindate, '--enddate', enddate]
     inv_docker.run_py_container(c, cmd)
     inv_base.write_statusfile_and_success_logging(get_suedtirol.__name__)
 
 
 @task
 def get_lwd(c):
-    """Download data from lwd tirol"""
+    '''Download data from lwd tirol'''
     inv_logging.task(get_lwd.__name__)
-    cmd = ["python", "./run_script.py", "--script", "get_lwd_data"]
+    cmd = ['python', './run_script.py', '--script', 'get_lwd_data']
     inv_docker.run_py_container(c, cmd)
     inv_base.write_statusfile_and_success_logging(get_lwd.__name__)
 
 
 @task
 def get_zamg(c):
-    """Download data from zamg webpage."""
+    '''Download data from zamg webpage.'''
     inv_logging.task(get_zamg.__name__)
-    cmd = ["python", "./run_script.py", "--script", "get_zamg_data"]
+    cmd = ['python', './run_script.py', '--script', 'get_zamg_data']
     inv_docker.run_py_container(c, cmd)
     inv_base.write_statusfile_and_success_logging(get_zamg.__name__)
 
 
 @task
 def combine_data(c, folder):
-    """Combine downloaded data for a folder."""
+    '''Combine downloaded data for a folder.'''
     inv_logging.task(combine_data.__name__)
-    cmd = ["python", "./run_script.py", "--script", "combine_data", "--folder", folder]
+    cmd = ['python', './run_script.py', '--script', 'combine_data', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
 
 @task
 def interpolate_gribfiles(c, parameter):
-    """GEFS Reforecasts are bilinear interpolated at station locations."""
+    '''GEFS Reforecasts are bilinear interpolated at station locations.'''
     inv_logging.task(interpolate_gribfiles.__name__)
     cmd = ['python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
@@ -224,71 +223,95 @@ def interpolate_gribfiles(c, parameter):
 
 @task
 def pre_processing_gamlss_crch_climatologies(c, parameter):
-    """Create climatologies for further processing in R with gamlss."""
+    '''Create climatologies for further processing in R with gamlss.'''
     inv_logging.task(pre_processing_gamlss_crch_climatologies.__name__)
-    cmd = ["python", "./spatialmos/pre_processing_gamlss_crch_climatologies.py", "--parameter", parameter]
+    cmd = ['python', './spatialmos/pre_processing_gamlss_crch_climatologies.py', '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
     inv_logging.success(pre_processing_gamlss_crch_climatologies.__name__)
 
 
 @task
 def r_gamlss_crch_model(c, validation, parameter):
-    """Create the required spatial climatologies."""
+    '''Create the required spatial climatologies.'''
     inv_logging.task(r_gamlss_crch_model.__name__)
-    cmd = ["Rscript", "./r_spatialmos/gamlss_crch_model.R", "--validation", validation, "--parameter", parameter]
+    cmd = ['Rscript', './r_spatialmos/gamlss_crch_model.R', '--validation', validation, '--parameter', parameter]
     cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_gamlss_crch_model.__name__)
 
 @task
 def r_spatial_climatologies_nwp(c,  begin, end, parameter):
-    """Create daily climatologies for the NWP."""
+    '''Create daily climatologies for the NWP.'''
     inv_logging.task(r_spatial_climatologies_nwp.__name__)
-    cmd = ["Rscript", "./r_spatialmos/spatial_climatologies_nwp.R",  "--begin", begin, "--end", end, "--parameter", parameter]
+    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_nwp.R',  '--begin', begin, '--end', end, '--parameter', parameter]
     cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_spatial_climatologies_nwp.__name__)
 
 @task
 def r_spatial_climatologies_obs(c, begin, end, parameter):
-    """Create daily climatologies for the observations."""
+    '''Create daily climatologies for the observations.'''
     inv_logging.task(r_spatial_climatologies_obs.__name__)
-    cmd = ["Rscript", "./r_spatialmos/spatial_climatologies_observations.R", "--begin", begin, "--end", end, "--parameter", parameter]
+    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_observations.R', '--begin', begin, '--end', end, '--parameter', parameter]
     cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_spatial_climatologies_obs.__name__)
 
 @task
 def pre_processing_gribfiles(c, date, resolution, parameter):
-    """Create the csv file and the jsonfile from the available gribfiles."""
+    '''Create the csv file and the jsonfile from the available gribfiles.'''
     inv_logging.task(pre_processing_gribfiles.__name__)
-    cmd = ["python", "./run_script.py", "--script", "pre_processing_prediction", "--date", date, "--resolution", resolution, "--parameter", parameter]
+    cmd = ['python', './run_script.py', '--script', 'pre_processing_prediction', '--date', date, '--resolution', resolution, '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
     inv_logging.success(pre_processing_gribfiles.__name__)
 
 @task
 def prediction__rh_2m(c):
-    """Create the predictions and the spatialMOS plots for rh_2m."""
+    '''Create the predictions and the spatialMOS plots for rh_2m.'''
     inv_logging.task(prediction__rh_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    cmd = ["python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", "rh_2m"]
+    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'rh_2m']
     inv_docker.run_py_container(c, cmd)
     inv_base.write_statusfile_and_success_logging(prediction__rh_2m.__name__)
 
 @task
 def prediction__tmp_2m(c):
-    """Create the predictions and the spatialMOS plots for tmp_2m."""
+    '''Create the predictions and the spatialMOS plots for tmp_2m.'''
     inv_logging.task(prediction__tmp_2m.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
-    cmd = ["python", "./run_script.py", "--script", "prediction", "--date", date, "--resolution", "0.5", "--parameter", "tmp_2m"]
+    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'tmp_2m']
     inv_docker.run_py_container(c, cmd)
     inv_base.write_statusfile_and_success_logging(prediction__tmp_2m.__name__)
 
-SPATIALMOS_NS = Collection("spatialmos")
+
+@task
+def install(c):
+    '''A task for quick installation of spatialMOS'''
+    inv_logging.task(install.__name__)
+    inv_base.create_folders(c)
+    inv_docker.rebuild(c)
+    inv_node.yarn(c, '')
+    inv_node.build(c)
+    inv_logging.success(install.__name__)
+
+
+@task
+def deploy(c):
+    '''Everything you need to deploy'''
+    inv_logging.task(deploy.__name__)
+    inv_base.check_upstream(c)
+    inv_node.build(c)
+    inv_rsync.push(c, 'sourcefiles')
+    inv_rsync.push(c, 'staticfiles')
+    inv_logging.success(deploy.__name__)
+
+
+SPATIALMOS_NS = Collection('spatialmos')
 SPATIALMOS_NS.add_task(init_topography)
 SPATIALMOS_NS.add_task(archive_folder__gefs_avgspr_forecast_p05)
 SPATIALMOS_NS.add_task(archive_folder__lwd)
 SPATIALMOS_NS.add_task(archive_folder__zamg)
+SPATIALMOS_NS.add_task(deploy)
 SPATIALMOS_NS.add_task(untar_folder)
 SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_avg)
 SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_spr)
@@ -302,6 +325,7 @@ SPATIALMOS_NS.add_task(get_suedtirol)
 SPATIALMOS_NS.add_task(get_lwd)
 SPATIALMOS_NS.add_task(get_zamg)
 SPATIALMOS_NS.add_task(combine_data)
+SPATIALMOS_NS.add_task(install)
 SPATIALMOS_NS.add_task(interpolate_gribfiles)
 SPATIALMOS_NS.add_task(pre_processing_gamlss_crch_climatologies)
 SPATIALMOS_NS.add_task(pre_processing_gribfiles__rh_2m)
