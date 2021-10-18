@@ -32,7 +32,7 @@ def combine_gribfiles(parser_dict: Dict[str, Any]):
                 logging.info('The spr file \'%s\' was found and will be processed', spr_gribfile)
                 json_file = gribfiles_path.joinpath(f"./GFSE_{parser_dict['date']}_0000_{step}.json")
                 logging.info('The data are written to \'%s\'.', json_file)
-                with open(Path(json_file), 'w') as f:
+                with open(Path(json_file), mode='w', encoding='utf-8') as f:
                     json.dump(spatial_util.gribfiles_to_json(avg_gribfile, spr_gribfile, parser_dict['parameter'], subset), f)
                 break
 

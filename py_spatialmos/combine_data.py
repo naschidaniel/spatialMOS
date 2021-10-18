@@ -20,7 +20,7 @@ def run_combine_data(parser_dict: Dict[str, Any]):
     os.makedirs(target_path, exist_ok=True)
     targetfile = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
     parameters = select_parameters(parser_dict['folder'])
-    with open(targetfile, mode='w', newline='') as target:
+    with open(targetfile, mode='w', newline='', encoding='utf-8') as target:
         csv_files_path = Path(f"./data/get_available_data/{parser_dict['folder']}")
         combine_data(csv_files_path, parameters, target)
 
@@ -30,7 +30,7 @@ def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
     measurements_file = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements.csv")
     parameters = select_parameters(parser_dict['folder'])
     for parameter in ['tmp_2m', 'rh_2m']:
-        with open(measurements_file) as f:
+        with open(measurements_file, mode='r', encoding='utf-8') as f:
             data = list(csv.reader(f, delimiter=';'))
         if len(data) <= 3:
             logging.warning("There is no data so the csv file \'%s\' will be skiped.", measurements_file)
@@ -38,7 +38,7 @@ def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
 
         targetfile_parameter = Path(target_path).joinpath(f"{parser_dict['folder']}_measurements_{parameter}.csv")
         targetfile_stations = Path(target_path).joinpath(f"{parser_dict['folder']}_stations_{parameter}.csv")
-        with open(targetfile_parameter, mode='w', newline='') as target_parameter, open(targetfile_stations, mode='w', newline='') as target_stations:
+        with open(targetfile_parameter, mode='w', newline='', encoding='utf-8') as target_parameter, open(targetfile_stations, mode='w', newline='', encoding='utf-8') as target_stations:
             data_for_spatialmos(data, parameters, parameter, target_parameter, target_stations)
 
 def select_parameters(folder: str) -> Dict[str, Dict[str, str]]:
@@ -50,7 +50,7 @@ def select_parameters(folder: str) -> Dict[str, Dict[str, str]]:
     elif folder == 'zamg':
         parameters = get_zamg_data.ZamgData.parameters()
     else:
-        raise RuntimeError('The run_combine_data is for the folder \'%s\' is not implemented' % folder)
+        raise RuntimeError(f'The run_combine_data is for the folder \'{folder}\' is not implemented')
     return parameters
 
 def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], target: TextIO):
@@ -61,7 +61,7 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
     writer = spatial_writer.SpatialWriter(parameters, target)
     for csv_file in sorted(csv_files_path.glob('**/*.csv')):
         logging.info('The file %s is added to %s', csv_file, target)
-        with open(csv_file) as f:
+        with open(csv_file, mode='r', encoding='utf-8') as f:
             data = list(csv.reader(f, delimiter=';'))
 
         if len(data) <= 3:
@@ -73,8 +73,7 @@ def combine_data(csv_files_path: Path, parameters: Dict[str, Dict[str, str]], ta
             logging.error("Header Keys     File: %s", data[0])
             logging.error("Header Units Expected: %s", parameters_units)
             logging.error("Header Units     File: %s", data[1])
-            raise RuntimeError(
-                'The header in the file %s is not supported' % csv_file)
+            raise RuntimeError(f'The header in the file {csv_file} is not supported')
         writer.appendrows(data[2:])
 
 def data_for_spatialmos(data: List[List[str]], parameters: Dict[str, Dict[str, str]], parameter: str, target_parameter: TextIO, target_stations: TextIO):

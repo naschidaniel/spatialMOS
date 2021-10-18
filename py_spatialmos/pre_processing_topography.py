@@ -37,10 +37,10 @@ def run_preprocessing_topography():
         }
 
     alt_area_filename = os.path.join(data_path, 'spatial_alt_area.json')
-    with open(alt_area_filename, 'w') as f:
+    with open(alt_area_filename, mode='w', encoding='utf-8') as f:
         json.dump(alt_area_data, f)
 
-    with open(data_path.joinpath('spatial_alt_area.csv'), 'w') as f:
+    with open(data_path.joinpath('spatial_alt_area.csv'), mode='w', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerows(alt)
 

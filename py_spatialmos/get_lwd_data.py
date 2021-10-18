@@ -112,7 +112,7 @@ def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
             count_stations_successfull += 1
 
     if count_stations_successfull <= 50:
-        raise RuntimeError('Only %s from %s stations are transmitted correctly' % (count_stations_successfull, count_stations))
+        raise RuntimeError(f'Only {count_stations_successfull} from {count_stations} stations are transmitted correctly')
 
     logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
 
@@ -132,13 +132,12 @@ def fetch_lwd_data(data_path: Path, ogd_path: Path):
 
     ogd_filename = ogd_path.joinpath(f'ogd_{utcnow_str}.geojson')
     try:
-        with open(ogd_filename, mode='w', newline='') as target:
+        with open(ogd_filename, mode='w', newline='', encoding='utf-8') as target:
             request_data = LwdData.request_data(target)
     except Exception as ex:
-        logging.error(
-            'The original data file \'%s\' could not be written.', ogd_filename)
+        logging.error('The original data file \'%s\' could not be written.', ogd_filename)
         logging.exception(ex)
         raise ex
 
-    with open(data_path.joinpath(f'lwd_{utcnow_str}.csv'), 'w', newline='') as target:
+    with open(data_path.joinpath(f'lwd_{utcnow_str}.csv'), mode='w', newline='', encoding='utf-8') as target:
         lwd_spatial_converter(request_data, target)

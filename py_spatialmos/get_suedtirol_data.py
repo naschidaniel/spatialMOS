@@ -43,8 +43,7 @@ class SuedtirolData:
         '''request_data loads the data from the API interface'''
 
         if request_type not in ['sensors', 'stations', 'timeseries']:
-            raise RuntimeError(
-                'The request_type \'%s\' ist not defined.' % request_type)
+            raise RuntimeError(f'The request_type \'{request_type}\' ist not defined.')
 
         if request_type == 'stations':
             url = 'http://dati.retecivica.bz.it/services/meteo/v1/stations'
@@ -54,21 +53,18 @@ class SuedtirolData:
         logging.info('Data is loaded from the api interface %s', url)
         data = requests.get(url)
         if data.status_code != 200:
-            logging.error(
-                'The response of the API \'%s\' does not match 200', url)
+            logging.error('The response of the API \'%s\' does not match 200', url)
             return {}
 
         try:
             data_dict = data.json()
         except ValueError as ex:
-            logging.error(
-                'The loaded Data from the \'%s\' could not be converted into a json.',  url)
+            logging.error('The loaded Data from the \'%s\' could not be converted into a json.', url)
             logging.exception(ex)
             return {}
 
         if request_type == 'stations':
             return {station['properties']['SCODE']: station['properties'] for station in data_dict['features']}
-
         return data_dict
 
 
@@ -79,9 +75,8 @@ def suedtirol_spatial_converter(measurements: Dict[str, Dict[str, Union[str, flo
         measurements_write_lines: List[List] = spatial_util.convert_measurements(
             measurements, columns)
         if len(measurements_write_lines) != 0:
-            with open(filename, mode='w', newline='') as target:
-                logging.info(
-                    'The suedtirol data will be written into the file \'%s\'', target)
+            with open(filename, mode='w', newline='', encoding='utf-8') as target:
+                logging.info('The suedtirol data will be written into the file \'{%s}\'', target)
                 parameters = SuedtirolData.parameters()
                 writer = SpatialWriter(parameters, target)
 
@@ -126,7 +121,7 @@ def fetch_suedtirol_data(begindate: str, enddate: str, data_path: Path):
     for station in stations.values():
         measurements: Dict = {}
         for sensor in station['SENSORS']:
-            if not sensor in SuedtirolData.parameters().keys():
+            if not sensor in SuedtirolData.parameters():
                 continue
             url_values = f"http://daten.buergernetz.bz.it/services/meteo/v1/timeseries?station_code={station['SCODE']}&output_format=JSON&sensor_code={sensor}&date_from={begindate}0000&date_to={enddate}0000"
             timeseries = SuedtirolData.request_data('timeseries', url_values)
@@ -146,8 +141,7 @@ def fetch_suedtirol_data(begindate: str, enddate: str, data_path: Path):
                     }
 
         if len(list(measurements.keys())) == 0:
-            logging.info(
-                'No data relevant for spatialMOS are available for the station %s.', station['SCODE'])
+            logging.info('No data relevant for spatialMOS are available for the station %s.', station['SCODE'])
             continue
 
         csv_filename = data_path.joinpath(

@@ -39,10 +39,10 @@ def run_interpolate_gribfiles(parser_dict: Dict[str, Any]):
     for step in [f'{s:03d}' for s in range(6, 192+1, 6)]:
         target = interpolated_data_path.joinpath(f"GFSE_f{step}.csv")
         gribfiles_json_path = sorted(gribfiles_path.glob(f'**/*{step}.json'))
-        with open(target, mode='a') as f:
+        with open(target, mode='a', encoding='utf-8') as f:
             csv_writer = SpatialWriter(PARAMETERS, f)
             for json_file in gribfiles_json_path:
-                with open(json_file) as f:
+                with open(json_file, mode='r', encoding='utf-8') as f:
                     gribdata = json.load(f)
                 interpolate_gribfiles(gribdata, csv_writer, station_locations)
 

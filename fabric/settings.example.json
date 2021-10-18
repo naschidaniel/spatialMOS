@@ -33,7 +33,7 @@
     "prediction__tmp_2m": "1455",
     "prediction__rh_2m": "1455",
     "pre_processing_gribfiles__rh_2m": "1455",
-    "pre_processing_gribfiles__tmp_./2m": "1455"
+    "pre_processing_gribfiles__tmp_2m": "1455"
   },
   "REMOTE_USER": "example",
   "REMOTE_HOST": "example.com",

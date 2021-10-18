@@ -18,8 +18,7 @@ def generate_folders(folder: str) -> Tuple[Path, Path]:
 def archive_folder(archive_path, data_path):
     '''archive_folder tar an order into an archive folder'''
     if not os.path.exists(data_path):
-        raise RuntimeError(
-            'There is no folder \'%s\' for archiving.' % data_path)
+        raise RuntimeError(f'There is no folder \'{data_path}\' for archiving.')
 
     foldername = PurePath(data_path)
     tarfile = os.path.join(archive_path, f"{foldername.name}_{dt.utcnow().strftime('%Y-%m-%d_%H_%M_%S')}.tar.gz")
@@ -27,7 +26,7 @@ def archive_folder(archive_path, data_path):
     system_run = os.system(f'tar -czvf {tarfile} -C {data_path} .')
 
     if system_run != 0:
-        raise RuntimeError('The archive file \'%s\' could not be created.' % tarfile)
+        raise RuntimeError(f'The archive file \'{tarfile}\' could not be created.')
     return tarfile
 
 def run_archive_folder(parser_dict: Dict[str, Any]):
@@ -51,4 +50,4 @@ def untar_archive_files(archive_path: Path, data_path: Path, file_prefix):
         logging.info('The file \'%s\' will be decompressed  to \'%s\'.', tarfile, data_path)
         system_run = os.system(f'tar -xvzf {tarfile} -C {data_path}')
         if system_run != 0:
-            raise RuntimeError('The archive file \'%s\' could not be unpacked.' % archive_path)
+            raise RuntimeError(f'The archive file \'{archive_path}\' could not be unpacked.')

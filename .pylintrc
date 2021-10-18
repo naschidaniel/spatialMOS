@@ -1,5 +1,5 @@
 [BASIC]
-good-names= c, cp, df, env, ex, f, i, j, k, m, p, pk, ts, x
+good-names= c, cp, df, env, ex, f, i, j, k, m, p, pk, ts, x, xx, yy
 extension-pkg-whitelist=spatial_rust_util
 
 [DESIGN]

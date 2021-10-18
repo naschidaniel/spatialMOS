@@ -59,8 +59,7 @@ class ZamgData:
         url = 'https://www.zamg.ac.at/cms/de/dokumente/klima/dok_messnetze/zamg-stationsliste-als-csv'
         data = requests.get(url)
         if data.status_code != 200:
-            raise RuntimeError(
-                'The response of the API \'%s\' does not match 200' % url)
+            raise RuntimeError(f'The response of the API \'{url}\' does not match 200')
 
         try:
             station_info = {}
@@ -135,8 +134,7 @@ class ZamgSpatialConverter:
             retry += 1
             time.sleep(600)
         else:
-            raise RuntimeError(
-                'The maximum number of retries was reached %s/%s and not all data could be saved.' % (retry, max_retries))
+            raise RuntimeError(f'The maximum number of retries was reached {retry}/{max_retries} and not all data could be saved.')
 
     @staticmethod
     def manipulate_html_text(raw_html_text: str) -> Tuple[List[List[str]], str]:
@@ -247,5 +245,5 @@ def fetch_zamg_data(data_path: Path):
     '''fetch_zamg_data is used to store zamg data in csv files.'''
     utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
 
-    with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='') as target:
+    with open(data_path.joinpath(f'zamg_{utcnow_str}.csv'), 'w', newline='', encoding='utf-8') as target:
         ZamgSpatialConverter.convert(target)

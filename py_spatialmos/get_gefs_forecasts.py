@@ -14,7 +14,7 @@ from datetime import datetime
 import pathlib
 import requests
 
-class IdxEntry(object):
+class IdxEntry():
     '''A small helper class to handle index entries.'''
 
     def __init__(self, args):
@@ -63,7 +63,7 @@ class IdxEntry(object):
         '''
         var = getattr(self, '_var')
         lev = getattr(self, '_lev')
-        return '{:s}:{:s}'.format(var, lev)
+        return f'{var}:{lev}'
 
     def range(self):
         '''range()
@@ -78,9 +78,9 @@ class IdxEntry(object):
         except AttributeError as ex:
             logging.exception(ex)
             raise AttributeError from ex
-        end = '' if end is None else '{:d}'.format(end)
+        end = '' if end is None else f'{end}'
 
-        return '{:d}-{:s}'.format(start, end)
+        return f'{start}-{end}'
 
     def __repr__(self):
         if isinstance(self._byte_end, bool):
@@ -88,9 +88,8 @@ class IdxEntry(object):
         elif self._byte_end is None:
             end = 'end of file'
         else:
-            end = '{:d}'.format(self._byte_end)
-        return 'IDX ENTRY: {:10d}-{:>10s}, \'{:s}\''.format(self._byte_start,
-                                                            end, self.key())
+            end = f'{self._byte_end}'
+        return f'IDX ENTRY: {self._byte_start:10d}-{end:>10s}, \'{self.key()}\''
 
 
 
@@ -100,32 +99,25 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
     if modeltype in ['avg', 'spr']:
         if resolution == 0.5:
             # Create URL for geavg.t00z.pgrb2a.0p50.f000.idx
-            filename = 'ge{:s}.t{:s}z.pgrb2a.0p50.f{:03d}'.format(
-                modeltype, date.strftime('%H'), step)
+            filename = f'ge{modeltype}.t{date.strftime("%H")}z.pgrb2a.0p50.f{step:03d}'
         elif resolution == 1:
             # since UPDATE of noa server depraced 2020-09-27
             # Create URL for geavg.t00z.pgrb2af00.idx
-            filename = 'ge{:s}.t{:s}z.pgrb2af{:s}'.format(modeltype, date.strftime(
-                '%H'), '{:02d}'.format(step) if step < 100 else '{:03d}'.format(step))
+            filename = f'ge{modeltype}.t{date.strftime("%H")}z.pgrb2af{step:02d}' if step < 100 else f'{step:03d}'
         else:
             logging.error('The resolution %d ist not supported', resolution)
             sys.exit(1)
 
         gribfile = os.path.join(date.strftime(baseurl), filename)
-        gribfile_path = date.strftime('GFEE_%Y%m%d_%H00') + \
-            '_{:s}_f{:03d}.grb2'.format(modeltype, step)
+        gribfile_path = f"{date.strftime('GFEE_%Y%m%d_%H00')}_{modeltype}_f{step:03d}.grb2"
     else:
         # UPDATE NAMES 2020-09-27
         # Create URL for gec00.t00z.pgrb2a.0p50.f000.idx
         # Create URL for gep01.t00z.pgrb2a.0p50.f000.idx
-        gribfile = os.path.join(date.strftime(baseurl),
-                                'ge{:s}{:02d}.t{:s}z.pgrb2a.0p50.f{:s}'.format(
-            'c' if mem == 0 else 'p', mem, date.strftime('%H'),
-            '{:03d}'.format(step)))
-        gribfile_path = date.strftime('GEFS_%Y%m%d_%H00') + \
-            '_{:02d}_f{:03d}.grb2'.format(mem, step)
+        gribfile = os.path.join(date.strftime(baseurl), f"ge{'c' if mem == 0 else 'p'}{mem:02d}.t{date.strftime('%H')}z.pgrb2a.0p50.f{step:03d}")
+        gribfile_path = f"date.strftime('GEFS_%Y%m%d_%H00')_{mem:02d}_f{step:03d}.grb2"
     return {'grib': gribfile,
-            'idx': '{:s}.idx'.format(gribfile),
+            'idx': f'{gribfile}.idx',
             'gribfile_path': os.path.join(data_path_gribfile, gribfile_path)}
 
 
@@ -152,7 +144,7 @@ def parse_index_file(idxfile, params):
             continue
         match = re.findall(comp, line)
         if not match:
-            raise Exception('whoops, pattern mismatch \'{:s}\''.format(line))
+            raise Exception(f'whoops, pattern mismatch \'{line}\'')
         # Else crate the variable hash
         idx_entries.append(IdxEntry(match[0]))
 
@@ -171,7 +163,7 @@ def parse_index_file(idxfile, params):
 
 def download_grib(grib, gribfile_path, required):
     '''A function to download GRIB files.'''
-    headers = {'Range': 'bytes={:s}'.format(','.join(required))}
+    headers = {'Range': f"bytes={','.join(required)}"}
     req_grib = requests.get(grib, headers=headers)
 
     try:
@@ -207,18 +199,17 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
 
     # runhour is in [0, 6, 12, 18]
     runhour = 0
-    date = datetime.strptime('{:s} {:02d}:00:00'.format(
-        date, runhour), '%Y%m%d %H:%M:%S')
+    date = datetime.strptime(f'{date} {runhour:02d}:00:00', '%Y%m%d %H:%M:%S')
 
     # Steps/members. The +1 is required to get the required sequence!
     steps = range(6, 300+1, 6)
 
-    logging.info('{:s}'.format(''.join(['-']*70)))
+    logging.info('-------------------------------------------------------------------------------------------------')
 
     # https://www.nco.ncep.noaa.gov/pmb/products/gens/
     if modeltype in ['avg', 'spr']:
         members = range(0, 1, 1)
-        logging.info('Downloading members: {:s}:  '.format(modeltype))
+        logging.info('Downloading members: %s', modeltype)
         if resolution == 1:
             data_path = pathlib.Path(f'./data/get_available_data/gefs_avgspr_forecast_p1/{parameter}')
             # url exchanged on 2020-09-23 response with a 404 error
@@ -230,31 +221,27 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
     else:
         data_path = pathlib.Path(f'./data/get_available_data/gefs_ens_forecast_p05/{parameter}')
         members = range(0, 30+1, 1)
-        logging.info('Downloading members: {:s}'.format(
-            ', '.join(['{:d}'.format(x) for x in members])))
+        logging.info('Downloading members: {%s}', ', '.join([f'{x:d}' for x in members]))
         # url exchanged on 2020-09-23 response with a 404 error
         #baseurl = ' http://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/%H/pgrb2/'
         baseurl = 'https://nomads.ncep.noaa.gov/pub/data/nccf/com/gens/prod/gefs.%Y%m%d/00/atmos/pgrb2ap5/'
 
 
-    steps_str = ', '.join(['{:d}'.format(x) for x in steps])
+    steps_str = ', '.join([f'{x:d}' for x in steps])
     logging.info('Downloading steps: %s', steps_str)
-    logging.info('For date/model initialization %s',
-                 date.strftime('%Y-%m-%d %H:%M UTC'))
+    logging.info('For date/model initialization %s', date.strftime('%Y-%m-%d %H:%M UTC'))
     logging.info('Base url: %s', date.strftime(baseurl))
-    logging.info('{:s}'.format(''.join(['-']*70)))
+    logging.info('-------------------------------------------------------------------------------------------------')
 
     # Looping over the different members first
     for mem in members:
         # Looping over forecast lead times
         for step in steps:
-            logging.info('{:s}'.format(''.join(['-']*70)))
+            logging.info('-------------------------------------------------------------------------------------------------')
             if modeltype in ['avg', 'spr']:
-                logging.info(
-                    'Processing +{:03d}h forecast, {:s}'.format(step, modeltype))
+                logging.info('Processing +%sh forecast %s', f'{step:03d}', modeltype)
             else:
-                logging.info(
-                    'Processing +{:03d}h forecast, member {:02d}'.format(step, mem))
+                logging.info('Processing +%sh forecast, member %s', f'{step:03d}', f'{mem:02d}')
 
             # Specify and create output directory if necessary
             data_path_gribfile = data_path.joinpath(date.strftime('%Y%m%d%H%M'))
@@ -265,7 +252,7 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                 data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
             if os.path.isfile(files['gribfile_path']):
                 logging.info('gribfile_path file exists, skip: %s', files['gribfile_path'])
-                logging.info('{:s}'.format(''.join(['-']*70)))
+                logging.info('-------------------------------------------------------------------------------------------------')
                 continue
 
             logging.info('Grib file: %s', files['grib'])
@@ -287,7 +274,6 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
                 exit_with_error = True
                 continue
 
-            logging.info('{:s}'.format(''.join(['-']*70)))
+            logging.info('-------------------------------------------------------------------------------------------------')
     if exit_with_error:
-        logging.exception('Not all gribfiles could be loaded.')
         raise RuntimeError('Not all gribfiles could be loaded.')
