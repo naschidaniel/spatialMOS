@@ -7,6 +7,15 @@ from invoke import task, Collection
 from . import inv_logging
 from . import util
 
+@task
+def prune_container(c):
+    '''prune all quit containers'''
+    inv_logging.task(prune_container.__name__)
+    command = ['docker', 'container', 'prune', '--force']
+    command = ' '.join(command)
+    logging.info('The following command has entered: \'%s\'', command)
+    c.run(command)
+    util.write_statusfile_and_success_logging(prune_container.__name__)
 
 @task
 def run_node(c, cmd):
@@ -14,19 +23,6 @@ def run_node(c, cmd):
     inv_logging.task(run_r_base.__name__)
     user, group = util.uid_gid()
     command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/www', '-p 3000:3000', 'node_container']
-    command.extend(cmd)
-    command = ' '.join(command)
-    logging.info('The following command has entered: \'%s\'', command)
-    c.run(command)
-    inv_logging.success(run_r_base.__name__)
-
-
-@task
-def run_r_base(c, cmd):
-    '''run_r_base will run a command in r_base'''
-    inv_logging.task(run_r_base.__name__)
-    user, group = util.uid_gid()
-    command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'r_base']
     command.extend(cmd)
     command = ' '.join(command)
     logging.info('The following command has entered: \'%s\'', command)
@@ -75,6 +71,19 @@ def rebuild(c):
 
 
 @task
+def run_r_base(c, cmd):
+    '''run_r_base will run a command in r_base'''
+    inv_logging.task(run_r_base.__name__)
+    user, group = util.uid_gid()
+    command = ['docker', 'run', '--rm', f'-u {user}:{group}', '-v $(pwd):/usr/src/app', 'r_base']
+    command.extend(cmd)
+    command = ' '.join(command)
+    logging.info('The following command has entered: \'%s\'', command)
+    c.run(command)
+    inv_logging.success(run_r_base.__name__)
+
+
+@task
 def stop(c):
     '''Stop all running Docker Containers'''
     inv_logging.task(stop.__name__)
@@ -84,7 +93,7 @@ def stop(c):
 
 
 DOCKER_NS = Collection('docker')
+DOCKER_NS.add_task(prune_container)
+DOCKER_NS.add_task(run_maturin_build)
 DOCKER_NS.add_task(rebuild)
 DOCKER_NS.add_task(stop)
-DOCKER_NS.add_task(run_py_container)
-DOCKER_NS.add_task(run_maturin_build)

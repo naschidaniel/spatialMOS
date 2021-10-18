@@ -62,17 +62,17 @@ def scp_get(remote_user, remote_host, source_file, destination_file):
     subprocess.run(scp_cmd, check=True)
 
 
-def rsync_push(remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, ignore_existing=False):
+def rsync_push(remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, ignore_existing=False): # pylint: disable=R0913
     '''The function synchronizes local files with the server'''
     return _rsync(remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, ignore_existing, push_to_server=True)
 
 
-def rsync_get(remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, ignore_existing=False):
+def rsync_get(remote_user, remote_host, local_dir, remote_dir, include=None, exclude=None, exclude_from=None, ignore_existing=False): # pylint: disable=R0913
     '''The function synchronizes remote files with the local machine'''
     return _rsync(remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, ignore_existing, push_to_server=False)
 
 
-def _rsync(remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, ignore_existing, push_to_server=True):
+def _rsync(remote_user, remote_host, local_dir, remote_dir, include, exclude, exclude_from, ignore_existing, push_to_server=True): # pylint: disable=R0913
     if include is None:
         include = []
     include_args = list(chain(*zip(repeat('--include'), include)))

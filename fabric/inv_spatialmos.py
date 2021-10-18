@@ -8,47 +8,19 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 import requests
-from invoke import task, Collection
+from invoke import task
 from . import inv_logging
 from . import inv_docker
 from . import inv_node
 from . import inv_rsync
 from . import util
 
-@task
-def init_topography(c):
-    '''Create shapefiles for spatialMOS'''
-    inv_logging.task(init_topography.__name__)
-    cmd = ['Rscript', './r_spatialmos/init_shapefiles.R']
-    inv_docker.run_r_base(c, cmd)
 
-    cmd = ['python', './run_script.py', '--script', 'pre_processing_topography']
-    inv_docker.run_py_container(c, cmd)
-
-    # Download Shapefile and unzip it
-    if not os.path.exists('./data/get_available_data/gadm/gadm36_AUT_shp'):
-        req_gadm36_zip_file = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip'
-        gadm36_zip_file = './data/get_available_data/gadm/gadm36_AUT_shp.zip'
-        req_shapefile = requests.get(req_gadm36_zip_file, stream=True)
-        if req_shapefile.status_code == 200:
-            with open(gadm36_zip_file, mode='wb') as f:
-                for chunk in req_shapefile.iter_content(chunk_size=128):
-                    f.write(chunk)
-            logging.info('The shapefile \'%s\' has been downloaded.', req_gadm36_zip_file)
-            c.run(f'unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp')
-        else:
-            raise RuntimeError(f'There was a problem with the download of the shapefile \'{req_gadm36_zip_file}\'')
-
-    inv_logging.success(init_topography.__name__)
-
-
-@task
 def archive_folder(c, folder):
     '''The *.tar.gz are created with tar. The folder must be specified e.g. zamg.'''
     inv_logging.task(archive_folder.__name__)
     cmd = ['python', './run_script.py', '--script', 'archive_folder', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(archive_folder.__name__)
 
 
 @task
@@ -73,12 +45,22 @@ def archive_folder__zamg(c):
 
 
 @task
-def untar_folder(c, folder):
-    '''The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg.'''
-    inv_logging.task(untar_folder.__name__)
-    cmd = ['python', './run_script.py', '--script', 'untar_folder', '--folder', folder]
+def combine_data(c, folder):
+    '''Combine downloaded data for a folder.'''
+    inv_logging.task(combine_data.__name__)
+    cmd = ['python', './run_script.py', '--script', 'combine_data', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(untar_folder.__name__)
+
+
+@task
+def deploy(c):
+    '''Everything you need to deploy'''
+    inv_logging.task(deploy.__name__)
+    util.check_upstream(c)
+    inv_node.build(c)
+    inv_rsync.push(c, 'sourcefiles')
+    inv_rsync.push(c, 'staticfiles')
+    inv_logging.success(deploy.__name__)
 
 
 @task
@@ -179,6 +161,45 @@ def pre_processing_gribfiles__rh_2m(c):
     pre_processing_gribfiles(c, date=date, resolution='0.5', parameter='rh_2m')
     util.write_statusfile_and_success_logging(pre_processing_gribfiles__rh_2m.__name__)
 
+
+@task
+def pre_processing_gamlss_crch_climatologies(c, parameter):
+    '''Create climatologies for further processing in R with gamlss.'''
+    inv_logging.task(pre_processing_gamlss_crch_climatologies.__name__)
+    cmd = ['python', './spatialmos/pre_processing_gamlss_crch_climatologies.py', '--parameter', parameter]
+    inv_docker.run_py_container(c, cmd)
+    inv_logging.success(pre_processing_gamlss_crch_climatologies.__name__)
+
+
+@task
+def pre_processing_gribfiles(c, date, resolution, parameter):
+    '''Create the csv file and the jsonfile from the available gribfiles.'''
+    inv_logging.task(pre_processing_gribfiles.__name__)
+    cmd = ['python', './run_script.py', '--script', 'pre_processing_prediction', '--date', date, '--resolution', resolution, '--parameter', parameter]
+    inv_docker.run_py_container(c, cmd)
+    inv_logging.success(pre_processing_gribfiles.__name__)
+
+
+@task
+def prediction__rh_2m(c):
+    '''Create the predictions and the spatialMOS plots for rh_2m.'''
+    inv_logging.task(prediction__rh_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'rh_2m']
+    inv_docker.run_py_container(c, cmd)
+    util.write_statusfile_and_success_logging(prediction__rh_2m.__name__)
+
+
+@task
+def prediction__tmp_2m(c):
+    '''Create the predictions and the spatialMOS plots for tmp_2m.'''
+    inv_logging.task(prediction__tmp_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'tmp_2m']
+    inv_docker.run_py_container(c, cmd)
+    util.write_statusfile_and_success_logging(prediction__tmp_2m.__name__)
+
+
 @task
 def get_suedtirol(c, begindate, enddate):
     '''Download data from South Tyrol.'''
@@ -208,82 +229,30 @@ def get_zamg(c):
 
 
 @task
-def combine_data(c, folder):
-    '''Combine downloaded data for a folder.'''
-    inv_logging.task(combine_data.__name__)
-    cmd = ['python', './run_script.py', '--script', 'combine_data', '--folder', folder]
-    inv_docker.run_py_container(c, cmd)
-
-@task
-def interpolate_gribfiles(c, parameter):
-    '''GEFS Reforecasts are bilinear interpolated at station locations.'''
-    inv_logging.task(interpolate_gribfiles.__name__)
-    cmd = ['python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
-    inv_docker.run_py_container(c, cmd)
-    inv_logging.success(interpolate_gribfiles.__name__)
-
-
-@task
-def pre_processing_gamlss_crch_climatologies(c, parameter):
-    '''Create climatologies for further processing in R with gamlss.'''
-    inv_logging.task(pre_processing_gamlss_crch_climatologies.__name__)
-    cmd = ['python', './spatialmos/pre_processing_gamlss_crch_climatologies.py', '--parameter', parameter]
-    inv_docker.run_py_container(c, cmd)
-    inv_logging.success(pre_processing_gamlss_crch_climatologies.__name__)
-
-
-@task
-def r_gamlss_crch_model(c, validation, parameter):
-    '''Create the required spatial climatologies.'''
-    inv_logging.task(r_gamlss_crch_model.__name__)
-    cmd = ['Rscript', './r_spatialmos/gamlss_crch_model.R', '--validation', validation, '--parameter', parameter]
-    cmd = ' '.join(cmd)
+def init_topography(c):
+    '''Create shapefiles for spatialMOS'''
+    inv_logging.task(init_topography.__name__)
+    cmd = ['Rscript', './r_spatialmos/init_shapefiles.R']
     inv_docker.run_r_base(c, cmd)
-    inv_logging.success(r_gamlss_crch_model.__name__)
 
-@task
-def r_spatial_climatologies_nwp(c,  begin, end, parameter):
-    '''Create daily climatologies for the NWP.'''
-    inv_logging.task(r_spatial_climatologies_nwp.__name__)
-    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_nwp.R',  '--begin', begin, '--end', end, '--parameter', parameter]
-    cmd = ' '.join(cmd)
-    inv_docker.run_r_base(c, cmd)
-    inv_logging.success(r_spatial_climatologies_nwp.__name__)
-
-@task
-def r_spatial_climatologies_obs(c, begin, end, parameter):
-    '''Create daily climatologies for the observations.'''
-    inv_logging.task(r_spatial_climatologies_obs.__name__)
-    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_observations.R', '--begin', begin, '--end', end, '--parameter', parameter]
-    cmd = ' '.join(cmd)
-    inv_docker.run_r_base(c, cmd)
-    inv_logging.success(r_spatial_climatologies_obs.__name__)
-
-@task
-def pre_processing_gribfiles(c, date, resolution, parameter):
-    '''Create the csv file and the jsonfile from the available gribfiles.'''
-    inv_logging.task(pre_processing_gribfiles.__name__)
-    cmd = ['python', './run_script.py', '--script', 'pre_processing_prediction', '--date', date, '--resolution', resolution, '--parameter', parameter]
+    cmd = ['python', './run_script.py', '--script', 'pre_processing_topography']
     inv_docker.run_py_container(c, cmd)
-    inv_logging.success(pre_processing_gribfiles.__name__)
 
-@task
-def prediction__rh_2m(c):
-    '''Create the predictions and the spatialMOS plots for rh_2m.'''
-    inv_logging.task(prediction__rh_2m.__name__)
-    date = datetime.now().strftime('%Y-%m-%d')
-    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'rh_2m']
-    inv_docker.run_py_container(c, cmd)
-    util.write_statusfile_and_success_logging(prediction__rh_2m.__name__)
+    # Download Shapefile and unzip it
+    if not os.path.exists('./data/get_available_data/gadm/gadm36_AUT_shp'):
+        req_gadm36_zip_file = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUT_shp.zip'
+        gadm36_zip_file = './data/get_available_data/gadm/gadm36_AUT_shp.zip'
+        req_shapefile = requests.get(req_gadm36_zip_file, stream=True)
+        if req_shapefile.status_code == 200:
+            with open(gadm36_zip_file, mode='wb') as f:
+                for chunk in req_shapefile.iter_content(chunk_size=128):
+                    f.write(chunk)
+            logging.info('The shapefile \'%s\' has been downloaded.', req_gadm36_zip_file)
+            c.run(f'unzip {gadm36_zip_file} -d ./data/get_available_data/gadm/gadm36_AUT_shp')
+        else:
+            raise RuntimeError(f'There was a problem with the download of the shapefile \'{req_gadm36_zip_file}\'')
 
-@task
-def prediction__tmp_2m(c):
-    '''Create the predictions and the spatialMOS plots for tmp_2m.'''
-    inv_logging.task(prediction__tmp_2m.__name__)
-    date = datetime.now().strftime('%Y-%m-%d')
-    cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'tmp_2m']
-    inv_docker.run_py_container(c, cmd)
-    util.write_statusfile_and_success_logging(prediction__tmp_2m.__name__)
+    inv_logging.success(init_topography.__name__)
 
 
 @task
@@ -298,15 +267,12 @@ def install(c):
 
 
 @task
-def deploy(c):
-    '''Everything you need to deploy'''
-    inv_logging.task(deploy.__name__)
-    util.check_upstream(c)
-    inv_node.build(c)
-    inv_rsync.push(c, 'sourcefiles')
-    inv_rsync.push(c, 'staticfiles')
-    inv_logging.success(deploy.__name__)
-
+def interpolate_gribfiles(c, parameter):
+    '''GEFS Reforecasts are bilinear interpolated at station locations.'''
+    inv_logging.task(interpolate_gribfiles.__name__)
+    cmd = ['python', './run_script.py', '--script', 'interpolate_gribfiles', '--parameter', parameter]
+    inv_docker.run_py_container(c, cmd)
+    inv_logging.success(interpolate_gribfiles.__name__)
 
 
 @task
@@ -351,33 +317,41 @@ def merge_statusfiles(c): # pylint: disable=W0613
     logging.info('The merged status file %s has been written.', merge_statusfile)
     inv_logging.success(merge_statusfiles.__name__)
 
-SPATIALMOS_NS = Collection('spatialmos')
-SPATIALMOS_NS.add_task(init_topography)
-SPATIALMOS_NS.add_task(archive_folder__gefs_avgspr_forecast_p05)
-SPATIALMOS_NS.add_task(archive_folder__lwd)
-SPATIALMOS_NS.add_task(archive_folder__zamg)
-SPATIALMOS_NS.add_task(deploy)
-SPATIALMOS_NS.add_task(untar_folder)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_avg)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__rh_2m_spr)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__tmp_2m_avg)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__tmp_2m_spr)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__ugrd_10m_avg)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__ugrd_10m_spr)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__vgrd_10m_avg)
-SPATIALMOS_NS.add_task(get_gefs_forecasts__vgrd_10m_spr)
-SPATIALMOS_NS.add_task(get_suedtirol)
-SPATIALMOS_NS.add_task(get_lwd)
-SPATIALMOS_NS.add_task(get_zamg)
-SPATIALMOS_NS.add_task(combine_data)
-SPATIALMOS_NS.add_task(install)
-SPATIALMOS_NS.add_task(interpolate_gribfiles)
-SPATIALMOS_NS.add_task(merge_statusfiles)
-SPATIALMOS_NS.add_task(pre_processing_gamlss_crch_climatologies)
-SPATIALMOS_NS.add_task(pre_processing_gribfiles__rh_2m)
-SPATIALMOS_NS.add_task(pre_processing_gribfiles__tmp_2m)
-SPATIALMOS_NS.add_task(prediction__tmp_2m)
-SPATIALMOS_NS.add_task(prediction__rh_2m)
-SPATIALMOS_NS.add_task(r_gamlss_crch_model)
-SPATIALMOS_NS.add_task(r_spatial_climatologies_nwp)
-SPATIALMOS_NS.add_task(r_spatial_climatologies_obs)
+
+@task
+def r_gamlss_crch_model(c, validation, parameter):
+    '''Create the required spatial climatologies.'''
+    inv_logging.task(r_gamlss_crch_model.__name__)
+    cmd = ['Rscript', './r_spatialmos/gamlss_crch_model.R', '--validation', validation, '--parameter', parameter]
+    cmd = ' '.join(cmd)
+    inv_docker.run_r_base(c, cmd)
+    inv_logging.success(r_gamlss_crch_model.__name__)
+
+
+@task
+def r_spatial_climatologies_nwp(c,  begin, end, parameter):
+    '''Create daily climatologies for the NWP.'''
+    inv_logging.task(r_spatial_climatologies_nwp.__name__)
+    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_nwp.R',  '--begin', begin, '--end', end, '--parameter', parameter]
+    cmd = ' '.join(cmd)
+    inv_docker.run_r_base(c, cmd)
+    inv_logging.success(r_spatial_climatologies_nwp.__name__)
+
+
+@task
+def r_spatial_climatologies_obs(c, begin, end, parameter):
+    '''Create daily climatologies for the observations.'''
+    inv_logging.task(r_spatial_climatologies_obs.__name__)
+    cmd = ['Rscript', './r_spatialmos/spatial_climatologies_observations.R', '--begin', begin, '--end', end, '--parameter', parameter]
+    cmd = ' '.join(cmd)
+    inv_docker.run_r_base(c, cmd)
+    inv_logging.success(r_spatial_climatologies_obs.__name__)
+
+
+@task
+def untar_folder(c, folder):
+    '''The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg.'''
+    inv_logging.task(untar_folder.__name__)
+    cmd = ['python', './run_script.py', '--script', 'untar_folder', '--folder', folder]
+    inv_docker.run_py_container(c, cmd)
+    inv_logging.success(untar_folder.__name__)

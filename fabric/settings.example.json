@@ -18,6 +18,7 @@
     "archive_folder__gefs_avgspr_forecast_p05": "10095",
     "archive_folder__lwd": "10095",
     "archive_folder__zamg": "10095",
+    "prune_container": "10095",
     "get_lwd": "75",
     "get_zamg": "75",
     "get_gefs_forecasts__rh_2m_avg": "1455",
@@ -31,8 +32,8 @@
     "merge_statusfiles": "16",
     "prediction__tmp_2m": "1455",
     "prediction__rh_2m": "1455",
-    "pre_processing_gribfiles__rh-2m": "1455",
-    "pre_processing_gribfiles__tmp-2m": "1455"
+    "pre_processing_gribfiles__rh_2m": "1455",
+    "pre_processing_gribfiles__tmp_./2m": "1455"
   },
   "REMOTE_USER": "example",
   "REMOTE_HOST": "example.com",
@@ -41,11 +42,11 @@
       "local_dir": ".",
       "remote_dir": "/www/spatialMOS",
       "include": [
-        "fabric/cert/ca.pem",
-        "fabric/cert/cert.pem",
-        "fabric/cert/key.pem",
         "container/py_container/spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl",
         "container/py_container/spatial_rust_util-0.1.1-cp310-cp310-linux_x86_64.whl",
+        "container/node_container.tar.gz",
+        "container/py_container.tar.gz",
+        "container/r_base.tar.gz",
         "website/dist",
         "settings.json",
         "task.py"
@@ -87,9 +88,6 @@
       ],
       "exclude": [
         "get_available_data/*",
-        "*.h5",
-        "*.RData",
-        "*_station_observations.csv",
         ".well-known",
         "archive",
         "media",
