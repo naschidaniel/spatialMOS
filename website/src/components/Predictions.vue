@@ -1,11 +1,22 @@
 <template>
   <div>
+    <div class="my-1 d-flex justify-content-end">
+      <div class="col-auto">
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="inputGroupSelectPlot"
+            >Karten</label
+          >
+          <select id="inputGroupSelectPlot" v-model="plot" class="form-select">
+            <option value="samos_mean">SAMOS MEAN</option>
+            <option value="samos_spread">SAMOS SPREAD</option>
+            <option value="nwp_mean">NWP MEAN</option>
+            <option value="nwp_spread">NWP SPREAD</option>
+          </select>
+        </div>
+      </div>
+    </div>
     <div class="d-flex justify-content-center">
-      <img
-        class="img-fluid pointer"
-        :src="selectedStep?.filename_spatialmos_mean"
-        @click="setStep(+1)"
-      />
+      <img class="img-fluid pointer" :src="imgHref" @click="setStep(+1)" />
     </div>
     <div class="mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
@@ -91,6 +102,7 @@ export default defineComponent({
       parameter,
       fetchPrediction,
       predictions,
+      plot,
       selectedStep,
       setStep,
       setParameter,
@@ -99,10 +111,22 @@ export default defineComponent({
       parameter,
       fetchPrediction,
       predictions,
+      plot,
       selectedStep,
       setStep,
       setParameter,
     };
+  },
+  computed: {
+    imgHref(): undefined | string {
+      return this.plot === "samos_spread"
+        ? this.selectedStep?.filename_spatialmos_spread
+        : this.plot === "nwp_mean"
+        ? this.selectedStep?.filename_nwp_mean
+        : this.plot === "nwp_spread"
+        ? this.selectedStep?.filename_nwp_spread
+        : this.selectedStep?.filename_spatialmos_mean;
+    },
   },
   methods: {
     changeParameter(change: string) {

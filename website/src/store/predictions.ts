@@ -22,6 +22,7 @@ export interface Predictions {
   step: string;
   steps: string[];
   parameter: string;
+  plot: string;
   url: string;
 }
 
@@ -34,6 +35,7 @@ const predictions: Predictions = reactive({
   statusText: "",
   step: "6",
   parameter: "tmp_2m",
+  plot: "samos_mean",
   url: "",
 });
 
@@ -70,6 +72,15 @@ export function usePrediction() {
     return unref(predictions.parameter);
   });
 
+  const plot = computed({
+    get() {
+      return predictions.plot;
+    },
+    set(value) {
+      predictions.plot = value as string;
+    },
+  });
+
   const selectedStep = computed(() => {
     return (
       predictions.data?.find((s) => s.step === unref(predictions.step)) ||
@@ -99,6 +110,7 @@ export function usePrediction() {
   return {
     parameter,
     predictions,
+    plot,
     fetchPrediction,
     selectedStep,
     setStep,
