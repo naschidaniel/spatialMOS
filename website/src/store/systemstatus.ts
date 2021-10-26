@@ -80,15 +80,15 @@ export function useSystemstatus() {
   });
 
   const updateTime = computed((): string => {
-    const VITE_APP_VUE_APP_UPDATETIME =
-      process.env.VITE_APP_VUE_APP_UPDATETIME ?? undefined;
+    const VITE_APP_VUE_APP_UPDATETIME = import.meta.env
+      .VITE_APP_VUE_APP_UPDATETIME;
     return typeof VITE_APP_VUE_APP_UPDATETIME === "string"
       ? formatDateTime(parseInt(VITE_APP_VUE_APP_UPDATETIME.toString()))
       : formatDateTime(undefined);
   });
 
   const lastCommit = computed((): string => {
-    return process.env.VITE_APP_CURRENT_GIT_SHA as string;
+    return import.meta.env.VITE_APP_CURRENT_GIT_SHA;
   });
 
   return {

@@ -11,3 +11,10 @@ declare namespace NodeJS {
     VITE_APP_VUE_APP_UPDATETIME: string;
   }
 }
+
+interface ImportMeta {
+  env: {
+    VITE_APP_CURRENT_GIT_SHA: string;
+    VITE_APP_VUE_APP_UPDATETIME: string;
+  };
+}
