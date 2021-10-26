@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { unref } from "vue";
+import { defineComponent, unref } from "vue";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "leaflet/dist/leaflet.css";
@@ -29,7 +29,7 @@ import { usePhotonApi } from "../store/photonapi";
   this._setPosition(pos);
 };
 
-export default {
+export default defineComponent({
   name: "LeafletMap",
   setup() {
     const { point, lat, lon, tooltip } = usePhotonApi();
@@ -48,12 +48,14 @@ export default {
   mounted() {
     const lat = unref(this.lat);
     const lon = unref(this.lon);
-    this.map = new Map("mapContainer").setView([lat, lon], 16);
-
+    if (!lat || !lon) {
+      return;
+    }
+    this.map = new Map("mapContainer").setView([lat, lon], 16) as Map;
     new TileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(this.map);
+    }).addTo(this.map as Map);
     this.updateMarker();
   },
   methods: {
@@ -72,7 +74,7 @@ export default {
             .addTo(this.map as Map);
     },
   },
-};
+});
 </script>
 
 <style scoped>

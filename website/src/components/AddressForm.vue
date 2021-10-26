@@ -47,9 +47,10 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
 import { usePhotonApi } from "../store/photonapi";
 
-export default {
+export default defineComponent({
   name: "AddressForm",
   setup() {
     const { photonApi, fetchPhotonApiData } = usePhotonApi();
@@ -76,11 +77,8 @@ export default {
         );
       return `https://photon.komoot.io/api/?q=${queryAddressString}&bbox=10,46.6,12.9,47.8&limit=1`;
     },
-    routerParams(): string {
-      return this.$route.query;
-    },
   },
-};
+});
 </script>
 
 <style scoped>

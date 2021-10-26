@@ -74,7 +74,7 @@ export function usePhotonApi() {
     photonApi.isLoading = false;
   }
 
-  const point = computed((): number[] | undefined => {
+  const point = computed((): [number, number] | undefined => {
     const lat = unref(photonApi.lat);
     const lon = unref(photonApi.lon);
     if (lat === undefined || lon === undefined) {

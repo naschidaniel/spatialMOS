@@ -81,14 +81,14 @@ export function useSystemstatus() {
 
   const updateTime = computed((): string => {
     const VITE_APP_VUE_APP_UPDATETIME =
-      import.meta.env.VITE_APP_VUE_APP_UPDATETIME ?? undefined;
+      process.env.VITE_APP_VUE_APP_UPDATETIME ?? undefined;
     return typeof VITE_APP_VUE_APP_UPDATETIME === "string"
       ? formatDateTime(parseInt(VITE_APP_VUE_APP_UPDATETIME.toString()))
       : formatDateTime(undefined);
   });
 
   const lastCommit = computed((): string => {
-    return import.meta.env.VITE_APP_CURRENT_GIT_SHA as string;
+    return process.env.VITE_APP_CURRENT_GIT_SHA as string;
   });
 
   return {
