@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="d-flex justify-content-center">
-      <img class="img-fluid pointer" :src="imgHref" @click="setStep(+1)" />
+      <img
+        class="img-fluid pointer"
+        :src="selectedStep?.filename_spatialmos_mean"
+        @click="setStep(+1)"
+      />
     </div>
     <div class="mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
@@ -99,15 +103,6 @@ export default defineComponent({
       setStep,
       setParameter,
     };
-  },
-  computed: {
-    imgHref(): string {
-      if (this.selectedStep === undefined) {
-        return "";
-      }
-      const img = this.selectedStep.filename_spatialmos_mean;
-      return `/media/${this.parameter}/images/${img}`;
-    },
   },
   methods: {
     changeParameter(change: string) {
