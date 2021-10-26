@@ -8,6 +8,7 @@
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
     "lint": "eslint \"src/**/*.{js,ts,vue}\" --fix",
+    "lint-no-fix": "eslint \"src/**/*.{js,ts,vue}\"",
     "serve": "vite preview"
   },
   "dependencies": {

@@ -1,0 +1,30 @@
+on: [push, pull_request]
+
+name: build website
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build moses.tirol
+    env:
+      working-directory: ./website
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'    
+      - name: install dependencies
+        working-directory: ${{env.working-directory}}
+        run: yarn install
+      - name: lint website
+        working-directory: ${{env.working-directory}}
+        run: yarn lint-no-fix
+      - name: build website
+        working-directory: ${{env.working-directory}}
+        run: yarn build
+      - name: Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: moses-tirol_build
+          path: website/dist
+          retention-days: 0.2
