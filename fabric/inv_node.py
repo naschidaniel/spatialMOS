@@ -15,6 +15,7 @@ def build(c):
     inv_docker.run_node(c, cmd)
     inv_logging.success(build.__name__)
 
+
 @task
 def dev(c):
     '''This task is used for development'''

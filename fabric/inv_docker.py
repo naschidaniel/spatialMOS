@@ -61,9 +61,9 @@ def rebuild(c):
     '''Rebuild all docker containers'''
     inv_logging.task(rebuild.__name__)
     run_maturin_build(c)
-    c.run('docker build -t node_container ./website/')
-    c.run('docker build -t r_base ./container/r_base/')
-    c.run('docker build -t py_container ./container/py_container/')
+    c.run('docker build --no-cache -t node_container ./website/')
+    c.run('docker build --no-cache -t r_base ./container/r_base/')
+    c.run('docker build --no-cache -t py_container ./container/py_container/')
     c.run('docker save node_container | gzip > ./container/node_container.tar.gz')
     c.run('docker save py_container | gzip > ./container/py_container.tar.gz')
     c.run('docker save r_base | gzip > ./container/r_base.tar.gz')
