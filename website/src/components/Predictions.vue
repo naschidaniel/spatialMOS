@@ -132,7 +132,7 @@ export default defineComponent({
     changeParameter(change: string) {
       this.setParameter(change);
       const url = `/media/${change}/spatialmosrun_${change}.json`;
-      this.fetchPrediction(url);
+      this.fetchPrediction(url, { cache: "no-cache" });
       this.$router.push({ path: "/", query: { parameter: change } });
     },
   },
