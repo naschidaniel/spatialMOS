@@ -164,8 +164,7 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     spatialmos_spread = np.round(spatialmos_spread, decimals=5)
 
     # Create filename for the plots for NWP and spatialMOS forecast maps
-    data_path_spool_images = data_path_spool.joinpath('images')
-    os.makedirs(data_path_spool_images, exist_ok=True)
+    os.makedirs(data_path_spool, exist_ok=True)
 
     plot_filenames = []
     for what in ['nwp_mean', 'nwp_spread', 'spatialmos_mean', 'spatialmos_spread']:
@@ -182,7 +181,7 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
             'spatialmos_mean': spatialmos_mean,
             'spatialmos_spread': spatialmos_spread
         }
-        plot_filename = data_path_spool_images.joinpath(f"{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.jpg")
+        plot_filename = data_path_spool.joinpath(f"{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.jpg")
         spatial_plots.plot_forecast(plot_filename, parser_dict['parameter'], xx, yy, plotparameter.get(what), gribfiles_data, gadm36_shape_file, what)
         plot_filenames.append(plot_filename)
 
@@ -209,17 +208,16 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                 {'filename_SpatialMosStep': filename_spatialmos_step,
                                  'valid_date': valid_date_aware.strftime('%Y-%m-%d %H:%M:%S'),
                                  'step': gribfiles_data['step'],
-                                 'filename_nwp_mean': f"/media/{parser_dict['parameter']}/images/{plot_filenames[0].name}",
-                                 'filename_nwp_spread': f"/media/{parser_dict['parameter']}/images/{plot_filenames[1].name}",
-                                 'filename_spatialmos_mean': f"/media/{parser_dict['parameter']}/images/{plot_filenames[2].name}",
-                                 'filename_spatialmos_spread': f"/media/{parser_dict['parameter']}/images/{plot_filenames[3].name}",
+                                 'filename_nwp_mean': f"/media/{parser_dict['parameter']}/{plot_filenames[0].name}",
+                                 'filename_nwp_spread': f"/media/{parser_dict['parameter']}/{plot_filenames[1].name}",
+                                 'filename_spatialmos_mean': f"/media/{parser_dict['parameter']}/{plot_filenames[2].name}",
+                                 'filename_spatialmos_spread': f"/media/{parser_dict['parameter']}/{plot_filenames[3].name}",
                                  },
                             'SpatialMosPoint': spatialmos_point_dict
                             }
 
     with open(data_path_spool.joinpath(filename_spatialmos_step), mode='w', encoding='utf-8') as f:
         json.dump(prediction_json_file, f)
-        f.close()
 
     logging.info('parameter: %9s | anal_date: %s | valid_date: %s | step: %03d | %s',
                  prediction_json_file['SpatialMosRun']['parameter'], prediction_json_file['SpatialMosRun']['anal_date'],
@@ -232,9 +230,9 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                   'parameter': parser_dict['parameter'],
                                   'unit': unit,
                                   'prediction_json_file': filename_spatialmos_step,
-                                  'filename_nwp_mean': f"/media/{parser_dict['parameter']}/images/{plot_filenames[0].name}",
-                                  'filename_nwp_spread': f"/media/{parser_dict['parameter']}/images/{plot_filenames[1].name}",
-                                  'filename_spatialmos_mean': f"/media/{parser_dict['parameter']}/images/{plot_filenames[2].name}",
-                                  'filename_spatialmos_spread': f"/media/{parser_dict['parameter']}/images/{plot_filenames[3].name}",
+                                  'filename_nwp_mean': f"/media/{parser_dict['parameter']}/{plot_filenames[0].name}",
+                                  'filename_nwp_spread': f"/media/{parser_dict['parameter']}/{plot_filenames[1].name}",
+                                  'filename_spatialmos_mean': f"/media/{parser_dict['parameter']}/{plot_filenames[2].name}",
+                                  'filename_spatialmos_spread': f"/media/{parser_dict['parameter']}/{plot_filenames[3].name}",
                                   })
     return spatialmos_run_status

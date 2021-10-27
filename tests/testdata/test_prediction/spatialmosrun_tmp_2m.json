@@ -7,9 +7,9 @@
     "parameter": "tmp_2m",
     "unit": "\u00b0 C",
     "prediction_json_file": "20210803_step_006.json",
-    "filename_nwp_mean": "/media/tmp_2m/images/nwp_mean_20210803_step_006.jpg",
-    "filename_nwp_spread": "/media/tmp_2m/images/nwp_spread_20210803_step_006.jpg",
-    "filename_spatialmos_mean": "/media/tmp_2m/images/spatialmos_mean_20210803_step_006.jpg",
-    "filename_spatialmos_spread": "/media/tmp_2m/images/spatialmos_spread_20210803_step_006.jpg"
+    "filename_nwp_mean": "/media/tmp_2m/nwp_mean_20210803_step_006.jpg",
+    "filename_nwp_spread": "/media/tmp_2m/nwp_spread_20210803_step_006.jpg",
+    "filename_spatialmos_mean": "/media/tmp_2m/spatialmos_mean_20210803_step_006.jpg",
+    "filename_spatialmos_spread": "/media/tmp_2m/spatialmos_spread_20210803_step_006.jpg"
   }
 ]
