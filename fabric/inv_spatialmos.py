@@ -184,6 +184,7 @@ def pre_processing_gribfiles(c, date, resolution, parameter):
 def prediction__rh_2m(c):
     '''Create the predictions and the spatialMOS plots for rh_2m.'''
     inv_logging.task(prediction__rh_2m.__name__)
+    c.run('rm -rf ./data/media/rh_2m/*')
     date = datetime.now().strftime('%Y-%m-%d')
     cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'rh_2m']
     inv_docker.run_py_container(c, cmd)
@@ -194,6 +195,7 @@ def prediction__rh_2m(c):
 def prediction__tmp_2m(c):
     '''Create the predictions and the spatialMOS plots for tmp_2m.'''
     inv_logging.task(prediction__tmp_2m.__name__)
+    c.run('rm -rf ./data/media/tmp_2m/*')
     date = datetime.now().strftime('%Y-%m-%d')
     cmd = ['python', './run_script.py', '--script', 'prediction', '--date', date, '--resolution', '0.5', '--parameter', 'tmp_2m']
     inv_docker.run_py_container(c, cmd)
