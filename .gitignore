@@ -8,11 +8,6 @@ __pycache__/
 # Python builds
 *.whl
 
-# Docker Certs
-fabric/cert/ca.pem
-fabric/cert/cert.pem
-fabric/cert/key.pem
-
 # Editor
 .vscode
 
@@ -50,3 +45,6 @@ website/dist
 ## Shapefiles
 gadm36_AUT_shp
 gadm36_AUT_shp.zip
+
+# Image-Optimizer
+image-optimizer

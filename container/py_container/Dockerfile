@@ -1,4 +1,4 @@
-FROM python:3.9-buster
+FROM python:3.9-bullseye
 
 ENV PYTHONUNBUFFERED 1
 
@@ -8,7 +8,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update -y
 
-RUN apt-get install gdal-bin libeccodes0 libgdal-dev libproj-dev proj-bin proj-data libgeos-dev -y
+RUN apt-get install gdal-bin libeccodes0 libgdal-dev libproj-dev proj-bin proj-data libgeos-dev libwebp-dev -y
 
 RUN apt-get clean all
 
