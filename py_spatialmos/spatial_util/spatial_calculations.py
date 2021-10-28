@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #  -*- coding: utf-8 -*-
 '''spatial_calculations is used to do some calculations for spatialMOS.'''
 

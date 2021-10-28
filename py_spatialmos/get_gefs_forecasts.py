@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''The script was developed by Reto Stauffer and extended by Daniel Naschberger.
 

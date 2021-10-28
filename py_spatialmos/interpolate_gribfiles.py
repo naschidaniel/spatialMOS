@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 ''' With this Python script the downloaded gribfiles can be interpolated to station locations.'''
 

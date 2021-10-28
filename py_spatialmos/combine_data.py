@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''A script to combine data from get_lwd_data, get_suedtirol_data and get_zamg_data'''
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """A script to create the required data structure for further processing in R. The data tables required for gamlss in R are created individually for each parameter."""
 

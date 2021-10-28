@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #  -*- coding: utf-8 -*-
 '''This collection is used to ensure data exchange between local PC and server.'''
 
