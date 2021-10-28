@@ -225,10 +225,10 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                 {'filename_SpatialMosStep': filename_spatialmos_step,
                                  'valid_date': valid_date_aware.strftime('%Y-%m-%d %H:%M:%S'),
                                  'step': gribfiles_data['step'],
-                                 'filename_nwp_mean': filename_nwp_mean,
-                                 'filename_nwp_spread': filename_nwp_spread,
-                                 'filename_spatialmos_mean': filename_spatialmos_mean,
-                                 'filename_spatialmos_spread': filename_spatialmos_spread,
+                                 'filename_nwp_mean': filename_nwp_mean[0],
+                                 'filename_nwp_spread': filename_nwp_spread[0],
+                                 'filename_spatialmos_mean': filename_spatialmos_mean[0],
+                                 'filename_spatialmos_spread': filename_spatialmos_spread[0],
                                  },
                             'SpatialMosPoint': spatialmos_point_dict
                             }
@@ -247,9 +247,9 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                   'parameter': parser_dict['parameter'],
                                   'unit': unit,
                                   'prediction_json_file': filename_spatialmos_step,
-                                  'filename_nwp_mean': filename_nwp_mean,
-                                  'filename_nwp_spread': filename_nwp_spread,
-                                  'filename_spatialmos_mean': filename_spatialmos_mean,
-                                  'filename_spatialmos_spread': filename_spatialmos_spread,
+                                  'filename_nwp_mean': filename_nwp_mean[0],
+                                  'filename_nwp_spread': filename_nwp_spread[0],
+                                  'filename_spatialmos_mean': filename_spatialmos_mean[0],
+                                  'filename_spatialmos_spread': filename_spatialmos_spread[0],
                                   })
     return spatialmos_run_status

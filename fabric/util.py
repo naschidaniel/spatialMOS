@@ -12,13 +12,13 @@ from . import inv_logging
 
 def check_upstream(c):
     '''Check main'''
-    print('Should the diff between origin/main and the current branch be checked? [yes/ignore/NO]')
+    print('Should the diff between origin/main and the current branch be checked? [yes/NO]')
     answer = input()
 
-    if answer.upper() not in ('J', 'JA', 'I', 'IGNORE', 'Y', 'YES'):
+    if answer.upper() not in ('J', 'JA', 'N', 'NEIN', 'NO', 'Y', 'YES'):
         raise ValueError(f'The input \'{answer}\' cannot be processed')
 
-    if answer.upper not in ('I', 'IGNORE'):
+    if answer.upper not in ('N', 'NEIN', 'NO'):
         logging.warning('The dff between origin/main and current branch is not checked.')
     else:
         if c.run('git rev-parse --abbrev-ref HEAD', hide=True).stdout.strip() != 'main':

@@ -12,7 +12,8 @@
     "./data/spatialmos_climatology",
     "./data/media",
     "./data/spool",
-    "./data/static"
+    "./data/static",
+    "image-optimizer"
   ],
   "systemChecks": {
     "archive_folder__gefs_avgspr_forecast_p05": "10095",
