@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 '''Help functions to create the spatialMOS plots,.'''
 
-import os
 import logging
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import datetime as dt
-from PIL import Image
 import cartopy.crs as ccrs
 import cartopy.io.shapereader as shpreader
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -175,7 +173,7 @@ def plot_forecast(filename, parameter, xx, yy, plotparameter, gribfiles_data, ga
     gl.yformatter = LATITUDE_FORMATTER
 
     fig.savefig(filename, bbox_inches='tight', pil_kwargs={
-                'quality': 70, 'optimize': True, 'progressive': True})
+                'quality': 95, 'optimize': True, 'progressive': True})
     plt.close(fig=None)
     logging.info('The prediction plot \'%s\' was created.', filename)
 

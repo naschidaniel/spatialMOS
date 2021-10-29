@@ -4,6 +4,7 @@ geos
 matplotlib
 numpy
 pandas
+pillow 
 pyproj
 pyshp
 pytz
