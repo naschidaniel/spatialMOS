@@ -1,27 +1,5 @@
 import { reactive, computed, unref } from "vue";
-import { formatDateTime } from "../util/formatters";
-
-export interface SystemCheck {
-  taskName: string;
-  taskFinishedTime: string;
-  taskMaxAgeTime: string;
-  maxAge: number;
-  failed: boolean;
-  complete?: boolean;
-}
-
-export interface SystemChecks {
-  hourly: SystemCheck[];
-  daily: SystemCheck[];
-  weekly: SystemCheck[];
-}
-
-export interface SystemStatus {
-  isLoading: boolean;
-  isError: boolean;
-  statusText: string;
-  systemChecks: SystemChecks;
-}
+import { SystemCheck, SystemChecks, SystemStatus } from "../model";
 
 const systemstatus: SystemStatus = reactive({
   isLoading: false,

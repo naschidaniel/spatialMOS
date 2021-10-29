@@ -1,35 +1,10 @@
 import { reactive, computed, unref } from "vue";
-export interface SpatialMosStep {
-  status: string;
-  step: string;
-  anal_date: string;
-  valid_date: string;
-  parameter: string;
-  unit: string;
-  prediction_json_file: string;
-  filename_nwp_mean: string;
-  filename_nwp_spread: string;
-  filename_spatialmos_mean: string;
-  filename_spatialmos_spread: string;
-}
-
-export interface Predictions {
-  analDate: string;
-  data: SpatialMosStep[] | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  statusText: string;
-  step: string;
-  steps: string[];
-  parameter: string;
-  plot: string;
-  url: string;
-}
+import { SpatialMosStep, Predictions } from "../model";
 
 const predictions: Predictions = reactive({
   analDate: "",
   steps: [],
-  data: undefined,
+  data: [],
   isError: false,
   isLoading: false,
   statusText: "",
@@ -81,12 +56,9 @@ export function usePrediction() {
     },
   });
 
-  const selectedStep = computed(() => {
-    return (
-      predictions.data?.find((s) => s.step === unref(predictions.step)) ||
-      undefined
-    );
-  });
+  const selectedStep = computed(() =>
+    predictions.data?.find((s) => s.step === unref(predictions.step))
+  );
 
   function setStep(change: string | number) {
     if (typeof change === "number") {
