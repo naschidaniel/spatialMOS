@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Predictions from "../components/Predictions.vue";
-import { usePrediction } from "../store/predictions";
+import { useData } from "../store/useData";
 
 export default defineComponent({
   name: "Vorhersagekarten",
@@ -27,7 +27,7 @@ export default defineComponent({
     Predictions,
   },
   setup() {
-    const { parameter, predictions, fetchPrediction } = usePrediction();
+    const { parameter, predictions, fetchPrediction } = useData();
     const url = `/media/${parameter.value}/spatialmosrun_${parameter.value}.json`;
     fetchPrediction(url, { cache: "no-cache" });
     return { predictions, fetchPrediction };

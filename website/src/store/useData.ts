@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref } from "vue";
-import { usePhotonApi } from "./photonapi";
-import { usePrediction } from "./predictions";
-import { useSystemstatus } from "./systemstatus";
+import { usePhotonApi } from "./usePhotonApi";
+import { usePrediction } from "./usePredictions";
+import { useSystemstatus } from "./useSystemStatus";
 import { DataState, AvailableBoxSizes } from "../model";
 import { formatDateTime } from "../util/formatters";
 

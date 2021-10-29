@@ -53,14 +53,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { usePhotonApi } from "../store/photonapi";
+import { useData } from "../store/useData";
 import AddressForm from "../components/AddressForm.vue";
 import LeafletMapContainer from "../components/LeafletMapContainer.vue";
 
 export default defineComponent({
   components: { AddressForm, LeafletMapContainer },
   setup() {
-    const { photonApi } = usePhotonApi();
+    const { photonApi } = useData();
     return { photonApi };
   },
 });
