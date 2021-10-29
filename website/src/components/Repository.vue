@@ -24,12 +24,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useSystemstatus } from "../store/systemstatus";
+import { useData } from "../store/useData";
 
 export default defineComponent({
   name: "Repository",
   setup() {
-    const { lastCommit, updateTime } = useSystemstatus();
+    const { lastCommit, updateTime } = useData();
     return { lastCommit, updateTime };
   },
 });

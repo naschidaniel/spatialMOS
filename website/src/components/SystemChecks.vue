@@ -47,13 +47,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useSystemstatus } from "../store/systemstatus";
+import { useData } from "../store/useData";
 import { formatDateTime } from "../util/formatters";
 
 export default defineComponent({
   name: "SystemChecks",
   setup() {
-    const { systemChecks, systemstatus } = useSystemstatus();
+    const { systemChecks, systemstatus } = useData();
     return { systemChecks, systemstatus };
   },
   methods: {

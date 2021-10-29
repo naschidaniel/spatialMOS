@@ -48,12 +48,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { usePhotonApi } from "../store/photonapi";
+import { useData } from "../store/useData";
 
 export default defineComponent({
   name: "AddressForm",
   setup() {
-    const { photonApi, fetchPhotonApiData } = usePhotonApi();
+    const { photonApi, fetchPhotonApiData } = useData();
     return { photonApi, fetchPhotonApiData };
   },
   data() {
