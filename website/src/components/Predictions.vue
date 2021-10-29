@@ -15,9 +15,14 @@
         </div>
       </div>
     </div>
-    <div class="d-flex justify-content-center">
-      <img class="img-fluid pointer" :src="imgHref" @click="setStep(+1)" />
-    </div>
+    <ResponsiveImage
+      v-if="spatialImage.filename != ''"
+      image-class="pointer img-fluid"
+      :image-href="spatialImage.filename"
+      :image-height="spatialImage.height"
+      :image-width="spatialImage.width"
+      @click="setStep(+1)"
+    />
     <div class="mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
         <SolidChevronLeftIcon
@@ -88,12 +93,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { usePrediction } from "../store/predictions";
+import { SpatialMosImage } from "../model";
+import ResponsiveImage from "./ResponsiveImage.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
 import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
 export default defineComponent({
   name: "Predictions",
   components: {
+    ResponsiveImage,
     SolidChevronLeftIcon,
     SolidChevronRightIcon,
   },
@@ -118,14 +126,17 @@ export default defineComponent({
     };
   },
   computed: {
-    imgHref(): undefined | string {
+    spatialImage(): SpatialMosImage {
+      if (this.selectedStep === undefined) {
+        return { filename: "", height: 0, width: 0 };
+      }
       return this.plot === "samos_spread"
-        ? this.selectedStep?.filename_spatialmos_spread
+        ? this.selectedStep.spatialmos_spread
         : this.plot === "nwp_mean"
-        ? this.selectedStep?.filename_nwp_mean
+        ? this.selectedStep.nwp_mean
         : this.plot === "nwp_spread"
-        ? this.selectedStep?.filename_nwp_spread
-        : this.selectedStep?.filename_spatialmos_mean;
+        ? this.selectedStep.nwp_spread
+        : this.selectedStep.spatialmos_mean;
     },
   },
   methods: {
