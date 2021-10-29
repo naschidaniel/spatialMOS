@@ -4,6 +4,7 @@
   "private": false,
   "description": "A Website for spatial weather predictions.",
   "author": "Daniel Naschberger <daniel@naschi.at>",
+  "license": "GNU GPLv3",
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
@@ -18,6 +19,7 @@
     "bootstrap": "^5.1.1",
     "leaflet": "^1.7.1",
     "prettier-eslint": "^13.0.0",
+    "tslib": "^2.3.1",
     "vue": "^3.2.13",
     "vue-router": "^4.0.10"
   },
