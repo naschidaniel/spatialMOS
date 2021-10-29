@@ -17,7 +17,7 @@ def check_upstream(c):
 
     if answer.upper() not in ('J', 'JA', 'N', 'NEIN', 'NO', 'Y', 'YES'):
         raise ValueError(f'The input \'{answer}\' cannot be processed')
-    
+
     if answer.upper() in ('N', 'NEIN', 'NO'):
         logging.warning('The dff between origin/main and current branch is not checked.')
     else:
