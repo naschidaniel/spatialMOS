@@ -1,5 +1,5 @@
 <template>
-  <div class="container">Punktvorhersagen</div>
+  <div class="container-lg">Punktvorhersagen</div>
 </template>
 
 <script lang="ts">

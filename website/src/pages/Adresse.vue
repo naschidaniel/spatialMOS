@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-lg">
     <h1>Adresse</h1>
     <AddressForm />
     <LeafletMapContainer />

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-lg">
     <h1>Projektbeschreibung</h1>
     <h2>Allgemeine Projektbeschreibung</h2>
     <p>

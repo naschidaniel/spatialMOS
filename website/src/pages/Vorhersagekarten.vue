@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-lg">
     <h1>Vorhersagekarten</h1>
     <div v-if="predictions.isLoading" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
