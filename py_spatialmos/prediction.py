@@ -243,26 +243,10 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                 'filename_SpatialMosStep': filename_spatialmos_step,
                                  'valid_date': valid_date_aware.strftime('%Y-%m-%d %H:%M:%S'),
                                  'step': gribfiles_data['step'],
-                                 'nwp_mean': {
-                                    'filename': filename_nwp_mean[0],
-                                    'height': dimension[0][0],
-                                    'width': dimension[0][1],
-                                 },
-                                 'nwp_spread': {
-                                    'filename': filename_nwp_spread[0],
-                                    'height': dimension[1][0],
-                                    'width': dimension[1][1],
-                                 },
-                                 'spatialmos_mean': {
-                                    'filename': filename_spatialmos_mean[0],
-                                    'height': dimension[2][0],
-                                    'width': dimension[2][1],
-                                 },
-                                 'spatialmos_spread': {
-                                    'filename': filename_spatialmos_spread[0],
-                                    'height': dimension[3][0],
-                                    'width': dimension[3][1],
-                                 },
+                                 'nwp_mean_filename': filename_nwp_mean[0],
+                                 'nwp_spread_filename': filename_nwp_spread[0],
+                                 'spatialmos_mean_filename': filename_spatialmos_mean[0],
+                                 'spatialmos_spread_filename': filename_spatialmos_spread[0],
                             },
                             'SpatialMosPoint': spatialmos_point_dict
                             }

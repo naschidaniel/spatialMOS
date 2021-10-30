@@ -38,7 +38,13 @@ class TestRustModules(unittest.TestCase):
         with open(Path("./tests/testdata/test_prediction/spatialmosrun_tmp_2m.json"), 'r', encoding='utf-8') as f_ok, open(data_path_spool.joinpath("spatialmosrun_tmp_2m.json"), 'r', encoding='utf-8') as f:
             spatialmos_run_status_ok = json.load(f_ok)
             spatialmos_run_status = json.load(f)
-        self.assertDictEqual(spatialmos_run_status_ok, spatialmos_run_status)
+        
+        for entry in ['nwp_mean', 'nwp_spread', 'spatialmos_mean', 'spatialmos_spread']:
+            spatialmos_run_status_ok[0][entry].pop('width')
+            spatialmos_run_status_ok[0][entry].pop('height')
+            spatialmos_run_status[0][entry].pop('width')
+            spatialmos_run_status[0][entry].pop('height')
+        self.assertEqual(spatialmos_run_status_ok, spatialmos_run_status)
 
         with open(Path("./tests/testdata/test_prediction/20210803_step_006.json"), 'r', encoding='utf-8') as f_ok, open(data_path_spool.joinpath("20210803_step_006.json"), 'r', encoding='utf-8') as f:
             spatialmos_prediction_ok = json.load(f_ok)
