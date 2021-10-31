@@ -74,7 +74,7 @@ def get_gefs(c, date, resolution, modeltype, parameter):
 
 @task
 def get_gefs_forecasts__tmp_2m_avg(c):
-    '''Download and pre process forcasts for tmp_2m'''
+    '''Download forcasts for tmp_2m mean'''
     inv_logging.task(get_gefs_forecasts__tmp_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='tmp_2m')
@@ -83,7 +83,7 @@ def get_gefs_forecasts__tmp_2m_avg(c):
 
 @task
 def get_gefs_forecasts__tmp_2m_spr(c):
-    '''Download and pre process forcasts for tmp_2m'''
+    '''Download forcasts for tmp_2m spread'''
     inv_logging.task(get_gefs_forecasts__tmp_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='tmp_2m')
@@ -92,7 +92,7 @@ def get_gefs_forecasts__tmp_2m_spr(c):
 
 @task
 def get_gefs_forecasts__rh_2m_avg(c):
-    '''Download and pre process forcasts for rh_2m'''
+    '''Download forcasts for rh_2m mean'''
     inv_logging.task(get_gefs_forecasts__rh_2m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='rh_2m')
@@ -101,7 +101,7 @@ def get_gefs_forecasts__rh_2m_avg(c):
 
 @task
 def get_gefs_forecasts__rh_2m_spr(c):
-    '''Download and pre process forcasts for rh_2m spr'''
+    '''Download forcasts for rh_2m spread'''
     inv_logging.task(get_gefs_forecasts__rh_2m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='rh_2m')
@@ -110,7 +110,7 @@ def get_gefs_forecasts__rh_2m_spr(c):
 
 @task
 def get_gefs_forecasts__ugrd_10m_avg(c):
-    '''Download and pre process forcasts for ugrd_10 avg'''
+    '''Download forcasts for ugrd_10 mean'''
     inv_logging.task(get_gefs_forecasts__ugrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='ugrd_10m')
@@ -119,7 +119,7 @@ def get_gefs_forecasts__ugrd_10m_avg(c):
 
 @task
 def get_gefs_forecasts__ugrd_10m_spr(c):
-    '''Download and pre process forcasts for ugrd_10 spr'''
+    '''Download forcasts for ugrd_10 spread'''
     inv_logging.task(get_gefs_forecasts__ugrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='ugrd_10m')
@@ -128,7 +128,7 @@ def get_gefs_forecasts__ugrd_10m_spr(c):
 
 @task
 def get_gefs_forecasts__vgrd_10m_avg(c):
-    '''Download and pre process forcasts for wind_10m avg'''
+    '''Download forcasts for wind_10m mean'''
     inv_logging.task(get_gefs_forecasts__vgrd_10m_avg.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='avg', parameter='vgrd_10m')
@@ -137,7 +137,7 @@ def get_gefs_forecasts__vgrd_10m_avg(c):
 
 @task
 def get_gefs_forecasts__vgrd_10m_spr(c):
-    '''Download and pre process forcasts for wind_10m spr'''
+    '''Download forcasts for wind_10m spread'''
     inv_logging.task(get_gefs_forecasts__vgrd_10m_spr.__name__)
     date = datetime.now().strftime('%Y-%m-%d')
     get_gefs(c, date=date, resolution='0.5', modeltype='spr', parameter='vgrd_10m')

@@ -23,7 +23,10 @@ def combine_gribfiles(parser_dict: Dict[str, Any]):
     exit_with_error = False
     for avg_gribfile in sorted(gribfiles_path.glob('*avg*.grb2')):
         logging.info('The avg file \'%s\' is processed', avg_gribfile)
-        step = f'{avg_gribfile.name[-9:-5]}'
+        if '_subset.grb2' in avg_gribfile.name:
+            step = f'{avg_gribfile.name[-16:-12]}'
+        else:
+            step = f'{avg_gribfile.name[-9:-5]}'
 
         is_spr_gribfile = False
         for spr_gribfile in spr_files:

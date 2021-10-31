@@ -7,13 +7,10 @@
     "./data/.well-known",
     "./data/archive",
     "./data/get_available_data",
-    "./data/get_available_data/gefs_reforecast",
-    "./data/get_available_data/gefs_reforecast/nwp",
     "./data/spatialmos_climatology",
     "./data/media",
     "./data/spool",
-    "./data/static",
-    "image-optimizer"
+    "./data/static"
   ],
   "systemChecks": {
     "archive_folder__gefs_avgspr_forecast_p05": "10095",
@@ -50,7 +47,7 @@
         "container/r_base.tar.gz",
         "website/dist",
         "settings.json",
-        "task.py"
+        "image-optimizer"
       ],
       "exclude": [
         "*.git*",
@@ -99,7 +96,7 @@
   },
   "rsync_get": {
     "archive": {
-      "local_dir": "./data/archive",
+      "local_dir": "./data",
       "remote_dir": "/www/spatialMOS/data/archive",
       "ignore-existing": "True"
     }
