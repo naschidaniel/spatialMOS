@@ -74,7 +74,7 @@ if __name__ == '__main__':
             get_zamg_data.run_fetch_zamg_data()
         elif PARSER_DICT['script'] == 'pre_processing_prediction':
             argsinfo = argsinfo | {'parameter': True,
-                                   'available_parameter': ['tmp_2m', 'rh_2m'],
+                                   'available_parameter': ['tmp_2m', 'rh_2m', 'ugrd_10m', 'vgrd_10m'],
                                    'date': True,
                                    'resolution': True,
                                    'available_resolution': [0.5, 1]

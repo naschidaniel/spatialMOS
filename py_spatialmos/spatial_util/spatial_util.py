@@ -22,7 +22,7 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
         ds_avg = ds_avg.sel(latitude = latitude, longitude = longitude)
         ds_spr = ds_spr.sel(latitude = latitude, longitude = longitude)
 
-        if parameter not in ['tmp_2m', 'pres_sfc', 'spfh_2m', 'rh_2m']:
+        if parameter not in ['tmp_2m', 'pres_sfc', 'spfh_2m', 'rh_2m', 'ugrd_10m', 'vgrd_10m']:
             raise ValueError(
                 'The parameter \'%s\' cannot be processed.' % parameter)
 
@@ -37,6 +37,16 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
         elif parameter == 'spfh_2m': # kg/kg
             values_avg = ds_avg['q']
             values_spr = ds_spr['q']
+        elif parameter == 'ugrd_10m': # m/s
+            values_avg = ds_avg['u10']
+            values_spr = ds_spr['u10']
+            values_avg = np.round(values_avg.values.tolist(), 2)
+            values_spr = np.round(values_spr.values.tolist(), 2)
+        elif parameter == 'vgrd_10m': # m/s
+            values_avg = ds_avg['v10']
+            values_spr = ds_spr['v10']
+            values_avg = np.round(values_avg.values.tolist(), 2)
+            values_spr = np.round(values_spr.values.tolist(), 2)
         elif parameter == 'rh_2m': # %
             values_avg = ds_avg['r2']
             values_spr = ds_spr['r2']
@@ -44,7 +54,7 @@ def gribfiles_to_json(file_avg, file_spr, parameter, subset):
             values_spr = np.round(values_spr.values.tolist(), 2)
         values_avg = [list(el) for el in values_avg]
         values_spr = [list(el) for el in values_spr]
-
+        
         data = spatial_rust_util.combine_gribdata(list(latitude), list(longitude), values_avg, values_spr)
         return {
             'parameter': parameter,

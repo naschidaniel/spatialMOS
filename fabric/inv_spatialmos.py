@@ -163,6 +163,22 @@ def pre_processing_gribfiles__rh_2m(c):
 
 
 @task
+def pre_processing_gribfiles__ugrd_10m(c):
+    '''combine ugrd_10m gribfiles for predictions'''
+    inv_logging.task(pre_processing_gribfiles__ugrd_10m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    pre_processing_gribfiles(c, date=date, resolution='0.5', parameter='ugrd_10m')
+    util.write_statusfile_and_success_logging(pre_processing_gribfiles__ugrd_10m.__name__)
+
+@task
+def pre_processing_gribfiles__vgrd_10m(c):
+    '''combine ugrd_10m gribfiles for predictions'''
+    inv_logging.task(pre_processing_gribfiles__vgrd_10m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    pre_processing_gribfiles(c, date=date, resolution='0.5', parameter='vgrd_10m')
+    util.write_statusfile_and_success_logging(pre_processing_gribfiles__vgrd_10m.__name__)
+
+@task
 def pre_processing_gamlss_crch_climatologies(c, parameter):
     '''Create climatologies for further processing in R with gamlss.'''
     inv_logging.task(pre_processing_gamlss_crch_climatologies.__name__)
