@@ -52,9 +52,9 @@ export default defineComponent({
       return;
     }
     this.map = new Map("mapContainer").setView([lat, lon], 16) as Map;
-    new TileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+    new TileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
       attribution:
-        '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.map as Map);
     this.updateMarker();
   },

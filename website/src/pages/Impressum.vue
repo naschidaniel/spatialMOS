@@ -28,7 +28,7 @@
       <br />
       <strong>Mitglied bei:</strong> WKO<br />
       <strong>Berufsrecht:</strong> Gewerbeordnung:
-      <a target="_blank" href="http://www.ris.bka.gv.at">www.ris.bka.gv.at</a
+      <a target="_blank" href="https://www.ris.bka.gv.at">www.ris.bka.gv.at</a
       ><br />
       <br />
       <strong>Aufsichtsbehörde/Gewerbebehörde:</strong> Bezirkshauptmannschaft
@@ -44,8 +44,8 @@
       (OS-Plattform) informieren.<br />
       Verbraucher haben die Möglichkeit, Beschwerden an die Online
       Streitbeilegungsplattform der Europäischen Kommission unter
-      <a target="_blank" href="http://ec.europa.eu/odr?tid=121389948"
-        >http://ec.europa.eu/odr?tid=121389948</a
+      <a target="_blank" href="https://ec.europa.eu/odr?tid=121389948"
+        >https://ec.europa.eu/odr?tid=121389948</a
       >
       zu richten. Die dafür notwendigen Kontaktdaten finden Sie oberhalb in
       unserem Impressum.
