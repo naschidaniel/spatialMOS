@@ -45,8 +45,6 @@ def run_untar_archive_files(parser_dict: Dict[str, Any]):
 def untar_archive_files(archive_path: Path, data_path: Path, file_prefix):
     '''untar_archive_folder extracts a tar file to the data folder'''
     for tarfile in archive_path.glob(f'{file_prefix}*.tar.gz'):
-        print(tarfile)
-        print(data_path)
         logging.info('The file \'%s\' will be decompressed  to \'%s\'.', tarfile, data_path)
         system_run = os.system(f'tar -xvzf {tarfile} -C {data_path}')
         if system_run != 0:
