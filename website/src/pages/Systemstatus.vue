@@ -32,7 +32,7 @@ export default defineComponent({
     const { systemstatus, fetchSystemStatus } = useData();
     const url = "/media/systemstatus.json";
     fetchSystemStatus(url, { cache: "no-cache" });
-    return { systemstatus, url, fetchSystemStatus };
+    return { systemstatus, url };
   },
 });
 </script>

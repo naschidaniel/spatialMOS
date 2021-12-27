@@ -10,7 +10,7 @@
       >
     </p>
     <p>
-      Systeminfo:
+      Version: {{ formatDate(updateTime) }}
       <a
         href="https://github.com/naschidaniel/spatialMOS/commits/main"
         target="_blank"
@@ -18,19 +18,22 @@
         >{{ lastCommit }}</a
       >
     </p>
-    <p>Updatetime: {{ updateTime }}</p>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useData } from "../store/useData";
+import { formatDate } from "../util/formatters";
 
 export default defineComponent({
   name: "Repository",
   setup() {
     const { lastCommit, updateTime } = useData();
     return { lastCommit, updateTime };
+  },
+  methods: {
+    formatDate,
   },
 });
 </script>

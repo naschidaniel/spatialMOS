@@ -3,7 +3,6 @@ import { usePhotonApi } from "./usePhotonApi";
 import { usePrediction } from "./usePredictions";
 import { useSystemstatus } from "./useSystemStatus";
 import { DataState, AvailableBoxSizes } from "../model";
-import { formatDateTime } from "../util/formatters";
 
 const windowInnerWidth: Ref<undefined | number> = ref(undefined);
 const windowInnerHeight: Ref<undefined | number> = ref(undefined);
@@ -28,16 +27,12 @@ export function useData() {
   const availableBoxSizes = computed(() => state.availableBoxSizes);
   const isWebpSupported = computed(() => state.isWebpSupported);
 
-  const updateTime = computed((): string => {
-    const VITE_APP_VUE_APP_UPDATETIME = import.meta.env
-      .VITE_APP_VUE_APP_UPDATETIME;
-    return typeof VITE_APP_VUE_APP_UPDATETIME === "string"
-      ? formatDateTime(parseInt(VITE_APP_VUE_APP_UPDATETIME.toString()))
-      : formatDateTime(undefined);
+  const updateTime = computed((): number => {
+    return new Date(import.meta.env.VITE_APP_BUILDTIME).getTime();
   });
 
   const lastCommit = computed((): string => {
-    return import.meta.env.VITE_APP_CURRENT_GIT_SHA;
+    return import.meta.env.VITE_APP_GITSHA;
   });
 
   function canUseWebP() {

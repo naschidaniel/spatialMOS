@@ -5,16 +5,13 @@ declare module "*.vue" {
   export default component;
 }
 
-declare namespace NodeJS {
-  interface ProcessEnv {
-    VITE_APP_CURRENT_GIT_SHA: string;
-    VITE_APP_VUE_APP_UPDATETIME: string;
-  }
+interface ImportMetaEnv
+  extends Readonly<Record<string, string | boolean | undefined>> {
+  readonly VITE_APP_BUILDTIME: string;
+  readonly VITE_APP_DEPENDENCIES: string;
+  readonly VITE_APP_GITSHA: string;
 }
 
 interface ImportMeta {
-  env: {
-    VITE_APP_CURRENT_GIT_SHA: string;
-    VITE_APP_VUE_APP_UPDATETIME: string;
-  };
+  readonly env: ImportMetaEnv;
 }

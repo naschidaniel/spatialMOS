@@ -107,10 +107,28 @@
       >
       geschützt.
     </p>
+    <h2>Verwendete Softwarepaket und Lizenzinformation</h2>
+    <ul>
+      <li v-for="dependency in dependencies" :key="dependency.version">
+        <span style="font-weight: bold">{{ dependency.name }} </span> –
+        <span style="font-style: italic">{{ dependency.version }}</span> –
+        {{ dependency.license }} License
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+import { Dependency } from "../model/dependency";
+
+export default defineComponent({
+  data() {
+    return {
+      dependencies: JSON.parse(
+        import.meta.env.VITE_APP_DEPENDENCIES
+      ) as Dependency[],
+    };
+  },
+});
 </script>
