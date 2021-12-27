@@ -4,6 +4,7 @@
 
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict
 from .spatial_util import spatial_util
@@ -42,6 +43,11 @@ def combine_gribfiles(parser_dict: Dict[str, Any]):
         if not is_spr_gribfile:
             logging.error('No spr_gribfile could be found for \'%s\'.', avg_gribfile)
             exit_with_error = True
+
+    for file in gribfiles_path.glob('**/*'):
+        if '.json' not in file.name and file.is_file():
+            logging.info('The file \'%s\' will bee deleted.', file)
+            os.remove(file)
 
     if exit_with_error:
         raise RuntimeError('Not all gribfiles could be combined.')
