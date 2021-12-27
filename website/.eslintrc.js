@@ -9,7 +9,6 @@ module.exports = {
     "eslint:recommended",
     "@vue/typescript",
     "@vue/prettier",
-    "@vue/prettier/@typescript-eslint",
   ],
   parser: "vue-eslint-parser",
   parserOptions: {
@@ -20,5 +19,8 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "vue/multi-word-component-names": ["warn", {
+      "ignores": ["Adresse", "Api", "Dsgvo", "Impressum", "Kontakt", "Systemstatus", "Punktvorhersagen", "Projektbeschreibung", "Vorhersagekarten"]
+    }]
   },
 };

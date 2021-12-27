@@ -11,20 +11,20 @@
         }}</a
         >' ist folgender Fehler aufgetretten: {{ predictions.statusText }}
       </div>
-      <Predictions v-else />
+      <PredictionsCarousel v-else />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Predictions from "../components/Predictions.vue";
+import PredictionsCarousel from "../components/PredictionsCarousel.vue";
 import { useData } from "../store/useData";
 
 export default defineComponent({
   name: "Vorhersagekarten",
   components: {
-    Predictions,
+    PredictionsCarousel,
   },
   setup() {
     const { parameter, predictions, fetchPrediction } = useData();

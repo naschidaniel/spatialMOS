@@ -27,7 +27,7 @@ import { useData } from "../store/useData";
 import { formatDate } from "../util/formatters";
 
 export default defineComponent({
-  name: "Repository",
+  name: "VersionInformation",
   setup() {
     const { lastCommit, updateTime } = useData();
     return { lastCommit, updateTime };

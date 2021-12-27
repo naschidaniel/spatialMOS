@@ -1,7 +1,7 @@
 <template>
   <div class="container-lg">
     <h1>Systemstatus</h1>
-    <Repository class="mt-4" />
+    <VersionInformation class="mt-4" />
     <h2 class="mt-4">Statuschecks</h2>
     <div v-if="systemstatus.isLoading" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -18,14 +18,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Repository from "../components/Repository.vue";
+import VersionInformation from "../components/VersionInformation.vue";
 import { useData } from "../store/useData";
 import SystemChecks from "../components/SystemChecks.vue";
 
 export default defineComponent({
   name: "Systemstatus",
   components: {
-    Repository,
+    VersionInformation,
     SystemChecks,
   },
   setup() {

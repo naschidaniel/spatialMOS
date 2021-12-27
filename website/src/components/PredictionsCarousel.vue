@@ -99,7 +99,7 @@ import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
 import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
 export default defineComponent({
-  name: "Predictions",
+  name: "PredictionsCarousel",
   components: {
     ResponsiveImage,
     SolidChevronLeftIcon,

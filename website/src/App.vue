@@ -1,23 +1,23 @@
 <template>
   <div>
-    <Navigation />
+    <NavigationMain />
     <main class="my-3">
       <router-view />
     </main>
-    <Footer />
+    <NavigationFooter />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Navigation from "./components/Navigation.vue";
-import Footer from "./components/Footer.vue";
+import NavigationMain from "./components/NavigationMain.vue";
+import NavigationFooter from "./components/NavigationFooter.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    Navigation,
-    Footer,
+    NavigationMain,
+    NavigationFooter,
   },
 });
 </script>
