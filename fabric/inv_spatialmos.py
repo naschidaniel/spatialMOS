@@ -341,7 +341,6 @@ def r_gamlss_crch_model(c, validation, parameter):
     '''Create the required spatial climatologies.'''
     inv_logging.task(r_gamlss_crch_model.__name__)
     cmd = ['Rscript', './r_spatialmos/gamlss_crch_model.R', '--validation', validation, '--parameter', parameter]
-    cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_gamlss_crch_model.__name__)
 
@@ -351,7 +350,6 @@ def r_spatial_climatologies_nwp(c,  begin, end, parameter):
     '''Create daily climatologies for the NWP.'''
     inv_logging.task(r_spatial_climatologies_nwp.__name__)
     cmd = ['Rscript', './r_spatialmos/spatial_climatologies_nwp.R',  '--begin', begin, '--end', end, '--parameter', parameter]
-    cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_spatial_climatologies_nwp.__name__)
 
@@ -361,7 +359,6 @@ def r_spatial_climatologies_obs(c, begin, end, parameter):
     '''Create daily climatologies for the observations.'''
     inv_logging.task(r_spatial_climatologies_obs.__name__)
     cmd = ['Rscript', './r_spatialmos/spatial_climatologies_observations.R', '--begin', begin, '--end', end, '--parameter', parameter]
-    cmd = ' '.join(cmd)
     inv_docker.run_r_base(c, cmd)
     inv_logging.success(r_spatial_climatologies_obs.__name__)
 
