@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useRoute } from "vue-router";
 import PredictionsCarousel from "../components/PredictionsCarousel.vue";
 import { useData } from "../store/useData";
 
@@ -27,10 +28,18 @@ export default defineComponent({
     PredictionsCarousel,
   },
   setup() {
-    const { parameter, predictions, fetchPrediction } = useData();
-    const url = `/media/${parameter.value}/spatialmosrun_${parameter.value}.json`;
-    fetchPrediction(url, { cache: "no-cache" });
-    return { predictions, fetchPrediction };
+    const route = useRoute();
+    const { setParameter, predictions, fetchPrediction } = useData();
+    if (
+      route.query?.parameter === "tmp_2m" ||
+      route.query?.parameter === "rh_2m"
+    ) {
+      setParameter(route.query?.parameter);
+      fetchPrediction();
+    } else {
+      fetchPrediction();
+    }
+    return { predictions };
   },
 });
 </script>

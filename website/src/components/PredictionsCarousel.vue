@@ -108,21 +108,19 @@ export default defineComponent({
   setup() {
     const {
       parameter,
-      fetchPrediction,
       predictions,
       plot,
       selectedStep,
       setStep,
-      setParameter,
+      changeParameter,
     } = useData();
     return {
       parameter,
-      fetchPrediction,
       predictions,
       plot,
       selectedStep,
       setStep,
-      setParameter,
+      changeParameter,
     };
   },
   computed: {
@@ -137,14 +135,6 @@ export default defineComponent({
         : this.plot === "nwp_spread"
         ? this.selectedStep.nwp_spread
         : this.selectedStep.spatialmos_mean;
-    },
-  },
-  methods: {
-    changeParameter(change: string) {
-      this.setParameter(change);
-      const url = `/media/${change}/spatialmosrun_${change}.json`;
-      this.fetchPrediction(url, { cache: "no-cache" });
-      this.$router.push({ path: "/", query: { parameter: change } });
     },
   },
 });
