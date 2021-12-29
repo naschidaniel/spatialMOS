@@ -40,6 +40,7 @@ def run_spatial_predictions(parser_dict):
 
     spatial_alt_area_file = Path('./data/get_available_data/gadm/spatial_alt_area_df.csv')
     spatialmos_run_status = []
+    
     for json_file in json_files:
         with open(json_file, mode='r', encoding='utf-8') as f:
             gribfiles_data = json.load(f)
@@ -49,19 +50,15 @@ def run_spatial_predictions(parser_dict):
         climate_spatialmos_nwp_file = Path(f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/climate_spatialmos_nwp/yday_{gribfiles_data['yday']:03d}_dayminute_{gribfiles_data['dayminute']}_step_{gribfiles_data['step']:03d}.csv")
         spatialmos_coef_file = Path(f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/spatialmos_coef/spatialmos_coef_{parser_dict['parameter']}_{gribfiles_data['step']:03d}.csv")
 
-        if not os.path.exists(climate_spatialmos_file) or not os.path.exists(climate_spatialmos_nwp_file) or not os.path.exists(spatialmos_coef_file):
-            logging.warning("For the parameter '%s', step '%03d' and yday '%03d' the required climatologies or coefficients are missing.", parser_dict['parameter'], gribfiles_data['step'], gribfiles_data['yday'])
-
-            # Write info file to spool directory
-            if not os.path.exists(climate_spatialmos_file):
-                logging.error('File %s is missing', climate_spatialmos_file)
-            if not os.path.exists(climate_spatialmos_nwp_file):
-                logging.error('File %s is missing',
-                              climate_spatialmos_nwp_file)
-            if not os.path.exists(spatialmos_coef_file):
-                logging.error('File %s is missing', spatialmos_coef_file)
-
-            spatialmos_run_status.append({'status': 'failed', 'step': f"{gribfiles_data['step']:03d}"})
+        # Write info file to spool directory
+        if not os.path.exists(climate_spatialmos_file):
+            logging.error("The File %s for the parameter '%s', step '%03d' and yday '%03d' the prediction.", climate_spatialmos_file, parser_dict['parameter'], gribfiles_data['step'], gribfiles_data['yday'])
+            continue
+        if not os.path.exists(climate_spatialmos_nwp_file):
+            logging.error("The File %s for the parameter '%s', step '%03d' and yday '%03d' the prediction.", climate_spatialmos_nwp_file, parser_dict['parameter'], gribfiles_data['step'], gribfiles_data['yday'])
+            continue
+        if not os.path.exists(spatialmos_coef_file):
+            logging.error("The File %s for the parameter '%s', step '%03d' and yday '%03d' the prediction.", spatialmos_coef_file, parser_dict['parameter'], gribfiles_data['step'], gribfiles_data['yday'])
             continue
 
         # Check if spatialmos coefficients are available
@@ -69,6 +66,8 @@ def run_spatial_predictions(parser_dict):
                                                    data_path_media, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file)
         write_spatialmos_run_file(data_path_media, spatialmos_run_status, parser_dict['parameter'])
 
+    if len(steps) != len(spatialmos_run_status):
+        raise RuntimeError('Some plots could not be created!')
 
 def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate_spatialmos_nwp_file, data_path_spool, gribfiles_data, spatial_alt_area_file, spatialmos_coef_file, spatialmos_run_status, parser_dict, gadm36_shape_file):
     '''spatial_prediction creates the plot and predictions for North and South Tyrol'''
@@ -227,7 +226,6 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                 logging.error('The image \'%s\' was successfully optimized with the following parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
     
     for entry in plot_filenames:
-        print(entry)
         with Image.open(entry) as im:
             width, height, = im.size
             dimension.append([height, width])
