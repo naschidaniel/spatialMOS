@@ -262,7 +262,8 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                   'valid_date': valid_date_aware.strftime('%Y-%m-%d %H:%M:%S'),
                                   'parameter': parser_dict['parameter'],
                                   'unit': unit,
-                                  'prediction_json_file': filename_spatialmos_step,
+                                  'prediction_json_file': f"/media/{parser_dict['parameter']}/{filename_spatialmos_step}",
+                                  'predictions_json_file': f"/media/{parser_dict['parameter']}/{anal_date_aware.strftime('%Y%m%d')}_predictions.json",
                                   'nwp_mean': {
                                     'filename': filename_nwp_mean[0],
                                     'height': dimension[0][0],
