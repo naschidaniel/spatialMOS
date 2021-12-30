@@ -16,10 +16,10 @@
       </li>
       <li class="list-group-item list-group-item-action">
         <a
-          href="https://moses.tirol/media/tmp_2m/spatialmosrun_rh_2m.json"
+          href="https://moses.tirol/media/rh_2m/spatialmosrun_rh_2m.json"
           rel="noopener"
           target="_blank"
-          >/media/tmp_2m/spatialmosrun_rh_2m.json</a
+          >/media/rh_2m/spatialmosrun_rh_2m.json</a
         >
       </li>
     </div>
