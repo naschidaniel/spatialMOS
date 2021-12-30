@@ -16,6 +16,8 @@
     "archive_folder__gefs_avgspr_forecast_p05": "10095",
     "archive_folder__lwd": "10095",
     "archive_folder__zamg": "10095",
+    "combine_prediction__tmp_2m": "1455",
+    "combine_prediction__rh_2m": "1455",
     "get_lwd": "75",
     "get_zamg": "75",
     "get_gefs_forecasts__rh_2m_avg": "1455",
