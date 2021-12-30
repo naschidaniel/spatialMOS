@@ -162,7 +162,7 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
 
     # Round predicted values
     spatialmos_mean = np.round(spatialmos_mean, decimals=2)
-    spatialmos_spread = np.round(spatialmos_spread, decimals=5)
+    spatialmos_spread = np.round(spatialmos_spread, decimals=2)
 
     # Create filename for the plots for NWP and spatialMOS forecast maps
     os.makedirs(data_path_spool, exist_ok=True)

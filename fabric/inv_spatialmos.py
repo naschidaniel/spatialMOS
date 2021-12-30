@@ -51,6 +51,23 @@ def combine_data(c, folder):
     cmd = ['python', './run_script.py', '--script', 'combine_data', '--folder', folder]
     inv_docker.run_py_container(c, cmd)
 
+@task
+def combine_predictions__tmp_2m(c):
+    '''combine tmp_2m predictions'''
+    inv_logging.task(combine_predictions__tmp_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    cmd = ['python', './run_script.py', '--script', 'combine_predictions', '--date', date, '--parameter', 'tmp_2m']
+    inv_docker.run_py_container(c, cmd)
+    util.write_statusfile_and_success_logging(combine_predictions__tmp_2m.__name__)
+
+@task
+def combine_predictions__rh_2m(c):
+    '''combine rh_2m predictions'''
+    inv_logging.task(combine_predictions__rh_2m.__name__)
+    date = datetime.now().strftime('%Y-%m-%d')
+    cmd = ['python', './run_script.py', '--script', 'combine_predictions', '--date', date, '--parameter', 'rh_2m']
+    inv_docker.run_py_container(c, cmd)
+    util.write_statusfile_and_success_logging(combine_predictions__rh_2m.__name__)
 
 @task
 def deploy(c):
