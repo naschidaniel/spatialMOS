@@ -2,7 +2,7 @@
 name = "spatial-rust-util"
 version = "0.1.1"
 authors = ["Daniel Naschberger <daniel@naschi.at>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 name = "spatial_rust_util"
@@ -11,7 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 chrono = "0.4.19"
 libmath = "0.2.1"
-
-[dependencies.pyo3]
-version = "0.14.5"
-features = ["extension-module"]
+pyo3 = { version = "0.15.1", features = ["extension-module"] }
