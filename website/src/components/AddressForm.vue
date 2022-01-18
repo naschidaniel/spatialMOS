@@ -36,11 +36,14 @@
           </select>
         </div>
       </div>
-      <button
-        class="btn btn-primary mt-2"
-        @click.prevent="fetchPhotonApiData(queryAddressUrl)"
-      >
+      <button class="btn btn-primary mt-2" @click.prevent="submitAddressForm()">
         Submit
+      </button>
+      <button
+        class="btn btn-danger ms-2 mt-2"
+        @click.prevent="resetAddressForm()"
+      >
+        Formular zurücksetzen
       </button>
     </form>
   </div>
@@ -49,34 +52,29 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useData } from "../store/useData";
+import { useAddress } from "../store/useAddress";
 
 export default defineComponent({
   name: "AddressForm",
   setup() {
-    const { photonApi, fetchPhotonApiData } = useData();
-    return { photonApi, fetchPhotonApiData };
-  },
-  data() {
+    const {
+      city,
+      postcode,
+      resetAddressForm,
+      submitAddressForm,
+      state,
+      street,
+    } = useAddress();
+    const { photonApi } = useData();
     return {
-      street: "",
-      city: "",
-      postcode: "",
-      state: "Nordtirol",
+      photonApi,
+      city,
+      postcode,
+      resetAddressForm,
+      submitAddressForm,
+      state,
+      street,
     };
-  },
-  computed: {
-    queryAddressUrl(): string | undefined {
-      if (this.street === "" && this.city === "" && this.postcode === "") {
-        return undefined;
-      }
-      const country = this.state === "Nordtirol" ? "Austria" : "Italy";
-      const queryAddressString =
-        `${this.street},${this.city},${this.postcode},${country}`.replace(
-          ",,",
-          ","
-        );
-      return `https://photon.komoot.io/api/?q=${queryAddressString}&bbox=10,46.6,12.9,47.8&limit=1`;
-    },
   },
 });
 </script>

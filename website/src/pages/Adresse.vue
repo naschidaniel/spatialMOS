@@ -24,9 +24,7 @@
           :to="{
             path: '/adresse',
             query: {
-              street: '',
               city: 'Wildschönau',
-              postcode: '',
               state: 'Nordtirol',
             },
           }"
@@ -38,9 +36,7 @@
           :to="{
             path: '/adresse',
             query: {
-              street: '',
               city: 'Bozen',
-              postcode: '',
               state: 'Südtirol',
             },
           }"
@@ -53,15 +49,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useData } from "../store/useData";
 import AddressForm from "../components/AddressForm.vue";
 import LeafletMapContainer from "../components/LeafletMapContainer.vue";
 
 export default defineComponent({
   components: { AddressForm, LeafletMapContainer },
-  setup() {
-    const { photonApi } = useData();
-    return { photonApi };
-  },
 });
 </script>

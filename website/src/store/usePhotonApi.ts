@@ -1,5 +1,6 @@
 import { reactive, computed, unref } from "vue";
 import { PhotonApi } from "../model";
+import { useAddress } from "./useAddress";
 
 const photonApi: PhotonApi = reactive({
   isError: false,
@@ -16,22 +17,26 @@ const photonApi: PhotonApi = reactive({
 
 export function usePhotonApi() {
   async function fetchPhotonApiData(
-    url: string | undefined,
+    city: string,
+    postcode: string,
+    state: string,
+    street: string,
     options?: Record<string, unknown>
   ) {
-    if (url === undefined) {
+    if (street === "" && city === "" && postcode === "") {
       photonApi.isError = false;
       photonApi.isEmpty = false;
       photonApi.lat = undefined;
       photonApi.lon = undefined;
       photonApi.statusText = "";
       photonApi.url = undefined;
-      photonApi.city = undefined;
-      photonApi.street = undefined;
-      photonApi.housenumber = undefined;
-
       return;
     }
+    const country = state === "Nordtirol" ? "Austria" : "Italy";
+    const queryAddressString =
+      `${street},${city},${postcode},${country}`.replace(",,", ",");
+    const url = `https://photon.komoot.io/api/?q=${queryAddressString}&bbox=10,46.6,12.9,47.8&limit=1`;
+
     photonApi.isLoading = true;
     const res = await fetch(url, options);
     if (res.ok) {
@@ -91,5 +96,12 @@ export function usePhotonApi() {
     return tooltip;
   });
 
-  return { photonApi, lat, lon, tooltip, point, fetchPhotonApiData };
+  return {
+    photonApi,
+    lat,
+    lon,
+    tooltip,
+    point,
+    fetchPhotonApiData,
+  };
 }
