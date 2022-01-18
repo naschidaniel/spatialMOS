@@ -48,7 +48,7 @@ def run_maturin_build(c):
     '''Build the Rust libraries for Spatialmos'''
     inv_logging.task(run_maturin_build.__name__)
     user, group = util.uid_gid()
-    command = ['docker', 'run', '--rm', '-v $(pwd):/io', 'konstin2/maturin', 'build', '--manylinux', 'off']
+    command = ['docker', 'run', '--rm', '-v $(pwd):/io', 'konstin2/maturin', 'build', '--release']
     command = ' '.join(command)
     c.run(command)
     c.run(f'sudo chown {user}:{group} -R target') # TODO rm sudo # pylint: disable=fixme
