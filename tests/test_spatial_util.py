@@ -11,9 +11,9 @@ from py_spatialmos.spatial_util import spatial_parser
 
 # Convert Grib Files
 test_avg_gribfile = Path(__file__).parent.absolute().joinpath(
-    './testdata/test_spatial_util/GFEE_20210416_0000_avg_f006.grb2')
+    './testdata/test_spatial_util/GFSE_20210416_0000_avg_f006.grb2')
 test_spr_gribfile = Path(__file__).parent.absolute().joinpath(
-    './testdata/test_spatial_util/GFEE_20210416_0000_spr_f006.grb2')
+    './testdata/test_spatial_util/GFSE_20210416_0000_spr_f006.grb2')
 test_subset = {'W': 15, 'E': 17, 'S': 46, 'N': 48, 'resolution': 0.5}
 test_info_file = {'parameter': 'tmp_2m',
                   'anal_date': '2021-04-16 00:00:00',

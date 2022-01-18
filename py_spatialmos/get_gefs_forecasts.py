@@ -93,7 +93,7 @@ class IdxEntry():
 
 
 
-def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, resolution):
+def get_file_names(data_path_gribfile: pathlib.Path, baseurl, date, mem, step, modeltype, resolution):
     '''With this function the file names from the server are preprocessed.'''
 
     if modeltype in ['avg', 'spr']:
@@ -109,16 +109,21 @@ def get_file_names(data_path_gribfile, baseurl, date, mem, step, modeltype, reso
             sys.exit(1)
 
         gribfile = os.path.join(date.strftime(baseurl), filename)
-        gribfile_path = f"{date.strftime('GFEE_%Y%m%d_%H00')}_{modeltype}_f{step:03d}.grb2"
+        gribfile_path = f"{date.strftime('GFSE_%Y%m%d_%H00')}_{modeltype}_f{step:03d}.grb2"
+        jsonfile_path = f"{date.strftime('GFSE_%Y%m%d_%H00')}_f{step:03d}.json"
+
     else:
         # UPDATE NAMES 2020-09-27
         # Create URL for gec00.t00z.pgrb2a.0p50.f000.idx
         # Create URL for gep01.t00z.pgrb2a.0p50.f000.idx
         gribfile = os.path.join(date.strftime(baseurl), f"ge{'c' if mem == 0 else 'p'}{mem:02d}.t{date.strftime('%H')}z.pgrb2a.0p50.f{step:03d}")
         gribfile_path = f"date.strftime('GEFS_%Y%m%d_%H00')_{mem:02d}_f{step:03d}.grb2"
+        jsonfile_path = f"date.strftime('GEFS_%Y%m%d_%H00')_{mem:02d}_f{step:03d}.json"
     return {'grib': gribfile,
             'idx': f'{gribfile}.idx',
-            'gribfile_path': os.path.join(data_path_gribfile, gribfile_path)}
+            'gribfile_path': data_path_gribfile.joinpath(gribfile_path),
+            'jsonfile_path': data_path_gribfile.joinpath(jsonfile_path)
+            }
 
 
 def parse_index_file(idxfile, params):
@@ -169,7 +174,6 @@ def download_grib(grib, gribfile_path, required):
     try:
         with open(gribfile_path, 'wb') as f:
             f.write(req_grib.content)
-            f.close()
         return True
     except OSError as ex:
         logging.error(
@@ -250,7 +254,8 @@ def fetch_gefs_data(modeltype, date, parameter, resolution):
 
             files = get_file_names(
                 data_path_gribfile, baseurl, date, mem, step, modeltype, resolution)
-            if os.path.isfile(files['gribfile_path']):
+            print(files)
+            if os.path.isfile(files['gribfile_path']) or os.path.isfile(files['jsonfile_path']):
                 logging.info('gribfile_path file exists, skip: %s', files['gribfile_path'])
                 logging.info('-------------------------------------------------------------------------------------------------')
                 continue

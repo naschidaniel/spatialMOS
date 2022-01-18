@@ -1,8 +1,8 @@
 # Data for Tests
 
-## GFEE Data
+## GFSE Data
 
-The files `./test_spatial_util/GFEE_20210416_0000_avg_f006.grb2` and `./test_spatial_util/GFEE_20210416_0000_spr_f006.grb2`, were downloaded from the website [https://nomads.ncep.noaa.gov/](https://nomads.ncep.noaa.gov/) and are used to check the converted data files.
+The files `./test_spatial_util/GFSE_20210416_0000_avg_f006.grb2` and `./test_spatial_util/GFSE_20210416_0000_spr_f006.grb2`, were downloaded from the website [https://nomads.ncep.noaa.gov/](https://nomads.ncep.noaa.gov/) and are used to check the converted data files.
 
 ## Suedtirol DATA
 
