@@ -1,6 +1,5 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref } from "vue";
 import { usePhotonApi } from "./usePhotonApi";
-import { useSystemstatus } from "./useSystemStatus";
 import { DataState, AvailableBoxSizes } from "../model";
 
 const windowInnerWidth: Ref<undefined | number> = ref(undefined);
@@ -20,7 +19,6 @@ const state: DataState = reactive({
 
 export function useData() {
   const photonapi = usePhotonApi();
-  const systemstatus = useSystemstatus();
 
   const availableBoxSizes = computed(() => state.availableBoxSizes);
   const isWebpSupported = computed(() => state.isWebpSupported);
@@ -67,7 +65,6 @@ export function useData() {
 
   return {
     ...photonapi,
-    ...systemstatus,
     availableBoxSizes,
     canUseWebP,
     isWebpSupported,

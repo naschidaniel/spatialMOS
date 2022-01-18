@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import VersionInformation from "../components/VersionInformation.vue";
-import { useData } from "../store/useData";
+import { useSystemStatus } from "../store/useSystemStatus";
 import SystemChecks from "../components/SystemChecks.vue";
 
 export default defineComponent({
@@ -29,7 +29,7 @@ export default defineComponent({
     SystemChecks,
   },
   setup() {
-    const { systemstatus, fetchSystemStatus } = useData();
+    const { systemstatus, fetchSystemStatus } = useSystemStatus();
     const url = "/media/systemstatus.json";
     fetchSystemStatus(url, { cache: "no-cache" });
     return { systemstatus, url };

@@ -12,7 +12,7 @@ const systemstatus: SystemStatus = reactive({
   },
 });
 
-export function useSystemstatus() {
+export function useSystemStatus() {
   async function fetchSystemStatus(
     url: string,
     options?: Record<string, unknown>

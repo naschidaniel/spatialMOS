@@ -10,7 +10,7 @@
       >
     </p>
     <p>
-      Version: {{ formatDate(updateTime) }}
+      Version: {{ formatDate(updateTime) }},
       <a
         href="https://github.com/naschidaniel/spatialMOS/commits/main"
         target="_blank"
