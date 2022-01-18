@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useData } from "../store/useData";
+import { usePhotonApi } from "../store/usePhotonApi";
 import { useAddress } from "../store/useAddress";
 
 export default defineComponent({
@@ -65,7 +65,7 @@ export default defineComponent({
       state,
       street,
     } = useAddress();
-    const { photonApi } = useData();
+    const { photonApi } = usePhotonApi();
     return {
       photonApi,
       city,

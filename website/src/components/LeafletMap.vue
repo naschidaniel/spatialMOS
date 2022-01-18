@@ -15,7 +15,7 @@ import { TileLayer } from "leaflet/src/layer/tile/TileLayer";
 import { Tooltip } from "leaflet/src/layer/Tooltip";
 import { latLng } from "leaflet";
 
-import { useData } from "../store/useData";
+import { usePhotonApi } from "../store/usePhotonApi";
 
 // fix "Uncaught TypeError: this._map is null" when zooming
 (Tooltip.prototype as any)._updatePosition = function () {
@@ -32,7 +32,7 @@ import { useData } from "../store/useData";
 export default defineComponent({
   name: "LeafletMap",
   setup() {
-    const { point, lat, lon, tooltip } = useData();
+    const { point, lat, lon, tooltip } = usePhotonApi();
     return { point, lat, lon, tooltip };
   },
   data() {

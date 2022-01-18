@@ -20,13 +20,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useData } from "../store/useData";
+import { usePhotonApi } from "../store/usePhotonApi";
 import LeafletMap from "../components/LeafletMap.vue";
 
 export default defineComponent({
   components: { LeafletMap },
   setup() {
-    const { photonApi, point } = useData();
+    const { photonApi, point } = usePhotonApi();
     return { photonApi, point };
   },
 });
