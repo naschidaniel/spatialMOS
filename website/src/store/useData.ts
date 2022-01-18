@@ -1,6 +1,5 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref } from "vue";
 import { usePhotonApi } from "./usePhotonApi";
-import { usePrediction } from "./usePredictions";
 import { useSystemstatus } from "./useSystemStatus";
 import { DataState, AvailableBoxSizes } from "../model";
 
@@ -21,7 +20,6 @@ const state: DataState = reactive({
 
 export function useData() {
   const photonapi = usePhotonApi();
-  const prediction = usePrediction();
   const systemstatus = useSystemstatus();
 
   const availableBoxSizes = computed(() => state.availableBoxSizes);
@@ -69,7 +67,6 @@ export function useData() {
 
   return {
     ...photonapi,
-    ...prediction,
     ...systemstatus,
     availableBoxSizes,
     canUseWebP,

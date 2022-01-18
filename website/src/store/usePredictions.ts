@@ -15,7 +15,7 @@ const predictions: Predictions = reactive({
   url: "",
 });
 
-export function usePrediction() {
+export function usePredictions() {
   const router = useRouter();
 
   async function fetchPrediction() {
@@ -33,7 +33,14 @@ export function usePrediction() {
           predictions.isError = false;
           predictions.data = data;
           predictions.parameter = data[0].parameter;
-          router.push({ path: "/", query: { parameter: data[0].parameter } });
+          router.push({
+            path: "/",
+            query: {
+              parameter: data[0].parameter,
+              step: predictions.step,
+              plot: predictions.plot,
+            },
+          });
         });
       } catch {
         predictions.isError = true;
@@ -54,8 +61,8 @@ export function usePrediction() {
     get() {
       return predictions.plot;
     },
-    set(value) {
-      predictions.plot = value as string;
+    set(value: string) {
+      predictions.plot = value;
     },
   });
 
@@ -78,13 +85,29 @@ export function usePrediction() {
           : newIndex === -1
           ? predictions.steps[predictions.steps.length - 1]
           : predictions.steps[newIndex];
-      return;
+    } else {
+      predictions.step = change;
     }
-    predictions.step = change;
+    router.push({
+      path: "/",
+      query: {
+        parameter: predictions.parameter,
+        step: predictions.step,
+        plot: predictions.plot,
+      },
+    });
   }
 
   function setParameter(change: string) {
     predictions.parameter = change;
+    router.push({
+      path: "/",
+      query: {
+        parameter: change,
+        step: predictions.step,
+        plot: predictions.plot,
+      },
+    });
   }
 
   return {

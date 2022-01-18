@@ -92,7 +92,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useData } from "../store/useData";
+import { usePredictions } from "../store/usePredictions";
 import { SpatialMosImage } from "../model";
 import ResponsiveImage from "./ResponsiveImage.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
@@ -113,7 +113,7 @@ export default defineComponent({
       selectedStep,
       setStep,
       changeParameter,
-    } = useData();
+    } = usePredictions();
     return {
       parameter,
       predictions,
