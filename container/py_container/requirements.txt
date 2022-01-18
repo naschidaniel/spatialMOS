@@ -13,6 +13,6 @@ pytest-cov
 requests
 scipy
 shapely --no-binary shapely
-spatial_rust_util-0.1.1-cp39-cp39-manylinux_2_31_x86_64.whl
+spatial_rust_util-0.1.1-cp39-cp39-linux_x86_64.whl
 xarray
 wheel
