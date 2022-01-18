@@ -1,7 +1,5 @@
 ![[maturin]](https://github.com/naschidaniel/spatialmos/actions/workflows/maturin.yml/badge.svg?name=maturin) 
 ![[mypy]](https://github.com/naschidaniel/spatialmos/actions/workflows/mypy.yml/badge.svg?name=mypy) 
-![[pytest]](https://github.com/naschidaniel/spatialmos/actions/workflows/pytest.yml/badge.svg?name=pytest) 
-![[pylint]](https://github.com/naschidaniel/spatialmos/actions/workflows/pylint.yml/badge.svg?name=pylint) 
 ![[rsaudit]](https://github.com/naschidaniel/spatialmos/actions/workflows/rsaudit.yml/badge.svg?name=rsaudit) 
 ![[rstest]](https://github.com/naschidaniel/spatialmos/actions/workflows/rstest.yml/badge.svg?name=rstest)
 ![[build webpage]](https://github.com/naschidaniel/spatialmos/actions/workflows/website.yml/badge.svg?name=website)
