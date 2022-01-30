@@ -20,4 +20,4 @@ RUN python -m pip install --upgrade pip
 
 RUN pip3 install --no-cache-dir -r /usr/src/app/requirements.txt
 
-RUN pip3 install cartopy
+RUN pip3 install cartopy==0.19.0.post1
