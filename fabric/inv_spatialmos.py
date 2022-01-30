@@ -381,6 +381,22 @@ def r_spatial_climatologies_obs(c, begin, end, parameter):
 
 
 @task
+def remove_old_climatologies(c): # pylint: disable=W0613
+    '''Climatologies older than 3 days are deleted'''
+    inv_logging.task(remove_old_climatologies.__name__)
+    days = range(1, datetime.now().timetuple().tm_yday - 2)
+    folders = ['./data/spatialmos_climatology/gam/rh_2m/climate_spatialmos',
+        './data/spatialmos_climatology/gam/rh_2m/climate_spatialmos_nwp',
+        './data/spatialmos_climatology/gam/tmp_2m/climate_spatialmos',
+        './data/spatialmos_climatology/gam/tmp_2m/climate_spatialmos_nwp']
+    for folder in folders:
+        for day in days:
+            for file in Path(folder).glob(f'yday_{day:03d}*.csv'):
+                logging.info('File \'%s\' will be removed', file)
+                os.unlink(file)
+    inv_logging.success(remove_old_climatologies.__name__)
+
+@task
 def untar_folder(c, folder):
     '''The *.tar.gz untared with tar. The fileprefix must be specified e.g. zamg.'''
     inv_logging.task(untar_folder.__name__)

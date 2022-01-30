@@ -55,6 +55,7 @@ MAIN_NS.add_task(inv_spatialmos.prediction__rh_2m)
 MAIN_NS.add_task(inv_spatialmos.r_gamlss_crch_model)
 MAIN_NS.add_task(inv_spatialmos.r_spatial_climatologies_nwp)
 MAIN_NS.add_task(inv_spatialmos.r_spatial_climatologies_obs)
+MAIN_NS.add_task(inv_spatialmos.remove_old_climatologies)
 
 # Program
 PROGRAM = Program(namespace=MAIN_NS)
