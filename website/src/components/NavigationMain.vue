@@ -15,7 +15,7 @@
       <div class="collapse navbar-collapse" :class="isOpen ? 'show' : ''">
         <ul class="navbar-nav">
           <li class="nav-item" @click="toogleNavbar()">
-            <router-link class="nav-link active" aria-current="page" to="/"
+            <router-link class="nav-link" aria-current="page" to="/"
               >Vorhersagekarten</router-link
             >
           </li>
