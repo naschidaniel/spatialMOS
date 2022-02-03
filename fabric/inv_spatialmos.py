@@ -36,6 +36,17 @@ def archive_folder__lwd(c):
     archive_folder(c, 'lwd')
     util.write_statusfile_and_success_logging(archive_folder__lwd.__name__)
 
+@task
+def archive_folder__measurements(c):
+    '''created a tar file from the folder measurements'''
+    archive_folder(c, 'measurements')
+    inv_logging.success(archive_folder__measurements.__name__)
+
+@task
+def archive_folder__suedtirol(c):
+    '''created a tar file from the folder suedtirol'''
+    archive_folder(c, 'suedtirol')
+    inv_logging.success(archive_folder__suedtirol.__name__)
 
 @task
 def archive_folder__zamg(c):
@@ -43,12 +54,25 @@ def archive_folder__zamg(c):
     archive_folder(c, 'zamg')
     util.write_statusfile_and_success_logging(archive_folder__zamg.__name__)
 
+@task
+def combine_climatology(c, parameter):
+    '''Combine climatologies for spatialmos'''
+    inv_logging.task(combine_climatology.__name__)
+    cmd = ['python', './run_script.py', '--script', 'combine_climatology', '--parameter', parameter]
+    inv_docker.run_py_container(c, cmd)
 
 @task
 def combine_data(c, folder):
     '''Combine downloaded data for a folder.'''
     inv_logging.task(combine_data.__name__)
     cmd = ['python', './run_script.py', '--script', 'combine_data', '--folder', folder]
+    inv_docker.run_py_container(c, cmd)
+
+@task
+def combine_measurements(c):
+    '''Combine measurements in the ./data/measurements folder.'''
+    inv_logging.task(combine_measurements.__name__)
+    cmd = ['python', './run_script.py', '--script', 'combine_measurements']
     inv_docker.run_py_container(c, cmd)
 
 @task

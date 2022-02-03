@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-'''Unittest for the combine_predictions modules'''
+'''Unittest for the combine_predictions module'''
 
 import json
 import unittest
@@ -10,7 +10,7 @@ import shutil
 import tempfile
 from py_spatialmos import combine_predictions
 
- # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class TestCombinePredictions(unittest.TestCase):
     '''pytest for combine_predictions'''
 

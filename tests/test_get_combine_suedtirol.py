@@ -9,8 +9,10 @@ import csv
 import unittest
 import shutil
 from pathlib import Path
-from py_spatialmos import get_suedtirol_data
+from py_spatialmos import combine_measurements
 from py_spatialmos import combine_data
+from py_spatialmos import get_suedtirol_data
+
 
 with open(Path('./tests/testdata/test_get_combine_suedtirol/suedtirol_20210101_20210102_2021-05-13T19_00_00.csv'), 'r',  encoding='utf-8') as testdata:
     MEASUREMENTS_OK = list(csv.reader(testdata, delimiter=';'))
@@ -55,7 +57,7 @@ class TestExitCodes(unittest.TestCase):
         temp_stations_file = create_csv_tempfile()
 
         with open(temp_parameter_file, mode='w', newline='', encoding='ISO-8859-1') as target_parameter, open(temp_stations_file, mode='w', newline='', encoding='ISO-8859-1') as target_stations:
-            combine_data.data_for_spatialmos(MEASUREMENTS_OK, PARAMETERS, 'rh_2m', target_parameter, target_stations)
+            combine_measurements.data_for_spatialmos(MEASUREMENTS_OK, PARAMETERS, 'rh_2m', target_parameter, target_stations)
 
         with open(Path(temp_parameter_file), 'r', encoding='ISO-8859-1') as f:
             measurements_rh_2m = list(csv.reader(f, delimiter=';'))
