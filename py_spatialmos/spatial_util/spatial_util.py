@@ -15,7 +15,7 @@ def convert_measurements(measurements: Dict[str, Dict[str, Union[str, float]]], 
 
 def gribfiles_to_json(file_avg, file_spr, parameter, subset):
     '''A function to open gribfiles and write out a json file'''
-    with xr.open_dataset(file_avg, engine='cfgrib') as ds_avg, xr.open_dataset(file_spr, engine='cfgrib') as ds_spr:
+    with xr.open_dataset(str(file_avg), engine='cfgrib') as ds_avg, xr.open_dataset(str(file_spr), engine='cfgrib') as ds_spr:
         latitude = np.arange(subset['S'], subset['N'] + subset['resolution'], subset['resolution'])
         longitude = np.arange(subset['W'], subset['E'] + subset['resolution'], subset['resolution'])
 
