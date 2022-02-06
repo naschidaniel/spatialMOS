@@ -6,6 +6,43 @@ use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList};
 use pyo3::wrap_pyfunction;
 use pyo3::Python;
+use std::collections::HashMap;
+
+#[pyfunction]
+fn combine_nwp_climatology(
+    py_gfse_data: &PyList,
+    py_measurements: &PyList,
+) -> PyResult<Vec<[String; 9]>> {
+    let gfse_data: Vec<Vec<String>> = py_gfse_data.extract()?;
+    let measurements: Vec<Vec<String>> = py_measurements.extract()?;
+    let mut nwp_climatology = Vec::new();
+    let mut measurements_hashmap = HashMap::new();
+
+    for row in measurements.iter() {
+        let key = vec![row[0].clone(), row[2].clone(), row[3].clone()].join("_");
+        measurements_hashmap.insert(
+            key,
+            row
+        );
+    }
+
+    for row in gfse_data.iter() {
+        let gfse_data_key = vec![row[1].clone(), row[5].clone(), row[6].clone()].join("_");
+        if measurements_hashmap.contains_key(&gfse_data_key) {
+            let alt = measurements_hashmap[&gfse_data_key][1].clone();
+            let lon = measurements_hashmap[&gfse_data_key][2].clone();
+            let lat = measurements_hashmap[&gfse_data_key][3].clone();
+            let obs = measurements_hashmap[&gfse_data_key][4].clone();
+            let yday = row[2].clone();
+            let kfold = String::from("1");
+            let dayminute = row[3].clone();
+            let mean = row[9].clone();
+            let log_spread = row[8].clone();
+            nwp_climatology.push([yday, kfold, dayminute, alt, lon, lat, obs, mean, log_spread]);
+        }
+    }
+    Ok(nwp_climatology)
+}
 
 #[pyfunction]
 fn combine_gribdata(
@@ -137,6 +174,8 @@ fn interpolate_gribdata(
             station[1],
             bilinear_data,
         );
+        let log_spr = utils::log_spr(&data[0]);
+        data.insert(1, log_spr);
         station.append(&mut data)
     }
     Ok(stations.into())
@@ -145,6 +184,7 @@ fn interpolate_gribdata(
 /// A python module implemented in Rust for spatialMOS.
 #[pymodule]
 fn spatial_rust_util(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(combine_nwp_climatology, m)?)?;
     m.add_function(wrap_pyfunction!(combine_gribdata, m)?)?;
     m.add_function(wrap_pyfunction!(convert_measurements, m)?)?;
     m.add_function(wrap_pyfunction!(interpolate_gribdata, m)?)?;

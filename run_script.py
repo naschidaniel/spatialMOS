@@ -10,7 +10,9 @@ import datetime
 import logging
 import sys
 from py_spatialmos import archive_folder
+from py_spatialmos import combine_gamlss_climatology
 from py_spatialmos import combine_data
+from py_spatialmos import combine_measurements
 from py_spatialmos import combine_predictions
 from py_spatialmos import get_gefs_forecasts
 from py_spatialmos import get_lwd_data
@@ -26,7 +28,10 @@ from py_spatialmos.spatial_util import spatial_parser
 if __name__ == '__main__':
     try:
         STARTTIME = datetime.datetime.now()
-        argsinfo = {'available_script': ['archive_folder', 'combine_data', 'combine_predictions',
+        argsinfo = {'available_script': ['archive_folder', 'combine_data', 
+                                         'combine_gamlss_climatology',
+                                         'combine_measurements',
+                                         'combine_predictions',
                                          'get_gefs_forecasts',
                                          'get_lwd_data', 'get_suedtirol_data', 'get_zamg_data',
                                          'interpolate_gribfiles', 'untar_folder',
@@ -62,7 +67,19 @@ if __name__ == '__main__':
                                    }
             PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
             combine_data.run_combine_data(PARSER_DICT)
-            combine_data.run_data_for_spatialmos(PARSER_DICT)
+        elif PARSER_DICT['script'] == 'combine_measurements':
+            logging.info('The combine_measurements has started.')
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            combine_measurements.run_data_for_spatialmos(PARSER_DICT)
+            combine_measurements.run_combine_all_provider()
+        elif PARSER_DICT['script'] == 'combine_gamlss_climatology':
+            logging.info('The combine_gamlss_climatology has started.')
+            argsinfo = argsinfo | {'parameter': True,
+                        'available_parameter': ['tmp_2m', 'rh_2m'],
+                        'available_resolution': [0.5, 1]
+                        }
+            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
+            combine_gamlss_climatology.run_combine_climatology(PARSER_DICT)
         elif PARSER_DICT['script'] == 'combine_predictions':
             logging.info('The combine_predictions has started.')
             argsinfo = argsinfo | {'date': True,

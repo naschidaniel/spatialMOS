@@ -16,7 +16,7 @@ def write_merged_predictions_file(data: Dict, outfile: Path):
 
 
 def merge_predictions(parser_dict, data_path_media: Path, steps: List):
-    '''combine_predictions'''
+    '''merge_predictions combines the predictions to one data object'''
     predictions = {}
     data = {
             'anal_date': '',
