@@ -28,7 +28,7 @@ from py_spatialmos.spatial_util import spatial_parser
 if __name__ == '__main__':
     try:
         STARTTIME = datetime.datetime.now()
-        argsinfo = {'available_script': ['archive_folder', 'combine_data', 
+        argsinfo = {'available_script': ['archive_folder', 'combine_data',
                                          'combine_gamlss_climatology',
                                          'combine_measurements',
                                          'combine_predictions',
@@ -69,8 +69,7 @@ if __name__ == '__main__':
             combine_data.run_combine_data(PARSER_DICT)
         elif PARSER_DICT['script'] == 'combine_measurements':
             logging.info('The combine_measurements has started.')
-            PARSER_DICT = spatial_parser.spatial_parser(arguments, argsinfo)
-            combine_measurements.run_data_for_spatialmos(PARSER_DICT)
+            combine_measurements.run_data_for_spatialmos()
             combine_measurements.run_combine_all_provider()
         elif PARSER_DICT['script'] == 'combine_gamlss_climatology':
             logging.info('The combine_gamlss_climatology has started.')

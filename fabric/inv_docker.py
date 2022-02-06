@@ -81,7 +81,7 @@ def rebuild_website(c):
     inv_logging.success(rebuild_website.__name__)
 
 @task(pre=[rebuild_py_container, rebuild_r_base, rebuild_website])
-def rebuild(c):
+def rebuild(c): # pylint: disable=W0613
     '''Rebuild all docker containers'''
     inv_logging.success(rebuild.__name__)
 

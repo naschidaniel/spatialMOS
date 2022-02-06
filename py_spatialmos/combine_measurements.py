@@ -13,7 +13,7 @@ from . import get_zamg_data
 from .spatial_util import spatial_writer
 
 
-def run_data_for_spatialmos(parser_dict: Dict[str, Any]):
+def run_data_for_spatialmos():
     '''run_data_for_spatialmos combins the data for spatialmos'''
     for provider in ['lwd', 'suedtirol', 'zamg']:
         if provider == 'lwd':
@@ -139,7 +139,7 @@ def run_combine_all_provider():
     for parameter in ['rh_2m', 'tmp_2m']:
         data = []
         for provider in ['lwd', 'suedtirol', 'zamg']:
-            measurements_files = Path("./data/get_available_data/measurements/combined/").glob(f"{provider}_measurements_{parameter}_*.csv")       
+            measurements_files = Path("./data/get_available_data/measurements/combined/").glob(f"{provider}_measurements_{parameter}_*.csv")
             for measurements_file in measurements_files:
                 logging.info("Reading %s", measurements_file)
                 with open(measurements_file, mode='r', newline='', encoding='utf-8') as f:

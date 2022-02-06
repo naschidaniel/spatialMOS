@@ -4,18 +4,18 @@
 
 import csv
 import datetime
+import logging
 from pathlib import Path
 from typing import Any, Dict
 import spatial_rust_util
-import logging
 
 def combine_nwp_gamlss_climatology(gfse_file: Path, measurements_file: Path, target: Path):
-    '''combine_nwp_climatology'''
+    '''combine_nwp_gamlss_climatology generates gamlss nwp climatologies'''
     with open(gfse_file, mode='r', encoding='utf-8') as f:
-        gfse_data = list(csv.reader(f, delimiter=';'))[2:]    
+        gfse_data = list(csv.reader(f, delimiter=';'))[2:]
 
     with open(measurements_file, mode='r', encoding='utf-8') as f:
-        measurements = list(csv.reader(f, delimiter=';'))[2:]   
+        measurements = list(csv.reader(f, delimiter=';'))[2:]
 
     nwp_climatology = spatial_rust_util.combine_nwp_climatology(gfse_data, measurements)
     nwp_climatology = sorted(nwp_climatology, key=lambda x:x[0])
@@ -26,8 +26,9 @@ def combine_nwp_gamlss_climatology(gfse_file: Path, measurements_file: Path, tar
         writer.writerows(nwp_climatology)
 
 def combine_obs_gamlss_climatology(measurements_file: Path, target: Path):
+    '''combine_obs_gamlss_climatology generates gamlss obs climatology'''
     with open(measurements_file, mode='r', encoding='utf-8') as f:
-        measurements = list(csv.reader(f, delimiter=';'))[2:]   
+        measurements = list(csv.reader(f, delimiter=';'))[2:]
 
     measurements_gamlss = []
     for row in measurements:
@@ -49,7 +50,7 @@ def run_combine_climatology(parser_dict: Dict[str, Any]):
     measurements_file = Path(f"./data/get_available_data/measurements/combined/all_measurements_{parser_dict['parameter']}.csv")
     target = Path(f"./data/spatialmos_climatology/gam/{parser_dict['parameter']}/{parser_dict['parameter']}_station_observations.csv")
     combine_obs_gamlss_climatology(measurements_file, target)
-    
+
     steps = range(6, 192+1, 6)
     for step in steps:
         logging.info("GAMLSS climatology for paramaeter '%s' and step '%s' will be created", parser_dict['parameter'], f"{step:03}")

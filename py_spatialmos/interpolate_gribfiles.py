@@ -28,7 +28,7 @@ def run_interpolate_gribfiles(parser_dict: Dict[str, Any]):
 
     station_locations = []
     for provider in ['lwd_stations', 'suedtirol_stations', 'zamg_stations']:
-        station_files = pathlib.Path(f"./data/get_available_data/measurements/combined/").glob(f"{provider}_{parser_dict['parameter']}*.csv")
+        station_files = pathlib.Path("./data/get_available_data/measurements/combined/").glob(f"{provider}_{parser_dict['parameter']}*.csv")
         for file in station_files:
             with open(file, mode='r', encoding='utf-8') as f:
                 reader = csv.reader(f, delimiter=';')

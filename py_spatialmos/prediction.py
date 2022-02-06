@@ -40,7 +40,7 @@ def run_spatial_predictions(parser_dict):
 
     spatial_alt_area_file = Path('./data/get_available_data/gadm/spatial_alt_area_df.csv')
     spatialmos_run_status = []
-    
+
     for json_file in json_files:
         with open(json_file, mode='r', encoding='utf-8') as f:
             gribfiles_data = json.load(f)
@@ -201,10 +201,10 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     filename_spatialmos_step = f"{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.json"
 
     # Optimize images with Image Optimizer
-    filename_nwp_mean = f"/media/{parser_dict['parameter']}/{plot_filenames[0].name}",
-    filename_nwp_spread = f"/media/{parser_dict['parameter']}/{plot_filenames[1].name}",
-    filename_spatialmos_mean = f"/media/{parser_dict['parameter']}/{plot_filenames[2].name}",
-    filename_spatialmos_spread = f"/media/{parser_dict['parameter']}/{plot_filenames[3].name}",
+    filename_nwp_mean = f"/media/{parser_dict['parameter']}/{plot_filenames[0].name}"
+    filename_nwp_spread = f"/media/{parser_dict['parameter']}/{plot_filenames[1].name}"
+    filename_spatialmos_mean = f"/media/{parser_dict['parameter']}/{plot_filenames[2].name}"
+    filename_spatialmos_spread = f"/media/{parser_dict['parameter']}/{plot_filenames[3].name}"
 
     sizes = [{'suffix': '2xs', 'width': 384, 'quality': 90},\
             {'suffix': 'xs', 'width': 512, 'quality': 90 },\
@@ -222,12 +222,12 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                     '--suffix', f"{size['suffix']}", '--width', f"{size['width']}", '--quality', f"{size['quality']}", '--webpimage', 'true', '--thumbnail', 'false']),\
                     shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 logging.info('The image \'%s\' was successfully optimized with the following parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
-            except:
-                logging.error('The image \'%s\' was successfully optimized with the following parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
-    
+            except subprocess.SubprocessError:
+                logging.error('Problems while optimizing the image \'%s\' – parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
+
     for entry in plot_filenames:
-        with Image.open(entry) as im:
-            width, height, = im.size
+        with Image.open(entry) as f:
+            width, height, = f.size
             dimension.append([height, width])
 
     prediction_json_file = {'SpatialMosRun':

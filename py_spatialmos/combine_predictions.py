@@ -9,6 +9,7 @@ from typing import Dict, List
 
 # Functions
 def write_merged_predictions_file(data: Dict, outfile: Path):
+    '''write_merged_predictions_file combines the predictions to one json'''
     logging.info('Saving data in file \'%s\'', outfile)
     with open(outfile, mode='w', encoding='utf-8') as f:
         json.dump(data, f)
@@ -33,15 +34,14 @@ def merge_predictions(parser_dict, data_path_media: Path, steps: List):
             logging.warning('The file \'%s\' for the step \'%s\' is missing.', file, step)
             data['steps_missing'].append(step)
             continue
-        else:
-            data['steps_available'].append(step)
-
-        with open(file) as f:
-            d = json.load(f)
-            data['anal_date'] = d['SpatialMosRun']['anal_date']
-            data['unit'] = d['SpatialMosRun']['unit']
-            data['dates_available'].append(d['SpatialMosStep']['valid_date'])
-            for entry in d['SpatialMosPoint']:
+        
+        data['steps_available'].append(step)
+        with open(file, mode='r', encoding='utf-8') as f:
+            json_data = json.load(f)
+            data['anal_date'] = json_data['SpatialMosRun']['anal_date']
+            data['unit'] = json_data['SpatialMosRun']['unit']
+            data['dates_available'].append(json_data['SpatialMosStep']['valid_date'])
+            for entry in json_data['SpatialMosPoint']:
                 lat = entry['lat']
                 lon = entry['lon']
                 if lat not in predictions.keys():
@@ -65,4 +65,3 @@ def run_combine_predictions(parser_dict):
     data = merge_predictions(parser_dict, data_path_media, steps)
     outfile = data_path_media.joinpath(f"{parser_dict['date']}_predictions.json")
     write_merged_predictions_file(data, outfile)
-
