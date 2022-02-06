@@ -21,8 +21,8 @@ def combine_nwp_gamlss_climatology(gfse_file: Path, measurements_file: Path, tar
     nwp_climatology = sorted(nwp_climatology, key=lambda x:x[0])
     logging.info("Write GAMLSS climatology to '%s'", target)
     with open(target, mode='w', encoding='utf-8') as f:
+        f.write("\"yday\";\"kfold\";\"dayminute\";\"alt\";\"lon\";\"lat\";\"obs\";\"mean\";\"log_spread\"\n")
         writer = csv.writer(f, delimiter=";")
-        writer.writerow(['yday', 'kfold', 'dayminute', 'alt', 'lon', 'lat', 'obs', 'mean', 'log_spread'])
         writer.writerows(nwp_climatology)
 
 def combine_obs_gamlss_climatology(measurements_file: Path, target: Path):
@@ -39,8 +39,8 @@ def combine_obs_gamlss_climatology(measurements_file: Path, target: Path):
         measurements_gamlss.append([timestamp.tm_yday, 1, 60 * timestamp.tm_hour, row[1], row[2], row[3], row[4]])
 
     with open(target, mode='w', encoding='utf-8') as f:
+        f.write("\"yday\";\"kfold\";\"dayminute\";\"alt\";\"lon\";\"lat\";\"obs\"\n")
         writer = csv.writer(f, delimiter=";")
-        writer.writerow(["yday", "kfold", "dayminute", "alt", "lon", "lat", "obs"])
         writer.writerows(measurements_gamlss)
 
 def run_combine_climatology(parser_dict: Dict[str, Any]):

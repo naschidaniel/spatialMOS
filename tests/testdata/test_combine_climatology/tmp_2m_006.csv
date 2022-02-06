@@ -1,4 +1,4 @@
-yday;kfold;dayminute;alt;lon;lat;obs;mean;log_spread
+"yday";"kfold";"dayminute";"alt";"lon";"lat";"obs";"mean";"log_spread"
 225;1;360;1235;10.461;46.637;13.8;11.61;-1.77
 225;1;360;2926;10.488;46.777;8.0;11.37;-1.97
 225;1;360;2040;10.498;46.806;11.2;11.3;-1.97

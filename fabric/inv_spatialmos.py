@@ -55,10 +55,10 @@ def archive_folder__zamg(c):
     util.write_statusfile_and_success_logging(archive_folder__zamg.__name__)
 
 @task
-def combine_climatology(c, parameter):
+def combine_gamlss_climatology(c, parameter):
     '''Combine climatologies for spatialmos'''
-    inv_logging.task(combine_climatology.__name__)
-    cmd = ['python', './run_script.py', '--script', 'combine_climatology', '--parameter', parameter]
+    inv_logging.task(combine_gamlss_climatology.__name__)
+    cmd = ['python', './run_script.py', '--script', 'combine_gamlss_climatology', '--parameter', parameter]
     inv_docker.run_py_container(c, cmd)
 
 @task

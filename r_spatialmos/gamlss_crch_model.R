@@ -17,9 +17,6 @@ required_gamlss_model_inputs <- TRUE
 required_climatologies_model_inputs <- FALSE
 source("./r_spatialmos/r_middleware/gamlss_crch_model_optparse.R")
 
-stations = read.csv('./data/spatialmos_climatology/stations.csv')
-
-
 # Load Config
 source("./r_spatialmos/gamlss_crch_model.R.conf")
 
@@ -33,7 +30,6 @@ if (!dir.exists(paste0("./data/spatialmos_climatology/gam/", parameter))){
 climate <- read.csv(paste0("./data/spatialmos_climatology/gam/", parameter, "/", parameter, "_station_observations.csv"), sep=";", header = TRUE)
 colnamesObsclimate <- colnames(climate)
 colnamesObsclimate <- colnamesObsclimate[1:6]
-
 
 if (validation == FALSE){
   # Create directory structure
