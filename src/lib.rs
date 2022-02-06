@@ -14,7 +14,6 @@ fn combine_nwp_climatology(
     py_measurements: &PyList,
 ) -> PyResult<Vec<[String; 9]>> {
     let gfse_data: Vec<Vec<String>> = py_gfse_data.extract()?;
-    let gfse_data_len = gfse_data.len();
     let measurements: Vec<Vec<String>> = py_measurements.extract()?;
     let mut nwp_climatology = Vec::new();
     let mut measurements_hashmap = HashMap::new();
@@ -27,13 +26,7 @@ fn combine_nwp_climatology(
         );
     }
 
-    for (i, row) in gfse_data.iter().enumerate() {
-        let quot = i / (gfse_data_len / 10);
-        let rem = i % (gfse_data_len / 10);
-
-        if rem == 0 {
-            println!("Done {} percent", quot * 10);
-        }
+    for row in gfse_data.iter() {
         let gfse_data_key = vec![row[1].clone(), row[5].clone(), row[6].clone()].join("_");
         if measurements_hashmap.contains_key(&gfse_data_key) {
             let alt = measurements_hashmap[&gfse_data_key][1].clone();

@@ -67,13 +67,13 @@ class TestRustModules(unittest.TestCase):
     def test_interpolate_gribdata(self):
         '''test_interpolate_gribdata checks if the gribdata can be interpolated.'''
         # [[lon, lat, spr, avg]]
-        self.assertEqual([[8.5, 45.0, 0.27, 4.3]], spatial_rust_util.interpolate_gribdata(
+        self.assertEqual([[8.5, 45.0, 0.27, -1.31, 4.3]], spatial_rust_util.interpolate_gribdata(
             latitudes, longitudes, values_avg, values_spr, [[8.5, 45.0]]))
-        self.assertEqual([[8.0, 45.0, 0.24, 4.59]], spatial_rust_util.interpolate_gribdata(
+        self.assertEqual([[8.0, 45.0, 0.24, -1.43, 4.59]], spatial_rust_util.interpolate_gribdata(
             latitudes, longitudes, values_avg, values_spr, [[8.0, 45.0]]))
-        self.assertEqual([[8.7, 45.6, 0.16, 4.07]], spatial_rust_util.interpolate_gribdata(
+        self.assertEqual([[8.7, 45.6, 0.16, -1.83, 4.07]], spatial_rust_util.interpolate_gribdata(
             latitudes, longitudes, values_avg, values_spr, [[8.7, 45.6]]))
-        self.assertEqual([[8.7, 45.6, 0.16, 4.07], [8.0, 45.0, 0.24, 4.59]], spatial_rust_util.interpolate_gribdata(
+        self.assertEqual([[8.7, 45.6, 0.16, -1.83, 4.07], [8.0, 45.0, 0.24, -1.43, 4.59]], spatial_rust_util.interpolate_gribdata(
             latitudes, longitudes, values_avg, values_spr, [[8.7, 45.6], [8.0, 45.0]]))
 
 if __name__ == '__main__':

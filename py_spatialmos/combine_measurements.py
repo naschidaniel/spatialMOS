@@ -103,6 +103,10 @@ def data_for_spatialmos(data: List[List[str]], parameters: Dict[str, Dict[str, s
         if not spatialmos_subset['S'] <= lat <= spatialmos_subset['N']:
             continue
 
+        if lat > 47.0 and float(row[alt_index]) <= 400:
+            logging.error("The altitude \'%s\' for the point '%s, %s' is probably wrong", row[alt_index], row[lon_index], row[lat_index])
+            continue
+
         try:
             if parameter == 'tmp_2m':
                 value = round(float(row[value_index]), 1)
@@ -144,10 +148,8 @@ def run_combine_all_provider():
                     data = data + data_new[2:]
 
         data = sorted(data[2:], key=lambda x:x[0])
-        start_date = data[0][0][0:10]
-        end_date = data[-1][0][0:10]
         data = header + data
-        measurements_file_all = Path(f"./data/get_available_data/measurements/combined/all_measurements_{parameter}_{start_date}_{end_date}.csv")
+        measurements_file_all = Path(f"./data/get_available_data/measurements/combined/all_measurements_{parameter}.csv")
         logging.info("Writing all measurements to %s", measurements_file_all)
         with open(measurements_file_all, mode='w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=";")

@@ -82,7 +82,6 @@ Current Ensemble weather forecasts can be obtained from the a FTP of the [NOAA](
 ```
 ./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter tmp_2m 
 ./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter rh_2m 
-./task.py local.spatialmos.py-spatialmos--get-gefs-forecasts --date 2020-07-03 --parameter wind_10m 
 ```
 
 ### Raw data pre processing for further statistical processing
@@ -126,8 +125,6 @@ The observations and the GEFS Reforecasts still need to be pre-processed. The ob
 ```
 ./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies --parameter tmp_2m
 ./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies --parameter rh_2m
-./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies --parameter wind_10m
-./task.py local.spatialmos.py-spatialmos--pre-processing-gamlss-crch-climatologies --parameter apcp_sfc
 ```
 
 ### Statistical processing for spatial of the spatially valid climatologies
@@ -140,7 +137,6 @@ Based on the pre processed data and the modelling software [gamlss](http://www.g
 ```
 ./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter tmp_2m
 ./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter rh_2m
-./task.py local.spatialmos.r-spatialmos--gamlss-crch-model --validation False --parameter wind_10m
 ```
 
 #### Create daily climatologies for post processing of GEFS forecasts
@@ -151,14 +147,12 @@ For the statistical processing of the Direct Model Output, climatologies for the
 ```
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter tmp_2m 
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter rh_2m
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-nwp --begin 192 --end 195 --parameter wind_10m
 ```
 
 ##### Observation climatologies for the day
 ```
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter tmp_2m
 ./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter rh_2m
-./task.py local.spatialmos.r-spatialmos--spatial-climatologies-obs --begin 192 --end 195 --parameter wind_10m
 ```
 
 
@@ -172,7 +166,6 @@ For this step, current forecasts ([GEFS Weather Forecasts](#GEFS-Weather-Forecas
 ```
 ./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter tmp_2m 
 ./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter rh_2m
-./task.py local.spatialmos.py-spatialmos--prediction --date 2020-07-22 --parameter wind_10m
 ```
 
 The calculated predictions are available in the exchange folder `./data/spool`. The presentation of the data is made with the help of django. 
@@ -183,13 +176,9 @@ The calculated predictions are available in the exchange folder `./data/spool`. 
 The downloaded files in the folders can be archived with `tar`. The archived files are located under `./data/archive`.
 
 ```
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p1
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_avgspr_forecast_p05
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder gefs_reforecast
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder lwd
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder suedtirol
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder uibk
-./task.py local.spatialmos.py-spatialmos--archive-available-data --folder wetter_at
 ./task.py local.spatialmos.py-spatialmos--archive-available-data --folder zamg
 ```
 
@@ -204,7 +193,6 @@ A web server can be started or stopped in dedatched modus for the local test env
 ```
 ./task.py local.docker-compose.start
 
-./task.py local.docker-compose.stop
 ```
 
 #### Urls for local development
@@ -237,14 +225,6 @@ The predictions can also be loaded as JSON data via the Api Rest interface.
 [http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/](http://localhost/api/spatialmospoint/last/tmp_2m/47.26266/11.394/)
 
 
-#### Delete model runs from the PostgreSQL database
-
-With this managing command model runs older than 5 days are removed from the database.
-
-```
-./task.py local.spatialmos.py-spatialmos--django-delete-spatialmos-runs --parameter tmp_2m --days 5
-```
-
 #### Predictions for addresses and coordinates
 
 For the prediction of addresses and coordinates in North- and South Tyrol the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org) is used. The [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) is licensed under [GPLv2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
@@ -267,15 +247,28 @@ With the help of `rsync` and `scp` data can be exchanged between server and loca
 The files are synchronized using the fabric command:
 
 ```
-./task.py production.deploy
+./task.py deploy
 ```
 
 The precalculated climatologies can be uploaded using the following fabric command:
 
 ```
-./task.py production.push-climatologies
+./task.py rsync.push-climatologies
 ```
 
+
+## Generate Climatologies for R GAMLSS
+
+```
+./task.py combine-data --folder lwd
+./task.py combine-data --folder suedtirol
+./task.py combine-data --folder zamg
+./task.py combine-measurements
+./task.py interpolate-gribfiles --parameter tmp_2m
+./task.py interpolate-gribfiles --parameter rh_2m
+./task.py combine_gamlss_climatology --parameter tmp_2m
+./task.py combine_gamlss_climatology --parameter rh_2m
+```
 
 ## Contribution
 
@@ -287,59 +280,6 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 * [noaa ncep](https://www.ftp.ncep.noaa.gov/)
 * [South Tyrolean weather service](http://wetter.provinz.bz.it/)
 * [ZAMG](https://www.zamg.ac.at/)
-
-## Changelog
-
-- 2021-05-06 spatial_parser and predict has been was refactored
-- 2021-04-12 #blacklivesmatter
-- 2021-04-11 CI: Github actions for pylint, pytest and rust tests
-- 2021-04-11 The generic script `run_get_data.py` was added for lwd, suedtirol and zamg.
-- 2021-03-21 Refactoring of lwd, suedtirol and zamg data download.
-- 2021-03-21 [http://at-wetter.tk/](http://at-wetter.tk/) and [https://www.uibk.ac.at/acinn/](https://www.uibk.ac.at/acinn/) data download was removed.
-- 2021-03-20 Build the Rust libraries for python.
-- 2020-12-16 PostgreSQL was upgraded to version 13.
-- 2020-10-22 Relative humidity forecasts are available.
-- 2020-10-17 The Python module basemap was replaced by [cartopy](https://scitools.org.uk/cartopy/docs/latest/).
-- 2020-10-17 The python module pygrib was replaced by [cfgrib](https://github.com/ecmwf/cfgrib) and [xarray](http://xarray.pydata.org/en/stable/).
-- 2020-10-11 Hourly download of LWD Tirol weather from [Land Tirol - data.tirol.gv.at](https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f) data. 
-- 2020-10-05 The system status of the tasks on the server can now be monitored via django [https://moses.tirol/systemstatus](https://moses.tirol/systemstatus)
-- 2020-09-27 The predictions are now made using the 0.5 x 0.5 grid model instead of the 1 x 1 degree.
-- 2020-09-27 Update the downloadlinks to the urls of [noaa ncep](https://www.ftp.ncep.noaa.gov/) server 
-- 2020-09-06 The charts library [Recharts](https://recharts.org) was used to draw the required charts for the predictions.
-- 2020-08-29 With the UI Framwork [React](https://reactjs.org) the required components are realized.
-- 2020-08-29 An overview map of API search results is displayed using [leafletjs.com](https://leafletjs.com).
-- 2020-08-29 The API interface of photon was replaced by the API interface of [nominatim.openstreetmap.org](https://nominatim.openstreetmap.org). The open source project [github.com/osm-search/Nominatim](https://github.com/osm-search/Nominatim) API Request for point- and address-predictions added to the project.
-- 2020-08-22 The open source project [github.com/komoot/photon](https://github.com/komoot/photon) API Request for point- and address-predictions added to the project. Have a look to [photon.komoot.de](https://photon.komoot.de) for there live demo.
-- 2020-08-21 Update README.md
-- 2020-08-13 small, medium and large image sizes of the predictions 
-- 2020-08-11 For future forecasts the predictions of the Global Weather Model are stored in a resolution of 0.5 degrees.
-- 2020-08-10 Prettier Django docstrings and remarks.
-- 2020-08-09 The Django website was put online on [moses.tirol](https://moses.tirol).
-- 2020-08-05 Data in JSON format can be obtained from the API interface.
-- 2020-07-30 Django was added to the project and tested locally.
-- 2020-07-29 The new version was installed on the server. Daily two meter Temperature spatialMOS forecasts are now generated.
-- 2020-07-28 The python dependencies gdal, basemap, pygrib and pyarrow caused problems. The prediction script was split and three docker containers were created
-- 2020-07-22 The fabric commands for spatialMOS has been improved
-- 2020-07-20 The codestyle embellishments were tested and merged
-- 2020-07-19 Embellish codestyle with prettier
-- 2020-07-10 Daily valid climatology files for tmp_2m can be created
-- 2020-07-09 A spatial valid climatology file for tmp_2m can be created
-- 2020-07-08 Download Shapefiles with R
-- 2020-07-07 Adding R Container to project 
-- 2020-07-03 Restructuring of the Docker containers, volumes and python script folder
-- 2020-06-23 Added https certificates via Let´s Encrypt to nginx configuration
-- 2020-06-18 Nginx configuration for [moses.tirol](https://moses.tirol)
-- 2020-06-16 Landing page set up for [moses.tirol](https://moses.tirol)
-- 2020-06-16 Productive use of fabric commands with crontab
-- 2020-06-16 Domain Moses.tirol was redirected to the new server
-- 2020-06-14 Implementing processing and cronjobs for servers
-- 2020-06-14 Download GEFS predictions from NCEP NOAA FTP Server
-- 2020-06-11 Parse HTML file from ZAMG
-- 2020-06-11 Fetch data from API of [at-wetter.tk](http://at-wetter.tk/)
-- 2020-06-09 Fetch data from the [University of Innsbruck API](https://www.uibk.ac.at/acinn/)
-- 2020-06-09 Fetch data from the [South Tyrolean weather service](http://wetter.provinz.bz.it/)  
-- 2020-06-07 Init Repository 
-
 
 ## License
 
