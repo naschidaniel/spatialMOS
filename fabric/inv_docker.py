@@ -55,20 +55,35 @@ def run_maturin_build(c):
     c.run('mv ./target/wheels/*.whl ./container/py_container/')
     inv_logging.success(run_maturin_build.__name__)
 
+@task
+def rebuild_py_container(c):
+    '''Rebuild the py_container'''
+    inv_logging.task(rebuild_py_container.__name__)
+    run_maturin_build(c)
+    c.run('docker build --no-cache -t py_container ./container/py_container/')
+    c.run('docker save py_container | gzip > ./container/py_container.tar.gz')
+    inv_logging.success(rebuild_py_container.__name__)
 
 @task
+def rebuild_r_base(c):
+    '''Rebuild the r_base container'''
+    inv_logging.task(rebuild_r_base.__name__)
+    c.run('docker build --no-cache -t r_base ./container/r_base/')
+    c.run('docker save r_base | gzip > ./container/r_base.tar.gz')
+    inv_logging.success(rebuild_r_base.__name__)
+
+@task
+def rebuild_website(c):
+    '''Rebuild the website container'''
+    inv_logging.task(rebuild_website.__name__)
+    c.run('docker build --no-cache -t node_container ./website/')
+    c.run('docker save node_container | gzip > ./container/node_container.tar.gz')
+    inv_logging.success(rebuild_website.__name__)
+
+@task(pre=[rebuild_py_container, rebuild_r_base, rebuild_website])
 def rebuild(c):
     '''Rebuild all docker containers'''
-    inv_logging.task(rebuild.__name__)
-    run_maturin_build(c)
-    c.run('docker build --no-cache -t node_container ./website/')
-    c.run('docker build --no-cache -t r_base ./container/r_base/')
-    c.run('docker build --no-cache -t py_container ./container/py_container/')
-    c.run('docker save node_container | gzip > ./container/node_container.tar.gz')
-    c.run('docker save py_container | gzip > ./container/py_container.tar.gz')
-    c.run('docker save r_base | gzip > ./container/r_base.tar.gz')
     inv_logging.success(rebuild.__name__)
-
 
 @task
 def run_r_base(c, cmd):
@@ -96,4 +111,7 @@ DOCKER_NS = Collection('docker')
 DOCKER_NS.add_task(prune_container)
 DOCKER_NS.add_task(run_maturin_build)
 DOCKER_NS.add_task(rebuild)
+DOCKER_NS.add_task(rebuild_py_container)
+DOCKER_NS.add_task(rebuild_r_base)
+DOCKER_NS.add_task(rebuild_website)
 DOCKER_NS.add_task(stop)
