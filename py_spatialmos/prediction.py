@@ -218,12 +218,12 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
     for entry in (filename_nwp_mean, filename_nwp_spread, filename_spatialmos_mean, filename_spatialmos_spread):
         for size in sizes:
             try:
-                subprocess.run(' '.join(['./image-optimizer', '--source', f'./data{entry[0]}', '--destination', f"./data/media/{parser_dict['parameter']}",\
+                subprocess.run(' '.join(['./image-optimizer', '--source', f'./data{entry}', '--destination', f"./data/media/{parser_dict['parameter']}",\
                     '--suffix', f"{size['suffix']}", '--width', f"{size['width']}", '--quality', f"{size['quality']}", '--webpimage', 'true', '--thumbnail', 'false']),\
                     shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-                logging.info('The image \'%s\' was successfully optimized with the following parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
+                logging.info('The image \'%s\' was successfully optimized with the following parameters: %s, width: %s, quality: %s .', f'./data{entry}', size['suffix'], size['quality'], size['width'])
             except subprocess.SubprocessError:
-                logging.error('Problems while optimizing the image \'%s\' – parameters: %s, width: %s, quality: %s .', f'./data{entry[0]}', size['suffix'], size['quality'], size['width'])
+                logging.error('Problems while optimizing the image \'%s\' – parameters: %s, width: %s, quality: %s .', f'./data{entry}', size['suffix'], size['quality'], size['width'])
 
     for entry in plot_filenames:
         with Image.open(entry) as f:
@@ -241,10 +241,10 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                 'filename_SpatialMosStep': filename_spatialmos_step,
                                  'valid_date': valid_date_aware.strftime('%Y-%m-%d %H:%M:%S'),
                                  'step': gribfiles_data['step'],
-                                 'nwp_mean_filename': filename_nwp_mean[0],
-                                 'nwp_spread_filename': filename_nwp_spread[0],
-                                 'spatialmos_mean_filename': filename_spatialmos_mean[0],
-                                 'spatialmos_spread_filename': filename_spatialmos_spread[0],
+                                 'nwp_mean_filename': filename_nwp_mean,
+                                 'nwp_spread_filename': filename_nwp_spread,
+                                 'spatialmos_mean_filename': filename_spatialmos_mean,
+                                 'spatialmos_spread_filename': filename_spatialmos_spread,
                             },
                             'SpatialMosPoint': spatialmos_point_dict
                             }
@@ -265,22 +265,22 @@ def spatial_prediction(alt_file, alt_area_file, climate_spatialmos_file, climate
                                   'prediction_json_file': f"/media/{parser_dict['parameter']}/{filename_spatialmos_step}",
                                   'predictions_json_file': f"/media/{parser_dict['parameter']}/{anal_date_aware.strftime('%Y%m%d')}_predictions.json",
                                   'nwp_mean': {
-                                    'filename': filename_nwp_mean[0],
+                                    'filename': filename_nwp_mean,
                                     'height': dimension[0][0],
                                     'width': dimension[0][1],
                                     },
                                   'nwp_spread': {
-                                    'filename': filename_nwp_spread[0],
+                                    'filename': filename_nwp_spread,
                                     'height': dimension[1][0],
                                     'width': dimension[1][1],
                                     },
                                   'spatialmos_mean': {
-                                    'filename': filename_spatialmos_mean[0],
+                                    'filename': filename_spatialmos_mean,
                                     'height': dimension[2][0],
                                     'width': dimension[2][1],
                                     },
                                   'spatialmos_spread': {
-                                    'filename': filename_spatialmos_spread[0],
+                                    'filename': filename_spatialmos_spread,
                                     'height': dimension[3][0],
                                     'width': dimension[3][1],
                                     },
