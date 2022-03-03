@@ -418,7 +418,7 @@ def remove_old_climatologies(c): # pylint: disable=W0613
             for file in Path(folder).glob(f'yday_{day:03d}*.csv'):
                 logging.info('File \'%s\' will be removed', file)
                 os.unlink(file)
-    inv_logging.success(remove_old_climatologies.__name__)
+    util.write_statusfile_and_success_logging(remove_old_climatologies.__name__)
 
 @task
 def untar_folder(c, folder):

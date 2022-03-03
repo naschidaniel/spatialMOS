@@ -35,7 +35,8 @@
     "pre_processing_gribfiles__tmp_2m": "1455",
     "pre_processing_gribfiles__ugrd_10m": "1455",
     "pre_processing_gribfiles__vgrd_10m": "1455",
-    "prune_container": "1455"
+    "prune_container": "1455",
+    "remove_old_climatologies": "1455"
   },
   "REMOTE_USER": "example",
   "REMOTE_HOST": "example.com",
