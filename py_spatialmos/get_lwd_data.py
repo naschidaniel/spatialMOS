@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''With this Python script data can be obtained from the North Tirolian Avalanche Service.'''
+"""With this Python script data can be obtained from the North Tirolian Avalanche Service."""
 
 import logging
 import logging.handlers
@@ -14,7 +14,7 @@ from .spatial_util.spatial_writer import SpatialWriter
 
 
 class LwdData:
-    '''Lwd_Data Class'''
+    """Lwd_Data Class"""
 
     # Data from the Open Data Platform - Katalog Wetterstationsdaten Tirol
     # https://www.data.gv.at/katalog/dataset/bb43170b-30fb-48aa-893f-51c60d27056f
@@ -25,119 +25,151 @@ class LwdData:
 
     @staticmethod
     def parameters() -> Dict[str, Dict[str, str]]:
-        '''parameters and a unit which is encapsulated in the spatialmos format.'''
-        return {'date': {'name': 'date', 'unit': '[UTC]'},
-                'name': {'name': 'name', 'unit': '[String]'},
-                'lat': {'name': 'lat', 'unit': '[angle Degree]'},
-                'lon': {'name': 'lon', 'unit': '[angle Degree]'},
-                'alt': {'name': 'alt', 'unit': '[m]'},
-                'LD': {'name': 'ldstat', 'unit': '[hPa]'},
-                'LT': {'name': 't', 'unit': '[Degree C]'},
-                'TD': {'name': 'tp', 'unit': '[Degree C]'},
-                'RH': {'name': 'rf', 'unit': '[Percent]'},
-                'WG_BOE': {'name': 'boe', 'unit': '[m/s]'},
-                'WG': {'name': 'wg', 'unit': '[m/s]'},
-                'WR': {'name': 'wr', 'unit': '[Degree]'},
-                'OFT': {'name': 'oft', 'unit': '[Degree C]'},
-                'GS_O': {'name': 'globalstrahlung_oben', 'unit': '[W/m^2]'},
-                'GS_U': {'name': 'globalstrahlung_unten', 'unit': '[W/m^2]'}}
+        """parameters and a unit which is encapsulated in the spatialmos format."""
+        return {
+            "date": {"name": "date", "unit": "[UTC]"},
+            "name": {"name": "name", "unit": "[String]"},
+            "lat": {"name": "lat", "unit": "[angle Degree]"},
+            "lon": {"name": "lon", "unit": "[angle Degree]"},
+            "alt": {"name": "alt", "unit": "[m]"},
+            "LD": {"name": "ldstat", "unit": "[hPa]"},
+            "LT": {"name": "t", "unit": "[Degree C]"},
+            "TD": {"name": "tp", "unit": "[Degree C]"},
+            "RH": {"name": "rf", "unit": "[Percent]"},
+            "WG_BOE": {"name": "boe", "unit": "[m/s]"},
+            "WG": {"name": "wg", "unit": "[m/s]"},
+            "WR": {"name": "wr", "unit": "[Degree]"},
+            "OFT": {"name": "oft", "unit": "[Degree C]"},
+            "GS_O": {"name": "globalstrahlung_oben", "unit": "[W/m^2]"},
+            "GS_U": {"name": "globalstrahlung_unten", "unit": "[W/m^2]"},
+        }
 
     @classmethod
     def request_data(cls, target: TextIO) -> dict:
-        '''request_data loads the data from the API interface'''
-        data = requests.get(
-            'https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson')
+        """request_data loads the data from the API interface"""
+        data = requests.get("https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson")
         if data.status_code != 200:
-            raise(RuntimeError(
-                'The response of the API \'https://wiski.tirol.gv.at\' does not match 200'))
+            raise (
+                RuntimeError(
+                    "The response of the API 'https://wiski.tirol.gv.at' does not match 200"
+                )
+            )
         try:
             target.write(data.text)
-            logging.info('A original data file \'%s\' was written.', str(target))
+            logging.info("A original data file '%s' was written.", str(target))
         except Exception as ex:
-            logging.error('The API interface data could not be stored into %s.', str(target))
+            logging.error(
+                "The API interface data could not be stored into %s.", str(target)
+            )
             logging.exception(ex)
             raise ex
         return data.json()
 
 
-
 def lwd_spatial_converter(request_data: dict, target: TextIO) -> None:
-    '''lwd_spatial_converter for data conversion into spatialMOS format'''
+    """lwd_spatial_converter for data conversion into spatialMOS format"""
     parameter = LwdData.parameters()
     now = datetime.datetime.now()
-    now_current_hour = now.replace(hour=round(now.hour + now.minute / 60.0),
-                                   minute=0, second=0, microsecond=0)
+    now_current_hour = now.replace(
+        hour=round(now.hour + now.minute / 60.0), minute=0, second=0, microsecond=0
+    )
     count_stations = 0
     count_stations_successfull = 0
     writer = SpatialWriter(parameter, target)
-    for station in request_data['features']:
+    for station in request_data["features"]:
         count_stations += 1
-        append_data = station['properties']
-        append_data.update({'station': station['id'],
-                            'alt': station['geometry']['coordinates'][2],
-                            'lon': station['geometry']['coordinates'][0],
-                            'lat': station['geometry']['coordinates'][1],
-                            })
+        append_data = station["properties"]
+        append_data.update(
+            {
+                "station": station["id"],
+                "alt": station["geometry"]["coordinates"][2],
+                "lon": station["geometry"]["coordinates"][0],
+                "lat": station["geometry"]["coordinates"][1],
+            }
+        )
 
-        if 'date' not in append_data:
+        if "date" not in append_data:
             logging.warning(
-                'No date could be found in the data for the station \'%s\'.', append_data['name'])
+                "No date could be found in the data for the station '%s'.",
+                append_data["name"],
+            )
             continue
 
         row = []
         for key in parameter:
-            if key == 'date':
+            if key == "date":
                 date = datetime.datetime.strptime(
-                    append_data['date'], '%Y-%m-%dT%H:%M:%S%z')
-                timedelta = (now_current_hour.timestamp() -
-                                date.timestamp()) / 60
+                    append_data["date"], "%Y-%m-%dT%H:%M:%S%z"
+                )
+                timedelta = (now_current_hour.timestamp() - date.timestamp()) / 60
                 if abs(timedelta) > 21:
                     logging.warning(
-                        'The timedelda \'%s\' in minutes for the received date \'%s\' at station \'%s\' is too old.', \
-                        abs(timedelta), date, append_data['name'])
+                        "The timedelda '%s' in minutes for the received date '%s' at station '%s' is too old.",
+                        abs(timedelta),
+                        date,
+                        append_data["name"],
+                    )
                     break
-                row.append(datetime.datetime.utcnow().replace(
-                    minute=0, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S'))
+                row.append(
+                    datetime.datetime.utcnow()
+                    .replace(minute=0, second=0, microsecond=0)
+                    .strftime("%Y-%m-%d %H:%M:%S")
+                )
                 continue
 
             if key in append_data:
                 row.append(append_data[key])
             else:
-                row.append('')
+                row.append("")
 
         if len(row) != 0:
             logging.info(
-                'The received data for the date \'%s\' and the station \'%s\' are stored.', date, append_data['name'])
+                "The received data for the date '%s' and the station '%s' are stored.",
+                date,
+                append_data["name"],
+            )
             writer.append(row)
             count_stations_successfull += 1
 
     if count_stations_successfull <= 50:
-        raise RuntimeError(f'Only {count_stations_successfull} from {count_stations} stations are transmitted correctly')
+        raise RuntimeError(
+            f"Only {count_stations_successfull} from {count_stations} stations are transmitted correctly"
+        )
 
-    logging.info('%s from %s stations have been successfully saved.', count_stations_successfull, count_stations)
+    logging.info(
+        "%s from %s stations have been successfully saved.",
+        count_stations_successfull,
+        count_stations,
+    )
 
 
 def run_fetch_lwd_data():
-    '''run_fetch_lwd_data runs fetch_lwd_data'''
-    data_path = Path('./data/get_available_data/lwd/data')
-    ogd_path = Path('./data/get_available_data/lwd/ogd')
+    """run_fetch_lwd_data runs fetch_lwd_data"""
+    data_path = Path("./data/get_available_data/lwd/data")
+    ogd_path = Path("./data/get_available_data/lwd/ogd")
 
     os.makedirs(data_path, exist_ok=True)
     os.makedirs(ogd_path, exist_ok=True)
     fetch_lwd_data(data_path, ogd_path)
 
-def fetch_lwd_data(data_path: Path, ogd_path: Path):
-    '''fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format.'''
-    utcnow_str = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H_%M_%S')
 
-    ogd_filename = ogd_path.joinpath(f'ogd_{utcnow_str}.geojson')
+def fetch_lwd_data(data_path: Path, ogd_path: Path):
+    """fetch_lwd_data from LWD Tirol and store the original data geojson file. Additionally the converted data is saved in spatialMOS CSV Format."""
+    utcnow_str = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H_%M_%S")
+
+    ogd_filename = ogd_path.joinpath(f"ogd_{utcnow_str}.geojson")
     try:
-        with open(ogd_filename, mode='w', newline='', encoding='utf-8') as target:
+        with open(ogd_filename, mode="w", newline="", encoding="utf-8") as target:
             request_data = LwdData.request_data(target)
     except Exception as ex:
-        logging.error('The original data file \'%s\' could not be written.', ogd_filename)
+        logging.error("The original data file '%s' could not be written.", ogd_filename)
         logging.exception(ex)
         raise ex
 
-    with open(data_path.joinpath(f'lwd_{utcnow_str}.csv'), mode='w', newline='', encoding='utf-8') as target:
+    with open(
+        data_path.joinpath(f"lwd_{utcnow_str}.csv"),
+        mode="w",
+        newline="",
+        encoding="utf-8",
+    ) as target:
         lwd_spatial_converter(request_data, target)

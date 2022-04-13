@@ -37,13 +37,13 @@
         </div>
       </div>
       <button class="btn btn-primary mt-2" @click.prevent="submitAddressForm()">
-        Submit
+        Absenden
       </button>
       <button
         class="btn btn-danger ms-2 mt-2"
         @click.prevent="resetAddressForm()"
       >
-        Formular zurücksetzen
+        Eingabe löschen 
       </button>
     </form>
   </div>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #  -*- coding: utf-8 -*-
-'''The fabricfile of the project.'''
+"""The fabricfile of the project."""
 
 from invoke import Collection, Program
 from fabric import inv_docker

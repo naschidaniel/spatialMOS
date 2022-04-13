@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-'''Unittest for the get_lwd_data modules'''
+"""Unittest for the get_lwd_data modules"""
 
 import csv
 import unittest
@@ -13,43 +13,52 @@ import shutil
 import pytest
 from py_spatialmos import get_lwd_data
 
+
 class TestExitCodes(unittest.TestCase):
-    '''pytest for get_lwd_data'''
+    """pytest for get_lwd_data"""
 
     def test_fetch_lwd_data_ok(self):
-        '''This test should complete successfully if all the data from lwd could be downloaded.'''
+        """This test should complete successfully if all the data from lwd could be downloaded."""
 
         current_minute = int(datetime.now().strftime("%M"))
         if current_minute > 25:
-            pytest.skip(f'The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}')
+            pytest.skip(
+                f"The Test test_fetch_lwd_data_ok has been skiped because of the current minute {current_minute}"
+            )
 
-        print(f'The Test test_fetch_lwd_data_ok is running. The current minute is {current_minute}.')
+        print(
+            f"The Test test_fetch_lwd_data_ok is running. The current minute is {current_minute}."
+        )
         data_path = Path(tempfile.mkdtemp())
         ogd_path = Path(tempfile.mkdtemp())
         get_lwd_data.fetch_lwd_data(data_path, ogd_path)
         try:
-            for csv_file in data_path.glob('*.csv'):
-                with open(csv_file, 'r', encoding='ISO-8859-1') as f:
-                    csv_data = list(csv.reader(f, delimiter=';'))
+            for csv_file in data_path.glob("*.csv"):
+                with open(csv_file, "r", encoding="ISO-8859-1") as f:
+                    csv_data = list(csv.reader(f, delimiter=";"))
                 self.assertEqual(len(csv_data) >= 57, True)
         finally:
             shutil.rmtree(data_path)
 
         try:
-            for ogd_file in ogd_path.glob('*.geojson'):
-                with open(ogd_file, 'r', encoding='ISO-8859-1') as f:
+            for ogd_file in ogd_path.glob("*.geojson"):
+                with open(ogd_file, "r", encoding="ISO-8859-1") as f:
                     ogd_data = dict(json.load(f))
-                self.assertEqual(['features', 'type'], list(ogd_data.keys()))
+                self.assertEqual(["features", "type"], list(ogd_data.keys()))
         finally:
             shutil.rmtree(ogd_path)
 
     def test_fetch_lwd_data_fail(self):
-        '''This test should complete successfully if all the data from lwd could be downloaded.'''
+        """This test should complete successfully if all the data from lwd could be downloaded."""
         current_minute = int(datetime.now().strftime("%M"))
         if current_minute < 35 or current_minute > 50:
-            pytest.skip(f'The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}')
+            pytest.skip(
+                f"The Test test_fetch_lwd_data_fail has been skiped because of the current minute {current_minute}"
+            )
 
-        print(f'The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}.')
+        print(
+            f"The Test test_fetch_lwd_data_fail is running. The current minute is {current_minute}."
+        )
         data_path = Path(tempfile.mkdtemp())
         ogd_path = Path(tempfile.mkdtemp())
         with self.assertRaises(RuntimeError):
@@ -57,5 +66,6 @@ class TestExitCodes(unittest.TestCase):
             shutil.rmtree(ogd_path)
             shutil.rmtree(data_path)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main(exit=False)
