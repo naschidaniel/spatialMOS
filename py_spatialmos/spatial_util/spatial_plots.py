@@ -12,7 +12,7 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 # Functions
 def plot_forecast(
-    filename, parameter, xx, yy, plotparameter, gribfiles_data, gadm36_shape_file, what
+    filename, overlay, parameter, xx, yy, plotparameter, gribfiles_data, gadm36_shape_file, what
 ):
     """A function to create the GEFS and spatialMOS forecast plots."""
     step = gribfiles_data["step"]
@@ -27,107 +27,62 @@ def plot_forecast(
 
     fig_dpi = 72
     fig = plt.figure(figsize=(1600 / fig_dpi, 1600 / fig_dpi), dpi=fig_dpi)
+    proj = ccrs.PlateCarree(globe=ccrs.Globe(datum="WGS84", ellipse="WGS84"))
     ax = plt.axes(
-        projection=ccrs.PlateCarree(globe=ccrs.Globe(datum="WGS84", ellipse="WGS84"))
+        projection=proj
     )
 
     if parameter == "tmp_2m" and what == "spatialmos_mean":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="RdBu_r",
-            vmin=-40,
-            vmax=40,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="RdBu_r"
+        vmin=-40
+        vmax=40
         plot_title = "2m Temperatur MEAN [°C]"
     elif parameter == "tmp_2m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="Reds",
-            vmin=0,
-            vmax=5,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="Reds"
+        vmin=0
+        vmax=5
         plot_title = "2m Temperatur SPREAD [°C]"
     elif parameter == "tmp_2m" and what == "nwp_mean":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="RdBu_r",
-            vmin=-40,
-            vmax=40,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="RdBu_r"
+        vmin=-40
+        vmax=40
         plot_title = "2m Temperatur GEFS MEAN [°C]"
     elif parameter == "tmp_2m" and what == "nwp_spread":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="Reds",
-            vmin=0,
-            vmax=5,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="Reds"
+        vmin=0
+        vmax=5
         plot_title = "2m Temperatur GEFS SPREAD [°C]"
     elif parameter == "rh_2m" and what == "spatialmos_mean":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="YlGn",
-            vmin=0,
-            vmax=100,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="YlGn"
+        vmin=0
+        vmax=100
         plot_title = "2m relative Feuchte MEAN [%]"
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="Reds",
-            vmin=0,
-            vmax=15,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="Reds"
+        vmin=0
+        vmax=15
         plot_title = "2m relative Feuchte SPREAD [%]"
     elif parameter == "rh_2m" and what == "nwp_mean":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="YlGn",
-            vmin=0,
-            vmax=100,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="YlGn"
+        vmin=0
+        vmax=100
         plot_title = "2m relative Feuchte GEFS MEAN [%]"
     elif parameter == "rh_2m" and what == "nwp_spread":
-        im = plt.pcolormesh(
-            xx,
-            yy,
-            plotparameter,
-            cmap="Reds",
-            vmin=0,
-            vmax=15,
-            shading="auto",
-            transform=ccrs.PlateCarree(),
-        )
+        cmap="Reds"
+        vmin=0
+        vmax=15
         plot_title = "2m relative Feuchte  GEFS SPREAD [%]"
 
+    im = plt.pcolormesh(
+        xx,
+        yy,
+        plotparameter,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        shading="auto",
+        transform=proj,
+    )
     plt.title(plot_title, loc="center", fontsize=20)
     anal_date_title = dt.datetime.strptime(
         gribfiles_data["anal_date"], "%Y-%m-%d %H:%M:%S"
@@ -142,18 +97,18 @@ def plot_forecast(
 
     # Set Colorbar and Extend
     if what in ["nwp_mean", "nwp_spread"]:
-        ax.set_extent([9.5, 17.5, 46, 49.5], ccrs.PlateCarree())
+        ax.set_extent([9.5, 17.5, 46, 49.5], proj)
         fig.colorbar(im, ax=ax, shrink=0.32)
         cities_offset = 0.05
     else:
-        ax.set_extent([10, 13, 46.2, 47.9], ccrs.PlateCarree())
+        ax.set_extent([10, 13, 46.2, 47.9], proj)
         fig.colorbar(im, ax=ax, shrink=0.45)
         cities_offset = 0.02
 
     # Add Austrian Borders
     gadm36_shape = list(shpreader.Reader(str(gadm36_shape_file)).geometries())
     ax.add_geometries(
-        gadm36_shape, ccrs.PlateCarree(), edgecolor="black", facecolor="None", alpha=0.5
+        gadm36_shape, proj, edgecolor="black", facecolor="None", alpha=0.5
     )
 
     # District capital cities
@@ -236,19 +191,19 @@ def plot_forecast(
             markersize=cities[c]["size"],
             marker="o",
             color="gray",
-            transform=ccrs.PlateCarree(),
+            transform=proj,
         )
         ax.text(
             cities[c]["pos"][1] + cities_offset,
             cities[c]["pos"][0] + cities_offset,
             cities[c]["label"],
             horizontalalignment="left",
-            transform=ccrs.PlateCarree(),
+            transform=proj,
         )
 
     # Add Grid
     gl = ax.gridlines(
-        crs=ccrs.PlateCarree(),
+        crs=proj,
         draw_labels=True,
         linewidth=1,
         color="gray",
@@ -269,6 +224,29 @@ def plot_forecast(
     )
     plt.close(fig=None)
     logging.info("The prediction plot '%s' was created.", filename)
+
+    # create a overlay map
+    fig = plt.figure(figsize=(20, 20))
+    proj = ccrs.epsg(3857)
+    ax = plt.axes(projection=proj)
+
+    plt.pcolormesh(xx, yy, plotparameter, cmap=cmap, vmin=vmin, vmax=vmax, shading="auto", transform=proj) 
+
+    ax.axis('off')
+    # # Add Austrian Borders
+    # gadm36_shape = list(shpreader.Reader(str(gadm36_shape_file)).geometries())
+    # ax.add_geometries(
+    #     gadm36_shape, proj, edgecolor="black", facecolor="None", alpha=0.5
+    # )
+
+    fig.savefig(
+        overlay,
+        bbox_inches="tight",
+        transparent=True,
+        pil_kwargs={"quality": 95, "optimize": True, "progressive": True},
+    )
+    plt.close(fig=None)
+    logging.info("The overlay for the prediction plot '%s' was created.", filename)
 
 
 def reshapearea(series, array):

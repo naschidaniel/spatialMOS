@@ -6,6 +6,7 @@ numpy
 pandas
 pillow 
 pyproj
+pyepsg
 pyshp
 pytz
 pytest

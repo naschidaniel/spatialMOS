@@ -269,6 +269,7 @@ def spatial_prediction(
     os.makedirs(data_path_spool, exist_ok=True)
 
     plot_filenames = []
+    overlay_filenames = []
     for what in ["nwp_mean", "nwp_spread", "spatialmos_mean", "spatialmos_spread"]:
         if what in ["nwp_mean", "nwp_spread"]:
             xx = xx_nwp
@@ -286,8 +287,12 @@ def spatial_prediction(
         plot_filename = data_path_spool.joinpath(
             f"{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.jpg"
         )
+        overlay_filename = data_path_spool.joinpath(
+            f"overlay_{what}_{anal_date_aware.strftime('%Y%m%d')}_step_{gribfiles_data['step']:03d}.png"
+        )
         spatial_plots.plot_forecast(
             plot_filename,
+            overlay_filename,
             parser_dict["parameter"],
             xx,
             yy,
@@ -297,6 +302,7 @@ def spatial_prediction(
             what,
         )
         plot_filenames.append(plot_filename)
+        overlay_filenames.append(overlay_filename)
 
     # Point Forecasts for North and South Tyrol without consideration of values outside the borders
     spatialmos_point = pd.DataFrame(
@@ -399,6 +405,13 @@ def spatial_prediction(
             ) = f.size
             dimension.append([height, width])
 
+
+    # overlays
+    overlay_nwp_mean = f"/media/{parser_dict['parameter']}/{overlay_filenames[0].name}"
+    overlay_nwp_spread = f"/media/{parser_dict['parameter']}/{overlay_filenames[1].name}"
+    overlay_spatialmos_mean = f"/media/{parser_dict['parameter']}/{overlay_filenames[2].name}"
+    overlay_spatialmos_spread = f"/media/{parser_dict['parameter']}/{overlay_filenames[3].name}"
+    
     prediction_json_file = {
         "SpatialMosRun": {
             "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
@@ -413,6 +426,10 @@ def spatial_prediction(
             "nwp_spread_filename": filename_nwp_spread,
             "spatialmos_mean_filename": filename_spatialmos_mean,
             "spatialmos_spread_filename": filename_spatialmos_spread,
+            "nwp_mean_overlay": overlay_nwp_mean,
+            "nwp_spread_overlay": overlay_nwp_spread,
+            "spatialmos_mean_overlay": overlay_spatialmos_mean,
+            "spatialmos_spread_overlay": overlay_spatialmos_spread,
         },
         "SpatialMosPoint": spatialmos_point_dict,
     }
@@ -443,21 +460,25 @@ def spatial_prediction(
             "predictions_json_file": f"/media/{parser_dict['parameter']}/{anal_date_aware.strftime('%Y%m%d')}_predictions.json",
             "nwp_mean": {
                 "filename": filename_nwp_mean,
+                "overlay": overlay_nwp_mean,
                 "height": dimension[0][0],
                 "width": dimension[0][1],
             },
             "nwp_spread": {
                 "filename": filename_nwp_spread,
+                "overlay": overlay_nwp_spread,
                 "height": dimension[1][0],
                 "width": dimension[1][1],
             },
             "spatialmos_mean": {
                 "filename": filename_spatialmos_mean,
+                "overlay": overlay_spatialmos_mean,
                 "height": dimension[2][0],
                 "width": dimension[2][1],
             },
             "spatialmos_spread": {
                 "filename": filename_spatialmos_spread,
+                "overlay": overlay_spatialmos_spread,
                 "height": dimension[3][0],
                 "width": dimension[3][1],
             },
