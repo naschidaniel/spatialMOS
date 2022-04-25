@@ -43,7 +43,7 @@
         class="btn btn-danger ms-2 mt-2"
         @click.prevent="resetAddressForm()"
       >
-        Eingabe löschen 
+        Eingabe löschen
       </button>
     </form>
   </div>

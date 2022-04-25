@@ -20,7 +20,7 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "vue/multi-word-component-names": ["warn", {
-      "ignores": ["Adresse", "Api", "Dsgvo", "Impressum", "Kontakt", "Systemstatus", "Punktvorhersagen", "Projektbeschreibung", "Vorhersagekarten"]
+      "ignores": ["Adresse", "Api", "Dsgvo", "Impressum", "Karte", "Kontakt", "Systemstatus", "Punktvorhersagen", "Projektbeschreibung", "Vorhersagekarten"]
     }]
   },
 };

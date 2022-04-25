@@ -18,7 +18,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useRoute } from "vue-router";
 import PredictionsCarousel from "../components/PredictionsCarousel.vue";
 import { usePredictions } from "../store/usePredictions";
 
@@ -28,24 +27,8 @@ export default defineComponent({
     PredictionsCarousel,
   },
   setup() {
-    const route = useRoute();
-    const { setParameter, predictions, fetchPrediction, setStep, plot } =
-      usePredictions();
-    if (
-      route.query?.parameter === "tmp_2m" ||
-      route.query?.parameter === "rh_2m"
-    ) {
-      setParameter(route.query?.parameter);
-      fetchPrediction();
-    } else {
-      fetchPrediction();
-    }
-    if (route.query?.step && typeof route.query?.step === "string") {
-      setStep(route.query.step);
-    }
-    if (route.query?.plot && typeof route.query?.plot === "string") {
-      plot.value = route.query.plot;
-    }
+    const { predictions, fetchPrediction } = usePredictions();
+    fetchPrediction();
     return { predictions };
   },
 });

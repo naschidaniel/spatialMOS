@@ -1,5 +1,5 @@
 import { reactive, computed, unref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { SpatialMosStep, Predictions } from "../model";
 
 const predictions: Predictions = reactive({
@@ -16,7 +16,21 @@ const predictions: Predictions = reactive({
 });
 
 export function usePredictions() {
+  const route = useRoute();
   const router = useRouter();
+
+  if (
+    route.query?.parameter === "tmp_2m" ||
+    route.query?.parameter === "rh_2m"
+  ) {
+    setParameter(route.query?.parameter);
+  }
+  if (route.query?.step && typeof route.query?.step === "string") {
+    setStep(route.query.step);
+  }
+  if (route.query?.plot && typeof route.query?.plot === "string") {
+    setPlot(route.query.plot);
+  }
 
   async function fetchPrediction() {
     const url = `/media/${parameter.value}/spatialmosrun_${parameter.value}.json`;
@@ -57,15 +71,9 @@ export function usePredictions() {
     return unref(predictions.parameter);
   });
 
-  const plot = computed({
-    get() {
-      return predictions.plot;
-    },
-    set(value: string) {
-      predictions.plot = value;
-    },
+  const plot = computed(() => {
+    return predictions.plot;
   });
-
   function changeParameter(change: string) {
     setParameter(change);
     fetchPrediction();
@@ -110,6 +118,18 @@ export function usePredictions() {
     });
   }
 
+  function setPlot(change: string) {
+    predictions.plot = change;
+    router.push({
+      path: "/",
+      query: {
+        parameter: predictions.parameter,
+        step: predictions.step,
+        plot: change,
+      },
+    });
+  }
+
   return {
     changeParameter,
     parameter,
@@ -119,5 +139,6 @@ export function usePredictions() {
     selectedStep,
     setStep,
     setParameter,
+    setPlot,
   };
 }
