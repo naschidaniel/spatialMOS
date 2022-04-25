@@ -232,6 +232,12 @@ def plot_forecast(
 
     plt.pcolormesh(xx, yy, plotparameter, cmap=cmap, vmin=vmin, vmax=vmax, shading="auto", transform=proj) 
 
+    # Set Colorbar and Extend
+    if what in ["nwp_mean", "nwp_spread"]:
+        ax.set_extent([9.5, 17.5, 46, 49.5], proj)
+    else:
+        ax.set_extent([10, 13, 46.2, 47.9], proj)
+
     ax.axis('off')
     # # Add Austrian Borders
     # gadm36_shape = list(shpreader.Reader(str(gadm36_shape_file)).geometries())
