@@ -12,7 +12,7 @@
       </div>
       <div v-else>
         <h2>Karte</h2>
-        <LeafletMap />
+        <LeafletMap map="leaflet" />
       </div>
     </div>
   </div>

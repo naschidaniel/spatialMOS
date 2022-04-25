@@ -1,6 +1,6 @@
 import { reactive, computed, unref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { SpatialMosStep, Predictions } from "../model";
+import { SpatialMosStep, SpatialMosImage, Predictions } from "../model";
 
 const predictions: Predictions = reactive({
   analDate: "",
@@ -48,7 +48,6 @@ export function usePredictions() {
           predictions.data = data;
           predictions.parameter = data[0].parameter;
           router.push({
-            path: "/",
             query: {
               parameter: data[0].parameter,
               step: predictions.step,
@@ -71,9 +70,23 @@ export function usePredictions() {
     return unref(predictions.parameter);
   });
 
+  const spatialImage = computed(() => {
+    if (selectedStep.value === undefined) {
+      return { filename: "", overlay: "", northEast: [47, 11], southWest: [46, 9], height: 0, width: 0 };
+    }
+    return plot.value === "samos_spread"
+      ? selectedStep.value.spatialmos_spread
+      : plot.value === "nwp_mean"
+      ? selectedStep.value.nwp_mean
+      : plot.value === "nwp_spread"
+      ? selectedStep.value.nwp_spread
+      : selectedStep.value.spatialmos_mean;
+  });
+
   const plot = computed(() => {
     return predictions.plot;
   });
+
   function changeParameter(change: string) {
     setParameter(change);
     fetchPrediction();
@@ -97,7 +110,6 @@ export function usePredictions() {
       predictions.step = change;
     }
     router.push({
-      path: "/",
       query: {
         parameter: predictions.parameter,
         step: predictions.step,
@@ -109,7 +121,6 @@ export function usePredictions() {
   function setParameter(change: string) {
     predictions.parameter = change;
     router.push({
-      path: "/",
       query: {
         parameter: change,
         step: predictions.step,
@@ -121,7 +132,6 @@ export function usePredictions() {
   function setPlot(change: string) {
     predictions.plot = change;
     router.push({
-      path: "/",
       query: {
         parameter: predictions.parameter,
         step: predictions.step,
@@ -140,5 +150,6 @@ export function usePredictions() {
     setStep,
     setParameter,
     setPlot,
+    spatialImage,
   };
 }

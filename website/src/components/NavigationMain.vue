@@ -20,6 +20,11 @@
             >
           </li>
           <li class="nav-item" @click="toogleNavbar()">
+            <router-link class="nav-link" aria-current="page" to="/karte"
+              >Karte</router-link
+            >
+          </li>
+          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/adresse"
               >Adressvorhersagen</router-link
             >

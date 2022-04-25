@@ -1,5 +1,8 @@
 export interface SpatialMosImage {
   filename: string;
+  overlay: string;
+  northEast: [number, number];
+  southWest: [number, number];
   height: number;
   width: number;
 }

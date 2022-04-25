@@ -1,5 +1,14 @@
 <template>
   <div>
+    <!-- <div v-if="predictions.isLoading" class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div v-if="predictions.isError" class="alert alert-danger" role="alert">
+      Beim Laden der Datei '<a :href="predictions.url" target="_blank">{{
+        predictions.url
+      }}</a
+      >' ist folgender Fehler aufgetretten: {{ predictions.statusText }}
+    </div> -->
     <div class="my-1 d-flex justify-content-end">
       <div class="col-auto">
         <div class="input-group mb-3">
@@ -20,12 +29,18 @@
       </div>
     </div>
     <ResponsiveImage
-      v-if="spatialImage.filename != ''"
+      v-if="spatialImage.filename != '' && map === 'images'"
       image-class="pointer img-fluid"
       :image-href="spatialImage.filename"
       :image-height="spatialImage.height"
       :image-width="spatialImage.width"
       @click="setStep(+1)"
+    />
+    <LeafletMap
+      v-if="map === 'leaflet'"
+      :overlay="spatialImage.overlay"
+      :south-west="spatialImage.southWest"
+      :north-east="spatialImage.northEast"
     />
     <div class="mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
@@ -97,7 +112,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { usePredictions } from "../store/usePredictions";
-import { SpatialMosImage } from "../model";
+import LeafletMap from "./LeafletMap.vue";
 import ResponsiveImage from "./ResponsiveImage.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
 import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
@@ -105,43 +120,37 @@ import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 export default defineComponent({
   name: "PredictionsCarousel",
   components: {
+    LeafletMap,
     ResponsiveImage,
     SolidChevronLeftIcon,
     SolidChevronRightIcon,
   },
+  props: {
+    map: { type: String, required: true },
+  },
   setup() {
     const {
+      plot,
       parameter,
       predictions,
-      plot,
       selectedStep,
       setStep,
       setPlot,
       changeParameter,
+      spatialImage,
+      fetchPrediction,
     } = usePredictions();
+    fetchPrediction();
     return {
+      plot,
       parameter,
       predictions,
-      plot,
       selectedStep,
       setStep,
       setPlot,
       changeParameter,
+      spatialImage,
     };
-  },
-  computed: {
-    spatialImage(): SpatialMosImage {
-      if (this.selectedStep === undefined) {
-        return { filename: "", height: 0, width: 0 };
-      }
-      return this.plot === "samos_spread"
-        ? this.selectedStep.spatialmos_spread
-        : this.plot === "nwp_mean"
-        ? this.selectedStep.nwp_mean
-        : this.plot === "nwp_spread"
-        ? this.selectedStep.nwp_spread
-        : this.selectedStep.spatialmos_mean;
-    },
   },
 });
 </script>

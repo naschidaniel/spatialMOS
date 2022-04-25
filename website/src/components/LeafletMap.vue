@@ -11,9 +11,8 @@ import { defineComponent, unref } from "vue";
 import "leaflet/dist/leaflet.css";
 import { Map } from "leaflet/src/map";
 import { Marker } from "leaflet/src/layer/marker/Marker";
-import { TileLayer } from "leaflet/src/layer/tile/TileLayer";
 import { Tooltip } from "leaflet/src/layer/Tooltip";
-import { latLng } from "leaflet";
+import L from "leaflet";
 
 import { usePhotonApi } from "../store/usePhotonApi";
 
@@ -31,6 +30,11 @@ import { usePhotonApi } from "../store/usePhotonApi";
 
 export default defineComponent({
   name: "LeafletMap",
+  props: {
+    overlay: { type: String, required: false, default: "" },
+    southWest: { type: [Number, Number], required: false, default: [undefined, undefined] },
+    northEast: { type: [Number, Number], required: false, default: [undefined, undefined] },
+  },
   setup() {
     const { point, lat, lon, tooltip } = usePhotonApi();
     return { point, lat, lon, tooltip };
@@ -44,26 +48,31 @@ export default defineComponent({
     point() {
       this.updateMarker();
     },
+    overlay() {
+      this.loadOverlay();
+    },
   },
   mounted() {
-    const lat = unref(this.lat);
-    const lon = unref(this.lon);
+    const lat = unref(this.lat) ?? 47.259659;
+    const lon = unref(this.lon) ?? 11.400375;
     if (!lat || !lon) {
       return;
     }
-    this.map = new Map("mapContainer").setView([lat, lon], 16) as Map;
-    new TileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+    this.map = L.map("mapContainer").setView([lat, lon], 7) as Map;
+    L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+      minZoom: 8,
     }).addTo(this.map as Map);
     this.updateMarker();
+    this.loadOverlay();
   },
   methods: {
     updateMarker(): void {
       if (this.point === undefined) {
         return;
       }
-      const _latlng = latLng(this.point);
+      const _latlng = L.latLng(this.point);
       this.map.setView(_latlng);
       const tooltip = this.tooltip;
       tooltip === ""
@@ -73,6 +82,17 @@ export default defineComponent({
             .openTooltip()
             .addTo(this.map as Map);
     },
+    loadOverlay(): void {
+      if (this.overlay === "") return;
+      const southWest = L.latLng(this.southWest[0], this.southWest[1]);
+      const northEast = L.latLng(this.northEast[0], this.northEast[1]);
+      const imageBounds = L.latLngBounds(southWest, northEast);
+      const image = L.imageOverlay(this.overlay, imageBounds, {
+        pane: "tilePane",
+        className: "mix-blend-mode-multiply",
+      });
+      image.addTo(this.map as Map);
+    },
   },
 });
 </script>
@@ -80,6 +100,10 @@ export default defineComponent({
 <style scoped>
 .mapContainer {
   width: 100%;
-  height: 400px;
+  height: 600px;
+}
+
+.mix-blend-mode-multiply {
+  mix-blend-mode: multiply;
 }
 </style>
