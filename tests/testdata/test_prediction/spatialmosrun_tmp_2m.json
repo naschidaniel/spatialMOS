@@ -11,24 +11,32 @@
     "nwp_mean": {
       "filename": "/media/tmp_2m/nwp_mean_20210803_step_006.jpg",
       "overlay": "/media/tmp_2m/overlay_nwp_mean_20210803_step_006.png",
+      "northEast": [49.5, 17.5],
+      "southWest": [46, 9,5],
       "height": 484,
       "width": 1156
     },
     "nwp_spread": {
       "filename": "/media/tmp_2m/nwp_spread_20210803_step_006.jpg",
       "overlay": "/media/tmp_2m/overlay_nwp_spread_20210803_step_006.png",
+      "northEast": [49.5, 17.5],
+      "southWest": [46, 9,5],
       "height": 484,
       "width": 1141
     },
     "spatialmos_mean": {
       "filename": "/media/tmp_2m/spatialmos_mean_20210803_step_006.jpg",
       "overlay": "/media/tmp_2m/overlay_spatialmos_mean_20210803_step_006.png",
+      "northEast": [47.9, 13],
+      "southWest": [46.2, 10],
       "height": 612,
       "width": 1164
     },
     "spatialmos_spread": {
       "filename": "/media/tmp_2m/spatialmos_spread_20210803_step_006.jpg",
       "overlay": "/media/tmp_2m/overlay_spatialmos_spread_20210803_step_006.png",
+      "northEast": [47.9, 13],
+      "southWest": [46.2, 10],
       "height": 612,
       "width": 1149
     }

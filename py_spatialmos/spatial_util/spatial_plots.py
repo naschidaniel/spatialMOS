@@ -12,7 +12,17 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 # Functions
 def plot_forecast(
-    filename, overlay, parameter, xx, yy, plotparameter, gribfiles_data, gadm36_shape_file, what
+    filename,
+    overlay,
+    parameter,
+    xx,
+    yy,
+    plotparameter,
+    gribfiles_data,
+    gadm36_shape_file,
+    what,
+    northEast,
+    southWest,
 ):
     """A function to create the GEFS and spatialMOS forecast plots."""
     step = gribfiles_data["step"]
@@ -28,49 +38,47 @@ def plot_forecast(
     fig_dpi = 72
     fig = plt.figure(figsize=(1600 / fig_dpi, 1600 / fig_dpi), dpi=fig_dpi)
     proj = ccrs.PlateCarree(globe=ccrs.Globe(datum="WGS84", ellipse="WGS84"))
-    ax = plt.axes(
-        projection=proj
-    )
+    ax = plt.axes(projection=proj)
 
     if parameter == "tmp_2m" and what == "spatialmos_mean":
-        cmap="RdBu_r"
-        vmin=-40
-        vmax=40
+        cmap = "RdBu_r"
+        vmin = -40
+        vmax = 40
         plot_title = "2m Temperatur MEAN [°C]"
     elif parameter == "tmp_2m" and what == "spatialmos_spread":
-        cmap="Reds"
-        vmin=0
-        vmax=5
+        cmap = "Reds"
+        vmin = 0
+        vmax = 5
         plot_title = "2m Temperatur SPREAD [°C]"
     elif parameter == "tmp_2m" and what == "nwp_mean":
-        cmap="RdBu_r"
-        vmin=-40
-        vmax=40
+        cmap = "RdBu_r"
+        vmin = -40
+        vmax = 40
         plot_title = "2m Temperatur GEFS MEAN [°C]"
     elif parameter == "tmp_2m" and what == "nwp_spread":
-        cmap="Reds"
-        vmin=0
-        vmax=5
+        cmap = "Reds"
+        vmin = 0
+        vmax = 5
         plot_title = "2m Temperatur GEFS SPREAD [°C]"
     elif parameter == "rh_2m" and what == "spatialmos_mean":
-        cmap="YlGn"
-        vmin=0
-        vmax=100
+        cmap = "YlGn"
+        vmin = 0
+        vmax = 100
         plot_title = "2m relative Feuchte MEAN [%]"
     elif parameter == "rh_2m" and what == "spatialmos_spread":
-        cmap="Reds"
-        vmin=0
-        vmax=15
+        cmap = "Reds"
+        vmin = 0
+        vmax = 15
         plot_title = "2m relative Feuchte SPREAD [%]"
     elif parameter == "rh_2m" and what == "nwp_mean":
-        cmap="YlGn"
-        vmin=0
-        vmax=100
+        cmap = "YlGn"
+        vmin = 0
+        vmax = 100
         plot_title = "2m relative Feuchte GEFS MEAN [%]"
     elif parameter == "rh_2m" and what == "nwp_spread":
-        cmap="Reds"
-        vmin=0
-        vmax=15
+        cmap = "Reds"
+        vmin = 0
+        vmax = 15
         plot_title = "2m relative Feuchte  GEFS SPREAD [%]"
 
     im = plt.pcolormesh(
@@ -96,12 +104,11 @@ def plot_forecast(
     plt.title(f"GEFS Lauf {anal_date_title} UTC", loc="right", fontsize=15)
 
     # Set Colorbar and Extend
+    ax.set_extent([southWest[1], northEast[1], southWest[0], northEast[0]], proj)
     if what in ["nwp_mean", "nwp_spread"]:
-        ax.set_extent([9.5, 17.5, 46, 49.5], proj)
         fig.colorbar(im, ax=ax, shrink=0.32)
         cities_offset = 0.05
     else:
-        ax.set_extent([10, 13, 46.2, 47.9], proj)
         fig.colorbar(im, ax=ax, shrink=0.45)
         cities_offset = 0.02
 
@@ -230,15 +237,21 @@ def plot_forecast(
     proj = ccrs.epsg(3857)
     ax = plt.axes(projection=proj)
 
-    plt.pcolormesh(xx, yy, plotparameter, cmap=cmap, vmin=vmin, vmax=vmax, shading="auto", transform=proj) 
+    plt.pcolormesh(
+        xx,
+        yy,
+        plotparameter,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        shading="auto",
+        transform=proj,
+    )
 
     # Set Colorbar and Extend
-    if what in ["nwp_mean", "nwp_spread"]:
-        ax.set_extent([9.5, 17.5, 46, 49.5], proj)
-    else:
-        ax.set_extent([10, 13, 46.2, 47.9], proj)
+    ax.set_extent([southWest[1], northEast[1], southWest[0], northEast[0]], proj)
 
-    ax.axis('off')
+    ax.axis("off")
     # # Add Austrian Borders
     # gadm36_shape = list(shpreader.Reader(str(gadm36_shape_file)).geometries())
     # ax.add_geometries(

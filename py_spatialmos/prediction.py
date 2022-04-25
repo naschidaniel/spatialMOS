@@ -274,9 +274,13 @@ def spatial_prediction(
         if what in ["nwp_mean", "nwp_spread"]:
             xx = xx_nwp
             yy = yy_nwp
+            northEast = [49.5, 17.5]
+            southWest = [46, 9, 5]
         else:
             xx = xx_spatialmos
             yy = yy_spatialmos
+            northEast = [47.9, 13]
+            southWest = [46.2, 10]
 
         plotparameter = {
             "nwp_mean": gribfiles_data["values_avg"],
@@ -300,6 +304,8 @@ def spatial_prediction(
             gribfiles_data,
             gadm36_shape_file,
             what,
+            northEast,
+            southWest,
         )
         plot_filenames.append(plot_filename)
         overlay_filenames.append(overlay_filename)
@@ -405,13 +411,18 @@ def spatial_prediction(
             ) = f.size
             dimension.append([height, width])
 
-
     # overlays
     overlay_nwp_mean = f"/media/{parser_dict['parameter']}/{overlay_filenames[0].name}"
-    overlay_nwp_spread = f"/media/{parser_dict['parameter']}/{overlay_filenames[1].name}"
-    overlay_spatialmos_mean = f"/media/{parser_dict['parameter']}/{overlay_filenames[2].name}"
-    overlay_spatialmos_spread = f"/media/{parser_dict['parameter']}/{overlay_filenames[3].name}"
-    
+    overlay_nwp_spread = (
+        f"/media/{parser_dict['parameter']}/{overlay_filenames[1].name}"
+    )
+    overlay_spatialmos_mean = (
+        f"/media/{parser_dict['parameter']}/{overlay_filenames[2].name}"
+    )
+    overlay_spatialmos_spread = (
+        f"/media/{parser_dict['parameter']}/{overlay_filenames[3].name}"
+    )
+
     prediction_json_file = {
         "SpatialMosRun": {
             "anal_date": anal_date_aware.strftime("%Y-%m-%d %H:%M:%S"),
@@ -461,24 +472,32 @@ def spatial_prediction(
             "nwp_mean": {
                 "filename": filename_nwp_mean,
                 "overlay": overlay_nwp_mean,
+                "northEast": [49.5, 17.5],
+                "southWest": [46, 9, 5],
                 "height": dimension[0][0],
                 "width": dimension[0][1],
             },
             "nwp_spread": {
                 "filename": filename_nwp_spread,
                 "overlay": overlay_nwp_spread,
+                "northEast": [49.5, 17.5],
+                "southWest": [46, 9, 5],
                 "height": dimension[1][0],
                 "width": dimension[1][1],
             },
             "spatialmos_mean": {
                 "filename": filename_spatialmos_mean,
                 "overlay": overlay_spatialmos_mean,
+                "northEast": [47.9, 13],
+                "southWest": [46.2, 10],
                 "height": dimension[2][0],
                 "width": dimension[2][1],
             },
             "spatialmos_spread": {
                 "filename": filename_spatialmos_spread,
                 "overlay": overlay_spatialmos_spread,
+                "northEast": [47.9, 13],
+                "southWest": [46.2, 10],
                 "height": dimension[3][0],
                 "width": dimension[3][1],
             },
