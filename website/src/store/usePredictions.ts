@@ -1,6 +1,6 @@
-import { reactive, computed, unref, onMounted } from "vue";
+import { reactive, computed, unref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { SpatialMosStep, SpatialMosImage, Predictions } from "../model";
+import { SpatialMosStep, Predictions } from "../model";
 
 const predictions: Predictions = reactive({
   analDate: "",
@@ -72,7 +72,14 @@ export function usePredictions() {
 
   const spatialImage = computed(() => {
     if (selectedStep.value === undefined) {
-      return { filename: "", overlay: "", northEast: [47, 11], southWest: [46, 9], height: 0, width: 0 };
+      return {
+        filename: "",
+        overlay: "",
+        northEast: [47, 11],
+        southWest: [46, 9],
+        height: 0,
+        width: 0,
+      };
     }
     return plot.value === "samos_spread"
       ? selectedStep.value.spatialmos_spread
@@ -83,8 +90,13 @@ export function usePredictions() {
       : selectedStep.value.spatialmos_mean;
   });
 
-  const plot = computed(() => {
-    return predictions.plot;
+  const plot = computed({
+    get() {
+      return predictions.plot;
+    },
+    set(value: string) {
+      setPlot(value);
+    },
   });
 
   function changeParameter(change: string) {

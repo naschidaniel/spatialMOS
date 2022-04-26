@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, unref } from "vue";
+import { defineComponent, unref, PropType } from "vue";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "leaflet/dist/leaflet.css";
@@ -32,8 +32,20 @@ export default defineComponent({
   name: "LeafletMap",
   props: {
     overlay: { type: String, required: false, default: "" },
-    southWest: { type: [Number, Number], required: false, default: [undefined, undefined] },
-    northEast: { type: [Number, Number], required: false, default: [undefined, undefined] },
+    southWest: {
+      type: Array as PropType<number[]>,
+      required: false,
+      default: () => {
+        return [undefined, undefined];
+      },
+    },
+    northEast: {
+      type: Array as PropType<number[]>,
+      required: false,
+      default: () => {
+        return [undefined, undefined];
+      },
+    },
   },
   setup() {
     const { point, lat, lon, tooltip } = usePhotonApi();
@@ -53,16 +65,17 @@ export default defineComponent({
     },
   },
   mounted() {
-    const lat = unref(this.lat) ?? 47.259659;
-    const lon = unref(this.lon) ?? 11.400375;
+    const lat = unref(this.lat) || this.southWest[0] + (this.northEast[0] - this.southWest[0]) / 2;
+    const lon = unref(this.lon) || this.southWest[1] + (this.northEast[1] - this.southWest[1]) / 2;
     if (!lat || !lon) {
       return;
     }
-    this.map = L.map("mapContainer").setView([lat, lon], 7) as Map;
+    console.log(lat, lon)
+    this.map = L.map("mapContainer").setView([lat, lon], 6) as Map;
     L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-      minZoom: 8,
+      minZoom: 7,
     }).addTo(this.map as Map);
     this.updateMarker();
     this.loadOverlay();

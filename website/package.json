@@ -7,8 +7,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
-    "build:noEmit": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "lint": "eslint \"src/**/*.{js,ts,vue}\" --fix",
     "lint-no-fix": "eslint \"src/**/*.{js,ts,vue}\"",
     "serve": "vite preview"

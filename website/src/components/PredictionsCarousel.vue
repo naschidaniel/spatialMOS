@@ -15,11 +15,7 @@
           <label class="input-group-text" for="inputGroupSelectPlot"
             >Karten</label
           >
-          <select
-            id="inputGroupSelectPlot"
-            class="form-select"
-            @change="(event) => setPlot(event.target.value)"
-          >
+          <select id="inputGroupSelectPlot" v-model="plot" class="form-select">
             <option value="samos_mean">SAMOS MEAN</option>
             <option value="samos_spread">SAMOS SPREAD</option>
             <option value="nwp_mean">NWP MEAN</option>

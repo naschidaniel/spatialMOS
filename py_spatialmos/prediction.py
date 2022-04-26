@@ -275,7 +275,7 @@ def spatial_prediction(
             xx = xx_nwp
             yy = yy_nwp
             northEast = [49.5, 17.5]
-            southWest = [46, 9, 5]
+            southWest = [46, 9.5]
         else:
             xx = xx_spatialmos
             yy = yy_spatialmos
@@ -473,7 +473,7 @@ def spatial_prediction(
                 "filename": filename_nwp_mean,
                 "overlay": overlay_nwp_mean,
                 "northEast": [49.5, 17.5],
-                "southWest": [46, 9, 5],
+                "southWest": [46, 9.5],
                 "height": dimension[0][0],
                 "width": dimension[0][1],
             },
@@ -481,7 +481,7 @@ def spatial_prediction(
                 "filename": filename_nwp_spread,
                 "overlay": overlay_nwp_spread,
                 "northEast": [49.5, 17.5],
-                "southWest": [46, 9, 5],
+                "southWest": [46, 9.5],
                 "height": dimension[1][0],
                 "width": dimension[1][1],
             },
