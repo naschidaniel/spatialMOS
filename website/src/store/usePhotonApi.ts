@@ -96,6 +96,19 @@ export function usePhotonApi() {
     return tooltip;
   });
 
+  function resetPhotonApiData() {
+    photonApi.isError = false;
+    photonApi.isLoading = false;
+    photonApi.isEmpty = false;
+    photonApi.lat = undefined;
+    photonApi.lon = undefined;
+    photonApi.statusText = "";
+    photonApi.url = undefined;
+    photonApi.city = undefined;
+    photonApi.street = undefined;
+    photonApi.housenumber = undefined;
+  }
+
   return {
     photonApi,
     lat,
@@ -103,5 +116,6 @@ export function usePhotonApi() {
     tooltip,
     point,
     fetchPhotonApiData,
+    resetPhotonApiData,
   };
 }

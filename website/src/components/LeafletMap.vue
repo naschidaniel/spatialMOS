@@ -7,9 +7,7 @@ import { defineComponent, unref, PropType } from "vue";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "leaflet/dist/leaflet.css";
-import { Map } from "leaflet/src/map";
-import { Marker } from "leaflet/src/layer/marker/Marker";
-import { Tooltip } from "leaflet/src/layer/Tooltip";
+import { FeatureGroup, Tooltip, Marker, Map } from "leaflet";
 import L from "leaflet";
 
 import { usePhotonApi } from "../store/usePhotonApi";
@@ -59,7 +57,7 @@ export default defineComponent({
       this.updateMarker();
     },
     overlay() {
-      this.loadOverlay();
+      this.overlayLayer();
     },
   },
   mounted() {
@@ -77,8 +75,15 @@ export default defineComponent({
       attribution:
         '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.map as Map);
+    L.control
+      .layers({
+        "SAMOS MEAN": this.overlayLayer().addTo(this.map as Map),
+        "SAMOS SPREAD": this.overlayLayer(),
+        "NWP MEAN": this.overlayLayer(),
+        "NWP SPREAD": this.overlayLayer(),
+      })
+      .addTo(this.map as Map);
     this.updateMarker();
-    this.loadOverlay();
   },
   methods: {
     updateMarker(): void {
@@ -95,8 +100,12 @@ export default defineComponent({
             .openTooltip()
             .addTo(this.map as Map);
     },
-    loadOverlay(): void {
-      if (this.overlay === "") return;
+    overlayLayer(): FeatureGroup {
+      const overlayImageGroup = L.featureGroup([], {
+        pane: "overlayImageGroup",
+      });
+      if (this.overlay === "") return L.featureGroup([], {});
+
       const southWest = L.latLng(this.southWest[0], this.southWest[1]);
       const northEast = L.latLng(this.northEast[0], this.northEast[1]);
       const imageBounds = L.latLngBounds(southWest, northEast);
@@ -104,7 +113,8 @@ export default defineComponent({
         pane: "tilePane",
         className: "mix-blend-mode-multiply",
       });
-      image.addTo(this.map as Map);
+      image.addTo(overlayImageGroup);
+      return overlayImageGroup;
     },
   },
 });

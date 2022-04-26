@@ -107,7 +107,7 @@
       >
       geschützt.
     </p>
-    <h2>Verwendete Softwarepaket und Lizenzinformation</h2>
+    <h2>Verwendete Softwarepakete und Lizenzinformation</h2>
     <ul>
       <li v-for="dependency in dependencies" :key="dependency.version">
         <span style="font-weight: bold">{{ dependency.name }} </span> –
