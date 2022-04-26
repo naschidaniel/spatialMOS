@@ -1,15 +1,15 @@
 <template>
   <div>
-    <!-- <div v-if="predictions.isLoading" class="spinner-border" role="status">
+    <div v-if="predictions.isLoading" class="container-lg spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <div v-if="predictions.isError" class="alert alert-danger" role="alert">
+    <div v-if="predictions.isError" class="container-lg alert alert-danger" role="alert">
       Beim Laden der Datei '<a :href="predictions.url" target="_blank">{{
         predictions.url
       }}</a
       >' ist folgender Fehler aufgetretten: {{ predictions.statusText }}
-    </div> -->
-    <div class="my-1 d-flex justify-content-end">
+    </div>
+    <div class="container-lg my-1 d-flex justify-content-end">
       <div class="col-auto">
         <div class="input-group mb-3">
           <label class="input-group-text" for="inputGroupSelectPlot"
@@ -38,7 +38,7 @@
       :south-west="spatialImage.southWest"
       :north-east="spatialImage.northEast"
     />
-    <div class="mt-3 d-flex justify-content-between">
+    <div class="container-lg mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
         <SolidChevronLeftIcon
           class="text-body"
@@ -65,7 +65,7 @@
         />
       </button>
     </div>
-    <div class="d-flex justify-content-end mt-3">
+    <div class="container-lg d-flex justify-content-end mt-3">
       <button
         type="button"
         class="btn btn-outline-dark me-2"
@@ -83,7 +83,7 @@
         Relative Luftfeuchte
       </button>
     </div>
-    <table class="table mt-4">
+    <table class="container-lg table mt-4">
       <thead>
         <tr>
           <th scope="col">#</th>

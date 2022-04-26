@@ -1,6 +1,8 @@
 <template>
-  <div class="container-lg">
-    <h1>Karte</h1>
+  <div>
+    <div class="container-lg">
+      <h1>Karte</h1>
+    </div>
     <PredictionsCarousel map="leaflet" />
   </div>
 </template>

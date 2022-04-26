@@ -1,7 +1,5 @@
 <template>
-  <div class="container">
-    <div id="mapContainer" class="mapContainer"></div>
-  </div>
+  <div id="mapContainer" class="mapContainer"></div>
 </template>
 
 <script lang="ts">
@@ -65,17 +63,19 @@ export default defineComponent({
     },
   },
   mounted() {
-    const lat = unref(this.lat) || this.southWest[0] + (this.northEast[0] - this.southWest[0]) / 2;
-    const lon = unref(this.lon) || this.southWest[1] + (this.northEast[1] - this.southWest[1]) / 2;
+    const lat =
+      unref(this.lat) ||
+      this.southWest[0] + (this.northEast[0] - this.southWest[0]) / 2;
+    const lon =
+      unref(this.lon) ||
+      this.southWest[1] + (this.northEast[1] - this.southWest[1]) / 2;
     if (!lat || !lon) {
       return;
     }
-    console.log(lat, lon)
-    this.map = L.map("mapContainer").setView([lat, lon], 6) as Map;
+    this.map = L.map("mapContainer").setView([lat, lon], 8) as Map;
     L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-      minZoom: 7,
     }).addTo(this.map as Map);
     this.updateMarker();
     this.loadOverlay();
