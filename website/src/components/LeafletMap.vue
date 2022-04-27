@@ -57,7 +57,7 @@ export default defineComponent({
       this.updateMarker();
     },
     overlay() {
-      this.overlayLayer();
+      this.overlayLayer().addTo(this.map as Map);
     },
   },
   mounted() {
@@ -78,9 +78,9 @@ export default defineComponent({
     L.control
       .layers({
         "SAMOS MEAN": this.overlayLayer().addTo(this.map as Map),
-        "SAMOS SPREAD": this.overlayLayer(),
-        "NWP MEAN": this.overlayLayer(),
-        "NWP SPREAD": this.overlayLayer(),
+        "SAMOS SPREAD": this.overlayLayer().addTo(this.map as Map),
+        "NWP MEAN": this.overlayLayer().addTo(this.map as Map),
+        "NWP SPREAD": this.overlayLayer().addTo(this.map as Map),
       })
       .addTo(this.map as Map);
     this.updateMarker();
@@ -102,17 +102,22 @@ export default defineComponent({
     },
     overlayLayer(): FeatureGroup {
       const overlayImageGroup = L.featureGroup([], {
-        pane: "overlayImageGroup",
+        id: "spatialmosmaps",
+        pane: "overlayPane",
       });
-      if (this.overlay === "") return L.featureGroup([], {});
-
+      if (this.overlay === "") return overlayImageGroup;
+      this.map.eachLayer(
+        (layer) => layer?.options?.id === "spatialmosmaps" && layer.remove()
+      );
       const southWest = L.latLng(this.southWest[0], this.southWest[1]);
       const northEast = L.latLng(this.northEast[0], this.northEast[1]);
       const imageBounds = L.latLngBounds(southWest, northEast);
       const image = L.imageOverlay(this.overlay, imageBounds, {
-        pane: "tilePane",
+        id: "rudi",
+        pane: "overlayPane",
         className: "mix-blend-mode-multiply",
       });
+
       image.addTo(overlayImageGroup);
       return overlayImageGroup;
     },
