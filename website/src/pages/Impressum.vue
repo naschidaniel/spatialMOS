@@ -118,17 +118,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { Dependency } from "../model/dependency";
 
-export default defineComponent({
-  data() {
-    return {
-      dependencies: JSON.parse(
-        import.meta.env.VITE_APP_DEPENDENCIES
-      ) as Dependency[],
-    };
-  },
-});
+const dependencies: Dependency[] = JSON.parse(
+  import.meta.env.VITE_APP_DEPENDENCIES
+);
 </script>

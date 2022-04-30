@@ -16,23 +16,12 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import VersionInformation from "../components/VersionInformation.vue";
 import { useSystemStatus } from "../store/useSystemStatus";
 import SystemChecks from "../components/SystemChecks.vue";
 
-export default defineComponent({
-  name: "Systemstatus",
-  components: {
-    VersionInformation,
-    SystemChecks,
-  },
-  setup() {
-    const { systemstatus, fetchSystemStatus } = useSystemStatus();
-    const url = "/media/systemstatus.json";
-    fetchSystemStatus(url, { cache: "no-cache" });
-    return { systemstatus, url };
-  },
-});
+const { systemstatus, fetchSystemStatus } = useSystemStatus();
+const url = "/media/systemstatus.json";
+fetchSystemStatus(url, { cache: "no-cache" });
 </script>

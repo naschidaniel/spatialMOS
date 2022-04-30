@@ -47,12 +47,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import AddressForm from "../components/AddressForm.vue";
 import LeafletMapContainer from "../components/LeafletMapContainer.vue";
-
-export default defineComponent({
-  components: { AddressForm, LeafletMapContainer },
-});
 </script>
