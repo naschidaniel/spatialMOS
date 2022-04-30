@@ -22,17 +22,7 @@
       class="container-lg my-1 d-flex justify-content-end"
     >
       <div class="col-auto">
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="inputGroupSelectPlot"
-            >Karten</label
-          >
-          <select id="inputGroupSelectPlot" v-model="plot" class="form-select">
-            <option value="samos_mean">SAMOS MEAN</option>
-            <option value="samos_spread">SAMOS SPREAD</option>
-            <option value="nwp_mean">NWP MEAN</option>
-            <option value="nwp_spread">NWP SPREAD</option>
-          </select>
-        </div>
+        <PredictionsCarouselDropdownMaps />
       </div>
     </div>
     <ResponsiveImage
@@ -121,6 +111,7 @@ import { defineProps } from "vue";
 import { usePredictions } from "../store/usePredictions";
 import LeafletMap from "./LeafletMap.vue";
 import ResponsiveImage from "./ResponsiveImage.vue";
+import PredictionsCarouselDropdownMaps from "./PredictionsCarouselDropdownMaps.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
 import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
@@ -129,7 +120,6 @@ const props = defineProps({
 });
 
 const {
-  plot,
   parameter,
   predictions,
   setStep,

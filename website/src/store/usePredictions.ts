@@ -66,8 +66,17 @@ export function usePredictions() {
     predictions.isLoading = false;
   }
 
-  const parameter = computed(() => {
-    return unref(predictions.parameter);
+  const step = computed(() => {
+    return unref(predictions.step);
+  });
+
+  const parameter = computed({
+    get() {
+      return predictions.parameter;
+    },
+    set(value: string) {
+      changeParameter(value);
+    },
   });
 
   const spatialImage = computed(() => {
@@ -157,6 +166,7 @@ export function usePredictions() {
     parameter,
     predictions,
     plot,
+    step,
     fetchPrediction,
     selectedStep,
     setStep,

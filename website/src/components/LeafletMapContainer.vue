@@ -1,5 +1,5 @@
 <template>
-  <div v-if="point !== undefined">
+  <div v-if="latlon !== undefined">
     <div v-if="photonApi.isLoading" class="spinner-border mt-4" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
@@ -22,5 +22,5 @@
 import { usePhotonApi } from "../store/usePhotonApi";
 import LeafletMap from "../components/LeafletMap.vue";
 
-const { photonApi, point } = usePhotonApi();
+const { photonApi, latlon } = usePhotonApi();
 </script>

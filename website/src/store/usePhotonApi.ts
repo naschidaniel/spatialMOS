@@ -68,7 +68,7 @@ export function usePhotonApi() {
     photonApi.isLoading = false;
   }
 
-  const point = computed((): [number, number] | undefined => {
+  const latlon = computed((): [number, number] | undefined => {
     const lat = unref(photonApi.lat);
     const lon = unref(photonApi.lon);
     if (lat === undefined || lon === undefined) {
@@ -114,7 +114,7 @@ export function usePhotonApi() {
     lat,
     lon,
     tooltip,
-    point,
+    latlon,
     fetchPhotonApiData,
     resetPhotonApiData,
   };

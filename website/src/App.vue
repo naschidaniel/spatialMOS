@@ -1,7 +1,7 @@
 <template>
   <div>
     <NavigationMain />
-    <main class="my-3">
+    <main>
       <router-view />
     </main>
     <NavigationFooter />

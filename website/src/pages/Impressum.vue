@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>Impressum</h1>
     <p>
       Informationspflicht laut §5 E-Commerce Gesetz, §14 Unternehmensgesetzbuch,

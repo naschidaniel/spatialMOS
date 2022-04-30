@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>API</h1>
     <p>
       Die Karten und Vorhersagen können ohne Einschränkung verwendet werden.

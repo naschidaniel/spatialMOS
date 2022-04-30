@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>Datenschutzerklärung</h1>
     <h2>Inhaltsverzeichnis</h2>
     <ul>

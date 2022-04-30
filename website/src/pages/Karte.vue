@@ -1,15 +1,21 @@
 <template>
   <div>
-    <div class="container-lg">
-      <h1>Karte</h1>
-    </div>
-    <PredictionsCarousel map="leaflet" />
+    <LeafletMap
+      :overlay="spatialImage.overlay"
+      :south-west="spatialImage.southWest"
+      :north-east="spatialImage.northEast"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import PredictionsCarousel from "../components/PredictionsCarousel.vue";
+import LeafletMap from "../components/LeafletMap.vue";
 import { usePhotonApi } from "../store/usePhotonApi";
+import { usePredictions } from "../store/usePredictions";
+
 const { resetPhotonApiData } = usePhotonApi();
 resetPhotonApiData();
+
+const { spatialImage, fetchPrediction } = usePredictions();
+fetchPrediction();
 </script>

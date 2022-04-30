@@ -1,15 +1,57 @@
 <template>
-  <div id="mapContainer" class="mapContainer"></div>
+  <div id="mapContainer" class="mapContainer">
+    <div class="leaflet-top leaflet-right">
+      <div class="leaflet-control">
+        <PredictionsCarouselDropdownMaps />
+      </div>
+    </div>
+    <div class="leaflet-bottom leaflet-left mb-3">
+      <div class="leaflet-control">
+        <PredictionsCarouselDropdownParameter />
+      </div>
+    </div>
+    <div class="leaflet-bottom leaflet-right d-flex mb-3">
+      <div class="ml-2 leaflet-control leaflet-bar">
+        <a
+          class="leaflet-control-spatialmos-next"
+          type="button"
+          @click="setStep(-1)"
+        >
+          <SolidChevronLeftIcon
+            class="text-body"
+            style="width: 1rem; height: 1rem"
+          />
+        </a>
+      </div>
+      <div class="mr-2 leaflet-control leaflet-bar">
+        <a
+          class="leaflet-control-spatialmos-pervious"
+          type="button"
+          @click="setStep(+1)"
+        >
+          <SolidChevronRightIcon
+            class="text-body"
+            style="width: 1rem; height: 1rem"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, unref, PropType } from "vue";
+import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
+import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
+import PredictionsCarouselDropdownMaps from "./PredictionsCarouselDropdownMaps.vue";
+import PredictionsCarouselDropdownParameter from "./PredictionsCarouselDropdownParameter.vue";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "leaflet/dist/leaflet.css";
 import { FeatureGroup, Tooltip, Marker, Map } from "leaflet";
 import L from "leaflet";
 
+import { usePredictions } from "../store/usePredictions";
 import { usePhotonApi } from "../store/usePhotonApi";
 
 // fix "Uncaught TypeError: this._map is null" when zooming
@@ -25,7 +67,12 @@ import { usePhotonApi } from "../store/usePhotonApi";
 };
 
 export default defineComponent({
-  name: "LeafletMap",
+  components: {
+    PredictionsCarouselDropdownMaps,
+    SolidChevronLeftIcon,
+    SolidChevronRightIcon,
+    PredictionsCarouselDropdownParameter,
+  },
   props: {
     overlay: { type: String, required: false, default: "" },
     southWest: {
@@ -43,9 +90,27 @@ export default defineComponent({
       },
     },
   },
-  setup() {
-    const { point, lat, lon, tooltip } = usePhotonApi();
-    return { point, lat, lon, tooltip };
+
+  setup(props) {
+    const { plot, setPlot, setStep, step } = usePredictions();
+    const { latlon, lat, lon, tooltip } = usePhotonApi();
+    const latidude =
+      unref(lat) ||
+      props.southWest[0] + (props.northEast[0] - props.southWest[0]) / 2;
+    const longitude =
+      unref(lon) ||
+      props.southWest[1] + (props.northEast[1] - props.southWest[1]) / 2;
+
+    return {
+      latlon,
+      latidude,
+      longitude,
+      plot,
+      tooltip,
+      setPlot,
+      setStep,
+      step,
+    };
   },
   data() {
     return {
@@ -53,7 +118,7 @@ export default defineComponent({
     };
   },
   watch: {
-    point() {
+    latlon() {
       this.updateMarker();
     },
     overlay() {
@@ -61,36 +126,22 @@ export default defineComponent({
     },
   },
   mounted() {
-    const lat =
-      unref(this.lat) ||
-      this.southWest[0] + (this.northEast[0] - this.southWest[0]) / 2;
-    const lon =
-      unref(this.lon) ||
-      this.southWest[1] + (this.northEast[1] - this.southWest[1]) / 2;
-    if (!lat || !lon) {
-      return;
-    }
-    this.map = L.map("mapContainer").setView([lat, lon], 8) as Map;
+    this.map = L.map("mapContainer", { attributionControl: false }).setView(
+      [this.latidude, this.longitude],
+      8
+    ) as Map;
     L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: "",
     }).addTo(this.map as Map);
-    L.control
-      .layers({
-        "SAMOS MEAN": this.overlayLayer().addTo(this.map as Map),
-        "SAMOS SPREAD": this.overlayLayer().addTo(this.map as Map),
-        "NWP MEAN": this.overlayLayer().addTo(this.map as Map),
-        "NWP SPREAD": this.overlayLayer().addTo(this.map as Map),
-      })
-      .addTo(this.map as Map);
+    this.overlayLayer().addTo(this.map as Map);
     this.updateMarker();
   },
   methods: {
     updateMarker(): void {
-      if (this.point === undefined) {
+      if (this.latlon === undefined) {
         return;
       }
-      const _latlng = L.latLng(this.point);
+      const _latlng = L.latLng(this.latlon);
       this.map.setView(_latlng);
       const tooltip = this.tooltip;
       tooltip === ""
@@ -102,22 +153,35 @@ export default defineComponent({
     },
     overlayLayer(): FeatureGroup {
       const overlayImageGroup = L.featureGroup([], {
-        id: "spatialmosmaps",
+        id: "spatialmosMaps",
         pane: "overlayPane",
       });
       if (this.overlay === "") return overlayImageGroup;
       this.map.eachLayer(
-        (layer) => layer?.options?.id === "spatialmosmaps" && layer.remove()
+        (layer) => layer?.options?.id === "spatialmosMaps" && layer.remove()
       );
-      const southWest = L.latLng(this.southWest[0], this.southWest[1]);
-      const northEast = L.latLng(this.northEast[0], this.northEast[1]);
-      const imageBounds = L.latLngBounds(southWest, northEast);
+      const _southWest = L.latLng(this.southWest[0], this.southWest[1]);
+      const _northEast = L.latLng(this.northEast[0], this.northEast[1]);
+      const imageBounds = L.latLngBounds(_southWest, _northEast);
       const image = L.imageOverlay(this.overlay, imageBounds, {
-        id: "rudi",
+        id: "spatialmosImage",
         pane: "overlayPane",
         className: "mix-blend-mode-multiply",
+        opacity: 0.7,
       });
 
+      if (this.map.attributionControl) {
+        this.map.attributionControl.remove();
+      }
+      L.control
+        .attribution({
+          position: "bottomright",
+          prefix: `<strong>${this.plot
+            .replace("_", " ")
+            .toUpperCase()}</strong>`,
+        })
+        .addAttribution(`Step: ${this.step}`)
+        .addTo(this.map as Map);
       image.addTo(overlayImageGroup);
       return overlayImageGroup;
     },
@@ -128,10 +192,16 @@ export default defineComponent({
 <style scoped>
 .mapContainer {
   width: 100%;
-  height: 600px;
+  height: calc(100vh - 200px);
 }
 
 .mix-blend-mode-multiply {
   mix-blend-mode: multiply;
+}
+
+.leaflet-control-spatialmos-next,
+.leaflet-control-spatialmos-pervious {
+  font: bold 18px "Lucida Console", Monaco, monospace;
+  text-indent: 1px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>Kontakt</h1>
     <strong>Daniel Naschberger</strong><br />
     <p>

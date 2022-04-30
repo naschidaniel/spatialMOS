@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>Projektbeschreibung</h1>
     <h2>Allgemeine Projektbeschreibung</h2>
     <p>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg">
+  <div class="container-lg my-3">
     <h1>Systemstatus</h1>
     <VersionInformation class="mt-4" />
     <h2 class="mt-4">Statuschecks</h2>
