@@ -21,19 +21,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useData } from "../store/useData";
 import { formatDate } from "../util/formatters";
 
-export default defineComponent({
-  name: "VersionInformation",
-  setup() {
-    const { lastCommit, updateTime } = useData();
-    return { lastCommit, updateTime };
-  },
-  methods: {
-    formatDate,
-  },
-});
+const { lastCommit, updateTime } = useData();
 </script>

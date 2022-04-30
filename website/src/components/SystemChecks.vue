@@ -37,7 +37,9 @@
                 class="d-none d-md-inline mx-2"
                 >&ndash;</span
               > </span
-            ><small>{{ formatDateTime(systemCheck.taskFinishedTime) }}</small>
+            ><small>{{
+              formatDateTime(Date.parse(systemCheck.taskFinishedTime))
+            }}</small>
           </div>
         </div>
       </div>
@@ -45,23 +47,9 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useSystemStatus } from "../store/useSystemStatus";
 import { formatDateTime } from "../util/formatters";
 
-export default defineComponent({
-  name: "SystemChecks",
-  setup() {
-    const { systemChecks, systemstatus } = useSystemStatus();
-    return { systemChecks, systemstatus };
-  },
-  methods: {
-    formatDateTime(date: string | undefined) {
-      return date
-        ? formatDateTime(Date.parse(date))
-        : formatDateTime(undefined);
-    },
-  },
-});
+const { systemChecks } = useSystemStatus();
 </script>

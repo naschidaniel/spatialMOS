@@ -1,4 +1,5 @@
-// https://heroicons.com/ - by @steveschoger - MIT Licensed - chevron-right icon
+// https://heroicons.com/ - by @steveschoger - MIT Licensed // outline
+chevron-right icon
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

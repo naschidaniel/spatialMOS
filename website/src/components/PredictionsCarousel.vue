@@ -18,7 +18,7 @@
       >' ist folgender Fehler aufgetretten: {{ predictions.statusText }}
     </div>
     <div
-      v-if="map === 'images'"
+      v-if="props.map === 'images'"
       class="container-lg my-1 d-flex justify-content-end"
     >
       <div class="col-auto">
@@ -36,7 +36,7 @@
       </div>
     </div>
     <ResponsiveImage
-      v-if="spatialImage.filename != '' && map === 'images'"
+      v-if="spatialImage.filename != '' && props.map === 'images'"
       image-class="pointer img-fluid"
       :image-href="spatialImage.filename"
       :image-height="spatialImage.height"
@@ -44,7 +44,7 @@
       @click="setStep(+1)"
     />
     <LeafletMap
-      v-if="map === 'leaflet'"
+      v-if="props.map === 'leaflet'"
       :overlay="spatialImage.overlay"
       :south-west="spatialImage.southWest"
       :north-east="spatialImage.northEast"
@@ -116,48 +116,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { defineProps } from "vue";
 import { usePredictions } from "../store/usePredictions";
 import LeafletMap from "./LeafletMap.vue";
 import ResponsiveImage from "./ResponsiveImage.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
 import SolidChevronRightIcon from "./icons/SolidChevronRightIcon.vue";
 
-export default defineComponent({
-  name: "PredictionsCarousel",
-  components: {
-    LeafletMap,
-    ResponsiveImage,
-    SolidChevronLeftIcon,
-    SolidChevronRightIcon,
-  },
-  props: {
-    map: { type: String, required: true },
-  },
-  setup() {
-    const {
-      plot,
-      parameter,
-      predictions,
-      selectedStep,
-      setStep,
-      setPlot,
-      changeParameter,
-      spatialImage,
-      fetchPrediction,
-    } = usePredictions();
-    fetchPrediction();
-    return {
-      plot,
-      parameter,
-      predictions,
-      selectedStep,
-      setStep,
-      setPlot,
-      changeParameter,
-      spatialImage,
-    };
-  },
+const props = defineProps({
+  map: { type: String, required: true },
 });
+
+const {
+  plot,
+  parameter,
+  predictions,
+  setStep,
+  changeParameter,
+  spatialImage,
+  fetchPrediction,
+} = usePredictions();
+fetchPrediction();
 </script>

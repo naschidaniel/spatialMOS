@@ -51,18 +51,12 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  data() {
-    return {
-      isOpen: false,
-    };
-  },
-  methods: {
-    toogleNavbar() {
-      this.isOpen = !this.isOpen;
-    },
-  },
-});
+<script setup lang="ts">
+import { ref } from "vue";
+
+const isOpen = ref(false);
+
+function toogleNavbar() {
+  isOpen.value = !isOpen.value;
+}
 </script>

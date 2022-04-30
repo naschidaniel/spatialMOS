@@ -49,34 +49,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { usePhotonApi } from "../store/usePhotonApi";
 import { useAddress } from "../store/useAddress";
 
-export default defineComponent({
-  name: "AddressForm",
-  setup() {
-    const {
-      city,
-      postcode,
-      resetAddressForm,
-      submitAddressForm,
-      state,
-      street,
-    } = useAddress();
-    const { photonApi } = usePhotonApi();
-    return {
-      photonApi,
-      city,
-      postcode,
-      resetAddressForm,
-      submitAddressForm,
-      state,
-      street,
-    };
-  },
-});
+const { city, postcode, resetAddressForm, submitAddressForm, state, street } =
+  useAddress();
+const { photonApi } = usePhotonApi();
 </script>
 
 <style scoped>
