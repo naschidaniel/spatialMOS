@@ -10,82 +10,73 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed, defineProps, Ref, ref, watchEffect } from "vue";
 import { useData } from "../store/useData";
 import { ImageSizes } from "../model";
 
-export default defineComponent({
-  props: {
-    imageHref: { type: String, required: true },
-    imageHeight: { type: Number, required: true },
-    imageWidth: { type: Number, required: true },
-    imageClass: { type: String, default: "", required: false },
-  },
-  setup() {
-    const { availableBoxSizes, canUseWebP, isWebpSupported, windowInnerWidth } =
-      useData();
-    return { availableBoxSizes, canUseWebP, isWebpSupported, windowInnerWidth };
-  },
-  data() {
-    return {
-      width: undefined as undefined | number,
-      height: undefined as undefined | number,
-      imageSizeSelectedClass: undefined as ImageSizes,
-    };
-  },
-  computed: {
-    responsiveHref() {
-      if (this.imageHref === "") {
-        console.warn(`The the entered imageHref is wrong ${this.imageHref}`);
-        return "";
-      }
-      const extension = this.imageHref.split(".").reverse()[0];
-      const filePostFix = `${this.imageSizeSelectedClass}.${extension}`;
-      let responsiveUrl = this.imageHref.replace(
-        `.${extension}`,
-        `_${filePostFix}`
-      );
-      if (this.isWebpSupported) {
-        responsiveUrl = responsiveUrl.replace(`.${extension}`, ".webp");
-      }
-      return responsiveUrl;
-    },
-  },
-  watch: {
-    windowInnerWidth() {
-      this.getBestImageSize();
-    },
-  },
-  mounted() {
-    this.canUseWebP();
-    this.getBestImageSize();
-  },
-  methods: {
-    getBestImageSize() {
-      const imageBoxWidth = (this.$refs.imageBox as any)?.clientWidth;
-      const devicePixelRatio = window?.devicePixelRatio > 1.5 ? 2 : 1;
-      const imageSize = imageBoxWidth * devicePixelRatio;
-      this.imageSizeSelectedClass =
-        imageSize <= this.availableBoxSizes["2xs"]
-          ? "2xs"
-          : imageSize <= this.availableBoxSizes.xs
-          ? "xs"
-          : imageSize <= this.availableBoxSizes.sm
-          ? "sm"
-          : imageSize <= this.availableBoxSizes.md
-          ? "md"
-          : imageSize <= this.availableBoxSizes.lg
-          ? "lg"
-          : imageSize <= this.availableBoxSizes.xl
-          ? "xl"
-          : "2xl";
-      this.width = this.availableBoxSizes[this.imageSizeSelectedClass];
-      this.height = Math.round(
-        this.availableBoxSizes[this.imageSizeSelectedClass] /
-          (this.imageWidth / this.imageHeight)
-      );
-    },
-  },
+const props = defineProps({
+  imageHref: { type: String, required: true },
+  imageHeight: { type: Number, required: true },
+  imageWidth: { type: Number, required: true },
+  imageClass: { type: String, default: "", required: false },
+});
+
+// eslint-disable-next-line no-unused-vars
+const { availableBoxSizes, canUseWebP, isWebpSupported, windowInnerWidth } =
+  useData();
+
+const width: Ref<undefined | number> = ref(undefined);
+const height: Ref<undefined | number> = ref(undefined);
+const imageSizeSelectedClass: Ref<undefined | ImageSizes> = ref(undefined);
+const imageBox = ref(null);
+
+const responsiveHref = computed(() => {
+  if (props.imageHref === "") {
+    console.warn(`The the entered props.imageHref is wrong ${props.imageHref}`);
+    return "";
+  }
+  const extension = props.imageHref.split(".").reverse()[0];
+  const filePostFix = `${imageSizeSelectedClass.value}.${extension}`;
+  let responsiveUrl = props.imageHref.replace(
+    `.${extension}`,
+    `_${filePostFix}`
+  );
+  if (isWebpSupported.value) {
+    responsiveUrl = responsiveUrl.replace(`.${extension}`, ".webp");
+  }
+  return responsiveUrl;
+});
+
+function getBestImageSize() {
+  const imageBoxWidth = (imageBox as any)?.clientWidth;
+  const devicePixelRatio = window?.devicePixelRatio > 1.5 ? 2 : 1;
+  const imageSize = imageBoxWidth * devicePixelRatio;
+  imageSizeSelectedClass.value =
+    imageSize <= availableBoxSizes.value["2xs"]
+      ? "2xs"
+      : imageSize <= availableBoxSizes.value.xs
+      ? "xs"
+      : imageSize <= availableBoxSizes.value.sm
+      ? "sm"
+      : imageSize <= availableBoxSizes.value.md
+      ? "md"
+      : imageSize <= availableBoxSizes.value.lg
+      ? "lg"
+      : imageSize <= availableBoxSizes.value.xl
+      ? "xl"
+      : "2xl";
+  width.value = availableBoxSizes.value[imageSizeSelectedClass.value];
+  height.value = Math.round(
+    availableBoxSizes.value[imageSizeSelectedClass.value] /
+      (props.imageWidth / props.imageHeight)
+  );
+}
+canUseWebP();
+getBestImageSize();
+
+// eslint-disable-next-line no-unused-vars
+watchEffect((windowInnerWidth) => {
+  getBestImageSize();
 });
 </script>

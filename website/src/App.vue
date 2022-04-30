@@ -8,18 +8,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import NavigationMain from "./components/NavigationMain.vue";
 import NavigationFooter from "./components/NavigationFooter.vue";
-
-export default defineComponent({
-  name: "App",
-  components: {
-    NavigationMain,
-    NavigationFooter,
-  },
-});
 </script>
 
 <style>
