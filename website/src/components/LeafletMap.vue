@@ -92,7 +92,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    const { plot, setPlot, setStep, step } = usePredictions();
+    const { parameter, plot, setPlot, setStep, step } = usePredictions();
     const { latlon, lat, lon, tooltip } = usePhotonApi();
     const latidude =
       unref(lat) ||
@@ -105,6 +105,7 @@ export default defineComponent({
       latlon,
       latidude,
       longitude,
+      parameter,
       plot,
       tooltip,
       setPlot,
@@ -175,10 +176,12 @@ export default defineComponent({
       }
       L.control
         .attribution({
-          position: "bottomright",
+          position: "bottomleft",
           prefix: `<strong>${this.plot
             .replace("_", " ")
-            .toUpperCase()}</strong>`,
+            .toUpperCase()}</strong> ${
+            this.parameter === "tmp_2m" ? "Temperatur" : "Relative Luftfeuchte"
+          }`,
         })
         .addAttribution(`Step: ${this.step}`)
         .addTo(this.map as Map);
