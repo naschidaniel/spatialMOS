@@ -21,7 +21,7 @@
       v-if="props.map === 'images'"
       class="container-lg my-1 d-flex justify-content-end"
     >
-      <div class="col-auto">
+      <div class="col-auto mb-3">
         <PredictionsCarouselDropdownMaps />
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="input-group mb-3">
+  <div class="input-group mb-1">
     <label class="input-group-text" for="inputGroupSelectPlot"
       ><OutlineMapIcon class="text-body" style="width: 1rem; height: 1rem"
     /></label>

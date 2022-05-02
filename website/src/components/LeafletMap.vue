@@ -1,12 +1,9 @@
 <template>
   <div id="mapContainer" class="mapContainer">
-    <div class="leaflet-top leaflet-right">
-      <div class="leaflet-control">
-        <PredictionsCarouselDropdownMaps />
-      </div>
-    </div>
+    <div class="leaflet-top leaflet-right"></div>
     <div class="leaflet-bottom leaflet-left mb-3">
       <div class="leaflet-control">
+        <PredictionsCarouselDropdownMaps />
         <PredictionsCarouselDropdownParameter />
       </div>
     </div>
@@ -48,7 +45,7 @@ import PredictionsCarouselDropdownParameter from "./PredictionsCarouselDropdownP
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "leaflet/dist/leaflet.css";
-import { FeatureGroup, Tooltip, Marker, Map } from "leaflet";
+import { FeatureGroup, Tooltip, Marker, Map, Control } from "leaflet";
 import L from "leaflet";
 
 import { usePredictions } from "../store/usePredictions";
@@ -116,6 +113,7 @@ export default defineComponent({
   data() {
     return {
       map: undefined as unknown as Map,
+      control: undefined as unknown as Control,
     };
   },
   watch: {
@@ -127,14 +125,43 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.map = L.map("mapContainer", { attributionControl: false }).setView(
-      [this.latidude, this.longitude],
-      8
-    ) as Map;
-    L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
-      attribution: "",
-    }).addTo(this.map as Map);
+    this.map = L.map("mapContainer", {
+      attributionControl: false,
+      minZoom: 6,
+      maxZoom: 13,
+    }).setView([this.latidude, this.longitude], 9) as Map;
+
+    const osm = L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+      attribution:
+        "<a href='https://www.openstreetmap.org' target='_blank' rel='noreferrer'>OpenStreetMap-Mitwirkende</a>",
+    });
+
+    const gelande = L.tileLayer(
+      `https://maps.wien.gv.at/basemap/bmapgelaende/grau/google3857/{z}/{y}/{x}.jpeg`,
+      {
+        attribution:
+          "<a href='https://basemap.at/' target='_blank' rel='noreferrer'>basemap.at</a>",
+      }
+    );
+
+    const beschriftung = L.tileLayer(
+      `https://maps.wien.gv.at/basemap/bmapoverlay/normal/google3857/{z}/{y}/{x}.png`,
+      {
+        pane: "markerPane",
+      }
+    );
+
+    const baseLayers = {
+      Gelände: gelande.addTo(this.map as Map),
+      OpenStreetMap: osm,
+    };
+
+    const overlays = {
+      Beschriftung: beschriftung,
+    };
     this.overlayLayer().addTo(this.map as Map);
+    this.control = L.control.layers(baseLayers, overlays);
+    this.control.addTo(this.map as Map);
     this.updateMarker();
   },
   methods: {
@@ -168,7 +195,7 @@ export default defineComponent({
         id: "spatialmosImage",
         pane: "overlayPane",
         className: "mix-blend-mode-multiply",
-        opacity: 0.7,
+        opacity: 0.85,
       });
 
       if (this.map.attributionControl) {
@@ -176,7 +203,7 @@ export default defineComponent({
       }
       L.control
         .attribution({
-          position: "bottomleft",
+          position: "bottomright",
           prefix: `<strong>${this.plot
             .replace("_", " ")
             .toUpperCase()}</strong> ${
@@ -196,6 +223,7 @@ export default defineComponent({
 .mapContainer {
   width: 100%;
   height: calc(100vh - 200px);
+  background: #fff;
 }
 
 .mix-blend-mode-multiply {
