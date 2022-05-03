@@ -79,13 +79,21 @@ export function usePredictions() {
     },
   });
 
+  const plotName = computed(() => {
+    return `${plot.value.replace("_", " ").toUpperCase()}`;
+  });
+
+  const parameterName = computed(() => {
+    return parameter.value === "tmp_2m" ? "Temperatur" : "Relative Luftfeuchte";
+  });
+
   const spatialImage = computed(() => {
     if (selectedStep.value === undefined) {
       return {
         filename: "",
         overlay: "",
-        northEast: [47, 11],
-        southWest: [46, 9],
+        northEast: [47.7, 12.9],
+        southWest: [46.4, 10],
         height: 0,
         width: 0,
       };
@@ -164,6 +172,7 @@ export function usePredictions() {
   return {
     changeParameter,
     parameter,
+    parameterName,
     predictions,
     plot,
     step,
@@ -173,5 +182,6 @@ export function usePredictions() {
     setParameter,
     setPlot,
     spatialImage,
+    plotName,
   };
 }

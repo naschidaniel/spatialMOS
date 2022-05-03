@@ -1,6 +1,5 @@
 import { reactive, computed, unref } from "vue";
 import { PhotonApi } from "../model";
-import { useAddress } from "./useAddress";
 
 const photonApi: PhotonApi = reactive({
   isError: false,

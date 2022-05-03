@@ -33,12 +33,6 @@
       :image-width="spatialImage.width"
       @click="setStep(+1)"
     />
-    <LeafletMap
-      v-if="props.map === 'leaflet'"
-      :overlay="spatialImage.overlay"
-      :south-west="spatialImage.southWest"
-      :north-east="spatialImage.northEast"
-    />
     <div class="container-lg mt-3 d-flex justify-content-between">
       <button class="btn btn-light" type="button" @click="setStep(-1)">
         <SolidChevronLeftIcon
@@ -109,7 +103,6 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { usePredictions } from "../store/usePredictions";
-import LeafletMap from "./LeafletMap.vue";
 import ResponsiveImage from "./ResponsiveImage.vue";
 import PredictionsCarouselDropdownMaps from "./PredictionsCarouselDropdownMaps.vue";
 import SolidChevronLeftIcon from "./icons/SolidChevronLeftIcon.vue";
