@@ -1,0 +1,145 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "large",
+        "marker-symbol": "",
+        "name": "Innsbruck"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.39454, 47.26266] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Kufstein"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.16667, 47.58333] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Kitzbuehel"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.39215, 47.44637] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Lienz"
+      },
+      "geometry": { "type": "Point", "coordinates": [12.76903, 46.8289] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Schwaz"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.71014, 47.35169] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Reutte"
+      },
+      "geometry": { "type": "Point", "coordinates": [10.71667, 47.48333] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Landeck"
+      },
+      "geometry": { "type": "Point", "coordinates": [10.56593, 47.13988] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Imst"
+      },
+      "geometry": { "type": "Point", "coordinates": [10.73974, 47.24504] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "large",
+        "marker-symbol": "",
+        "name": "Bozen"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.354758, 46.498295] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Schlanders"
+      },
+      "geometry": { "type": "Point", "coordinates": [10.773689, 46.627678] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Meran"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.16399, 46.66893] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Sterzing"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.433619, 46.892673] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Brixen"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.6572, 46.715858] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "marker-color": "#7e7e7e",
+        "marker-size": "medium",
+        "marker-symbol": "",
+        "name": "Bruneck"
+      },
+      "geometry": { "type": "Point", "coordinates": [11.938042, 46.796574] }
+    }
+  ]
+}

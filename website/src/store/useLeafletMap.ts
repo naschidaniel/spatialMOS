@@ -42,6 +42,7 @@ export function useLeafletMap() {
     map.value.setView([latidude, longitude], 9) as Map;
     createControl();
     spatialPlot().addTo(map.value as Map);
+    createBezirkshauptstaette();
     updateMarker();
   });
 
@@ -88,6 +89,32 @@ export function useLeafletMap() {
     if (map.value === undefined) return;
     updateMarker();
   });
+
+  async function createBezirkshauptstaette() {
+    const bezirkhauptstaette = await fetch(
+      "/bezirkhauptstaette.geojson.json"
+    ).then((res) => (res.ok ? res.json() : "1212"));
+    const geojsonMarkerOptions = {
+      radius: 5,
+      fillColor: "#909090",
+      color: "#000",
+      weight: 0.6,
+      opacity: 0.6,
+      fillOpacity: 0.8,
+    };
+
+    const markerGroup = L.featureGroup([], {
+      id: "bezirkhauptstaette",
+    }).addTo(map.value as Map);
+
+    L.geoJSON(bezirkhauptstaette, {
+      pointToLayer: (feature, latlng) => {
+        return L.circleMarker(latlng, geojsonMarkerOptions).bindTooltip(
+          feature.properties.name
+        );
+      },
+    }).addTo(markerGroup);
+  }
 
   function updateMarker(): void {
     if (latlon.value === undefined) {
