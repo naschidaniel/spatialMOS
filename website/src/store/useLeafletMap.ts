@@ -85,11 +85,6 @@ export function useLeafletMap() {
     spatialPlot().addTo(map.value as Map);
   });
 
-  watchEffect((latlon) => {
-    if (map.value === undefined) return;
-    updateMarker();
-  });
-
   async function createBezirkshauptstaette() {
     const bezirkhauptstaette = await fetch(
       "/bezirkhauptstaette.geojson.json"

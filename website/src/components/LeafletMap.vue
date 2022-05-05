@@ -2,7 +2,8 @@
   <div id="mapContainer" class="mapContainer">
     <div class="leaflet-control-spatialmos-headline-container">
       <div class="leaflet-control-spatialmos-headline">
-        <strong>{{ plotName }}</strong> | {{ parameterName }} | Step: {{ step }}
+        <strong>Step: {{ step }}</strong> |
+        {{ formatDateTime(validDateTimestamp) }}
       </div>
     </div>
     <div class="leaflet-bottom leaflet-left">
@@ -44,8 +45,9 @@ import "leaflet/dist/leaflet.css";
 
 import { useLeafletMap } from "../store/useLeafletMap";
 import { usePredictions } from "../store/usePredictions";
+import { formatDateTime } from "../util/formatters";
 
-const { setStep, parameterName, step, plotName } = usePredictions();
+const { setStep, step, validDateTimestamp } = usePredictions();
 useLeafletMap();
 </script>
 
@@ -85,6 +87,9 @@ useLeafletMap();
 }
 
 .leaflet-control-spatialmos-headline {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
   font-size: large;
   padding: 10px;
   margin-left: auto;

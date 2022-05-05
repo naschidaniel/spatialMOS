@@ -80,11 +80,19 @@ export function usePredictions() {
   });
 
   const plotName = computed(() => {
-    return `${plot.value.replace("_", " ").toUpperCase()}`;
+    return `${predictions.plot.replace("_", " ").toUpperCase()}`;
   });
 
   const parameterName = computed(() => {
-    return parameter.value === "tmp_2m" ? "Temperatur" : "Relative Luftfeuchte";
+    return predictions.parameter === "tmp_2m"
+      ? "Temperatur"
+      : "Relative Luftfeuchte";
+  });
+
+  const validDateTimestamp = computed(() => {
+    return selectedStep.value?.valid_date
+      ? Date.parse(selectedStep.value.valid_date)
+      : undefined;
   });
 
   const spatialImage = computed(() => {
@@ -98,11 +106,11 @@ export function usePredictions() {
         width: 0,
       };
     }
-    return plot.value === "samos_spread"
+    return predictions.plot === "samos_spread"
       ? selectedStep.value.spatialmos_spread
-      : plot.value === "nwp_mean"
+      : predictions.plot === "nwp_mean"
       ? selectedStep.value.nwp_mean
-      : plot.value === "nwp_spread"
+      : predictions.plot === "nwp_spread"
       ? selectedStep.value.nwp_spread
       : selectedStep.value.spatialmos_mean;
   });
@@ -183,5 +191,6 @@ export function usePredictions() {
     setPlot,
     spatialImage,
     plotName,
+    validDateTimestamp,
   };
 }
