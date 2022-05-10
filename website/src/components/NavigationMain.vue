@@ -30,11 +30,6 @@
             >
           </li>
           <li class="nav-item" @click="toogleNavbar()">
-            <router-link class="nav-link" to="/punktvorhersagen"
-              >Punktvorhersagen</router-link
-            >
-          </li>
-          <li class="nav-item" @click="toogleNavbar()">
             <router-link class="nav-link" to="/projektbeschreibung"
               >Projektbeschreibung</router-link
             >

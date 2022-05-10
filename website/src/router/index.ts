@@ -23,7 +23,6 @@ const router = createRouter({
     { path: "/karte", component: Karte },
     { path: "/kontakt", component: Kontakt },
     { path: "/projektbeschreibung", component: Projektbeschreibung },
-    { path: "/punktvorhersagen", component: Punktvorhersagen },
     { path: "/systemstatus", component: Systemstatus },
     { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
   ],
