@@ -101,7 +101,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { usePredictions } from "../store/usePredictions";
 import ResponsiveImage from "./ResponsiveImage.vue";
 import PredictionsCarouselDropdownMaps from "./PredictionsCarouselDropdownMaps.vue";

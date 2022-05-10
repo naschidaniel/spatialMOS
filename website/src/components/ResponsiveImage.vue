@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, Ref, ref, watchEffect } from "vue";
+import { computed, Ref, ref, watchEffect } from "vue";
 import { useData } from "../store/useData";
 import { ImageSizes } from "../model";
 
