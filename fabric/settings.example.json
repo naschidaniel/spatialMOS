@@ -104,6 +104,21 @@
       "local_dir": "./data",
       "remote_dir": "/www/spatialMOS/data/archive",
       "ignore-existing": "True"
+    },
+    "container": {
+      "local_dir": ".",
+      "remote_dir": "/www/spatialMOS/container",
+      "ignore-existing": "True"
+    },
+    "gdam": {
+      "local_dir": "./data/get_available_data",
+      "remote_dir": "/www/spatialMOS/data/get_available_data/gadm",
+      "ignore-existing": "True"
+    },
+    "spatialmos_climatology": {
+      "local_dir": "./data",
+      "remote_dir": "/www/spatialMOS/data/spatialmos_climatology",
+      "ignore-existing": "True"
     }
   }
 }
